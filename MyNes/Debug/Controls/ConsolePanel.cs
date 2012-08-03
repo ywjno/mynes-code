@@ -26,6 +26,30 @@ namespace MyNes
 {
     public partial class ConsolePanel : Control
     {
+        private static Dictionary<DebugCode, Brush> CodeColors = new Dictionary<DebugCode, Brush>()
+        {
+            { DebugCode.Error,   Brushes.Red       },
+            { DebugCode.Good,    Brushes.LimeGreen },
+            { DebugCode.None,    Brushes.White     },
+            { DebugCode.Warning, Brushes.Yellow    },
+        };
+
+        private List<DebugLine> debugLines = new List<DebugLine>();
+
+        public int ScrollOffset = 0;
+
+        public event EventHandler DebugLinesUpdated;
+
+        public int StringHeight
+        {
+            get
+            {
+                Size CharSize = TextRenderer.MeasureText("TEST", this.Font);
+
+                return CharSize.Height * debugLines.Count;
+            }
+        }
+
         public ConsolePanel()
         {
             InitializeComponent();
@@ -36,59 +60,44 @@ namespace MyNes
             WriteLine("MY NES CONSOLE VERSION 5");
             WriteLine("Enter 'help' for instruction list");
             WriteLine("=====================================");
-            CONSOLE.DebugRised += new EventHandler<DebugEventArgs>(CONSOLE_DebugRised);
+
+            CONSOLE.LineWritten += (sender, e) => WriteLine(e.Text, e.Code);
         }
 
-        List<DebugLine> debugLines = new List<DebugLine>();
-        public int ScrollOffset = 0;
-        public void WriteLine(string line)
-        { WriteLine(line, DebugCode.None); }
-        public void WriteLine(string line, DebugCode status)
+        protected override void OnPaint(PaintEventArgs e)
         {
-            debugLines.Add(new DebugLine(line, status));
-            if (DebugLinesUpdated != null)
-                DebugLinesUpdated(this, null);
-            this.Invalidate();
-        }
-        public int StringHeight
-        {
-            get
-            {
-                Size CharSize = TextRenderer.MeasureText("TEST", this.Font);
+            base.OnPaint(e);
 
-                return CharSize.Height * debugLines.Count;
-            }
-        }
-        public event EventHandler DebugLinesUpdated;
-        void CONSOLE_DebugRised(object sender, DebugEventArgs e)
-        {
-            WriteLine(e.Text, e.Code);
-        }
-        protected override void OnPaint(PaintEventArgs pe)
-        {
-            base.OnPaint(pe);
-            //get default size of word
-            Size CharSize = TextRenderer.MeasureText("TEST", this.Font);
+            int stringHeight = StringHeight;
 
-            int lines = (this.Height / CharSize.Height) + 2;
-            int lineIndex = ScrollOffset / CharSize.Height;
-            int offset = ScrollOffset % CharSize.Height;
-            for (int i = 0; i < lines; i++)
+            int lines = (base.Height / stringHeight) + 2;
+            int lineIndex = ScrollOffset / stringHeight;
+            int offset = ScrollOffset % stringHeight;
+
+            for (int i = 0; i < lines; i++, lineIndex++)
             {
                 if (lineIndex < debugLines.Count)
                 {
-                    Color clr = Color.White;
-                    switch (debugLines[lineIndex].DebugStatus)
-                    {
-                        case DebugCode.Error: clr = Color.Red; break;
-                        case DebugCode.Warning: clr = Color.Yellow; break;
-                        case DebugCode.Good: clr = Color.LimeGreen; break;
-                    }
-                    pe.Graphics.DrawString(debugLines[lineIndex].Line, this.Font,
-                               new SolidBrush(clr), new PointF(1, (i * CharSize.Height) - offset));
+                    var line = debugLines[lineIndex];
+
+                    e.Graphics.DrawString(
+                        line.Text,
+                        this.Font,
+                        CodeColors[line.Code],
+                        1,
+                        (i * stringHeight) - offset);
                 }
-                lineIndex++;
             }
+        }
+
+        public void WriteLine(string line, DebugCode status = DebugCode.None)
+        {
+            debugLines.Add(new DebugLine(line, status));
+
+            if (DebugLinesUpdated != null)
+                DebugLinesUpdated(this, EventArgs.Empty);
+
+            base.Invalidate();
         }
     }
 }

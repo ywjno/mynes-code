@@ -10,9 +10,9 @@
         string debugLine;
         DebugCode status;
 
-        public string Line
+        public string Text
         { get { return debugLine; } set { debugLine = value; } }
-        public DebugCode DebugStatus
+        public DebugCode Code
         { get { return status; } set { status = value; } }
     }
 }
