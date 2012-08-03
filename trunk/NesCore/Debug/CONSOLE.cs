@@ -34,13 +34,13 @@
        /// <param name="status">The status</param>
         public static void WriteLine(object Sender, string Line,DebugCode status)
         {
-            System.EventHandler<DebugEventArgs> handler = DebugRised;
+            System.EventHandler<DebugEventArgs> handler = LineWritten;
             if (handler != null)
                 handler(Sender, new DebugEventArgs(Line, status));
         }
         /// <summary>
         /// Rised when the system write a debug
         /// </summary>
-        public static event System.EventHandler<DebugEventArgs> DebugRised;
+        public static event System.EventHandler<DebugEventArgs> LineWritten;
     }
 }

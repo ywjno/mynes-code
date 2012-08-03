@@ -50,21 +50,21 @@ namespace MyNes
         }
         void UpdateVscroll()
         {
-            if (consolePanel1.StringHeight < consolePanel1.Height)
+            if (consolePanel.StringHeight < consolePanel.Height)
             {
-                vScrollBar1.Maximum = 1;
-                vScrollBar1.Value = 0;
-                vScrollBar1.Enabled = false;
-                consolePanel1.ScrollOffset = 0;
+                vScrollBar.Maximum = 1;
+                vScrollBar.Value = 0;
+                vScrollBar.Enabled = false;
+                consolePanel.ScrollOffset = 0;
             }
             else
             {
-                vScrollBar1.Enabled = true;
-                vScrollBar1.Maximum = consolePanel1.StringHeight - consolePanel1.Height + 15;
-                vScrollBar1.Value = vScrollBar1.Maximum - 1;
-                consolePanel1.ScrollOffset = vScrollBar1.Value;
+                vScrollBar.Enabled = true;
+                vScrollBar.Maximum = consolePanel.StringHeight - consolePanel.Height + 15;
+                vScrollBar.Value = vScrollBar.Maximum - 1;
+                consolePanel.ScrollOffset = vScrollBar.Value;
             }
-            consolePanel1.Invalidate();
+            consolePanel.Invalidate();
         }
 
         void ExecuteCommand()
@@ -81,30 +81,30 @@ namespace MyNes
         void DoCommand()
         {
             //refresh commands list
-            if (!comboBox1.Items.Contains(comboBox1.Text))
-                comboBox1.Items.Add(comboBox1.Text);
+            if (!comboBoxHistory.Items.Contains(comboBoxHistory.Text))
+                comboBoxHistory.Items.Add(comboBoxHistory.Text);
             //detect command
             bool found = false;
             bool showCommandHelp = false;
-            string[] code = comboBox1.Text.Split(new char[] { ' ' });
+            string[] code = comboBoxHistory.Text.Split(new char[] { ' ' });
             foreach (ConsoleCommand command in ConsoleCommands.AvailableCommands)
             {
                 if (command.Method == code[0])
                 {
                     if (command.Parameters.Length == 0 && code.Length > 1)
                     {
-                        CONSOLE.WriteLine("] " + comboBox1.Text + ": THIS COMAND HAS NO PARAMETER", DebugCode.Warning);
+                        CONSOLE.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAS NO PARAMETER", DebugCode.Warning);
                         showCommandHelp = true;
                     }
                     else if (command.Parameters.Length > 0 && code.Length == 1)
                     {
-                        CONSOLE.WriteLine("] " + comboBox1.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Error);
+                        CONSOLE.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Error);
                         showCommandHelp = true;
                     }
                     else
                     {
-                        CONSOLE.WriteLine("] " + comboBox1.Text);
-                        command.Execute(comboBox1.Text);
+                        CONSOLE.WriteLine("] " + comboBoxHistory.Text);
+                        command.Execute(comboBoxHistory.Text);
                     }
                     found = true;
                     if (showCommandHelp)
@@ -120,7 +120,7 @@ namespace MyNes
             }
             if (!found)
             {
-                CONSOLE.WriteLine("] " + comboBox1.Text + ": COMMAND NOT FOUND", DebugCode.Error);
+                CONSOLE.WriteLine("] " + comboBoxHistory.Text + ": COMMAND NOT FOUND", DebugCode.Error);
             }
         }
 
@@ -134,8 +134,8 @@ namespace MyNes
         }
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
-            consolePanel1.ScrollOffset = vScrollBar1.Value;
-            consolePanel1.Invalidate();
+            consolePanel.ScrollOffset = vScrollBar.Value;
+            consolePanel.Invalidate();
         }
         private void Frm_Console_FormClosed(object sender, FormClosedEventArgs e)
         {
