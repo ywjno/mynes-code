@@ -10,12 +10,20 @@ namespace MyNes
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// <param name="Args"></param>
         [STAThread]
-        static void Main()
+        static void Main(string[] Args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            settings.Reload();
+            //Application.Run(new Frm_Main());
+            Application.Run(new Frm_Console());
         }
+
+        static Properties.Settings settings = new Properties.Settings();
+
+        public static Properties.Settings Settings
+        { get { return settings; } }
     }
 }
