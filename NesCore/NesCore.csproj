@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Debug\DebugArg.cs" />
     <Compile Include="Debug\ConsoleCommands.cs" />
     <Compile Include="Debug\CONSOLE.cs" />
@@ -47,7 +48,13 @@
     <Compile Include="Debug\DebugLine.cs" />
     <Compile Include="Debug\DebugCode.cs" />
     <Compile Include="Debug\DefaultCommands\help.cs" />
+    <Compile Include="Delegates.cs" />
+    <Compile Include="Memory\Memory.cs" />
+    <Compile Include="NesCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
