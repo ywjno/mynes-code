@@ -3,7 +3,6 @@
     public class CpuMemory : Memory
     {
         private byte[] ram = new byte[2048];
-        private byte[] prg;
 
         public CpuMemory()
             : base(0xFFFF)
