@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Boards\Board.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Debug\DebugArg.cs" />
     <Compile Include="Debug\ConsoleCommands.cs" />
