@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-using System;
+
 namespace MyNes.Core
 {
     /// <summary>
@@ -14,7 +15,10 @@ namespace MyNes.Core
         /// Get tha available commands
         /// </summary>
         public static ConsoleCommand[] AvailableCommands
-        { get { return availableCommands.ToArray(); } }
+        {
+            get { return availableCommands.ToArray(); }
+        }
+
         /// <summary>
         /// Add command to the commands
         /// </summary>
@@ -23,6 +27,7 @@ namespace MyNes.Core
         {
             availableCommands.Add(theCommand);
         }
+
         /// <summary>
         /// Detect and add the default commands, the available commands list get cleared
         /// </summary>

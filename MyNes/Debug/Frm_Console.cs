@@ -93,12 +93,12 @@ namespace MyNes
                 {
                     if (command.Parameters.Length == 0 && code.Length > 1)
                     {
-                        CONSOLE.WriteLine("] " + comboBox1.Text + ": THIS COMAND HAS NO PARAMETER", DebugStatus.Warning);
+                        CONSOLE.WriteLine("] " + comboBox1.Text + ": THIS COMAND HAS NO PARAMETER", DebugCode.Warning);
                         showCommandHelp = true;
                     }
                     else if (command.Parameters.Length > 0 && code.Length == 1)
                     {
-                        CONSOLE.WriteLine("] " + comboBox1.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugStatus.Error);
+                        CONSOLE.WriteLine("] " + comboBox1.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Error);
                         showCommandHelp = true;
                     }
                     else
@@ -120,7 +120,7 @@ namespace MyNes
             }
             if (!found)
             {
-                CONSOLE.WriteLine("] " + comboBox1.Text + ": COMMAND NOT FOUND", DebugStatus.Error);
+                CONSOLE.WriteLine("] " + comboBox1.Text + ": COMMAND NOT FOUND", DebugCode.Error);
             }
         }
 

@@ -45,9 +45,8 @@
     <Compile Include="Debug\CONSOLE.cs" />
     <Compile Include="Debug\ConsoleCommand.cs" />
     <Compile Include="Debug\DebugLine.cs" />
-    <Compile Include="Debug\DebugStatus.cs" />
+    <Compile Include="Debug\DebugCode.cs" />
     <Compile Include="Debug\DefaultCommands\help.cs" />
-    <Compile Include="NesCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

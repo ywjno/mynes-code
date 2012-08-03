@@ -3,27 +3,23 @@
     /// <summary>
     /// Console Debug Args
     /// </summary>
-    public class DebugArg : System.EventArgs
+    public class DebugEventArgs : System.EventArgs
     {
+        private DebugCode code;
+        private string text;
+
+        public DebugCode Code { get { return code; } }
+        public string Text { get { return text; } }
+
         /// <summary>
         /// Console Debug Args
         /// </summary>
-        /// <param name="Line">The debug line</param>
-        /// <param name="status">The status</param>
-        public DebugArg(string Line, DebugStatus status)
+        /// <param name="text">The debug line</param>
+        /// <param name="code">The status</param>
+        public DebugEventArgs(string text, DebugCode code)
         {
-            _DebugLine = Line;
-            this.status = status;
+            this.text = text;
+            this.code = code;
         }
-        string _DebugLine;
-        DebugStatus status;
-        /// <summary>
-        /// The debug line
-        /// </summary>
-        public string DebugLine
-        { get { return _DebugLine; } }
-
-        public DebugStatus DebugStatus
-        { get { return status; } }
     }
 }

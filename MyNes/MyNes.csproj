@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NesCore\NesCore.csproj">
-      <Project>{787ABC83-447F-4E6C-BB85-143B1F244AEE}</Project>
+      <Project>{787abc83-447f-4e6c-bb85-143b1f244aee}</Project>
       <Name>NesCore</Name>
     </ProjectReference>
   </ItemGroup>

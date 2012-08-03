@@ -1,7 +1,10 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNes", "MyNes\MyNes.csproj", "{43283580-C19C-4A20-80B7-784300D736B3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{787ABC83-447F-4E6C-BB85-143B1F244AEE} = {787ABC83-447F-4E6C-BB85-143B1F244AEE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NesCore", "NesCore\NesCore.csproj", "{787ABC83-447F-4E6C-BB85-143B1F244AEE}"
 EndProject

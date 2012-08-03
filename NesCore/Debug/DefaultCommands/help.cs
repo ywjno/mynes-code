@@ -14,7 +14,7 @@ namespace MyNes.Core.Debug.DefaultCommands
         /// <returns>True if executed success, otherwise false</returns>
         public override void Execute(string parameters)
         {
-            CONSOLE.WriteLine("AVAILABLE INSTRUCTIONS:", DebugStatus.Good);
+            CONSOLE.WriteLine("AVAILABLE INSTRUCTIONS:", DebugCode.Good);
             foreach (ConsoleCommand command in ConsoleCommands.AvailableCommands)
             {
                 string line = "> " + command.Method + ": ";

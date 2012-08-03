@@ -2,17 +2,17 @@
 {
     public struct DebugLine
     {
-        public DebugLine(string debugLine, DebugStatus status)
+        public DebugLine(string debugLine, DebugCode status)
         {
             this.debugLine = debugLine;
             this.status = status;
         }
         string debugLine;
-        DebugStatus status;
+        DebugCode status;
 
         public string Line
         { get { return debugLine; } set { debugLine = value; } }
-        public DebugStatus DebugStatus
+        public DebugCode DebugStatus
         { get { return status; } set { status = value; } }
     }
 }
