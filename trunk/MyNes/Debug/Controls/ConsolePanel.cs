@@ -18,11 +18,7 @@
  */
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using MyNes.Core;
 
@@ -40,14 +36,14 @@ namespace MyNes
             WriteLine("MY NES CONSOLE VERSION 5");
             WriteLine("Enter 'help' for instruction list");
             WriteLine("=====================================");
-            CONSOLE.DebugRised += new EventHandler<DebugArg>(CONSOLE_DebugRised);
+            CONSOLE.DebugRised += new EventHandler<DebugEventArgs>(CONSOLE_DebugRised);
         }
 
         List<DebugLine> debugLines = new List<DebugLine>();
         public int ScrollOffset = 0;
         public void WriteLine(string line)
-        { WriteLine(line, DebugStatus.None); }
-        public void WriteLine(string line, DebugStatus status)
+        { WriteLine(line, DebugCode.None); }
+        public void WriteLine(string line, DebugCode status)
         {
             debugLines.Add(new DebugLine(line, status));
             if (DebugLinesUpdated != null)
@@ -64,9 +60,9 @@ namespace MyNes
             }
         }
         public event EventHandler DebugLinesUpdated;
-        void CONSOLE_DebugRised(object sender, DebugArg e)
+        void CONSOLE_DebugRised(object sender, DebugEventArgs e)
         {
-            WriteLine(e.DebugLine, e.DebugStatus);
+            WriteLine(e.Text, e.Code);
         }
         protected override void OnPaint(PaintEventArgs pe)
         {
@@ -84,9 +80,9 @@ namespace MyNes
                     Color clr = Color.White;
                     switch (debugLines[lineIndex].DebugStatus)
                     {
-                        case DebugStatus.Error: clr = Color.Red; break;
-                        case DebugStatus.Warning: clr = Color.Yellow; break;
-                        case DebugStatus.Good: clr = Color.LimeGreen; break;
+                        case DebugCode.Error: clr = Color.Red; break;
+                        case DebugCode.Warning: clr = Color.Yellow; break;
+                        case DebugCode.Good: clr = Color.LimeGreen; break;
                     }
                     pe.Graphics.DrawString(debugLines[lineIndex].Line, this.Font,
                                new SolidBrush(clr), new PointF(1, (i * CharSize.Height) - offset));
