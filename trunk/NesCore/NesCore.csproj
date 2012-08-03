@@ -51,7 +51,9 @@
     <Compile Include="Debug\DefaultCommands\help.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Memory\Memory.cs" />
+    <Compile Include="Types\Mirroring.cs" />
     <Compile Include="NesCore.cs" />
+    <Compile Include="Memory\PpuMemory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
