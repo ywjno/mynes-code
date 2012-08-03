@@ -7,7 +7,7 @@
         public CpuMemory()
             : base(0xFFFF)
         {
-            Hook(0x0000, 0x2000, PeekRam, PokeRam);
+            Hook(0x0000, 0x1FFF, PeekRam, PokeRam);
         }
 
         private byte PeekRam(int address)
