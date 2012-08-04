@@ -43,7 +43,7 @@
     <Compile Include="Boards\Board.cs" />
     <Compile Include="CPU\CPU.cs" />
     <Compile Include="CPU\Types\Register.cs" />
-    <Compile Include="CPU\Types\SRRegister.cs" />
+    <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Debug\DebugEventArgs.cs" />
     <Compile Include="Debug\ConsoleCommands.cs" />
