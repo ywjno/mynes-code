@@ -1,22 +1,16 @@
-﻿namespace MyNes.Core
-{
-    abstract class RegisterPair
-    {
-        byte low;
-        byte high;
+﻿using System.Runtime.InteropServices;
 
-        public virtual byte Low
-        { get { return low; } set { low = value; } }
-        public virtual byte High
-        { get { return high; } set { high = value; } }
-        public virtual int Value
-        {
-            get { return ((high << 8) | low); }
-            set 
-            {
-                high = (byte)((value & 0xFF00) >> 8);
-                low = (byte)((value & 0xFF));
-            }
-        }
+namespace MyNes.Core
+{
+    [StructLayout(LayoutKind.Explicit)]
+    public class RegisterPair
+    {
+        [FieldOffset(0)]
+        public byte LoByte;
+        [FieldOffset(1)]
+        public byte HiByte;
+
+        [FieldOffset(0)]
+        public int Value;
     }
 }
