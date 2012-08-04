@@ -3,7 +3,7 @@
 namespace MyNes.Core
 {
     [StructLayout(LayoutKind.Explicit)]
-    public class Register
+    public struct Register
     {
         [FieldOffset(0)]
         public byte LoByte;
