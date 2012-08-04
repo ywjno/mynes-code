@@ -12,5 +12,17 @@ namespace MyNes.Core
 
         [FieldOffset(0)]
         public int Value;
+
+        public static implicit operator Register(int value)
+        {
+            return new Register
+            {
+                Value = value
+            };
+        }
+        public static int operator +(Register a1, int value)
+        {
+            return a1.Value + value;
+        }
     }
 }
