@@ -1,6 +1,6 @@
 ﻿namespace MyNes.Core
 {
-    class SRRegister : RegisterPair
+    class SRRegister : Register
     {
         public bool FlagN;
         public bool FlagV;

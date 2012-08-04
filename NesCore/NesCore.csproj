@@ -42,8 +42,7 @@
   <ItemGroup>
     <Compile Include="Boards\Board.cs" />
     <Compile Include="CPU\CPU.cs" />
-    <Compile Include="CPU\Types\PCRegister.cs" />
-    <Compile Include="CPU\Types\RegisterPair.cs" />
+    <Compile Include="CPU\Types\Register.cs" />
     <Compile Include="CPU\Types\SRRegister.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Debug\DebugEventArgs.cs" />
