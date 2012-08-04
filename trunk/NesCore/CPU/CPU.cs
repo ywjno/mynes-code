@@ -25,11 +25,11 @@
 
         void AmAbs()
         {
-            aa = (NesCore.CpuMemory[pc + 0] | (NesCore.CpuMemory[pc + 1] << 8));
             peek = PeekMem;
             poke = PokeMem;
 
-            pc.Value += 2;
+            aa.LoByte = NesCore.CpuMemory[pc.Value++];
+            aa.HiByte = NesCore.CpuMemory[pc.Value++];
         }
         void AmAbX()
         {
