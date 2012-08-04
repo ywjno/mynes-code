@@ -11,37 +11,16 @@
 
         private Register aa;
 
-        private PeekAccessor peek;
-        private PokeAccessor poke;
         /*Add a cycle to the counter*/
-        void Clock(int cycles)
-        {
+        private void Clock(int cycles) { }
 
-        }
-
-        byte PeekMem()
+        private void AmAbs()
         {
-            byte data = NesCore.CpuMemory[aa.Value];
-            return data;
-        }
-        void PokeMem(byte data)
-        {
-            NesCore.CpuMemory[aa.Value] = data;
-        }
-
-        void AmAbs()
-        {
-            peek = PeekMem;
-            poke = PokeMem;
-
             aa.LoByte = NesCore.CpuMemory[pc.Value++];
             aa.HiByte = NesCore.CpuMemory[pc.Value++];
         }
-        void AmAbX()
+        private void AmAbX()
         {
-            peek = PeekMem;
-            poke = PokeMem;
-
             aa.LoByte = NesCore.CpuMemory[pc.Value++];
             aa.HiByte = NesCore.CpuMemory[pc.Value++];
 
@@ -53,11 +32,8 @@
                 aa.HiByte++;
             }
         }
-        void AmAbX_C()//add cycle when crossed page
+        private void AmAbX_C()
         {
-            peek = PeekMem;
-            poke = PokeMem;
-
             aa.LoByte = NesCore.CpuMemory[pc.Value++];
             aa.HiByte = NesCore.CpuMemory[pc.Value++];
 
@@ -70,12 +46,8 @@
                 Clock(1);
             }
         }
-        void AmAbX_D()//always does dummy read
+        private void AmAbX_D()
         {
-            /*Special case for ROL 0x3E, always does dummy reads !!*/
-            peek = PeekMem;
-            poke = PokeMem;
-
             aa.LoByte = NesCore.CpuMemory[pc.Value++];
             aa.HiByte = NesCore.CpuMemory[pc.Value++];
 
@@ -85,11 +57,8 @@
             aa.HiByte++;
             Clock(1);
         }
-        void AmAbY()
+        private void AmAbY()
         {
-            peek = PeekMem;
-            poke = PokeMem;
-
             aa.LoByte = NesCore.CpuMemory[pc++];
             aa.HiByte = NesCore.CpuMemory[pc++];
 
@@ -101,11 +70,8 @@
                 aa.HiByte++;
             }
         }
-        void AmAbY_C()//add cycle when crossed page
+        private void AmAbY_C()
         {
-            peek = PeekMem;
-            poke = PokeMem;
-
             aa.LoByte = NesCore.CpuMemory[pc.Value++];
             aa.HiByte = NesCore.CpuMemory[pc.Value++];
 
@@ -118,45 +84,37 @@
                 Clock(1);
             }
         }
-        void AmAcc()
+        private void AmImm()
         {
-            peek = () => a;
-            poke = (data) => a = data;
+            aa.Value = pc.Value++;
         }
-        void AmImm()
+        private void AmImp() { }
+        private void AmInd()
         {
-            aa = pc++;
-            peek = PeekMem;
-            poke = PokeMem;
-        }
-        void AmImp()
-        {
-        }
-        void AmInd()
-        {
-            aa.LoByte = NesCore.CpuMemory[pc++];
-            aa.HiByte = NesCore.CpuMemory[pc++];
+            aa.LoByte = NesCore.CpuMemory[pc.Value++];
+            aa.HiByte = NesCore.CpuMemory[pc.Value++];
 
-            aa.LoByte = NesCore.CpuMemory[aa];
-            aa.HiByte = NesCore.CpuMemory[NesCore.CpuMemory[((aa + 1) & 0xFF) | aa.HiByte]];
-        }
-        void AmInX()
-        {
-            byte arg = NesCore.CpuMemory[pc++];
-            aa.LoByte = NesCore.CpuMemory[(arg + x + 0) & 0xFF];
-            aa.HiByte = NesCore.CpuMemory[(arg + x + 1) & 0xFF];
+            byte addr = NesCore.CpuMemory[aa.Value++];
 
-            peek = PeekMem;
-            poke = PokeMem;
-        }
-        void AmInY()
-        {
-            peek = PeekMem;
-            poke = PokeMem;
+            aa.LoByte++; // only increment the low byte, causing the "JMP ($nnnn)" bug
 
-            byte arg = NesCore.CpuMemory[pc++];
-            aa.LoByte = NesCore.CpuMemory[(arg  + 0) & 0xFF];
-            aa.HiByte = NesCore.CpuMemory[(arg  + 1) & 0xFF];
+            aa.HiByte = NesCore.CpuMemory[aa.Value++];
+            aa.LoByte = value;
+        }
+        private void AmInX()
+        {
+            byte addr = NesCore.CpuMemory[pc.Value++];
+
+            addr += x;
+
+            aa.LoByte = NesCore.CpuMemory[addr++];
+            aa.HiByte = NesCore.CpuMemory[addr++];
+        }
+        private void AmInY()
+        {
+            byte addr = NesCore.CpuMemory[pc.Value++];
+            aa.LoByte = NesCore.CpuMemory[addr++];
+            aa.HiByte = NesCore.CpuMemory[addr++];
 
             aa.LoByte += y;
 
@@ -166,14 +124,11 @@
                 aa.HiByte++;
             }
         }
-        void AmInY_C()
+        private void AmInY_C()
         {
-            peek = PeekMem;
-            poke = PokeMem;
-
-            byte arg = NesCore.CpuMemory[pc++];
-            aa.LoByte = NesCore.CpuMemory[(arg + 0) & 0xFF];
-            aa.HiByte = NesCore.CpuMemory[(arg + 1) & 0xFF];
+            byte addr = NesCore.CpuMemory[pc.Value++];
+            aa.LoByte = NesCore.CpuMemory[addr++];
+            aa.HiByte = NesCore.CpuMemory[addr++];
 
             aa.LoByte += y;
 
@@ -184,23 +139,21 @@
                 Clock(1);
             }
         }
-        void AmZpg()
+        private void AmZpg()
         {
-            aa = (NesCore.CpuMemory[pc++]);
-            peek = PeekMem;
-            poke = PokeMem;
+            aa.Value = NesCore.CpuMemory[pc.Value++];
         }
-        void AmZpX()
+        private void AmZpX()
         {
-            aa = (NesCore.CpuMemory[pc++] + x) & 0xFF;
-            peek = PeekMem;
-            poke = PokeMem;
+            aa.Value = NesCore.CpuMemory[pc.Value++];
+
+            aa.LoByte += x;
         }
-        void AmZpY()
+        private void AmZpY()
         {
-            aa = (NesCore.CpuMemory[pc++] + y) & 0xFF;
-            peek = PeekMem;
-            poke = PokeMem;
+            aa.Value = NesCore.CpuMemory[pc.Value++];
+
+            aa.LoByte += y;
         }
     }
 }
