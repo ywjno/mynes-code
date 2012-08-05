@@ -2,5 +2,7 @@
 {
     public class Apu
     {
+        public void Update()
+        { }
     }
 }
