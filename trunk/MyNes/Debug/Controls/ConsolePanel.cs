@@ -37,7 +37,7 @@ namespace MyNes
         private List<DebugLine> debugLines = new List<DebugLine>();
 
         public int ScrollOffset = 0;
-
+        private int charHeight = 0;
         public event EventHandler DebugLinesUpdated;
 
         public int StringHeight
@@ -48,6 +48,10 @@ namespace MyNes
 
                 return CharSize.Height * debugLines.Count;
             }
+        }
+        public int CharHeight
+        {
+            get { return TextRenderer.MeasureText("TEST", this.Font).Height; }
         }
 
         public ConsolePanel()
@@ -60,19 +64,19 @@ namespace MyNes
             WriteLine("MY NES CONSOLE VERSION 5");
             WriteLine("Enter 'help' for instruction list");
             WriteLine("=====================================");
-
+            
             CONSOLE.LineWritten += (sender, e) => WriteLine(e.Text, e.Code);
+
+            charHeight = CharHeight;
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            int stringHeight = StringHeight;
-
-            int lines = (base.Height / stringHeight) + 2;
-            int lineIndex = ScrollOffset / stringHeight;
-            int offset = ScrollOffset % stringHeight;
+            int lines = (base.Height / charHeight) + 2;
+            int lineIndex = ScrollOffset / charHeight;
+            int offset = ScrollOffset % charHeight;
 
             for (int i = 0; i < lines; i++, lineIndex++)
             {
@@ -85,7 +89,7 @@ namespace MyNes
                         this.Font,
                         CodeColors[line.Code],
                         1,
-                        (i * stringHeight) - offset);
+                        (i * charHeight) - offset);
                 }
             }
         }
