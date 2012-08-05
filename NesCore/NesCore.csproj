@@ -46,7 +46,7 @@
     <Compile Include="CPU\TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="CPU\Types\Register.cs" />
-    <Compile Include="Debug\CONSOLE.cs" />
+    <Compile Include="Debug\Console.cs" />
     <Compile Include="Debug\ConsoleCommand.cs" />
     <Compile Include="Debug\ConsoleCommands.cs" />
     <Compile Include="Debug\DebugCode.cs" />

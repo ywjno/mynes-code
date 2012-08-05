@@ -14,7 +14,7 @@ namespace MyNes.Core.Debug.DefaultCommands
         /// <returns>True if executed success, otherwise false</returns>
         public override void Execute(string parameters)
         {
-            CONSOLE.WriteLine("AVAILABLE INSTRUCTIONS:", DebugCode.Good);
+            Console.WriteLine("AVAILABLE INSTRUCTIONS:", DebugCode.Good);
             foreach (ConsoleCommand command in ConsoleCommands.AvailableCommands)
             {
                 string line = "> " + command.Method + ": ";
@@ -22,7 +22,7 @@ namespace MyNes.Core.Debug.DefaultCommands
                     line += par + " ";
                 line += command.Description;
 
-                CONSOLE.WriteLine(line);
+                Console.WriteLine(line);
             }
         }
         /// <summary>

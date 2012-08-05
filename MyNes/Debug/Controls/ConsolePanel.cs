@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using MyNes.Core;
+using Console = MyNes.Core.Console;
 
 namespace MyNes
 {

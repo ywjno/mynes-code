@@ -5,11 +5,8 @@
     /// </summary>
     public class DebugEventArgs : System.EventArgs
     {
-        private DebugCode code;
-        private string text;
-
-        public DebugCode Code { get { return code; } }
-        public string Text { get { return text; } }
+        public DebugCode Code { get; private set; }
+        public string Text { get; private set; }
 
         /// <summary>
         /// Console Debug Args
@@ -18,8 +15,8 @@
         /// <param name="code">The status</param>
         public DebugEventArgs(string text, DebugCode code)
         {
-            this.text = text;
-            this.code = code;
+            this.Text = text;
+            this.Code = code;
         }
     }
 }

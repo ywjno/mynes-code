@@ -22,7 +22,6 @@
         /// <summary>
         /// Get the parameters that accepted
         /// </summary>
-        public virtual string[] Parameters
-        { get { return new string[0]; } }
+        public virtual string[] Parameters { get { return new string[0]; } }
     }
 }
