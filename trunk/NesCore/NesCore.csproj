@@ -56,6 +56,7 @@
     <Compile Include="Debug\DefaultCommands\help.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Dma.cs" />
+    <Compile Include="IO\Output\IVideoDevice.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Memory\Memory.cs" />
     <Compile Include="Memory\PpuMemory.cs" />
@@ -63,6 +64,9 @@
     <Compile Include="PPU\Ppu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Mirroring.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\Input\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

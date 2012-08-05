@@ -8,8 +8,8 @@
 
         public byte this[int addr]
         {
-            get { NesCore.CPU.Clock(); return peek[addr & mask](addr); }
-            set { NesCore.CPU.Clock(); poke[addr & mask](addr, value); }
+            get { NesCore.Cpu.Clock(); return peek[addr & mask](addr); }
+            set { NesCore.Cpu.Clock(); poke[addr & mask](addr, value); }
         }
         public Memory(int capacity)
         {
