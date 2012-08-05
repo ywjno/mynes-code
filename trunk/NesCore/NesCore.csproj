@@ -8,7 +8,7 @@
     <ProjectGuid>{D062CE1D-E10B-42B1-B39A-225A5117825C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NesCore</RootNamespace>
+    <RootNamespace>MyNes.Core</RootNamespace>
     <AssemblyName>NesCore</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,10 +54,12 @@
     <Compile Include="Debug\DebugLine.cs" />
     <Compile Include="Debug\DefaultCommands\help.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="Dma.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Memory\Memory.cs" />
     <Compile Include="Memory\PpuMemory.cs" />
     <Compile Include="NesCore.cs" />
+    <Compile Include="PPU\Ppu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Mirroring.cs" />
   </ItemGroup>
