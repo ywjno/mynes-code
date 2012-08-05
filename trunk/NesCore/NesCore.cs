@@ -2,10 +2,10 @@
 {
     public class NesCore
     {
-        public static CpuMemory CpuMemory;
-        public static PpuMemory PpuMemory;
-        public static CPU CPU;
+        public static CPU Cpu;
         public static Ppu Ppu;
         public static Apu Apu;
+        public static CpuMemory CpuMemory;
+        public static PpuMemory PpuMemory;
     }
 }
