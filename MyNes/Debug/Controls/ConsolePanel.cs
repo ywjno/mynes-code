@@ -65,8 +65,9 @@ namespace MyNes
             WriteLine("MY NES CONSOLE VERSION 5");
             WriteLine("Enter 'help' for instruction list");
             WriteLine("=====================================");
-            
+
             Console.LineWritten += (sender, e) => WriteLine(e.Text, e.Code);
+            Console.UpdateLastLine += (sender, e) => UpdateLastLine(e.Text, e.Code);
 
             charHeight = CharHeight;
         }
@@ -98,6 +99,15 @@ namespace MyNes
         public void WriteLine(string line, DebugCode status = DebugCode.None)
         {
             debugLines.Add(new DebugLine(line, status));
+
+            if (DebugLinesUpdated != null)
+                DebugLinesUpdated(this, EventArgs.Empty);
+
+            base.Invalidate();
+        }
+        public void UpdateLastLine(string line, DebugCode status = DebugCode.None)
+        {
+            debugLines[debugLines.Count - 1] = new DebugLine(line, status);
 
             if (DebugLinesUpdated != null)
                 DebugLinesUpdated(this, EventArgs.Empty);

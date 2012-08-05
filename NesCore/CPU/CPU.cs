@@ -738,13 +738,13 @@ namespace MyNes.Core
             codes = new Action[256]
             {
                 // 0   1      2      3      4      5      6      7      8      9      A          B      C      D      E      F
-                OpBrk, OpOra, OpJam, OpSlo, OpDop, OpOra, OpAsl, OpSlo, OpPhp, OpOra, OpAsl_A(), OpAnc, OpTop, OpOra, OpAsl, OpSlo, // 0
+                OpBrk, OpOra, OpJam, OpSlo, OpDop, OpOra, OpAsl, OpSlo, OpPhp, OpOra, OpAsl_A, OpAnc, OpTop, OpOra, OpAsl, OpSlo, // 0
                 OpBpl, OpOra, OpJam, OpSlo, OpDop, OpOra, OpAsl, OpSlo, OpClc, OpOra, OpNop,     OpSlo, OpTop, OpOra, OpAsl, OpSlo, // 1
-                OpJsr, OpAnd, OpJam, OpRla, OpBit, OpAnd, OpRol, OpRla, OpPlp, OpAnd, OpRol_A(), OpAnc, OpBit, OpAnd, OpRol, OpRla, // 2
+                OpJsr, OpAnd, OpJam, OpRla, OpBit, OpAnd, OpRol, OpRla, OpPlp, OpAnd, OpRol_A, OpAnc, OpBit, OpAnd, OpRol, OpRla, // 2
                 OpBmi, OpAnd, OpJam, OpRla, OpDop, OpAnd, OpRol, OpRla, OpSec, OpAnd, OpNop,     OpRla, OpTop, OpAnd, OpRol, OpRla, // 3
-                OpRti, OpEor, OpJam, OpSre, OpDop, OpEor, OpLsr, OpSre, OpPha, OpEor, OpLsr_A(), OpAlr, OpJmp, OpEor, OpLsr, OpSre, // 4
+                OpRti, OpEor, OpJam, OpSre, OpDop, OpEor, OpLsr, OpSre, OpPha, OpEor, OpLsr_A, OpAlr, OpJmp, OpEor, OpLsr, OpSre, // 4
                 OpBvc, OpEor, OpJam, OpSre, OpDop, OpEor, OpLsr, OpSre, OpCli, OpEor, OpNop,     OpSre, OpTop, OpEor, OpLsr, OpSre, // 5
-                OpRts, OpAdc, OpJam, OpRra, OpDop, OpAdc, OpRor, OpRra, OpPla, OpAdc, OpRor_A(), OpArr, OpJmp, OpAdc, OpRor, OpRra, // 6
+                OpRts, OpAdc, OpJam, OpRra, OpDop, OpAdc, OpRor, OpRra, OpPla, OpAdc, OpRor_A, OpArr, OpJmp, OpAdc, OpRor, OpRra, // 6
                 OpBvs, OpAdc, OpJam, OpRra, OpDop, OpAdc, OpRor, OpRra, OpSei, OpAdc, OpNop,     OpRra, OpTop, OpAdc, OpRor, OpRra, // 7
                 OpDop, OpSta, OpDop, OpSax, OpSty, OpSta, OpStx, OpSax, OpDey, OpDop, OpTxa,     OpXaa, OpSty, OpSta, OpStx, OpSax, // 8
                 OpBcc, OpSta, OpJam, OpAhx, OpSty, OpSta, OpStx, OpSax, OpTya, OpSta, OpTxs,     OpXas, OpShy, OpSta, OpShx, OpAhx, // 9
