@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{43283580-C19C-4A20-80B7-784300D736B3}</ProjectGuid>
+    <ProjectGuid>{F0CF9A42-6D0B-480D-8946-CA277D752E73}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyNes</RootNamespace>
@@ -49,13 +49,13 @@
     <Compile Include="Debug\Controls\ConsolePanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Debug\Controls\ConsolePanel.designer.cs">
+    <Compile Include="Debug\Controls\ConsolePanel.Designer.cs">
       <DependentUpon>ConsolePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Debug\Frm_Console.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debug\Frm_Console.designer.cs">
+    <Compile Include="Debug\Frm_Console.Designer.cs">
       <DependentUpon>Frm_Console.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Frm_Main.cs">
@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NesCore\NesCore.csproj">
-      <Project>{787abc83-447f-4e6c-bb85-143b1f244aee}</Project>
+      <Project>{D062CE1D-E10B-42B1-B39A-225A5117825C}</Project>
       <Name>NesCore</Name>
     </ProjectReference>
   </ItemGroup>

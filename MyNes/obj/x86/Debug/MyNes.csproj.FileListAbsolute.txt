@@ -1,0 +1,13 @@
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\MyNes.Frm_Console.resources
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\MyNes.Frm_Main.resources
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\MyNes.Properties.Resources.resources
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\bin\Debug\MyNes.exe.config
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\bin\Debug\MyNes.exe
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\bin\Debug\MyNes.pdb
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\bin\Debug\NesCore.dll
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\bin\Debug\NesCore.pdb
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\MyNes.exe
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\MyNes\obj\x86\Debug\MyNes.pdb

@@ -1,0 +1,5 @@
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\NesCore\bin\Debug\NesCore.dll
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\NesCore\bin\Debug\NesCore.pdb
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\NesCore\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\NesCore\obj\Debug\NesCore.dll
+C:\Users\Beannaich\documents\visual studio 2010\Projects\MyNes\NesCore\obj\Debug\NesCore.pdb
