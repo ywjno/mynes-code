@@ -20,6 +20,9 @@
 
         public void Update()
         {
+            if (size == 0)
+                return;
+
             if (step = !step)
             {
                 data = NesCore.CpuMemory[addr];
