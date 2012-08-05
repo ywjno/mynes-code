@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Apu\Apu.cs" />
     <Compile Include="Boards\Board.cs" />
     <Compile Include="CPU\CPU.cs" />
     <Compile Include="CPU\TimingInfo.cs" />

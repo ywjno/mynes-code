@@ -4,18 +4,21 @@ namespace MyNes.Core
 {
     public class CPU
     {
+        //registers
         private Flags sr; // Processor Status
-        private Register aa;
         private Register pc; // Program Counter
         private Register sp; // Stack Pointer
+        private byte a; // Accumulator
+        private byte x; // Index Register X
+        private byte y; // Index Register Y
+
+        private Register aa;
         private Action[] codes;
         private Action[] modes;
         private bool NmiRequest;
         private bool SetNmiRequest;
         private bool ExeIRQ;
-        private byte a; // Accumulator
-        private byte x; // Index Register X
-        private byte y; // Index Register Y
+  
         private int irqRequestFlags;
 
         #region Helpers
