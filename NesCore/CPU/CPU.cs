@@ -15,11 +15,21 @@ namespace MyNes.Core
         private Register aa;
         private Action[] codes;
         private Action[] modes;
+        private byte code;
+
+        //interrupts
         private bool NmiRequest;
         private bool SetNmiRequest;
         private bool ExeIRQ;
-  
         private int irqRequestFlags;
+        private bool SetMapperIrqRequest;
+
+        public enum IsrType
+        {
+            Frame = 1,
+            Delta = 2,
+            External = 4,
+        }
 
         #region Helpers
 
@@ -130,12 +140,12 @@ namespace MyNes.Core
                 NmiRequest = false;
                 SetNmiRequest = false;
                 pc.LoByte = NesCore.CpuMemory[0xFFFA];
-                pc.LoByte = NesCore.CpuMemory[0xFFFB];
+                pc.HiByte = NesCore.CpuMemory[0xFFFB];
             }
             else
             {
                 pc.LoByte = NesCore.CpuMemory[0xFFFE];
-                pc.LoByte = NesCore.CpuMemory[0xFFFE];
+                pc.HiByte = NesCore.CpuMemory[0xFFFF];
             }
         }
         private void OpBvc()
@@ -739,6 +749,74 @@ namespace MyNes.Core
             sr = 0x34;
 
             Console.WriteLine("CPU Initialized!", DebugCode.Good);
+        }
+
+        /// <summary>
+        /// Request IRQ
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="asserted"></param>
+        public void IRQ(IsrType type, bool asserted)
+        {
+            if (asserted)
+                irqRequestFlags |= (int)type;
+            else
+                irqRequestFlags &= ~(int)type;
+        }
+        /// <summary>
+        /// Request NMI
+        /// </summary>
+        public void NMI(bool asserted)
+        {
+            NmiRequest = asserted;
+        }
+
+        public void Execute()
+        {
+            //check for irq !?
+            ExeIRQ = (!sr.FlagI && (irqRequestFlags != 0));
+
+            //fetch opcode
+            code = NesCore.CpuMemory[pc.Value++];
+            //do addressing mode
+            modes[code]();
+            //do opcode
+            codes[code]();
+            //timing
+            //cycleCounter += times[code];
+
+            if (NmiRequest)
+            {
+                SetNmiRequest = NmiRequest = false;
+                Push(pc.HiByte);
+                Push(pc.LoByte);
+                Push(sr & 0xEF);
+                sr.FlagI = true;
+                pc.LoByte = NesCore.CpuMemory[0xFFFA];
+                pc.HiByte = NesCore.CpuMemory[0xFFFB];
+                //cycleCounter += 7;
+            }
+            else if (ExeIRQ)
+            {
+                Push(pc.HiByte);
+                Push(pc.LoByte);
+                Push(sr & 0xEF);
+                sr.FlagI = true;
+                pc.LoByte = NesCore.CpuMemory[0xFFFE];
+                pc.HiByte = NesCore.CpuMemory[0xFFFF];
+                //cycleCounter += 7;
+            }
+
+            if (SetNmiRequest)
+            {
+                NmiRequest = true;
+                SetNmiRequest = false;
+            }
+            if (SetMapperIrqRequest)
+            {
+                SetMapperIrqRequest = false;
+                IRQ(IsrType.External, true);
+            }
         }
     }
 }
