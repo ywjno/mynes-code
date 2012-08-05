@@ -66,7 +66,7 @@ namespace MyNes
             WriteLine("Enter 'help' for instruction list");
             WriteLine("=====================================");
             
-            CONSOLE.LineWritten += (sender, e) => WriteLine(e.Text, e.Code);
+            Console.LineWritten += (sender, e) => WriteLine(e.Text, e.Code);
 
             charHeight = CharHeight;
         }
