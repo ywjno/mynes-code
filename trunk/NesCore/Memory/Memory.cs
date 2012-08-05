@@ -8,10 +8,9 @@
 
         public byte this[int addr]
         {
-            get { return peek[addr & mask](addr); }
-            set { poke[addr & mask](addr, value); }
+            get { NesCore.CPU.Clock(); return peek[addr & mask](addr); }
+            set { NesCore.CPU.Clock(); poke[addr & mask](addr, value); }
         }
-
         public Memory(int capacity)
         {
             this.peek = new PeekRegister[capacity + 1];
@@ -55,5 +54,13 @@
                 this.poke[i] = poke;
             }
         }
+
+        public virtual byte DebugPeek(int address)
+        { return this[address]; }
+        public virtual void DebugPoke(int address, byte value)
+        { this[address] = value; ; }
+
+        public int Length
+        { get { return mask; } }
     }
 }

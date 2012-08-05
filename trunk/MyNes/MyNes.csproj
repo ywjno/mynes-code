@@ -52,6 +52,18 @@
     <Compile Include="Debug\Controls\ConsolePanel.Designer.cs">
       <DependentUpon>ConsolePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debug\Controls\con_Memory.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Debug\Controls\con_Memory.designer.cs">
+      <DependentUpon>con_Memory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debug\Controls\MemoryPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Debug\Controls\MemoryPanel.designer.cs">
+      <DependentUpon>MemoryPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debug\Frm_Console.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +78,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Debug\Controls\con_Memory.resx">
+      <DependentUpon>con_Memory.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Debug\Frm_Console.resx">
       <DependentUpon>Frm_Console.cs</DependentUpon>
     </EmbeddedResource>
