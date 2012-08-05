@@ -7,6 +7,7 @@
         private Unit bkg = new Unit(272);
         private Unit spr = new Unit(256);
         private bool vbl;
+        private byte chr;
         private int hclock;
         private int vclock;
 
@@ -26,7 +27,53 @@
             return data;
         }
         private byte Peek2004(int address) { return 0; }
-        private byte Peek2007(int address) { return 0; }
+        private byte Peek2007(int address)
+        {
+            byte tmp;
+
+            if ((address & 0x3F00) == 0x3F00)
+            {
+                tmp = NesCore.PpuMemory[scroll.addr];
+                chr = NesCore.PpuMemory[scroll.addr & 0x2FFF];
+            }
+            else
+            {
+                tmp = chr;
+                chr = NesCore.PpuMemory[scroll.addr];
+            }
+
+            scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
+
+            return tmp;
+        }
+        private void Poke2000(int address, byte data) { }
+        private void Poke2001(int address, byte data) { }
+        private void Poke2003(int address, byte data) { }
+        private void Poke2004(int address, byte data) { }
+        private void Poke2005(int address, byte data)
+        {
+            if (scroll.swap = !scroll.swap)
+            {
+            }
+            else
+            {
+            }
+        }
+        private void Poke2006(int address, byte data)
+        {
+            if (scroll.swap = !scroll.swap)
+            {
+            }
+            else
+            {
+            }
+        }
+        private void Poke2007(int address, byte data)
+        {
+            NesCore.PpuMemory[scroll.addr] = data;
+
+            scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
+        }
 
         public void Update()
         {
@@ -52,6 +99,7 @@
         {
             public bool swap;
             public int addr;
+            public int fine;
             public int step;
             public int temp;
 
