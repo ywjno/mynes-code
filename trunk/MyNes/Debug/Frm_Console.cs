@@ -16,15 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using MyNes.Core;
+using Action = System.Action;
+using EventArgs = System.EventArgs;
 
 namespace MyNes
 {
@@ -75,7 +70,7 @@ namespace MyNes
             }
             else
             {
-                this.Invoke(new CONSOLE.WriteDebugLineDelegate(DoCommand));
+                this.Invoke(new Action(DoCommand));
             }
         }
         void DoCommand()
@@ -93,17 +88,17 @@ namespace MyNes
                 {
                     if (command.Parameters.Length == 0 && code.Length > 1)
                     {
-                        CONSOLE.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAS NO PARAMETER", DebugCode.Warning);
+                        Console.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAS NO PARAMETER", DebugCode.Warning);
                         showCommandHelp = true;
                     }
                     else if (command.Parameters.Length > 0 && code.Length == 1)
                     {
-                        CONSOLE.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Error);
+                        Console.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Error);
                         showCommandHelp = true;
                     }
                     else
                     {
-                        CONSOLE.WriteLine("] " + comboBoxHistory.Text);
+                        Console.WriteLine("] " + comboBoxHistory.Text);
                         command.Execute(comboBoxHistory.Text);
                     }
                     found = true;
@@ -113,14 +108,14 @@ namespace MyNes
                         foreach (string par in command.Parameters)
                             line += par + " ";
                         line += command.Description;
-                        CONSOLE.WriteLine("HELP:" + line);
+                        Console.WriteLine("HELP:" + line);
                     }
                     break;
                 }
             }
             if (!found)
             {
-                CONSOLE.WriteLine("] " + comboBoxHistory.Text + ": COMMAND NOT FOUND", DebugCode.Error);
+                Console.WriteLine("] " + comboBoxHistory.Text + ": COMMAND NOT FOUND", DebugCode.Error);
             }
         }
 
