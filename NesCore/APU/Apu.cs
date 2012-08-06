@@ -2,11 +2,11 @@
 {
     public class Apu : ProcessorBase
     {
-        public Apu(TimingInfo.Cookie cookie)
-            : base(cookie)
+        public Apu(TimingInfo.System system)
+            : base(system)
         {
-            timing.period = cookie.Master;
-            timing.single = cookie.Spu;
+            timing.period = system.Master;
+            timing.single = system.Spu;
         }
 
         public override void Update() { }

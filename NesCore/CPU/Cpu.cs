@@ -20,11 +20,11 @@ namespace MyNes.Core
         private byte code;
         private int irqRequestFlags;
 
-        public Cpu(TimingInfo.Cookie cookie)
-            : base(cookie)
+        public Cpu(TimingInfo.System system)
+            : base(system)
         {
-            timing.period = cookie.Master;
-            timing.single = cookie.Cpu;
+            timing.period = system.Master;
+            timing.single = system.Cpu;
         }
 
         private void Branch(bool flag)
