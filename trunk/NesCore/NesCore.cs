@@ -117,19 +117,19 @@ namespace MyNes.Core
         {
             //memory first
             CpuMemory = new CpuMemory();
-            CpuMemory.Initialize();
             PpuMemory = new PpuMemory();
+
+            CpuMemory.Initialize();
             PpuMemory.Initialize();
            
             Board.Initialize();
 
-            Cpu = new Cpu();
+            Cpu = new Cpu(TimingInfo.NTSC);
+            Ppu = new Ppu(TimingInfo.NTSC);
+            Apu = new Apu(TimingInfo.NTSC);
+
             Cpu.Initialize();
-
-            Ppu = new Ppu();
             Ppu.Initialize();
-
-            Apu = new Apu();
             Apu.Initialize();
         }
 

@@ -1,14 +1,17 @@
 ﻿namespace MyNes.Core
 {
-    public class Apu
+    public class Apu : ProcessorBase
     {
-        public void Update()
-        { }
-        public void Shutdown()
-        { }
-        public void Initialize()
-        { 
-        
+        public Apu(TimingInfo.Cookie cookie)
+            : base(cookie)
+        {
+            timing.period = cookie.Master;
+            timing.single = cookie.Spu;
         }
+
+        public override void Update() { }
+
+        public void Shutdown() { }
+        public void Initialize() { }
     }
 }

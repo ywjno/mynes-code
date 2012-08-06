@@ -46,6 +46,7 @@
     <Compile Include="Boards\NesNROM128.cs" />
     <Compile Include="Boards\NesNROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
+    <Compile Include="ProcessorBase.cs" />
     <Compile Include="TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="CPU\Types\Register.cs" />

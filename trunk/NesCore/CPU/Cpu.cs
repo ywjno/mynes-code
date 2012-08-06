@@ -2,19 +2,17 @@
 
 namespace MyNes.Core
 {
-    public class Cpu
+    public class Cpu : ProcessorBase
     {
-        //registers
+        private Action[] codes;
+        private Action[] modes;
         private Flags sr; // Processor Status
+        private Register aa;
         private Register pc; // Program Counter
         private Register sp; // Stack Pointer
         private byte a; // Accumulator
         private byte x; // Index Register X
         private byte y; // Index Register Y
-
-        private Register aa;
-        private Action[] codes;
-        private Action[] modes;
         private byte code;
 
         //interrupts
@@ -24,11 +22,11 @@ namespace MyNes.Core
         private int irqRequestFlags;
         private bool SetMapperIrqRequest;
 
-        public enum IsrType
+        public Cpu(TimingInfo.Cookie cookie)
+            : base(cookie)
         {
-            Frame = 1,
-            Delta = 2,
-            External = 4,
+            timing.period = cookie.Master;
+            timing.single = cookie.Cpu;
         }
 
         #region Helpers
@@ -777,8 +775,7 @@ namespace MyNes.Core
 
             Console.WriteLine("CPU Initialized!", DebugCode.Good);
         }
-        public void Shutdown()
-        { }
+        public void Shutdown() { }
 
         /// <summary>
         /// Request IRQ
@@ -839,6 +836,13 @@ namespace MyNes.Core
                 SetMapperIrqRequest = false;
                 IRQ(IsrType.External, true);
             }
+        }
+
+        public enum IsrType
+        {
+            Frame = 1,
+            Delta = 2,
+            External = 4,
         }
     }
 }
