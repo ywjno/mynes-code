@@ -41,10 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Apu\Apu.cs" />
+    <Compile Include="APU\Apu.cs" />
     <Compile Include="Boards\Board.cs" />
     <Compile Include="Boards\brd_NROM.cs" />
-    <Compile Include="CPU\CPU.cs" />
+    <Compile Include="CPU\Cpu.cs" />
     <Compile Include="CPU\TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="CPU\Types\Register.cs" />
@@ -57,7 +57,7 @@
     <Compile Include="Debug\DefaultCommands\help.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="PPU\Dma.cs" />
-    <Compile Include="Rom\InesHeader.cs" />
+    <Compile Include="ROM\InesHeader.cs" />
     <Compile Include="IO\Output\ISoundDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
