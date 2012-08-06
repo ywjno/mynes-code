@@ -2,7 +2,7 @@
 
 namespace MyNes.Core
 {
-    public class CPU
+    public class Cpu
     {
         //registers
         private Flags sr; // Processor Status

@@ -7,7 +7,7 @@ namespace MyNes.Core
 {
     public class NesCore
     {
-        public static CPU Cpu;
+        public static Cpu Cpu;
         public static Ppu Ppu;
         public static Apu Apu;
         public static CpuMemory CpuMemory;
@@ -123,7 +123,7 @@ namespace MyNes.Core
            
             Board.Initialize();
 
-            Cpu = new CPU();
+            Cpu = new Cpu();
             Cpu.Initialize();
 
             Ppu = new Ppu();
