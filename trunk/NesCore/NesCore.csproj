@@ -46,7 +46,7 @@
     <Compile Include="Boards\NesNROM128.cs" />
     <Compile Include="Boards\NesNROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
-    <Compile Include="CPU\TimingInfo.cs" />
+    <Compile Include="TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="CPU\Types\Register.cs" />
     <Compile Include="Debug\Console.cs" />
@@ -57,7 +57,7 @@
     <Compile Include="Debug\DebugLine.cs" />
     <Compile Include="Debug\DefaultCommands\help.cs" />
     <Compile Include="Delegates.cs" />
-    <Compile Include="PPU\Dma.cs" />
+    <Compile Include="CPU\Dma.cs" />
     <Compile Include="ROM\INESHeader.cs" />
     <Compile Include="IO\Output\ISoundDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
