@@ -35,9 +35,9 @@ namespace MyNes.Core
         private static void LoadINES(string romPath)
         {
             Console.WriteLine("Reading header ...");
-            InesHeader header = new InesHeader(romPath);
+            INESHeader header = new INESHeader(romPath);
             Console.UpdateLine("Reading header ... OK");
-            if (header.Result == InesHeader.InesOpenRomResult.Valid)
+            if (header.Result == INESHeader.InesOpenRomResult.Valid)
             {
                 #region Read banks
                 //the header is ok, load the banks
@@ -89,7 +89,7 @@ namespace MyNes.Core
                 // TODO: find a way to get board without using switch
                 switch (header.Mapper)
                 {
-                    case 0: Board = new brd_NROM(prg, chr); break;
+                    case 0: Board = new NesNROM128(chr, prg); break;
                 }
                 #endregion
                 //everything is ok, initialize components
@@ -101,10 +101,10 @@ namespace MyNes.Core
                 Console.WriteLine("Reading header ... Failed", DebugCode.Error);
                 switch (header.Result)
                 {
-                    case InesHeader.InesOpenRomResult.NotINES:
+                    case INESHeader.InesOpenRomResult.NotINES:
                         Console.WriteLine("Not INES rom", DebugCode.Error);
                         throw new System.Exception("Not INES rom");
-                    case InesHeader.InesOpenRomResult.NotSupportedMapper:
+                    case INESHeader.InesOpenRomResult.NotSupportedMapper:
                         Console.WriteLine("Mapper not supported", DebugCode.Error);
                         throw new System.Exception("Mapper not supported");
                     default:
