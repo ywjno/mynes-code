@@ -15,7 +15,7 @@ namespace MyNes.Core
         public static Board Board;
         //devices
         public static IVideoDevice VideoDevice;
-        public static ISoundDevice AudioDevice;
+        public static IAudioDevice AudioDevice;
         //Emulation controls
         public static bool ON;
         public static bool Pause;
@@ -37,7 +37,7 @@ namespace MyNes.Core
             Console.WriteLine("Reading header ...");
             INESHeader header = new INESHeader(romPath);
             Console.UpdateLine("Reading header ... OK");
-            if (header.Result == INESHeader.InesOpenRomResult.Valid)
+            if (header.Result == INESHeader.INESResult.Valid)
             {
                 #region Read banks
                 //the header is ok, load the banks
@@ -101,10 +101,10 @@ namespace MyNes.Core
                 Console.WriteLine("Reading header ... Failed", DebugCode.Error);
                 switch (header.Result)
                 {
-                    case INESHeader.InesOpenRomResult.NotINES:
+                    case INESHeader.INESResult.InvalidHeader:
                         Console.WriteLine("Not INES rom", DebugCode.Error);
                         throw new System.Exception("Not INES rom");
-                    case INESHeader.InesOpenRomResult.NotSupportedMapper:
+                    case INESHeader.INESResult.InvalidMapper:
                         Console.WriteLine("Mapper not supported", DebugCode.Error);
                         throw new System.Exception("Mapper not supported");
                     default:
@@ -150,7 +150,7 @@ namespace MyNes.Core
             {
                 if (!Pause)
                 {
-                    Cpu.Execute();
+                    Cpu.Update();
                 }
                 else
                 {

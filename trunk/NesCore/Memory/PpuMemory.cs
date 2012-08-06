@@ -2,17 +2,19 @@
 {
     public class PpuMemory : Memory
     {
-        private byte[] chr;
-        private byte[] nmtBank;
+        private byte[] nmtBank = new byte[4];
         private byte[] pal = new byte[] // Miscellaneous, real NES loads values similar to these during power up
         {
            0x09, 0x01, 0x00, 0x01, 0x00, 0x02, 0x02, 0x0D, 0x08, 0x10, 0x08, 0x24, 0x00, 0x00, 0x04, 0x2C, // Bkg palette
            0x09, 0x01, 0x34, 0x03, 0x00, 0x04, 0x00, 0x14, 0x08, 0x3A, 0x00, 0x02, 0x00, 0x20, 0x2C, 0x08  // Spr palette
         };
-        private byte[][] nmt;
+        private byte[][] nmt = new byte[2][]
+        {
+            new byte[1024], new byte[1024]
+        };
 
         public PpuMemory()
-            : base(0x3FFF)
+            : base(1 << 14)
         {
             Hook(0x2000, 0x3EFF, PeekNmt, PokeNmt);
             Hook(0x3F00, 0x3FFF, PeekPal, PokePal);
@@ -37,10 +39,10 @@
 
         public void SwitchMirroring(int value)
         {
-            nmtBank[0] = (byte)(value >> 6 & 0x03);
-            nmtBank[1] = (byte)(value >> 4 & 0x03);
-            nmtBank[2] = (byte)(value >> 2 & 0x03);
-            nmtBank[3] = (byte)(value >> 0 & 0x03);
+            nmtBank[0] = (byte)(value >> 3 & 0x01);
+            nmtBank[1] = (byte)(value >> 2 & 0x01);
+            nmtBank[2] = (byte)(value >> 1 & 0x01);
+            nmtBank[3] = (byte)(value >> 0 & 0x01);
         }
 
         public override void Initialize()

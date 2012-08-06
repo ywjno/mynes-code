@@ -1,68 +1,63 @@
 ﻿namespace MyNes.Core
 {
-    public abstract class Memory
+    public class Memory
     {
         private PeekRegister[] peek;
         private PokeRegister[] poke;
-        private int mask;
+        private int size;
 
-        public byte this[int addr]
-        {
-            get { NesCore.Cpu.Clock(); return peek[addr & mask](addr); }
-            set { NesCore.Cpu.Clock(); poke[addr & mask](addr, value); }
-        }
-        public Memory(int capacity)
-        {
-            this.peek = new PeekRegister[capacity + 1];
-            this.poke = new PokeRegister[capacity + 1];
-            this.mask = capacity;
+        public int Length { get { return size; } }
 
-            this.Hook(0, capacity, PeekStub, PokeStub);
+        public byte this[int address]
+        {
+            get { return peek[address](address); }
+            set { poke[address](address, value); }
         }
 
-        private byte PeekStub(int addr) { return 0; }
-        private void PokeStub(int addr, byte data) { }
+        public Memory(int size)
+        {
+            this.peek = new PeekRegister[size];
+            this.poke = new PokeRegister[size];
+            this.size = size;
 
-        public void Hook(int addr, PeekRegister peek)
-        {
-            this.peek[addr] = peek;
-        }
-        public void Hook(int addr, PokeRegister poke)
-        {
-            this.poke[addr] = poke;
-        }
-        public void Hook(int addr, PeekRegister peek, PokeRegister poke)
-        {
-            this.peek[addr] = peek;
-            this.poke[addr] = poke;
-        }
-        public void Hook(int addr, int last, PeekRegister peek)
-        {
-            for (int i = addr; i <= last; i++)
-                this.peek[i] = peek;
-        }
-        public void Hook(int addr, int last, PokeRegister poke)
-        {
-            for (int i = addr; i <= last; i++)
-                this.poke[i] = poke;
-        }
-        public void Hook(int addr, int last, PeekRegister peek, PokeRegister poke)
-        {
-            for (int i = addr; i <= last; i++)
-            {
-                this.peek[i] = peek;
-                this.poke[i] = poke;
-            }
+            this.Hook(0, size - 1,
+                delegate { return 0; },
+                delegate { });
         }
 
-        public virtual byte DebugPeek(int address) { return this[address]; }
-        public virtual void DebugPoke(int address, byte value) { this[address] = value; ; }
+        public void Hook(int address, PeekRegister peek) { this.peek[address] = peek; }
+        public void Hook(int address, PokeRegister poke) { this.poke[address] = poke; }
+        public void Hook(int address, PeekRegister peek, PokeRegister poke)
+        {
+            Hook(address, peek);
+            Hook(address, poke);
+        }
+        public void Hook(int address, int last, PeekRegister peek)
+        {
+            for (; address <= last; address++)
+                Hook(address, peek);
+        }
+        public void Hook(int address, int last, PokeRegister poke)
+        {
+            for (; address <= last; address++)
+                Hook(address, poke);
+        }
+        public void Hook(int address, int last, PeekRegister peek, PokeRegister poke)
+        {
+            for (; address <= last; address++)
+                Hook(address, peek, poke);
+        }
 
-        public abstract void Initialize();
-        public virtual void Shutdown()
-        { }
+        public virtual byte DebugPeek(int address)
+        {
+            return this[address];
+        }
+        public virtual void DebugPoke(int address, byte data)
+        {
+            this[address] = data;
+        }
 
-        public int Length
-        { get { return mask; } }
+        public virtual void Initialize() { }
+        public virtual void Shutdown() { }
     }
 }
