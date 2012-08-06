@@ -1,17 +1,15 @@
-﻿using System.Windows.Forms;
+﻿using System;
 using System.Reflection;
-using System;
+using System.Windows.Forms;
 using MyNes.Core;
 using MyNes.Debug.ConsoleCommands;
-using Action = System.Action;
-using EventArgs = System.EventArgs;
 using Console = MyNes.Core.Console;
 
 namespace MyNes
 {
-    public partial class Frm_Console : Form
+    public partial class FormConsole : Form
     {
-        public Frm_Console()
+        public FormConsole()
         {
             InitializeComponent();
             LoadSettings();

@@ -6,7 +6,7 @@ namespace MyNes.Debug.ConsoleCommands
     {
         public override void Execute(string parameters)
         {
-            Frm_Disassembler frm = new Frm_Disassembler();
+            FormDisassembler frm = new FormDisassembler();
             frm.Show();
         }
 

@@ -4,11 +4,11 @@ namespace MyNes.Debug.ConsoleCommands
 {
     class CloseConsole : ConsoleCommand
     {
-        public CloseConsole(Frm_Console frm)
+        public CloseConsole(FormConsole frm)
         {
             this.frm = frm;
         }
-        Frm_Console frm;
+        FormConsole frm;
         public override void Execute(string parameters)
         {
             frm.Close();

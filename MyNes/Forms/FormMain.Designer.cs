@@ -1,6 +1,6 @@
 ﻿namespace MyNes
 {
-    partial class Frm_Main
+    partial class FormMain
     {
         /// <summary>
         /// Required designer variable.
