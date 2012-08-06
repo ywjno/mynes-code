@@ -6,11 +6,16 @@
         protected byte[] prg;
         protected int chrMask;
         protected int prgMask;
+        protected int[] chrPage;
+        protected int[] prgPage;
 
         public Board(byte[] chr, byte[] prg)
         {
             this.chr = chr;
             this.prg = prg;
+
+            this.chrMask = (this.chr.Length - 1);
+            this.prgMask = (this.prg.Length - 1);
         }
 
         protected virtual byte PeekChr(int address) { return chr[DecodeChrAddress(address) & chrMask]; }

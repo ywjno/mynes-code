@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using MyNes.Properties;
+using myNES.Properties;
 
 namespace MyNes
 {
@@ -17,8 +17,7 @@ namespace MyNes
             Settings = new Settings();
             Settings.Reload();
 
-            // Application.Run(new FormMain());
-            Application.Run(new FormConsole());
+            Application.Run(new FormMain());
         }
     }
 }
