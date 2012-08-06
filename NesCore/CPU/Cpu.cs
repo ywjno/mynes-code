@@ -73,25 +73,25 @@ namespace MyNes.Core
         private void OpAdc()
         {
             byte data = NesCore.CpuMemory[aa.Value];
-            int temp = (a + data + (sr.FlagC ? 1 : 0));
+            int temp = (a + data + (sr.c ? 1 : 0));
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagV = ((temp ^ a) & (temp ^ data) & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (temp >> 0x8) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.v = ((temp ^ a) & (temp ^ data) & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (temp >> 0x8) != 0;
             a = (byte)(temp);
         }
         private void OpAnd()
         {
             a &= NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpAsl()
         {
             byte data = NesCore.CpuMemory[aa.Value];
 
-            sr.FlagC = (data & 0x80) != 0;
+            sr.c = (data & 0x80) != 0;
 
             NesCore.CpuMemory[aa.Value] = data;
 
@@ -99,14 +99,14 @@ namespace MyNes.Core
 
             NesCore.CpuMemory[aa.Value] = data;
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
         }
         private void OpAsl_A()
         {
             //byte data = NesCore.CpuMemory[aa.Value];
 
-            sr.FlagC = (a & 0x80) != 0;
+            sr.c = (a & 0x80) != 0;
 
             //NesCore.CpuMemory[aa.Value] = data;
 
@@ -115,23 +115,23 @@ namespace MyNes.Core
 
             //NesCore.CpuMemory[aa.Value] = data;
 
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
-        private void OpBcc() { Branch(!sr.FlagC); }
-        private void OpBcs() { Branch(sr.FlagC); }
-        private void OpBeq() { Branch(sr.FlagZ); }
+        private void OpBcc() { Branch(!sr.c); }
+        private void OpBcs() { Branch(sr.c); }
+        private void OpBeq() { Branch(sr.z); }
         private void OpBit()
         {
             var data = NesCore.CpuMemory[aa.Value];
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagV = (data & 0x40) != 0;
-            sr.FlagZ = (data & a) == 0;
+            sr.n = (data & 0x80) != 0;
+            sr.v = (data & 0x40) != 0;
+            sr.z = (data & a) == 0;
         }
-        private void OpBmi() { Branch(sr.FlagN); }
-        private void OpBne() { Branch(!sr.FlagZ); }
-        private void OpBpl() { Branch(!sr.FlagN); }
+        private void OpBmi() { Branch(sr.n); }
+        private void OpBne() { Branch(!sr.z); }
+        private void OpBpl() { Branch(!sr.n); }
         private void OpBrk()
         {
             pc.Value++; Clock();
@@ -140,7 +140,7 @@ namespace MyNes.Core
             Push(pc.LoByte);
             Push(sr | 0x10);
 
-            sr.FlagI = true;
+            sr.i = true;
 
             if (NmiRequest)
             {
@@ -155,35 +155,35 @@ namespace MyNes.Core
                 pc.HiByte = NesCore.CpuMemory[0xFFFF];
             }
         }
-        private void OpBvc() { Branch(!sr.FlagV); }
-        private void OpBvs() { Branch(sr.FlagV); }
-        private void OpClc() { sr.FlagC = false; }
-        private void OpCld() { sr.FlagD = false; }
-        private void OpCli() { sr.FlagI = false; }
-        private void OpClv() { sr.FlagV = false; }
+        private void OpBvc() { Branch(!sr.v); }
+        private void OpBvs() { Branch(sr.v); }
+        private void OpClc() { sr.c = false; }
+        private void OpCld() { sr.d = false; }
+        private void OpCli() { sr.i = false; }
+        private void OpClv() { sr.v = false; }
         private void OpCmp()
         {
             int data = (a - NesCore.CpuMemory[aa.Value]);
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
-            sr.FlagC = (~data >> 8) != 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
+            sr.c = (~data >> 8) != 0;
         }
         private void OpCpx()
         {
             int data = (x - NesCore.CpuMemory[aa.Value]);
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
-            sr.FlagC = (~data >> 8) != 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
+            sr.c = (~data >> 8) != 0;
         }
         private void OpCpy()
         {
             int data = (y - NesCore.CpuMemory[aa.Value]);
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
-            sr.FlagC = (~data >> 8) != 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
+            sr.c = (~data >> 8) != 0;
         }
         private void OpDec()
         {
@@ -195,26 +195,26 @@ namespace MyNes.Core
 
             NesCore.CpuMemory[aa.Value] = data;
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
         }
         private void OpDex()
         {
             x--;
-            sr.FlagN = (x & 0x80) != 0;
-            sr.FlagZ = (x & 0xFF) == 0;
+            sr.n = (x & 0x80) != 0;
+            sr.z = (x & 0xFF) == 0;
         }
         private void OpDey()
         {
             y--;
-            sr.FlagN = (y & 0x80) != 0;
-            sr.FlagZ = (y & 0xFF) == 0;
+            sr.n = (y & 0x80) != 0;
+            sr.z = (y & 0xFF) == 0;
         }
         private void OpEor()
         {
             a ^= NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpInc()
         {
@@ -226,20 +226,20 @@ namespace MyNes.Core
 
             NesCore.CpuMemory[aa.Value] = data;
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
         }
         private void OpInx()
         {
             x++;
-            sr.FlagN = (x & 0x80) != 0;
-            sr.FlagZ = (x & 0xFF) == 0;
+            sr.n = (x & 0x80) != 0;
+            sr.z = (x & 0xFF) == 0;
         }
         private void OpIny()
         {
             y++;
-            sr.FlagN = (y & 0x80) != 0;
-            sr.FlagZ = (y & 0xFF) == 0;
+            sr.n = (y & 0x80) != 0;
+            sr.z = (y & 0xFF) == 0;
         }
         private void OpJmp()
         {
@@ -257,26 +257,26 @@ namespace MyNes.Core
         private void OpLda()
         {
             a = NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpLdx()
         {
             x = NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (x & 0x80) != 0;
-            sr.FlagZ = (x & 0xFF) == 0;
+            sr.n = (x & 0x80) != 0;
+            sr.z = (x & 0xFF) == 0;
         }
         private void OpLdy()
         {
             y = NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (y & 0x80) != 0;
-            sr.FlagZ = (y & 0xFF) == 0;
+            sr.n = (y & 0x80) != 0;
+            sr.z = (y & 0xFF) == 0;
         }
         private void OpLsr()
         {
             byte data = NesCore.CpuMemory[aa.Value];
 
-            sr.FlagC = (data & 0x01) != 0;
+            sr.c = (data & 0x01) != 0;
 
             NesCore.CpuMemory[aa.Value] = data;
 
@@ -284,14 +284,14 @@ namespace MyNes.Core
 
             NesCore.CpuMemory[aa.Value] = data;
 
-            sr.FlagN = (data & 0x80) != 0;
-            sr.FlagZ = (data & 0xFF) == 0;
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
         } 
         private void OpLsr_A()
         {
            // byte data = NesCore.CpuMemory[aa.Value];
 
-            sr.FlagC = (a & 0x01) != 0;
+            sr.c = (a & 0x01) != 0;
 
             // NesCore.CpuMemory[aa.Value] = data;
 
@@ -300,8 +300,8 @@ namespace MyNes.Core
 
            // NesCore.CpuMemory[aa.Value] = data;
 
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpNop()
         {
@@ -309,8 +309,8 @@ namespace MyNes.Core
         private void OpOra()
         {
             a |= NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpPha()
         {
@@ -323,8 +323,8 @@ namespace MyNes.Core
         private void OpPla()
         {
             a = Pull();
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpPlp()
         {
@@ -336,11 +336,11 @@ namespace MyNes.Core
 
             NesCore.CpuMemory[aa.Value] = data;
 
-            byte temp = (byte)((data << 1) | (sr.FlagC ? 0x01 : 0x00));
+            byte temp = (byte)((data << 1) | (sr.c ? 0x01 : 0x00));
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (data & 0x80) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (data & 0x80) != 0;
 
             NesCore.CpuMemory[aa.Value] = temp;
         }
@@ -350,11 +350,11 @@ namespace MyNes.Core
 
            // NesCore.CpuMemory[aa.Value] = data;
 
-            byte temp = (byte)((a << 1) | (sr.FlagC ? 0x01 : 0x00));
+            byte temp = (byte)((a << 1) | (sr.c ? 0x01 : 0x00));
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (a & 0x80) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (a & 0x80) != 0;
 
             NesCore.CpuMemory[aa.Value] = temp;
         }
@@ -364,11 +364,11 @@ namespace MyNes.Core
 
             NesCore.CpuMemory[aa.Value] = data;
 
-            byte temp = (byte)((data >> 1) | (sr.FlagC ? 0x80 : 0x00));
+            byte temp = (byte)((data >> 1) | (sr.c ? 0x80 : 0x00));
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (data & 0x01) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (data & 0x01) != 0;
 
             NesCore.CpuMemory[aa.Value] = temp;
         }  
@@ -378,11 +378,11 @@ namespace MyNes.Core
 
            //  NesCore.CpuMemory[aa.Value] = data;
 
-            byte temp = (byte)((a >> 1) | (sr.FlagC ? 0x80 : 0x00));
+            byte temp = (byte)((a >> 1) | (sr.c ? 0x80 : 0x00));
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (a & 0x01) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (a & 0x01) != 0;
 
             NesCore.CpuMemory[aa.Value] = temp;
         }
@@ -392,7 +392,7 @@ namespace MyNes.Core
             pc.LoByte = Pull();
             pc.HiByte = Pull();
 
-            ExeIRQ = (!sr.FlagI && (irqRequestFlags != 0));
+            ExeIRQ = (!sr.i && (irqRequestFlags != 0));
         }
         private void OpRts()
         {
@@ -404,43 +404,43 @@ namespace MyNes.Core
         private void OpSbc()
         {
             int data = NesCore.CpuMemory[aa.Value] ^ 0xFF;
-            int temp = (a + data + (sr.FlagC ? 1 : 0));
+            int temp = (a + data + (sr.c ? 1 : 0));
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagV = ((temp ^ a) & (temp ^ data) & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (temp >> 0x8) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.v = ((temp ^ a) & (temp ^ data) & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (temp >> 0x8) != 0;
             a = (byte)(temp);
         }
-        private void OpSec() { sr.FlagC = true; }
-        private void OpSed() { sr.FlagD = true; }
-        private void OpSei() { sr.FlagI = true; }
+        private void OpSec() { sr.c = true; }
+        private void OpSed() { sr.d = true; }
+        private void OpSei() { sr.i = true; }
         private void OpSta() { NesCore.CpuMemory[aa.Value] = a; }
         private void OpStx() { NesCore.CpuMemory[aa.Value] = x; }
         private void OpSty() { NesCore.CpuMemory[aa.Value] = y; }
         private void OpTax()
         {
             x = a;
-            sr.FlagN = (x & 0x80) != 0;
-            sr.FlagZ = (x & 0xFF) == 0;
+            sr.n = (x & 0x80) != 0;
+            sr.z = (x & 0xFF) == 0;
         }
         private void OpTay()
         {
             y = a;
-            sr.FlagN = (y & 0x80) != 0;
-            sr.FlagZ = (y & 0xFF) == 0;
+            sr.n = (y & 0x80) != 0;
+            sr.z = (y & 0xFF) == 0;
         }
         private void OpTsx()
         {
             x = sp.LoByte;
-            sr.FlagN = (x & 0x80) != 0;
-            sr.FlagZ = (x & 0xFF) == 0;
+            sr.n = (x & 0x80) != 0;
+            sr.z = (x & 0xFF) == 0;
         }
         private void OpTxa()
         {
             a = x;
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpTxs()
         {
@@ -449,37 +449,37 @@ namespace MyNes.Core
         private void OpTya()
         {
             a = y;
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
 
         /* Unofficial Codes */
         private void OpAnc()
         {
             a &= NesCore.CpuMemory[aa.Value];
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
-            sr.FlagC = (a & 0x80) != 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
+            sr.c = (a & 0x80) != 0;
         }
         private void OpArr()
         {
-            a = (byte)(((NesCore.CpuMemory[aa.Value] & a) >> 1) | (sr.FlagC ? 0x80 : 0x00));
+            a = (byte)(((NesCore.CpuMemory[aa.Value] & a) >> 1) | (sr.c ? 0x80 : 0x00));
 
-            sr.FlagZ = (a & 0xFF) == 0;
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagC = (a & 0x40) != 0;
-            sr.FlagV = ((a << 1 ^ a) & 0x40) != 0;
+            sr.z = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.c = (a & 0x40) != 0;
+            sr.v = ((a << 1 ^ a) & 0x40) != 0;
         }
         private void OpAlr()
         {
             a &= NesCore.CpuMemory[aa.Value];
 
-            sr.FlagC = (a & 0x01) != 0;
+            sr.c = (a & 0x01) != 0;
 
             a >>= 1;
 
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpAhx()
         {
@@ -491,9 +491,9 @@ namespace MyNes.Core
         {
             var temp = ((a & x) - NesCore.CpuMemory[aa.Value]);
 
-            sr.FlagN = (temp & 0x80) != 0;
-            sr.FlagZ = (temp & 0xFF) == 0;
-            sr.FlagC = (~temp >> 8) != 0;
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (~temp >> 8) != 0;
 
             x = (byte)(temp);
         }
@@ -518,8 +518,8 @@ namespace MyNes.Core
             a = sp.LoByte;
             x = sp.LoByte;
 
-            sr.FlagN = (sp.LoByte & 0x80) != 0;
-            sr.FlagZ = (sp.LoByte & 0xFF) == 0;
+            sr.n = (sp.LoByte & 0x80) != 0;
+            sr.z = (sp.LoByte & 0xFF) == 0;
         }
         private void OpLax()
         {
@@ -556,8 +556,8 @@ namespace MyNes.Core
         private void OpXaa()
         {
             a = (byte)(x & NesCore.CpuMemory[aa.Value]);
-            sr.FlagN = (a & 0x80) != 0;
-            sr.FlagZ = (a & 0xFF) == 0;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpXas()
         {
@@ -802,7 +802,7 @@ namespace MyNes.Core
 
         public void Execute()
         {
-            ExeIRQ = (!sr.FlagI && (irqRequestFlags != 0));
+            ExeIRQ = (!sr.i && (irqRequestFlags != 0));
 
             code = NesCore.CpuMemory[pc.Value++];
 
@@ -815,7 +815,7 @@ namespace MyNes.Core
                 Push(pc.HiByte);
                 Push(pc.LoByte);
                 Push(sr & 0xEF);
-                sr.FlagI = true;
+                sr.i = true;
                 pc.LoByte = NesCore.CpuMemory[0xFFFA];
                 pc.HiByte = NesCore.CpuMemory[0xFFFB];
             }
@@ -824,7 +824,7 @@ namespace MyNes.Core
                 Push(pc.HiByte);
                 Push(pc.LoByte);
                 Push(sr & 0xEF);
-                sr.FlagI = true;
+                sr.i = true;
                 pc.LoByte = NesCore.CpuMemory[0xFFFE];
                 pc.HiByte = NesCore.CpuMemory[0xFFFF];
             }
