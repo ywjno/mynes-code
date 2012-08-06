@@ -1,74 +1,77 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace MyNes.Core
 {
     /// <summary>
-    /// A class for reading INES file format header
+    /// Encapsulates an INES format header
     /// </summary>
     public class INESHeader
     {
-        /// <summary>
-        /// Create a new instant of INES format header
-        /// </summary>
-        /// <param name="romPath">The complete rom path</param>
-        public INESHeader(string romPath)
-        {
-            //create read stream
-            Stream fileStream = new FileStream(romPath, FileMode.Open, FileAccess.Read);
-            //read header
-            byte[] header = new byte[16];
-            fileStream.Read(header, 0, 16);
-            //Check header
-            if (header[0] != 0x4E | header[1] != 0x45 | header[2] != 0x53 | header[3] != 0x1A)
-            {
-                fileStream.Close();
-                Result = InesOpenRomResult.NotINES;
-                return;
-            }
-            //Flags
-            PrgPages = header[4];
-            ChrPages = header[5];
-            if ((header[6] & 0x1) == 0)
-                this.Mirroring = MyNes.Core.Mirroring.ModeHorz;
-            else
-                this.Mirroring = MyNes.Core.Mirroring.ModeVert;
-
-            if ((header[6] & 0x8) != 0)
-                this.Mirroring = MyNes.Core.Mirroring.ModeFull;
-
-            HasSaveRam = (header[6] & 0x2) != 0x0;
-            HasTrainer = (header[6] & 0x4) != 0x0;
-
-            if ((header[7] & 0x0F) == 0)
-                Mapper = (byte)((header[7] & 0xF0) | (header[6] & 0xF0) >> 4);
-            else
-                Mapper = (byte)((header[6] & 0xF0) >> 4);
-
-            IsVSUnisystem = ((header[7] & 0x1) == 0x1);
-            IsPC10 = ((header[7] & 0x2) == 0x2);
-            //TODO: pal system detect
-            IsPal = false;
-
-            /*if (!MappersManager.SupportedMapper(mapper))
-            {
-                fileStream.Close();
-                return LoadRomStatus.InvalidMapper;
-            }*/
-            fileStream.Close();
-            Result = InesOpenRomResult.Valid;
-        }
-        public InesOpenRomResult Result;
+        public INESResult Result;
         public byte ChrPages;
         public byte PrgPages;
         public byte Mapper;
         public bool HasTrainer;
         public bool HasSaveRam;
-        public bool IsPal;
+        public bool IsPalb;
         public bool IsVSUnisystem;
-        public bool IsPC10;
+        public bool IsPlaychoice10;
         public int Mirroring;
 
-        public enum InesOpenRomResult
-        { NotINES, NotSupportedMapper, Valid, }
+        /// <summary>
+        /// Create a new instance of INES format header
+        /// </summary>
+        /// <param name="romPath">The absolute ROM path</param>
+        public INESHeader(string romPath)
+        {
+            var stream = new FileStream(romPath, FileMode.Open, FileAccess.Read);
+            var header = new byte[16];
+
+            stream.Read(header, 0, 16);
+            stream.Close();
+
+            if (header[0] != 'N' ||
+                header[1] != 'E' ||
+                header[2] != 'S' ||
+                header[3] != 0x1A)
+            {
+                Result = INESResult.InvalidHeader;
+                return;
+            }
+
+            PrgPages = header[4];
+            ChrPages = header[5];
+
+            switch (header[6] & 0x9)
+            {
+                case 0x0: this.Mirroring = MyNes.Core.Mirroring.ModeHorz; break;
+                case 0x1: this.Mirroring = MyNes.Core.Mirroring.ModeVert; break;
+                case 0x8:
+                case 0x9: throw new Exception("4-screen mirroring isn't supported.");
+            }
+            
+            HasSaveRam = (header[6] & 0x2) != 0x0;
+            HasTrainer = (header[6] & 0x4) != 0x0;
+
+            if ((header[7] & 0x0F) == 0)
+                Mapper |= (byte)((header[7] & 0xF0) | (header[6] >> 4));
+            else
+                throw new Exception("Header is corrupted, please use the header cleaner tool");
+
+            IsVSUnisystem = (header[7] & 0x01) != 0;
+            IsPlaychoice10 = (header[7] & 0x02) != 0;
+
+            //TODO: pal system detect
+            IsPalb = false;
+            Result = INESResult.Valid;
+        }
+
+        public enum INESResult
+        {
+            InvalidHeader = -2,
+            InvalidMapper = -1,
+            Valid = 0,
+        }
     }
 }

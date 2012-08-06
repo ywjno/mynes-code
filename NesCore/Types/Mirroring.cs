@@ -2,33 +2,25 @@
 {
     public class Mirroring
     {
-        public const int ModeVert = 0x11;
-        public const int ModeHorz = 0x05;
-        public const int Mode1ScA = 0x00;
-        public const int Mode1ScB = 0x55;
-        public const int ModeFull = 0x1B;
+        /// <summary>
+        /// [ A ][ A ]
+        /// [ A ][ A ]
+        /// </summary>
+        public const int Mode1ScA = 0x0;
+        /// <summary>
+        /// [ B ][ B ]
+        /// [ B ][ B ]
+        /// </summary>
+        public const int Mode1ScB = 0xF;
+        /// <summary>
+        /// [ A ][ B ]
+        /// [ A ][ B ]
+        /// </summary>
+        public const int ModeVert = 0x5;
+        /// <summary>
+        /// [ A ][ A ]
+        /// [ B ][ B ]
+        /// </summary>
+        public const int ModeHorz = 0x3;
     }
-    //public enum Mirroring : byte
-    //{
-    //    /// <summary>
-    //    /// Vertical
-    //    /// </summary>
-    //    ModeVert = 0x11,
-    //    /// <summary>
-    //    /// Horizontal
-    //    /// </summary>
-    //    ModeHorz = 0x05,
-    //    /// <summary>
-    //    /// One screen - low
-    //    /// </summary>
-    //    Mode1ScA = 0x00,
-    //    /// <summary>
-    //    /// One screen - high
-    //    /// </summary>
-    //    Mode1ScB = 0x55,
-    //    /// <summary>
-    //    /// Four screen
-    //    /// </summary>
-    //    ModeFull = 0x1B,
-    //}
 }

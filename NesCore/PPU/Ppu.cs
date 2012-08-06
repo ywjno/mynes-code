@@ -35,23 +35,36 @@
         {
             fetch.addr = 0x2000 | (scroll.addr & 0xFFF);
         }
-        private void FetchName_1() { fetch.name = NesCore.PpuMemory[fetch.addr]; }
+        private void FetchName_1()
+        {
+            fetch.name = NesCore.PpuMemory[fetch.addr];
+        }
         private void FetchAttr_0()
         {
             fetch.addr = 0x23C0 | (scroll.addr & 0xC00) | (scroll.addr >> 4 & 0x38) | (scroll.addr >> 2 & 0x7);
         }
-        private void FetchAttr_1() { fetch.attr = NesCore.PpuMemory[fetch.addr] >> ((scroll.addr >> 4 & 0x04) | (scroll.addr & 0x02)); }
+        private void FetchAttr_1()
+        {
+            fetch.attr = NesCore.PpuMemory[fetch.addr] >> ((scroll.addr >> 4 & 0x04) | (scroll.addr & 0x02));
+        }
         private void FetchBit0_0()
         {
             fetch.addr = bkg.address | (fetch.name << 4) | 0 | (scroll.addr >> 12 & 7);
         }
-        private void FetchBit0_1() { fetch.bit0 = NesCore.PpuMemory[fetch.addr]; }
+        private void FetchBit0_1()
+        {
+            fetch.bit0 = NesCore.PpuMemory[fetch.addr];
+        }
         private void FetchBit1_0()
         {
             fetch.addr = bkg.address | (fetch.name << 4) | 8 | (scroll.addr >> 12 & 7);
         }
-        private void FetchBit1_1() { fetch.bit1 = NesCore.PpuMemory[fetch.addr]; }
+        private void FetchBit1_1()
+        {
+            fetch.bit1 = NesCore.PpuMemory[fetch.addr];
+        }
 
+        private byte Peek____(int address) { return 0; }
         private byte Peek2002(int address)
         {
             byte data = 0;
@@ -83,6 +96,7 @@
 
             return tmp;
         }
+        private void Poke____(int address, byte data) { }
         private void Poke2000(int address, byte data)
         {
             scroll.temp = (scroll.temp & ~0x0C00) | (data << 10 & 0x0C00);
@@ -148,14 +162,14 @@
             var pos = (hclock + 9) % 336;
 
             for (int i = 0; i < 8 && pos < 256; i++, pos++, fetch.bit0 <<= 1, fetch.bit1 <<= 1)
-                bkg.pixels[pos] = (fetch.attr << 2 & 0xC) | (fetch.bit0 >> 7 & 0x1) | (fetch.bit1 >> 6 & 0x2);
+                bkg.pixels[pos] = (fetch.attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
         }
         private void SynthesizeSprPixels()
         {
             int pos = buffer[hclock >> 3 & 7].x;
 
             for (int i = 0; i < 8 && pos < 256; i++, pos++, fetch.bit0 <<= 1, fetch.bit1 <<= 1)
-                spr.pixels[pos] = (fetch.attr << 2 & 0xC) | (fetch.bit0 >> 7 & 0x1) | (fetch.bit1 >> 6 & 0x2);
+                spr.pixels[pos] = (fetch.attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
         }
 
         public override void Update()
@@ -181,6 +195,9 @@
                         }
 
                         #endregion
+
+                        if (vclock < 240)
+                            RenderPixel();
                     }
                     else if (hclock < 320)
                     {
@@ -262,7 +279,7 @@
                     vbl = true;
 
                     if (nmi)
-                        NesCore.Cpu.NMI(true);
+                        NesCore.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
                 }
 
                 if (vclock == 262)
@@ -275,7 +292,24 @@
             }
         }
 
-        public void Initialize() { }
+        public void Initialize()
+        {
+            Console.WriteLine("Initializing PPU...");
+
+            for (int i = 0x0000; i < 0x2000; i += 8)
+            {
+                NesCore.CpuMemory.Hook(0x2000 + i, Peek____, Poke2000);
+                NesCore.CpuMemory.Hook(0x2001 + i, Peek____, Poke2001);
+                NesCore.CpuMemory.Hook(0x2002 + i, Peek2002, Poke____);
+                NesCore.CpuMemory.Hook(0x2003 + i, Peek____, Poke2003);
+                NesCore.CpuMemory.Hook(0x2004 + i, Peek2004, Poke2004);
+                NesCore.CpuMemory.Hook(0x2005 + i, Peek____, Poke2005);
+                NesCore.CpuMemory.Hook(0x2006 + i, Peek____, Poke2006);
+                NesCore.CpuMemory.Hook(0x2007 + i, Peek2007, Poke2007);
+            }
+
+            Console.WriteLine("PPU initialized!", DebugCode.Good);
+        }
         public void Shutdown() { }
 
         public class Fetch
@@ -291,7 +325,7 @@
             public bool swap;
             public int addr;
             public int fine;
-            public int step;
+            public int step = 1;
             public int temp;
 
             public void ClockX()
@@ -331,10 +365,10 @@
         }
         public class Unit
         {
-            public bool  clipped;
-            public bool  enabled;
-            public int   address;
-            public int   rasters;
+            public bool clipped;
+            public bool enabled;
+            public int address;
+            public int rasters = 8;
             public int[] pixels;
 
             public Unit(int capacity)

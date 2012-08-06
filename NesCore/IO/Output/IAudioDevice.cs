@@ -1,6 +1,6 @@
 ﻿namespace MyNes.Core.IO.Output
 {
-    public interface ISoundDevice
+    public interface IAudioDevice
     {
         /// <summary>
         /// Emu calls this when it needs to update a frame

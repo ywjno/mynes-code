@@ -60,7 +60,7 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="CPU\Dma.cs" />
     <Compile Include="ROM\INESHeader.cs" />
-    <Compile Include="IO\Output\ISoundDevice.cs" />
+    <Compile Include="IO\Output\IAudioDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
     <Compile Include="Memory\Memory.cs" />
