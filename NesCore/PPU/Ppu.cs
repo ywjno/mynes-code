@@ -1,7 +1,7 @@
 ﻿namespace MyNes.Core
 {
     // Emulates the RP2C02/RP2C07 graphics synthesizer
-    public class Ppu
+    public class Ppu : ProcessorBase
     {
         private Scroll scroll = new Scroll();
         private Unit bkg = new Unit(272);
@@ -11,8 +11,11 @@
         private int hclock;
         private int vclock;
 
-        public Ppu()
+        public Ppu(TimingInfo.Cookie cookie)
+            : base(cookie)
         {
+            timing.period = cookie.Master;
+            timing.single = cookie.Gpu;
         }
 
         private byte Peek2002(int address)
@@ -75,7 +78,7 @@
             scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
         }
 
-        public void Update()
+        public override void Update()
         {
             hclock++;
 
@@ -95,10 +98,8 @@
             }
         }
 
-        public void Shutdown()
-        { }
-        public void Initialize()
-        { }
+        public void Shutdown() { }
+        public void Initialize() { }
 
         public class Scroll
         {
