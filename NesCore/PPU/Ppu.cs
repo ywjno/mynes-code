@@ -123,18 +123,24 @@
         {
             if (scroll.swap = !scroll.swap)
             {
+                scroll.temp = (scroll.temp & ~0x001F) | (data >> 3 & 0x001F);
+                scroll.fine = (data & 0x07);
             }
             else
             {
+                scroll.temp = (scroll.temp & ~0x73E0) | (data << 2 & 0x03E0) | (data << 12 & 0x7000);
             }
         }
         private void Poke2006(int address, byte data)
         {
             if (scroll.swap = !scroll.swap)
             {
+                scroll.temp = (scroll.temp & ~0xFF00) | (data << 0 & 0x3F00);
             }
             else
             {
+                scroll.temp = (scroll.temp & ~0x00FF) | (data << 0 & 0x00FF);
+                scroll.addr = (scroll.temp);
             }
         }
         private void Poke2007(int address, byte data)
