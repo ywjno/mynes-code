@@ -133,9 +133,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NesCore\NesCore.csproj">
+    <ProjectReference Include="..\NesCore\MyNes.Core.csproj">
       <Project>{D062CE1D-E10B-42B1-B39A-225A5117825C}</Project>
-      <Name>NesCore</Name>
+      <Name>MyNes.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
