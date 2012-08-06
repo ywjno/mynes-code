@@ -16,7 +16,7 @@ namespace MyNes
         {
             InitializeComponent();
             ControlStyles flag = ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint;
-            this.SetStyle(flag, true);
+            this.SetStyle(flag, true); 
         }
 
         public int currentAddress = 0;

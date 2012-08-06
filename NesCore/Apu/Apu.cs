@@ -4,5 +4,11 @@
     {
         public void Update()
         { }
+        public void Shutdown()
+        { }
+        public void Initialize()
+        { 
+        
+        }
     }
 }

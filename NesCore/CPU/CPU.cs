@@ -47,10 +47,13 @@ namespace MyNes.Core
                 pc.Value = addr;
             }
         }
-        public void Clock(int cycles = 1) 
+        public void Clock(int cycles = 1)
         {
-            NesCore.Apu.Update();
-            NesCore.Ppu.Update();
+            if (NesCore.ON)
+            {
+                NesCore.Apu.Update();
+                NesCore.Ppu.Update();
+            }
         }
         private byte Pull()
         {
@@ -774,6 +777,8 @@ namespace MyNes.Core
 
             Console.WriteLine("CPU Initialized!", DebugCode.Good);
         }
+        public void Shutdown()
+        { }
 
         /// <summary>
         /// Request IRQ
