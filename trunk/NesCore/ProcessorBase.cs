@@ -3,11 +3,11 @@
     public class ProcessorBase
     {
         protected TimingInfo timing;
-        protected TimingInfo.Cookie cookie;
+        protected TimingInfo.System system;
 
-        public ProcessorBase(TimingInfo.Cookie cookie)
+        public ProcessorBase(TimingInfo.System system)
         {
-            this.cookie = cookie;
+            this.system = system;
         }
 
         public virtual void Update()

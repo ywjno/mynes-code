@@ -18,11 +18,11 @@
         private int[] colors;
         private int[][] screen;
 
-        public Ppu(TimingInfo.Cookie cookie)
-            : base(cookie)
+        public Ppu(TimingInfo.System system)
+            : base(system)
         {
-            timing.period = cookie.Master;
-            timing.single = cookie.Gpu;
+            timing.period = system.Master;
+            timing.single = system.Gpu;
 
             colors = new int[64];
             screen = new int[240][];
