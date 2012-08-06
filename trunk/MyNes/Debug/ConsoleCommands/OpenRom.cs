@@ -1,28 +1,28 @@
-﻿using MyNes.Core;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using MyNes.Core;
 
 namespace MyNes.Debug.ConsoleCommands
 {
-    class OpenRom : ConsoleCommand
+    public class OpenRom : ConsoleCommand
     {
-        public override void Execute(string parameters)
+        public override string Description
         {
-            OpenFileDialog op = new OpenFileDialog();
-            op.Filter = "INES (*.nes)|*.nes";
-            if (op.ShowDialog() == DialogResult.OK)
-            {
-                NesCore.CreateNew(op.FileName);
-            }
+            get { return "Open a rom (for test)"; }
         }
-
         public override string Method
         {
             get { return "open"; }
         }
 
-        public override string Description
+        public override void Execute(string parameters)
         {
-            get { return "Open a rom (for test)"; }
+            using (var form = new OpenFileDialog())
+            {
+                form.Filter = "INES (*.nes)|*.nes";
+
+                if (form.ShowDialog() == DialogResult.OK)
+                    NesCore.CreateNew(form.FileName);
+            }
         }
     }
 }
