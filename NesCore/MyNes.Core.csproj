@@ -56,7 +56,7 @@
     <Compile Include="Debug\DebugCode.cs" />
     <Compile Include="Debug\DebugEventArgs.cs" />
     <Compile Include="Debug\DebugLine.cs" />
-    <Compile Include="Debug\DefaultCommands\help.cs" />
+    <Compile Include="Debug\DefaultCommands\HelpCommand.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="CPU\Dma.cs" />
     <Compile Include="ROM\INESHeader.cs" />
