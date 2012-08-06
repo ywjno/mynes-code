@@ -62,6 +62,7 @@
             // 
             this.con_Memory1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.con_Memory1.EnableSpecialAddress = true;
+            this.con_Memory1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.con_Memory1.Location = new System.Drawing.Point(3, 41);
             this.con_Memory1.Memory = null;
             this.con_Memory1.Name = "con_Memory1";

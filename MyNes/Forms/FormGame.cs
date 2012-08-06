@@ -1,10 +1,13 @@
 ﻿using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace MyNes.Forms
 {
     public partial class FormGame : Form
     {
+        private Thread thread;
+
         public FormGame()
         {
             InitializeComponent();

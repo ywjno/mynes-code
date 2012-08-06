@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNes", "MyNes\MyNes.csproj", "{F0CF9A42-6D0B-480D-8946-CA277D752E73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "myNES", "MyNes\myNES.csproj", "{F0CF9A42-6D0B-480D-8946-CA277D752E73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNes.Core", "NesCore\MyNes.Core.csproj", "{D062CE1D-E10B-42B1-B39A-225A5117825C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "myNES.Core", "NesCore\myNES.Core.csproj", "{D062CE1D-E10B-42B1-B39A-225A5117825C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System.Threading;
-using MyNes.Core.IO.Output;
 using MyNes.Core.Boards;
+using MyNes.Core.Boards.Nintendo;
+using MyNes.Core.IO.Output;
 
 namespace MyNes.Core
 {
@@ -34,63 +35,64 @@ namespace MyNes.Core
         }
         private static void LoadINES(string romPath)
         {
-            Console.WriteLine("Reading header ...");
+            Console.WriteLine("Reading header...");
+
             INESHeader header = new INESHeader(romPath);
-            Console.UpdateLine("Reading header ... OK");
+
+            Console.UpdateLine("Reading header... Finished!");
+
             if (header.Result == INESHeader.INESResult.Valid)
             {
                 #region Read banks
-                //the header is ok, load the banks
-                Stream fileStream = new FileStream(romPath, FileMode.Open, FileAccess.Read);
-                fileStream.Position = 16;
-                //bank arrays
-                byte[] prg = new byte[0];
-                byte[] chr = new byte[0];
-                byte[] trainer = new byte[0];
-                //get trainer if presented
+
+                var stream = File.OpenRead(romPath);
+                var reader = new BinaryReader(stream);
+
+                stream.Seek(16L, SeekOrigin.Begin);
+
+                // Skip trainer if presented
                 if (header.HasTrainer)
                 {
-                    Console.WriteLine("Reading trainer......");
-                    trainer = new byte[512];
-                    fileStream.Read(trainer, 0, 512);
-                    Console.UpdateLine("Reading trainer...... OK");
+                    Console.WriteLine("Trainer found! Skipping...");
+                    stream.Seek(512L, SeekOrigin.Current);
                 }
 
-                //get prg banks
-                Console.WriteLine("Reading prg......");
-                int prg_roms = header.PrgPages * 4;
-                prg = new byte[prg_roms * 4096];
-                for (int i = 0; i < prg_roms; i++)
-                {
-                    fileStream.Read(prg, i * 4096, 4096);
-                }
-                Console.UpdateLine("Reading prg...... OK");
+                // Get PRG dump
+                Console.WriteLine("Reading PRG-ROM...");
 
-                //get chr banks if presented
-                if (header.ChrPages > 0)
-                {
-                    Console.WriteLine("Reading chr......");
-                    int chr_roms = header.ChrPages * 8;
-                    chr = new byte[chr_roms * 1024];
-                    for (int i = 0; i < (chr_roms); i++)
-                    {
-                        fileStream.Read(chr, i * 1024, 1024);
-                    }
-                    Console.UpdateLine("Reading chr...... OK");
-                }
-                else
+                byte[] prg = reader.ReadBytes(header.PrgPages * 16384);
+
+                Console.UpdateLine("Reading PRG-ROM... Finished!");
+
+                Console.WriteLine("Reading CHR-ROM...");
+
+                byte[] chr = reader.ReadBytes(header.ChrPages * 8192);
+
+                Console.UpdateLine("Reading CHR-ROM... Finished!");
+
+                if (chr.Length == 0)
                 {
                     Console.WriteLine("No chr, VRAM");
+                    chr = new byte[8192]; // assume 8kb vram
                 }
-                fileStream.Dispose();
-                fileStream.Close();
+
+                reader.Close();
+
                 #endregion
                 #region Get board depending on mapper #
+
                 // TODO: find a way to get board without using switch
                 switch (header.Mapper)
                 {
-                    case 0: Board = new NesNROM128(chr, prg); break;
+                case 0:
+                    switch (prg.Length)
+                    {
+                    case 0x4000: Board = new NROM128(chr, prg); break;
+                    case 0x8000: Board = new NROM256(chr, prg); break;
+                    }
+                    break;
                 }
+
                 #endregion
                 //everything is ok, initialize components
                 InitializeComponents();
@@ -108,8 +110,8 @@ namespace MyNes.Core
                         Console.WriteLine("Mapper not supported", DebugCode.Error);
                         throw new System.Exception("Mapper not supported");
                     default:
-                        Console.WriteLine("Can't open this rom", DebugCode.Error);
-                        throw new System.Exception("Can't open this rom");
+                        Console.WriteLine("Can't open this rom (Unspecified error)", DebugCode.Error);
+                        throw new System.Exception("Can't open this rom (Unspecified error)");
                 }
             }
         }

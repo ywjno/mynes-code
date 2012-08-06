@@ -8,8 +8,8 @@
     <ProjectGuid>{D062CE1D-E10B-42B1-B39A-225A5117825C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyNes.Core</RootNamespace>
-    <AssemblyName>MyNes.Core</AssemblyName>
+    <RootNamespace>myNES.Core</RootNamespace>
+    <AssemblyName>myNES.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -43,8 +43,10 @@
   <ItemGroup>
     <Compile Include="APU\Apu.cs" />
     <Compile Include="Boards\Board.cs" />
-    <Compile Include="Boards\NesNROM128.cs" />
-    <Compile Include="Boards\NesNROM256.cs" />
+    <Compile Include="Boards\Discreet\UNROM.cs" />
+    <Compile Include="Boards\Discreet\UOROM.cs" />
+    <Compile Include="Boards\Nintendo\NesNROM128.cs" />
+    <Compile Include="Boards\Nintendo\NesNROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="TimingInfo.cs" />
@@ -71,6 +73,8 @@
     <Compile Include="Types\Mirroring.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Boards\Konami\" />
+    <Folder Include="Boards\Sunsoft\" />
     <Folder Include="IO\Input\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
