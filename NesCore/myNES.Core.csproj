@@ -45,8 +45,8 @@
     <Compile Include="Boards\Board.cs" />
     <Compile Include="Boards\Discreet\UNROM.cs" />
     <Compile Include="Boards\Discreet\UOROM.cs" />
-    <Compile Include="Boards\Nintendo\NesNROM128.cs" />
-    <Compile Include="Boards\Nintendo\NesNROM256.cs" />
+    <Compile Include="Boards\Nintendo\NROM128.cs" />
+    <Compile Include="Boards\Nintendo\NROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="TimingInfo.cs" />

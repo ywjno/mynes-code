@@ -3,6 +3,7 @@ using System.Threading;
 using MyNes.Core.Boards;
 using MyNes.Core.Boards.Nintendo;
 using MyNes.Core.IO.Output;
+using MyNes.Core.Boards.Discreet;
 
 namespace MyNes.Core
 {
@@ -87,13 +88,22 @@ namespace MyNes.Core
                 case 0:
                     switch (prg.Length)
                     {
-                    case 0x4000: Board = new NROM128(chr, prg); break;
-                    case 0x8000: Board = new NROM256(chr, prg); break;
+                    case 0x4000: Board = new NROM128(chr, prg); break; // 128 kb PRG, 8kB CHR-RAM
+                    case 0x8000: Board = new NROM256(chr, prg); break; // 256 kb PRG, 8kB CHR-RAM
+                    }
+                    break;
+
+                case 2:
+                    switch (prg.Length)
+                    {
+                    case 0x20000: Board = new UNROM(chr, prg); break; // 128 kB PRG, 8kB CHR-RAM
+                    case 0x40000: Board = new UOROM(chr, prg); break; // 256 kB PRG, 8kB CHR-RAM
                     }
                     break;
                 }
 
                 #endregion
+
                 //everything is ok, initialize components
                 InitializeComponents();
                 Console.WriteLine("Ready.", DebugCode.Good);
