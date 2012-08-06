@@ -45,10 +45,10 @@ namespace MyNes.Core
 
             switch (header[6] & 0x9)
             {
-                case 0x0: this.Mirroring = MyNes.Core.Mirroring.ModeHorz; break;
-                case 0x1: this.Mirroring = MyNes.Core.Mirroring.ModeVert; break;
-                case 0x8:
-                case 0x9: throw new Exception("4-screen mirroring isn't supported.");
+            case 0x0: this.Mirroring = MyNes.Core.Mirroring.ModeHorz; break;
+            case 0x1: this.Mirroring = MyNes.Core.Mirroring.ModeVert; break;
+            case 0x8:
+            case 0x9: throw new Exception("4-screen mirroring isn't supported.");
             }
             
             HasSaveRam = (header[6] & 0x2) != 0x0;
@@ -62,7 +62,7 @@ namespace MyNes.Core
             IsVSUnisystem = (header[7] & 0x01) != 0;
             IsPlaychoice10 = (header[7] & 0x02) != 0;
 
-            //TODO: pal system detect
+            // TODO: pal system detect
             IsPalb = false;
             Result = INESResult.Valid;
         }

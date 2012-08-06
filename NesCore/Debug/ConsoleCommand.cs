@@ -6,12 +6,6 @@
     public abstract class ConsoleCommand
     {
         /// <summary>
-        /// Execute the command
-        /// </summary>
-        /// <param name="parameters">The parameters if this command have parameters</param>
-        public abstract void Execute(string parameters);
-
-        /// <summary>
         /// Get the method of this command
         /// </summary>
         public abstract string Method { get; }
@@ -23,5 +17,11 @@
         /// Get the parameters that accepted
         /// </summary>
         public virtual string[] Parameters { get { return new string[0]; } }
+
+        /// <summary>
+        /// Execute the command
+        /// </summary>
+        /// <param name="parameters">The parameters if this command have parameters</param>
+        public abstract void Execute(string parameters);
     }
 }

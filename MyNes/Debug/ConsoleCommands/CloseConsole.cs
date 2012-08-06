@@ -2,26 +2,27 @@
 
 namespace MyNes.Debug.ConsoleCommands
 {
-    class CloseConsole : ConsoleCommand
+    public class CloseConsole : ConsoleCommand
     {
-        public CloseConsole(FormConsole frm)
-        {
-            this.frm = frm;
-        }
-        FormConsole frm;
-        public override void Execute(string parameters)
-        {
-            frm.Close();
-        }
+        FormConsole form;
 
+        public override string Description
+        {
+            get { return "Close the console"; }
+        }
         public override string Method
         {
             get { return "exit"; }
         }
 
-        public override string Description
+        public CloseConsole(FormConsole form)
         {
-            get { return "Close the console"; }
+            this.form = form;
+        }
+
+        public override void Execute(string parameters)
+        {
+            form.Close();
         }
     }
 }

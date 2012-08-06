@@ -31,9 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDisassembler));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.con_Memory1 = new MyNes.con_Memory();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.con_Memory1 = new MyNes.con_Memory();
             this.groupBox2.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +58,18 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Memory";
             // 
+            // con_Memory1
+            // 
+            this.con_Memory1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.con_Memory1.EnableSpecialAddress = true;
+            this.con_Memory1.Location = new System.Drawing.Point(3, 41);
+            this.con_Memory1.Memory = null;
+            this.con_Memory1.Name = "con_Memory1";
+            this.con_Memory1.Size = new System.Drawing.Size(388, 318);
+            this.con_Memory1.SpecailAddress = 0;
+            this.con_Memory1.SpecialAddressHighlight = System.Drawing.Color.Blue;
+            this.con_Memory1.TabIndex = 1;
+            // 
             // toolStrip1
             // 
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -81,29 +93,17 @@
             this.toolStripButton1.Size = new System.Drawing.Size(34, 22);
             this.toolStripButton1.Text = "CPU";
             // 
-            // con_Memory1
-            // 
-            this.con_Memory1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.con_Memory1.EnableSpecialAddress = true;
-            this.con_Memory1.Location = new System.Drawing.Point(3, 41);
-            this.con_Memory1.Memory = null;
-            this.con_Memory1.Name = "con_Memory1";
-            this.con_Memory1.Size = new System.Drawing.Size(388, 318);
-            this.con_Memory1.SpecailAddress = 0;
-            this.con_Memory1.SpecialAddressHighlight = System.Drawing.Color.Blue;
-            this.con_Memory1.TabIndex = 1;
-            // 
-            // Frm_Disassembler
+            // FormDisassembler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(730, 447);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Name = "Frm_Disassembler";
+            this.Name = "FormDisassembler";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "Disassembler";
+            this.Text = "myNES v5 - Disassembler";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
