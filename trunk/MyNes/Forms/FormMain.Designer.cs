@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.buttonCreateFolder = new System.Windows.Forms.ToolStripButton();
@@ -40,11 +41,13 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonConsole = new System.Windows.Forms.ToolStripButton();
             this.buttonPalette = new System.Windows.Forms.ToolStripButton();
+            this.buttonPad = new System.Windows.Forms.ToolStripButton();
             this.buttonCpu = new System.Windows.Forms.ToolStripButton();
             this.buttonPpu = new System.Windows.Forms.ToolStripButton();
             this.buttonApu = new System.Windows.Forms.ToolStripButton();
-            this.buttonPad = new System.Windows.Forms.ToolStripButton();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.treeView = new System.Windows.Forms.TreeView();
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,10 +64,10 @@
             this.toolStripSeparator2,
             this.buttonConsole,
             this.buttonPalette,
+            this.buttonPad,
             this.buttonCpu,
             this.buttonPpu,
-            this.buttonApu,
-            this.buttonPad});
+            this.buttonApu});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(624, 25);
@@ -83,6 +86,7 @@
             // buttonModifyFolder
             // 
             this.buttonModifyFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonModifyFolder.Enabled = false;
             this.buttonModifyFolder.Image = ((System.Drawing.Image)(resources.GetObject("buttonModifyFolder.Image")));
             this.buttonModifyFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonModifyFolder.Name = "buttonModifyFolder";
@@ -93,6 +97,7 @@
             // buttonDeleteFolder
             // 
             this.buttonDeleteFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonDeleteFolder.Enabled = false;
             this.buttonDeleteFolder.Image = ((System.Drawing.Image)(resources.GetObject("buttonDeleteFolder.Image")));
             this.buttonDeleteFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonDeleteFolder.Name = "buttonDeleteFolder";
@@ -108,6 +113,7 @@
             // buttonPlay
             // 
             this.buttonPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonPlay.Enabled = false;
             this.buttonPlay.Image = ((System.Drawing.Image)(resources.GetObject("buttonPlay.Image")));
             this.buttonPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPlay.Name = "buttonPlay";
@@ -118,6 +124,7 @@
             // buttonHalt
             // 
             this.buttonHalt.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonHalt.Enabled = false;
             this.buttonHalt.Image = ((System.Drawing.Image)(resources.GetObject("buttonHalt.Image")));
             this.buttonHalt.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonHalt.Name = "buttonHalt";
@@ -128,6 +135,7 @@
             // buttonStop
             // 
             this.buttonStop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonStop.Enabled = false;
             this.buttonStop.Image = ((System.Drawing.Image)(resources.GetObject("buttonStop.Image")));
             this.buttonStop.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonStop.Name = "buttonStop";
@@ -160,36 +168,6 @@
             this.buttonPalette.Text = "Palette";
             this.buttonPalette.Click += new System.EventHandler(this.buttonPalette_Click);
             // 
-            // buttonCpu
-            // 
-            this.buttonCpu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonCpu.Image = ((System.Drawing.Image)(resources.GetObject("buttonCpu.Image")));
-            this.buttonCpu.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonCpu.Name = "buttonCpu";
-            this.buttonCpu.Size = new System.Drawing.Size(23, 22);
-            this.buttonCpu.Text = "CPU debugger";
-            this.buttonCpu.Click += new System.EventHandler(this.buttonCpu_Click);
-            // 
-            // buttonPpu
-            // 
-            this.buttonPpu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonPpu.Image = ((System.Drawing.Image)(resources.GetObject("buttonPpu.Image")));
-            this.buttonPpu.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonPpu.Name = "buttonPpu";
-            this.buttonPpu.Size = new System.Drawing.Size(23, 22);
-            this.buttonPpu.Text = "PPU debugger";
-            this.buttonPpu.Click += new System.EventHandler(this.buttonPpu_Click);
-            // 
-            // buttonApu
-            // 
-            this.buttonApu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonApu.Image = ((System.Drawing.Image)(resources.GetObject("buttonApu.Image")));
-            this.buttonApu.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonApu.Name = "buttonApu";
-            this.buttonApu.Size = new System.Drawing.Size(23, 22);
-            this.buttonApu.Text = "APU debugger";
-            this.buttonApu.Click += new System.EventHandler(this.buttonApu_Click);
-            // 
             // buttonPad
             // 
             this.buttonPad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -200,22 +178,67 @@
             this.buttonPad.Text = "Pad Configuration";
             this.buttonPad.Click += new System.EventHandler(this.buttonPad_Click);
             // 
-            // treeView1
+            // buttonCpu
             // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(0, 25);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(624, 417);
-            this.treeView1.TabIndex = 1;
+            this.buttonCpu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonCpu.Enabled = false;
+            this.buttonCpu.Image = ((System.Drawing.Image)(resources.GetObject("buttonCpu.Image")));
+            this.buttonCpu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonCpu.Name = "buttonCpu";
+            this.buttonCpu.Size = new System.Drawing.Size(23, 22);
+            this.buttonCpu.Text = "CPU debugger";
+            this.buttonCpu.Click += new System.EventHandler(this.buttonCpu_Click);
+            // 
+            // buttonPpu
+            // 
+            this.buttonPpu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonPpu.Enabled = false;
+            this.buttonPpu.Image = ((System.Drawing.Image)(resources.GetObject("buttonPpu.Image")));
+            this.buttonPpu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonPpu.Name = "buttonPpu";
+            this.buttonPpu.Size = new System.Drawing.Size(23, 22);
+            this.buttonPpu.Text = "PPU debugger";
+            this.buttonPpu.Click += new System.EventHandler(this.buttonPpu_Click);
+            // 
+            // buttonApu
+            // 
+            this.buttonApu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonApu.Enabled = false;
+            this.buttonApu.Image = ((System.Drawing.Image)(resources.GetObject("buttonApu.Image")));
+            this.buttonApu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonApu.Name = "buttonApu";
+            this.buttonApu.Size = new System.Drawing.Size(23, 22);
+            this.buttonApu.Text = "APU debugger";
+            this.buttonApu.Click += new System.EventHandler(this.buttonApu_Click);
+            // 
+            // treeView
+            // 
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView.ImageIndex = 0;
+            this.treeView.ImageList = this.imageList;
+            this.treeView.Location = new System.Drawing.Point(0, 25);
+            this.treeView.Name = "treeView";
+            this.treeView.SelectedImageIndex = 0;
+            this.treeView.Size = new System.Drawing.Size(624, 417);
+            this.treeView.TabIndex = 1;
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+            // 
+            // imageList
+            // 
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "folder.png");
+            this.imageList.Images.SetKeyName(1, "page.png");
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 442);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.treeView);
             this.Controls.Add(this.toolStrip);
             this.Name = "FormMain";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "myNES v5";
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
@@ -241,7 +264,9 @@
         private System.Windows.Forms.ToolStripButton buttonCpu;
         private System.Windows.Forms.ToolStripButton buttonPpu;
         private System.Windows.Forms.ToolStripButton buttonApu;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView treeView;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
+        private System.Windows.Forms.ImageList imageList;
     }
 }
 
