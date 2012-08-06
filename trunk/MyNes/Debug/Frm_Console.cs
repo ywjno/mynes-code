@@ -1,8 +1,11 @@
 ﻿using System.Windows.Forms;
+using System.Reflection;
+using System;
 using MyNes.Core;
 using MyNes.Debug.ConsoleCommands;
 using Action = System.Action;
 using EventArgs = System.EventArgs;
+using Console = MyNes.Core.Console;
 
 namespace MyNes
 {
@@ -16,8 +19,23 @@ namespace MyNes
             ConsoleCommands.AddDefaultCommands();
             //add other commands
             ConsoleCommands.AddCommand(new CloseConsole(this));
+            AddCommands();
         }
-
+        void AddCommands()
+        {
+            Type[] types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (Type tp in types)
+            {
+                if (tp.IsSubclassOf(typeof(ConsoleCommand)))
+                {
+                    if (tp != typeof(CloseConsole))
+                    {
+                        ConsoleCommand command = Activator.CreateInstance(tp) as ConsoleCommand;
+                        ConsoleCommands.AddCommand(command);
+                    }
+                }
+            }
+        }
         void LoadSettings()
         {
             this.Location = Program.Settings.console_location;

@@ -18,5 +18,10 @@
         {
             ram[address & 0x7FF] = data;
         }
+
+        public override void Initialize()
+        {
+            base.Hook(0x0000, 0x1FFF, PeekRam, PokeRam);
+        }
     }
 }

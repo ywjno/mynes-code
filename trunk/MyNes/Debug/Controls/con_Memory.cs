@@ -42,8 +42,11 @@ namespace MyNes
             get { return memoryPanel1.memorySpace; }
             set
             {
-                vScrollBar1.Maximum = value.Length / 16;
-                vScrollBar1.Value = 0;
+                if (value != null)
+                {
+                    vScrollBar1.Maximum = value.Length / 16;
+                    vScrollBar1.Value = 0;
+                }
                 memoryPanel1.memorySpace = value;
                 memoryPanel1.Invalidate();
             }
@@ -63,7 +66,12 @@ namespace MyNes
         }
         private void con_Memory_Paint(object sender, PaintEventArgs e)
         {
-            vScrollBar1.Maximum = memoryPanel1.memorySpace.Length / 16;
+            if (memoryPanel1.memorySpace != null)
+                vScrollBar1.Maximum = memoryPanel1.memorySpace.Length / 16;
+            else
+            {
+                vScrollBar1.Maximum = 1;
+            }
             memoryPanel1.Invalidate();
         }
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)

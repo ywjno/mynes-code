@@ -11,5 +11,9 @@
         /// Begin the rendering operation, Ppu calls this at the beginning of the frame
         /// </summary>
         void Begin();
+        /// <summary>
+        /// Shutdown the device then dispose, emu calls this when it shutdown
+        /// </summary>
+        void Shutdown();
     }
 }

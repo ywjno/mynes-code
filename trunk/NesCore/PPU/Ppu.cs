@@ -95,6 +95,11 @@
             }
         }
 
+        public void Shutdown()
+        { }
+        public void Initialize()
+        { }
+
         public class Scroll
         {
             public bool swap;

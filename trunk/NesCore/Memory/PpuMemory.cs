@@ -42,5 +42,11 @@
             nmtBank[2] = (byte)(value >> 2 & 0x03);
             nmtBank[3] = (byte)(value >> 0 & 0x03);
         }
+
+        public override void Initialize()
+        {
+            base.Hook(0x2000, 0x3EFF, PeekNmt, PokeNmt);
+            base.Hook(0x3F00, 0x3FFF, PeekPal, PokePal);
+        }
     }
 }

@@ -55,10 +55,12 @@
             }
         }
 
-        public virtual byte DebugPeek(int address)
-        { return this[address]; }
-        public virtual void DebugPoke(int address, byte value)
-        { this[address] = value; ; }
+        public virtual byte DebugPeek(int address) { return this[address]; }
+        public virtual void DebugPoke(int address, byte value) { this[address] = value; ; }
+
+        public abstract void Initialize();
+        public virtual void Shutdown()
+        { }
 
         public int Length
         { get { return mask; } }
