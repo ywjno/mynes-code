@@ -5,13 +5,13 @@ namespace MyNes.Core
     /// <summary>
     /// A class for reading INES file format header
     /// </summary>
-    public class InesHeader
+    public class INESHeader
     {
         /// <summary>
         /// Create a new instant of INES format header
         /// </summary>
         /// <param name="romPath">The complete rom path</param>
-        public InesHeader(string romPath)
+        public INESHeader(string romPath)
         {
             //create read stream
             Stream fileStream = new FileStream(romPath, FileMode.Open, FileAccess.Read);

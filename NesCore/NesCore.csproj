@@ -43,7 +43,8 @@
   <ItemGroup>
     <Compile Include="APU\Apu.cs" />
     <Compile Include="Boards\Board.cs" />
-    <Compile Include="Boards\brd_NROM.cs" />
+    <Compile Include="Boards\NesNROM128.cs" />
+    <Compile Include="Boards\NesNROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="CPU\TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
@@ -57,7 +58,7 @@
     <Compile Include="Debug\DefaultCommands\help.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="PPU\Dma.cs" />
-    <Compile Include="ROM\InesHeader.cs" />
+    <Compile Include="ROM\INESHeader.cs" />
     <Compile Include="IO\Output\ISoundDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
     <Compile Include="Memory\CpuMemory.cs" />
