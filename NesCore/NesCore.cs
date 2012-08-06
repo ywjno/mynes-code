@@ -15,7 +15,7 @@ namespace MyNes.Core
         public static Board Board;
         //devices
         public static IVideoDevice VideoDevice;
-        public static ISoundDevice SoundDevice;
+        public static ISoundDevice AudioDevice;
         //Emulation controls
         public static bool ON;
         public static bool Pause;
@@ -171,7 +171,7 @@ namespace MyNes.Core
             CpuMemory.Shutdown();
             PpuMemory.Shutdown();
             VideoDevice.Shutdown();
-            SoundDevice.Shutdown();
+            AudioDevice.Shutdown();
             Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
         }
     }
