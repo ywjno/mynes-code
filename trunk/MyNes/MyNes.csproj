@@ -67,37 +67,37 @@
     <Compile Include="Debug\Controls\MemoryPanel.designer.cs">
       <DependentUpon>MemoryPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debug\Frm_Console.cs">
+    <Compile Include="Debug\FormConsole.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debug\Frm_Console.Designer.cs">
-      <DependentUpon>Frm_Console.cs</DependentUpon>
+    <Compile Include="Debug\FormConsole.Designer.cs">
+      <DependentUpon>FormConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Frm_Main.cs">
+    <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Frm_Main.Designer.cs">
-      <DependentUpon>Frm_Main.cs</DependentUpon>
+    <Compile Include="Forms\FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debug\Frm_Disassembler.cs">
+    <Compile Include="Debug\FormDisassembler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debug\Frm_Disassembler.Designer.cs">
-      <DependentUpon>Frm_Disassembler.cs</DependentUpon>
+    <Compile Include="Debug\FormDisassembler.Designer.cs">
+      <DependentUpon>FormDisassembler.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Debug\Controls\con_Memory.resx">
       <DependentUpon>con_Memory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debug\Frm_Console.resx">
-      <DependentUpon>Frm_Console.cs</DependentUpon>
+    <EmbeddedResource Include="Debug\FormConsole.resx">
+      <DependentUpon>FormConsole.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debug\Frm_Disassembler.resx">
-      <DependentUpon>Frm_Disassembler.cs</DependentUpon>
+    <EmbeddedResource Include="Debug\FormDisassembler.resx">
+      <DependentUpon>FormDisassembler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Frm_Main.resx">
-      <DependentUpon>Frm_Main.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

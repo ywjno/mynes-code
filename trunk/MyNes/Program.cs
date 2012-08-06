@@ -18,7 +18,7 @@ namespace MyNes
             Application.SetCompatibleTextRenderingDefault(false);
             settings.Reload();
             //Application.Run(new Frm_Main());
-            Application.Run(new Frm_Console());
+            Application.Run(new FormConsole());
         }
 
         static Properties.Settings settings = new Properties.Settings();
