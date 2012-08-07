@@ -13,10 +13,12 @@ namespace myNES.Core.PPU
         private bool nmi;
         private bool vbl;
         private byte chr;
+        private byte[] oam = new byte[256];
         private int clipping;
         private int emphasis;
         private int hclock;
         private int vclock;
+        private int oam_address;
         private int[] colors;
         private int[][] screen;
 
@@ -92,12 +94,12 @@ namespace myNES.Core.PPU
 
             return data;
         }
-        private byte Peek2004(int address) { return 0; }
+        private byte Peek2004(int address) { return oam[oam_address]; }
         private byte Peek2007(int address)
         {
             byte tmp;
 
-            if ((address & 0x3F00) == 0x3F00)
+            if ((scroll.addr & 0x3F00) == 0x3F00)
             {
                 tmp = Nes.PpuMemory[scroll.addr];
                 chr = Nes.PpuMemory[scroll.addr & 0x2FFF];
@@ -144,8 +146,15 @@ namespace myNES.Core.PPU
             bkg.enabled = (data & 0x08) != 0;
             spr.enabled = (data & 0x10) != 0;
         }
-        private void Poke2003(int address, byte data) { }
-        private void Poke2004(int address, byte data) { }
+        private void Poke2003(int address, byte data)
+        {
+            oam_address = data;
+        }
+        private void Poke2004(int address, byte data)
+        {
+            oam[oam_address] = data;
+            oam_address = ++oam_address & 0xFF;
+        }
         private void Poke2005(int address, byte data)
         {
             if (scroll.swap = !scroll.swap)
