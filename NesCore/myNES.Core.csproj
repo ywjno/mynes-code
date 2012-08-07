@@ -56,6 +56,7 @@
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="Debug\DefaultCommands\OffCommand.cs" />
     <Compile Include="ProcessorBase.cs" />
+    <Compile Include="ROM\INESHeader.cs" />
     <Compile Include="TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="CPU\Types\Register.cs" />
@@ -68,7 +69,6 @@
     <Compile Include="Debug\DefaultCommands\HelpCommand.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="CPU\Dma.cs" />
-    <Compile Include="ROM\INESHeader.cs" />
     <Compile Include="IO\Output\IAudioDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
     <Compile Include="CPU\CpuMemory.cs" />
