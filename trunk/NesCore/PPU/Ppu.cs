@@ -136,7 +136,7 @@ namespace myNES.Core.PPU
         {
             if (scroll.swap = !scroll.swap)
             {
-                scroll.temp = (scroll.temp & ~0xFF00) | (data << 0 & 0x3F00);
+                scroll.temp = (scroll.temp & ~0xFF00) | (data << 8 & 0x3F00);
             }
             else
             {
@@ -346,7 +346,9 @@ namespace myNES.Core.PPU
             public void ClockY()
             {
                 if ((addr & 0x7000) != 0x7000)
+                {
                     addr += 0x1000;
+                }
                 else
                 {
                     addr ^= 0x7000;

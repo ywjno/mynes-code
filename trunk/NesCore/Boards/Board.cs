@@ -20,7 +20,7 @@
 
         protected virtual byte PeekChr(int address) { return chr[DecodeChrAddress(address) & chrMask]; }
         protected virtual byte PeekPrg(int address) { return prg[DecodePrgAddress(address) & prgMask]; }
-        protected virtual void PokeChr(int address, byte data) { }
+        protected virtual void PokeChr(int address, byte data) { chr[DecodeChrAddress(address) & chrMask] = data; }
         protected virtual void PokePrg(int address, byte data) { }
 
         protected virtual int DecodeChrAddress(int address) { return address; }
