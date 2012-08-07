@@ -18,7 +18,8 @@ namespace myNES
             Settings = new Settings();
             Settings.Reload();
 
-            Application.Run(new FormMain());
+            Application.Run(new FormMain(args));
+            //Application.Run(new FormConsole());
         }
     }
 }

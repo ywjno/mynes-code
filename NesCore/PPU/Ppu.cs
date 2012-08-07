@@ -179,6 +179,13 @@ namespace myNES.Core.PPU
             for (int i = 0; i < 8 && pos < 256; i++, pos++, fetch.bit0 <<= 1, fetch.bit1 <<= 1)
                 spr.pixels[pos] = (fetch.attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
         }
+        //Note: added this to avoid exceptions 'cause the buffer never reset
+        private void ResetSprBuffer()
+        {
+            buffer = new Sprite[8];
+            for (int i = 0; i < 8; i++)
+                buffer[i] = new Sprite();
+        }
 
         public override void Initialize()
         {
@@ -225,6 +232,9 @@ namespace myNES.Core.PPU
 
                         if (vclock < 240)
                             RenderPixel();
+
+                        if (hclock == 255)
+                            ResetSprBuffer();
                     }
                     else if (hclock < 320)
                     {
@@ -363,6 +373,7 @@ namespace myNES.Core.PPU
                 addr = (addr & ~0x41F) | (temp & 0x41F);
             }
         }
+
         public class Sprite
         {
             public byte y;

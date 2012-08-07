@@ -48,12 +48,13 @@
     <Compile Include="APU\ChannelSq2.cs" />
     <Compile Include="APU\ChannelTri.cs" />
     <Compile Include="Boards\Board.cs" />
-    <Compile Include="Boards\BoardManager.cs" />
+    <Compile Include="Boards\INESBoardManager.cs" />
     <Compile Include="Boards\Discreet\UNROM.cs" />
     <Compile Include="Boards\Discreet\UOROM.cs" />
     <Compile Include="Boards\Nintendo\NROM128.cs" />
     <Compile Include="Boards\Nintendo\NROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
+    <Compile Include="Debug\DefaultCommands\OffCommand.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="TimingInfo.cs" />
     <Compile Include="CPU\Types\Flags.cs" />

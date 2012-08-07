@@ -23,6 +23,15 @@
                 this.Gpu = gpu;
                 this.Spu = spu;
             }
+
+            public static bool operator ==(System a, System b)
+            {
+                return (a.Master == b.Master) && (a.Cpu == b.Cpu) && (a.Gpu == b.Gpu) && (a.Spu == b.Spu);
+            }
+            public static bool operator !=(System a, System b)
+            {
+                return (a.Master != b.Master) || (a.Cpu != b.Cpu) || (a.Gpu != b.Gpu) || (a.Spu != b.Spu);
+            }
         }
     }
 }

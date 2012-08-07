@@ -20,8 +20,8 @@
 
             switch (address & 0xC000)
             {
-            case 0x8000: return (address & 0x3FFF) | prgPage[0]; // first bank switchable
-            case 0xC000: return (address & 0x3FFF) | prgPage[1]; // second bank fixed to last page ($7 << 14)
+                case 0x8000: return (address & 0x3FFF) | prgPage[0]; // first bank switchable
+                case 0xC000: return (address & 0x3FFF) | prgPage[1]; // second bank fixed to last page ($7 << 14)
             }
 
             return (address & 0x3FFF) | prgPage[address >> 14 & 1]; // simplified, one-line version of above

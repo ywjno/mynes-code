@@ -1,17 +1,13 @@
 ﻿using System.IO;
 using System.Threading;
-using myNES.Core.APU;
-using myNES.Core.Boards;
-using myNES.Core.Boards.Discreet;
-using myNES.Core.Boards.Nintendo;
-using myNES.Core.CPU;
-using myNES.Core.IO.Output;
-using myNES.Core.PPU;
-using myNES.Core.ROM;
+using MyNes.Core.Boards;
+using MyNes.Core.Boards.Nintendo;
+using MyNes.Core.IO.Output;
+using MyNes.Core.Boards.Discreet;
 
-namespace myNES.Core
+namespace MyNes.Core
 {
-    public class Nes
+    public class NesCore
     {
         public static Cpu Cpu;
         public static Ppu Ppu;
@@ -22,13 +18,9 @@ namespace myNES.Core
         //devices
         public static IVideoDevice VideoDevice;
         public static IAudioDevice AudioDevice;
-        //emulation controls
+        //Emulation controls
         public static bool ON;
         public static bool Pause;
-        //events
-        public static event System.EventHandler EmuShutdown;
-
-        private static TimingInfo.System emuSystem;
 
         /// <summary>
         /// Create new nes emulation core
@@ -37,7 +29,7 @@ namespace myNES.Core
         public static void CreateNew(string romPath)
         {
             string extension = System.IO.Path.GetExtension(romPath).ToLower();
-            switch (extension)
+            switch (extension) 
             {
                 case ".nes": Console.WriteLine("INES ROM"); LoadINES(romPath); break;
             }
@@ -48,10 +40,10 @@ namespace myNES.Core
 
             INESHeader header = new INESHeader(romPath);
 
+            Console.UpdateLine("Reading header... Finished!");
+
             if (header.Result == INESHeader.INESResult.Valid)
             {
-                Console.UpdateLine("Reading header... Success!", DebugCode.Good);
-
                 #region Read banks
 
                 var stream = File.OpenRead(romPath);
@@ -59,7 +51,7 @@ namespace myNES.Core
 
                 stream.Seek(16L, SeekOrigin.Begin);
 
-                // Skip trainer if presented
+                // Skip trainer if presented, trainer is IMPORTANT for mapper 6, later
                 if (header.HasTrainer)
                 {
                     Console.WriteLine("Trainer found! Skipping...");
@@ -88,14 +80,29 @@ namespace myNES.Core
                 reader.Close();
 
                 #endregion
+                #region Get board depending on mapper #
 
-                Board = INESBoardManager.GetBoard(header, chr, prg);
-
-                if (Board == null)
+                // TODO: find a way to get board without using switch
+                switch (header.Mapper)
                 {
-                    Console.WriteLine("Mapper isn't supported!", DebugCode.Error);
-                    throw new System.Exception("Mapper isn't supported!");
+                case 0:
+                    switch (prg.Length)
+                    {
+                    case 0x4000: Board = new NROM128(chr, prg); break; // 128 kb PRG, 8kB CHR-RAM
+                    case 0x8000: Board = new NROM256(chr, prg); break; // 256 kb PRG, 8kB CHR-RAM
+                    }
+                    break;
+
+                case 2:
+                    switch (prg.Length)
+                    {
+                    case 0x20000: Board = new UNROM(chr, prg); break; // 128 kB PRG, 8kB CHR-RAM
+                    case 0x40000: Board = new UOROM(chr, prg); break; // 256 kB PRG, 8kB CHR-RAM
+                    }
+                    break;
                 }
+
+                #endregion
 
                 //everything is ok, initialize components
                 InitializeComponents();
@@ -103,13 +110,15 @@ namespace myNES.Core
             }
             else
             {
-                Console.UpdateLine("Reading header... Failed", DebugCode.Error);
-
+                Console.WriteLine("Reading header ... Failed", DebugCode.Error);
                 switch (header.Result)
                 {
                     case INESHeader.INESResult.InvalidHeader:
                         Console.WriteLine("Not INES rom", DebugCode.Error);
                         throw new System.Exception("Not INES rom");
+                    case INESHeader.INESResult.InvalidMapper:
+                        Console.WriteLine("Mapper not supported", DebugCode.Error);
+                        throw new System.Exception("Mapper not supported");
                     default:
                         Console.WriteLine("Can't open this rom (Unspecified error)", DebugCode.Error);
                         throw new System.Exception("Can't open this rom (Unspecified error)");
@@ -124,12 +133,12 @@ namespace myNES.Core
 
             CpuMemory.Initialize();
             PpuMemory.Initialize();
-
+           
             Board.Initialize();
 
-            Cpu = new Cpu(emuSystem);
-            Ppu = new Ppu(emuSystem);
-            Apu = new Apu(emuSystem);
+            Cpu = new Cpu(TimingInfo.NTSC);
+            Ppu = new Ppu(TimingInfo.NTSC);
+            Apu = new Apu(TimingInfo.NTSC);
 
             Cpu.Initialize();
             Ppu.Initialize();
@@ -139,7 +148,7 @@ namespace myNES.Core
         /// <summary>
         /// Get the emu into the active state
         /// </summary>
-        public static void TurnOn()
+        public static void TurnOn() 
         {
             ON = true;
             Console.WriteLine("Emu ON", DebugCode.Good);
@@ -167,34 +176,15 @@ namespace myNES.Core
         public static void Shutdown()
         {
             Console.WriteLine("SHUTTING DOWN", DebugCode.Warning);
-            if (ON)
-            {
-                ON = false;
-                Apu.Shutdown();
-                Cpu.Shutdown();
-                Ppu.Shutdown();
-                CpuMemory.Shutdown();
-                PpuMemory.Shutdown();
-                VideoDevice.Shutdown();
-                AudioDevice.Shutdown();
-
-                if (EmuShutdown != null)
-                    EmuShutdown(null, null);
-                Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
-            }
-        }
-
-        /// <summary>
-        /// Setup output devices
-        /// </summary>
-        /// <param name="system">The emulation system</param>
-        /// <param name="videoDevice">The video device</param>
-        /// <param name="audioDevice"></param>
-        public static void SetupOutput(TimingInfo.System system, IVideoDevice videoDevice, IAudioDevice audioDevice)
-        {
-            VideoDevice = videoDevice;
-            AudioDevice = audioDevice;
-            emuSystem = system;
+            ON = false;
+            Apu.Shutdown();
+            Cpu.Shutdown();
+            Ppu.Shutdown();
+            CpuMemory.Shutdown();
+            PpuMemory.Shutdown();
+            VideoDevice.Shutdown();
+            AudioDevice.Shutdown();
+            Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
         }
     }
 }
