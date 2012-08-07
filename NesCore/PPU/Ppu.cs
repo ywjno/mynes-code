@@ -20,6 +20,11 @@ namespace myNES.Core.PPU
         private int[] colors;
         private int[][] screen;
 
+        bool suppressNmi;
+        bool suppressVbl;
+        bool oddSwap;
+        byte value2000;
+
         public Ppu(TimingInfo.System system)
             : base(system)
         {
@@ -68,6 +73,16 @@ namespace myNES.Core.PPU
         private byte Peek____(int address) { return 0; }
         private byte Peek2002(int address)
         {
+            //Read 1 cycle before vblank should suppress setting flag
+            if (vclock == 240 & hclock == 340)
+            {
+                suppressVbl = true; suppressNmi = true;
+            }
+            //Read 1 cycle before/after vblank should suppress nmi
+            if ((vclock == 241 & hclock < 2))
+            {
+                suppressNmi = true;
+            }
             byte data = 0;
 
             if (vbl) data |= 0x80;
@@ -107,6 +122,15 @@ namespace myNES.Core.PPU
             spr.rasters = (data & 0x20) != 0 ? 0x0010 : 0x0008;
 
             nmi = (data & 0x80) != 0;
+
+            if (nmi && ((value2000 & 0x80) == 0) && vbl)
+                Nes.Cpu.requestNmi = true;
+            if ((vclock == 241 & hclock < 2) && !nmi)
+            {
+                Nes.Cpu.requestNmi = false;
+                Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
+            }
+            value2000 = data;
         }
         private void Poke2001(int address, byte data)
         {
@@ -207,14 +231,14 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 7)
                         {
-                        case 0: FetchName_0(); break;
-                        case 1: FetchName_1(); break;
-                        case 2: FetchAttr_0(); break;
-                        case 3: FetchAttr_1(); scroll.ClockX(); break;
-                        case 4: FetchBit0_0(); break;
-                        case 5: FetchBit0_1(); break;
-                        case 6: FetchBit1_0(); break;
-                        case 7: FetchBit1_1(); SynthesizeBkgPixels(); break;
+                            case 0: FetchName_0(); break;
+                            case 1: FetchName_1(); break;
+                            case 2: FetchAttr_0(); break;
+                            case 3: FetchAttr_1(); scroll.ClockX(); break;
+                            case 4: FetchBit0_0(); break;
+                            case 5: FetchBit0_1(); break;
+                            case 6: FetchBit1_0(); break;
+                            case 7: FetchBit1_1(); SynthesizeBkgPixels(); break;
                         }
 
                         #endregion
@@ -237,14 +261,14 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 7)
                         {
-                        case 0: FetchName_0(); break;
-                        case 1: FetchName_1(); break;
-                        case 2: FetchAttr_0(); break;
-                        case 3: FetchAttr_1(); break;
-                        case 4: /*   Bit0   */ break;
-                        case 5: /*   Bit0   */ break;
-                        case 6: /*   Bit1   */ break;
-                        case 7: /*   Bit1   */ SynthesizeSprPixels(); break;
+                            case 0: FetchName_0(); break;
+                            case 1: FetchName_1(); break;
+                            case 2: FetchAttr_0(); break;
+                            case 3: FetchAttr_1(); break;
+                            case 4: /*   Bit0   */ break;
+                            case 5: /*   Bit0   */ break;
+                            case 6: /*   Bit1   */ break;
+                            case 7: /*   Bit1   */ SynthesizeSprPixels(); break;
                         }
 
                         #endregion
@@ -255,14 +279,14 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 7)
                         {
-                        case 0: FetchName_0(); break;
-                        case 1: FetchName_1(); break;
-                        case 2: FetchAttr_0(); break;
-                        case 3: FetchAttr_1(); scroll.ClockX(); break;
-                        case 4: FetchBit0_0(); break;
-                        case 5: FetchBit0_1(); break;
-                        case 6: FetchBit1_0(); break;
-                        case 7: FetchBit1_1(); SynthesizeBkgPixels(); break;
+                            case 0: FetchName_0(); break;
+                            case 1: FetchName_1(); break;
+                            case 2: FetchAttr_0(); break;
+                            case 3: FetchAttr_1(); scroll.ClockX(); break;
+                            case 4: FetchBit0_0(); break;
+                            case 5: FetchBit0_1(); break;
+                            case 6: FetchBit1_0(); break;
+                            case 7: FetchBit1_1(); SynthesizeBkgPixels(); break;
                         }
 
                         #endregion
@@ -273,8 +297,8 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 1)
                         {
-                        case 0: FetchName_0(); break;
-                        case 1: FetchName_1(); break;
+                            case 0: FetchName_0(); break;
+                            case 1: FetchName_1(); break;
                         }
 
                         #endregion
@@ -292,6 +316,22 @@ namespace myNES.Core.PPU
 
             hclock++;
 
+            //Nmi occur after 2 cycles of vblank
+            if (vclock == 241)
+            {
+                if (hclock == 2)
+                {
+                    if (!suppressNmi)
+                    {
+                        if (nmi)
+                            Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                    }
+                    else
+                    {
+                        suppressNmi = false;
+                    }
+                }
+            }
             if (hclock == 341)
             {
                 hclock = 0;
@@ -299,10 +339,10 @@ namespace myNES.Core.PPU
 
                 if (vclock == 241)
                 {
-                    vbl = true;
-
-                    if (nmi)
-                        Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                    if (!suppressVbl)
+                        vbl = true;
+                    else
+                        suppressVbl = false;
                 }
 
                 if (vclock == 262)
@@ -312,6 +352,18 @@ namespace myNES.Core.PPU
 
                     Nes.VideoDevice.RenderFrame(screen);
                 }
+            }
+            //odd frame ?
+            if (vclock == -1 && hclock == 339)
+            {
+
+                oddSwap = !oddSwap;
+
+                if (!oddSwap & bkg.enabled)
+                {
+                    hclock++;
+                }
+
             }
         }
 
