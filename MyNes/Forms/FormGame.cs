@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Windows.Forms;
 
-namespace MyNes.Forms
+namespace myNES.Forms
 {
     public partial class FormGame : Form
     {

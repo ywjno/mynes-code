@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyNes.Core
+namespace myNES.Core
 {
     /// <summary>
     /// My Nes Console

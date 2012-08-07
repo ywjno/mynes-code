@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core.Debug.DefaultCommands
+﻿namespace myNES.Core.Debug.DefaultCommands
 {
     public class HelpCommand : ConsoleCommand
     {

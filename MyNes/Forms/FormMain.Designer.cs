@@ -1,4 +1,4 @@
-﻿namespace MyNes
+﻿namespace myNES.Forms
 {
     partial class FormMain
     {
@@ -150,6 +150,7 @@
             // 
             // buttonConsole
             // 
+            this.buttonConsole.CheckOnClick = true;
             this.buttonConsole.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonConsole.Image = ((System.Drawing.Image)(resources.GetObject("buttonConsole.Image")));
             this.buttonConsole.ImageTransparentColor = System.Drawing.Color.Magenta;

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 using myNES.Properties;
+using myNES.Forms;
 
-namespace MyNes
+namespace myNES
 {
     static class Program
     {

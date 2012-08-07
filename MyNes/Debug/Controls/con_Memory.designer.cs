@@ -18,7 +18,7 @@
 *You should have received a copy of the GNU General Public License    *
 *along with this program.  If not, see <http://www.gnu.org/licenses/>.*
 \*********************************************************************/
-namespace MyNes
+namespace myNES
 {
     partial class con_Memory
     {
@@ -49,7 +49,7 @@ namespace MyNes
         private void InitializeComponent()
         {
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-            this.memoryPanel1 = new MyNes.MemoryPanel();
+            this.memoryPanel1 = new myNES.MemoryPanel();
             this.SuspendLayout();
             // 
             // vScrollBar1

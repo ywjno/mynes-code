@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core.Boards
+﻿namespace myNES.Core.Boards
 {
     public abstract class Board
     {
@@ -28,8 +28,8 @@
 
         public virtual void Initialize()
         {
-            NesCore.CpuMemory.Hook(0x8000, 0xFFFF, PeekPrg, PokePrg);
-            NesCore.PpuMemory.Hook(0x0000, 0x1FFF, PeekChr, PokeChr);
+            Nes.CpuMemory.Hook(0x8000, 0xFFFF, PeekPrg, PokePrg);
+            Nes.PpuMemory.Hook(0x0000, 0x1FFF, PeekChr, PokeChr);
         }
     }
 }

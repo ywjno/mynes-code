@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
-using MyNes.Core;
-using MyNes.Debug.ConsoleCommands;
-using Console = MyNes.Core.Console;
+using myNES.Core;
+using myNES.Debug.ConsoleCommands;
+using Console = myNES.Core.Console;
 
-namespace MyNes
+namespace myNES
 {
     public partial class FormConsole : Form
     {
@@ -19,6 +19,7 @@ namespace MyNes
             ConsoleCommands.AddCommand(new CloseConsole(this));
             AddCommands();
         }
+
         void AddCommands()
         {
             Type[] types = Assembly.GetExecutingAssembly().GetTypes();

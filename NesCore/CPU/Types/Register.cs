@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace MyNes.Core
+namespace myNES.Core.CPU.Types
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct Register

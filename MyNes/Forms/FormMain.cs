@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using MyNes.Forms;
 
-namespace MyNes
+namespace myNES.Forms
 {
     public partial class FormMain : Form
     {
@@ -68,7 +67,19 @@ namespace MyNes
         private void buttonHalt_Click(object sender, EventArgs e) { }
         private void buttonStop_Click(object sender, EventArgs e) { }
 
-        private void buttonConsole_Click(object sender, EventArgs e) { }
+        private void buttonConsole_Click(object sender, EventArgs e)
+        {
+            if (consoleForm != null)
+            {
+                consoleForm.Close();
+                consoleForm = null;
+            }
+            else
+            {
+                consoleForm = new FormConsole();
+                consoleForm.Show();
+            }
+        }
         private void buttonPalette_Click(object sender, EventArgs e) { }
 
         private void buttonCpu_Click(object sender, EventArgs e) { }
@@ -78,15 +89,7 @@ namespace MyNes
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (e.Node.Tag is FileInfo)
-            {
-                buttonPlay.Enabled = true;
-            }
-
-            if (e.Node.Tag is DirectoryInfo)
-            {
-                buttonPlay.Enabled = false;
-            }
+            buttonPlay.Enabled = (e.Node.Tag is FileInfo);
         }
     }
 }

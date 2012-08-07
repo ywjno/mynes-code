@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MyNes.Core
+namespace myNES.Core
 {
     /// <summary>
     /// The class that manage the console commands
