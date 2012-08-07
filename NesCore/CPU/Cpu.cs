@@ -14,7 +14,7 @@ namespace myNES.Core.CPU
         private bool irq;
         private bool nmi;
         private bool requestIrq;
-        private bool requestNmi;
+        public bool requestNmi;
         private byte a; // Accumulator
         private byte x; // Index Register X
         private byte y; // Index Register Y
