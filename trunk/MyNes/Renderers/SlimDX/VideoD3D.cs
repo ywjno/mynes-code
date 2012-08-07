@@ -47,7 +47,7 @@ namespace myNES
             surface = Surface;
             this.system = system;
         }
-        void InitializeDirect3D()
+        public void InitializeDirect3D()
         {
             if (CutLinesInNTSC)
             {
@@ -124,7 +124,7 @@ namespace myNES
                 }
                 Console.WriteLine("Direct 3d (SlimDX) video device initialized.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Initialized = false;
                 Console.WriteLine("Faild to initialize the Direct 3d (SlimDX) video device:");
@@ -213,15 +213,18 @@ namespace myNES
         {
             if (surface != null & canRender & !disposed & Initialized)
             {
+                isRendering = true;
                 fixed (byte* lpDst = displayData)
                 {
                     var pixelsToSkip = (linesToSkip << 8);
                     var lpD = (int*)lpDst;
 
-                    for (int i = pixelsToSkip; i < ScreenBuffer.Length - pixelsToSkip; i++)
+                    for (int i = pixelsToSkip; i < (256 * 240) - pixelsToSkip; i++)
                     {
                         int y = i / 256;
-                        *(lpD + (i - pixelsToSkip)) = ScreenBuffer[y][i - (y * 256)];
+                        int x = i  - (y * 256);
+
+                        *(lpD + (i - pixelsToSkip)) = ScreenBuffer[y][x];
                     }
                 }
 
@@ -371,5 +374,5 @@ namespace myNES
         {
             this.Dispose();
         }
-     }
+    }
 }

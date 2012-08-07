@@ -31,7 +31,8 @@ namespace myNES
         void InitializeRendrers()
         {
             videoDevice = new VideoD3D(TimingInfo.NTSC, this);
-            videoDevice.FullScreen = false;
+            videoDevice.InitializeDirect3D();
+
             audioDevice = new AudioDSD(this.Handle);
 
             Nes.SetupOutput(TimingInfo.NTSC, videoDevice, audioDevice);
