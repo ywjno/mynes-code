@@ -1,4 +1,4 @@
-﻿namespace MyNes
+﻿namespace myNES
 {
     partial class FormConsole
     {
@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConsole));
             this.vScrollBar = new System.Windows.Forms.VScrollBar();
             this.panel = new System.Windows.Forms.Panel();
-            this.consolePanel = new MyNes.ConsolePanel();
+            this.consolePanel = new myNES.ConsolePanel();
             this.comboBoxHistory = new System.Windows.Forms.ComboBox();
             this.buttonEnter = new System.Windows.Forms.Button();
             this.panel.SuspendLayout();

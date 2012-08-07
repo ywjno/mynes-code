@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core.Boards.Nintendo
+﻿namespace myNES.Core.Boards.Nintendo
 {
     public class NROM256 : Board
     {

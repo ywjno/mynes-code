@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core.Boards.Discreet
+﻿namespace myNES.Core.Boards.Discreet
 {
     public class UNROM : Board
     {

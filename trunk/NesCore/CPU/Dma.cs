@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core
+﻿namespace myNES.Core.CPU
 {
     // Emulates the undocumented direct memory access controller in the 2A03/2A07
     public class Dma
@@ -25,11 +25,11 @@
 
             if (step = !step)
             {
-                data = NesCore.CpuMemory[addr];
+                data = Nes.CpuMemory[addr];
             }
             else
             {
-                NesCore.CpuMemory[0x2004] = data;
+                Nes.CpuMemory[0x2004] = data;
 
                 addr = (++addr) & 0xFFFF;
                 size = (--size) & 0xFFFF;

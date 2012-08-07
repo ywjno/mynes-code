@@ -20,10 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using MyNes.Core;
-using Console = MyNes.Core.Console;
+using myNES.Core;
+using Console = myNES.Core.Console;
 
-namespace MyNes
+namespace myNES
 {
     public partial class ConsolePanel : Control
     {

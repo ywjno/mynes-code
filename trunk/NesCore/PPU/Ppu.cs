@@ -1,4 +1,6 @@
-﻿namespace MyNes.Core
+﻿using myNES.Core.CPU;
+
+namespace myNES.Core.PPU
 {
     // Emulates the RP2C02/RP2C07 graphics synthesizer
     public class Ppu : ProcessorBase
@@ -37,7 +39,7 @@
         }
         private void FetchName_1()
         {
-            fetch.name = NesCore.PpuMemory[fetch.addr];
+            fetch.name = Nes.PpuMemory[fetch.addr];
         }
         private void FetchAttr_0()
         {
@@ -45,7 +47,7 @@
         }
         private void FetchAttr_1()
         {
-            fetch.attr = NesCore.PpuMemory[fetch.addr] >> ((scroll.addr >> 4 & 0x04) | (scroll.addr & 0x02));
+            fetch.attr = Nes.PpuMemory[fetch.addr] >> ((scroll.addr >> 4 & 0x04) | (scroll.addr & 0x02));
         }
         private void FetchBit0_0()
         {
@@ -53,7 +55,7 @@
         }
         private void FetchBit0_1()
         {
-            fetch.bit0 = NesCore.PpuMemory[fetch.addr];
+            fetch.bit0 = Nes.PpuMemory[fetch.addr];
         }
         private void FetchBit1_0()
         {
@@ -61,7 +63,7 @@
         }
         private void FetchBit1_1()
         {
-            fetch.bit1 = NesCore.PpuMemory[fetch.addr];
+            fetch.bit1 = Nes.PpuMemory[fetch.addr];
         }
 
         private byte Peek____(int address) { return 0; }
@@ -83,13 +85,13 @@
 
             if ((address & 0x3F00) == 0x3F00)
             {
-                tmp = NesCore.PpuMemory[scroll.addr];
-                chr = NesCore.PpuMemory[scroll.addr & 0x2FFF];
+                tmp = Nes.PpuMemory[scroll.addr];
+                chr = Nes.PpuMemory[scroll.addr & 0x2FFF];
             }
             else
             {
                 tmp = chr;
-                chr = NesCore.PpuMemory[scroll.addr];
+                chr = Nes.PpuMemory[scroll.addr];
             }
 
             scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
@@ -145,7 +147,7 @@
         }
         private void Poke2007(int address, byte data)
         {
-            NesCore.PpuMemory[scroll.addr] = data;
+            Nes.PpuMemory[scroll.addr] = data;
 
             scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
         }
@@ -161,7 +163,7 @@
             if ((pixel & 0x03) == 0)
                 pixel = 0x3F00;
 
-            screen[vclock][hclock] = colors[NesCore.PpuMemory[pixel]];
+            screen[vclock][hclock] = colors[Nes.PpuMemory[pixel]];
         }
         private void SynthesizeBkgPixels()
         {
@@ -178,6 +180,25 @@
                 spr.pixels[pos] = (fetch.attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
         }
 
+        public override void Initialize()
+        {
+            Console.WriteLine("Initializing PPU...");
+
+            for (int i = 0x0000; i < 0x2000; i += 8)
+            {
+                Nes.CpuMemory.Hook(0x2000 + i, Peek____, Poke2000);
+                Nes.CpuMemory.Hook(0x2001 + i, Peek____, Poke2001);
+                Nes.CpuMemory.Hook(0x2002 + i, Peek2002, Poke____);
+                Nes.CpuMemory.Hook(0x2003 + i, Peek____, Poke2003);
+                Nes.CpuMemory.Hook(0x2004 + i, Peek2004, Poke2004);
+                Nes.CpuMemory.Hook(0x2005 + i, Peek____, Poke2005);
+                Nes.CpuMemory.Hook(0x2006 + i, Peek____, Poke2006);
+                Nes.CpuMemory.Hook(0x2007 + i, Peek2007, Poke2007);
+            }
+
+            Console.UpdateLine("Initializing PPU... Success!", DebugCode.Good);
+        }
+        public override void Shutdown() { }
         public override void Update()
         {
             if (vclock < 240 || vclock == 261)
@@ -285,7 +306,7 @@
                     vbl = true;
 
                     if (nmi)
-                        NesCore.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                        Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
                 }
 
                 if (vclock == 262)
@@ -293,30 +314,10 @@
                     vclock = 0;
                     vbl = false;
 
-                    NesCore.VideoDevice.RenderFrame(screen);
+                    Nes.VideoDevice.RenderFrame(screen);
                 }
             }
         }
-
-        public void Initialize()
-        {
-            Console.WriteLine("Initializing PPU...");
-
-            for (int i = 0x0000; i < 0x2000; i += 8)
-            {
-                NesCore.CpuMemory.Hook(0x2000 + i, Peek____, Poke2000);
-                NesCore.CpuMemory.Hook(0x2001 + i, Peek____, Poke2001);
-                NesCore.CpuMemory.Hook(0x2002 + i, Peek2002, Poke____);
-                NesCore.CpuMemory.Hook(0x2003 + i, Peek____, Poke2003);
-                NesCore.CpuMemory.Hook(0x2004 + i, Peek2004, Poke2004);
-                NesCore.CpuMemory.Hook(0x2005 + i, Peek____, Poke2005);
-                NesCore.CpuMemory.Hook(0x2006 + i, Peek____, Poke2006);
-                NesCore.CpuMemory.Hook(0x2007 + i, Peek2007, Poke2007);
-            }
-
-            Console.WriteLine("PPU initialized!", DebugCode.Good);
-        }
-        public void Shutdown() { }
 
         public class Fetch
         {

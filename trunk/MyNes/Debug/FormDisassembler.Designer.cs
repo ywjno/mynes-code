@@ -1,4 +1,4 @@
-﻿namespace MyNes
+﻿namespace myNES
 {
     partial class FormDisassembler
     {
@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDisassembler));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.con_Memory1 = new MyNes.con_Memory();
+            this.con_Memory1 = new myNES.con_Memory();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.groupBox2.SuspendLayout();

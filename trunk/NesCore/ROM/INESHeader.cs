@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MyNes.Core
+namespace myNES.Core.ROM
 {
     /// <summary>
     /// Encapsulates an INES format header
@@ -45,8 +45,8 @@ namespace MyNes.Core
 
             switch (header[6] & 0x9)
             {
-            case 0x0: this.Mirroring = MyNes.Core.Mirroring.ModeHorz; break;
-            case 0x1: this.Mirroring = MyNes.Core.Mirroring.ModeVert; break;
+            case 0x0: this.Mirroring = Types.Mirroring.ModeHorz; break;
+            case 0x1: this.Mirroring = Types.Mirroring.ModeVert; break;
             case 0x8:
             case 0x9: throw new Exception("4-screen mirroring isn't supported.");
             }

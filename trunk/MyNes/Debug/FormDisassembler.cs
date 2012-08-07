@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
-using MyNes.Core;
+using myNES.Core;
 
-namespace MyNes
+namespace myNES
 {
     public partial class FormDisassembler : Form
     {
@@ -16,7 +16,7 @@ namespace MyNes
         private void RefreshCpu() { }
         private void RefreshMemory()
         {
-            con_Memory1.Memory = NesCore.CpuMemory;
+            con_Memory1.Memory = Nes.CpuMemory;
         }
     }
 }

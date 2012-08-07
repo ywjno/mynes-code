@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core
+﻿namespace myNES.Core.CPU.Types
 {
     public struct Flags
     {

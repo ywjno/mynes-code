@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
-using MyNes.Core;
+using myNES.Core;
 
-namespace MyNes.Debug.ConsoleCommands
+namespace myNES.Debug.ConsoleCommands
 {
     public class OpenRom : ConsoleCommand
     {
@@ -21,7 +21,7 @@ namespace MyNes.Debug.ConsoleCommands
                 form.Filter = "INES (*.nes)|*.nes";
 
                 if (form.ShowDialog() == DialogResult.OK)
-                    NesCore.CreateNew(form.FileName);
+                    Nes.CreateNew(form.FileName);
             }
         }
     }

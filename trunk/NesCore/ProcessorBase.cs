@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core
+﻿namespace myNES.Core
 {
     public class ProcessorBase
     {
@@ -10,9 +10,10 @@
             this.system = system;
         }
 
-        public virtual void Update()
-        {
-        }
+        public virtual void Initialize() { }
+        public virtual void Shutdown() { }
+
+        public virtual void Update() { }
         public virtual void Update(int cycles)
         {
             while (timing.cycles < cycles)

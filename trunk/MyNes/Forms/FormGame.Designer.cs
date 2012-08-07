@@ -1,4 +1,4 @@
-﻿namespace MyNes.Forms
+﻿namespace myNES.Forms
 {
     partial class FormGame
     {
@@ -34,9 +34,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.Name = "FormGame";
-            this.Text = "FormGame";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "myNES v5 - Game";
             this.Load += new System.EventHandler(this.FormGame_Load);
             this.ResumeLayout(false);
 

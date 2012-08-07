@@ -1,6 +1,6 @@
-﻿using MyNes.Core;
+﻿using myNES.Core;
 
-namespace MyNes.Debug.ConsoleCommands
+namespace myNES.Debug.ConsoleCommands
 {
     public class CloseConsole : ConsoleCommand
     {

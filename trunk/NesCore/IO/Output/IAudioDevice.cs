@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core.IO.Output
+﻿namespace myNES.Core.IO.Output
 {
     public interface IAudioDevice
     {

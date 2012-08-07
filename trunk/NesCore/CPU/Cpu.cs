@@ -1,6 +1,7 @@
 ﻿using System;
+using myNES.Core.CPU.Types;
 
-namespace MyNes.Core
+namespace myNES.Core.CPU
 {
     public class Cpu : ProcessorBase
     {
@@ -44,10 +45,10 @@ namespace MyNes.Core
         }
         private void Dispatch()
         {
-            if (NesCore.ON)
+            if (Nes.ON)
             {
-                NesCore.Apu.Update();
-                NesCore.Ppu.Update();
+                Nes.Apu.Update();
+                Nes.Ppu.Update();
             }
         }
         private byte Pull()
@@ -64,13 +65,13 @@ namespace MyNes.Core
         {
             Dispatch();
 
-            return NesCore.CpuMemory[address];
+            return Nes.CpuMemory[address];
         }
         private void Poke(int address, byte data)
         {
             Dispatch();
 
-            NesCore.CpuMemory[address] = data;
+            Nes.CpuMemory[address] = data;
         }
 
         #region Codes
@@ -697,7 +698,23 @@ namespace MyNes.Core
 
         #endregion
 
-        public void Initialize()
+        public void Interrupt(IsrType type, bool asserted)
+        {
+            switch (type)
+            {
+                case IsrType.Ppu: nmi = asserted; break;
+                case IsrType.Apu:
+                case IsrType.Dmc:
+                case IsrType.Mmc:
+                    if (asserted)
+                        irqRequestFlags |= (int)type;
+                    else
+                        irqRequestFlags &= ~(int)type;
+                    break;
+            }
+        }
+
+        public override void Initialize()
         {
             Console.WriteLine("Initializing CPU...");
 
@@ -762,23 +779,7 @@ namespace MyNes.Core
 
             Console.WriteLine("CPU initialized!", DebugCode.Good);
         }
-        public void Interrupt(IsrType type, bool asserted)
-        {
-            switch (type)
-            {
-                case IsrType.Ppu: nmi = asserted; break;
-                case IsrType.Apu:
-                case IsrType.Dmc:
-                case IsrType.Mmc:
-                    if (asserted)
-                        irqRequestFlags |= (int)type;
-                    else
-                        irqRequestFlags &= ~(int)type;
-                    break;
-            }
-        }
-        public void Shutdown() { }
-
+        public override void Shutdown() { }
         public override void Update()
         {
             irq = (!sr.i && (irqRequestFlags != 0));

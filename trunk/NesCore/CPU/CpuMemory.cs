@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core
+﻿namespace myNES.Core.CPU
 {
     public class CpuMemory : Memory
     {

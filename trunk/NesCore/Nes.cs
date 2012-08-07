@@ -1,13 +1,17 @@
 ﻿using System.IO;
 using System.Threading;
-using MyNes.Core.Boards;
-using MyNes.Core.Boards.Nintendo;
-using MyNes.Core.IO.Output;
-using MyNes.Core.Boards.Discreet;
+using myNES.Core.APU;
+using myNES.Core.Boards;
+using myNES.Core.Boards.Discreet;
+using myNES.Core.Boards.Nintendo;
+using myNES.Core.CPU;
+using myNES.Core.IO.Output;
+using myNES.Core.PPU;
+using myNES.Core.ROM;
 
-namespace MyNes.Core
+namespace myNES.Core
 {
-    public class NesCore
+    public class Nes
     {
         public static Cpu Cpu;
         public static Ppu Ppu;
@@ -40,10 +44,10 @@ namespace MyNes.Core
 
             INESHeader header = new INESHeader(romPath);
 
-            Console.UpdateLine("Reading header... Finished!");
-
             if (header.Result == INESHeader.INESResult.Valid)
             {
+                Console.UpdateLine("Reading header... Success!", DebugCode.Good);
+
                 #region Read banks
 
                 var stream = File.OpenRead(romPath);
@@ -80,29 +84,14 @@ namespace MyNes.Core
                 reader.Close();
 
                 #endregion
-                #region Get board depending on mapper #
 
-                // TODO: find a way to get board without using switch
-                switch (header.Mapper)
+                Board = BoardManager.GetBoard(header, chr, prg);
+
+                if (Board == null)
                 {
-                case 0:
-                    switch (prg.Length)
-                    {
-                    case 0x4000: Board = new NROM128(chr, prg); break; // 128 kb PRG, 8kB CHR-RAM
-                    case 0x8000: Board = new NROM256(chr, prg); break; // 256 kb PRG, 8kB CHR-RAM
-                    }
-                    break;
-
-                case 2:
-                    switch (prg.Length)
-                    {
-                    case 0x20000: Board = new UNROM(chr, prg); break; // 128 kB PRG, 8kB CHR-RAM
-                    case 0x40000: Board = new UOROM(chr, prg); break; // 256 kB PRG, 8kB CHR-RAM
-                    }
-                    break;
+                    Console.WriteLine("Mapper isn't supported!", DebugCode.Error);
+                    return;
                 }
-
-                #endregion
 
                 //everything is ok, initialize components
                 InitializeComponents();
@@ -110,7 +99,8 @@ namespace MyNes.Core
             }
             else
             {
-                Console.WriteLine("Reading header ... Failed", DebugCode.Error);
+                Console.UpdateLine("Reading header... Failed", DebugCode.Error);
+
                 switch (header.Result)
                 {
                     case INESHeader.INESResult.InvalidHeader:

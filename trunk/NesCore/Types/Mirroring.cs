@@ -1,4 +1,4 @@
-﻿namespace MyNes.Core
+﻿namespace myNES.Core.Types
 {
     public class Mirroring
     {
