@@ -51,7 +51,7 @@ namespace myNES
         {
             if (CutLinesInNTSC)
             {
-                if (system == TimingInfo.NTSC)
+                if (system.Master == 236250000)
                 {
                     scanlines = 224;
                     linesToSkip = 8;
