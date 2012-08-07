@@ -16,6 +16,8 @@
             step = false;
             addr = (data << 8);
             size = 256;
+
+            Nes.Cpu.Lock();
         }
 
         public void Update()
@@ -33,6 +35,9 @@
 
                 addr = (++addr) & 0xFFFF;
                 size = (--size) & 0xFFFF;
+
+                if (size == 0)
+                    Nes.Cpu.Unlock();
             }
         }
     }

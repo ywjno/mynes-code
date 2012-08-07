@@ -7,6 +7,7 @@ namespace myNES.Core.CPU
     {
         private Action[] codes;
         private Action[] modes;
+        private Dma dma = new Dma();
         private Flags sr; // Processor Status
         private Register aa;
         private Register pc; // Program Counter
@@ -20,6 +21,7 @@ namespace myNES.Core.CPU
         private byte y; // Index Register Y
         private byte code;
         private int irqRequestFlags;
+        private bool locked;
 
         public Cpu(TimingInfo.System system)
             : base(system)
@@ -713,6 +715,8 @@ namespace myNES.Core.CPU
                     break;
             }
         }
+        public void Lock() { locked = true; }
+        public void Unlock() { locked = false; }
 
         public override void Initialize()
         {
@@ -777,11 +781,19 @@ namespace myNES.Core.CPU
 
             sr.i = true;
 
+            Nes.CpuMemory.Hook(0x4014, dma.OamTransfer);
+
             Console.WriteLine("CPU initialized!", DebugCode.Good);
         }
         public override void Shutdown() { }
         public override void Update()
         {
+            if (locked)
+            {
+                dma.Update();
+                return;
+            }
+
             irq = (!sr.i && (irqRequestFlags != 0));
 
             code = Peek(pc.Value++);
