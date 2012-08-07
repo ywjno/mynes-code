@@ -196,5 +196,9 @@ namespace myNES.Core
             AudioDevice = audioDevice;
             emuSystem = system;
         }
+        public static void SetupPalette()
+        {
+            Ppu.SetupPalette(NTSCPaletteGenerator.GeneratePalette());
+        }
     }
 }

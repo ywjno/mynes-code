@@ -48,7 +48,7 @@ namespace myNES.Core.CPU
             if (Nes.ON)
             {
                 Nes.Apu.Update();
-                Nes.Ppu.Update();
+                Nes.Ppu.Update(timing.single);
             }
         }
         private byte Pull()

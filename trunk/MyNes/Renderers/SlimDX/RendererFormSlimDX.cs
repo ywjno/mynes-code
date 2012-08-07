@@ -20,6 +20,7 @@ namespace myNES
         {
             InitializeComponent();
             InitializeRendrers();
+            base.ClientSize = new Size(256,240);
             Nes.EmuShutdown += new EventHandler(Nes_EmuShutdown);     
         }
 
@@ -34,6 +35,7 @@ namespace myNES
             audioDevice = new AudioDSD(this.Handle);
 
             Nes.SetupOutput(TimingInfo.NTSC, videoDevice, audioDevice);
+            Nes.SetupPalette();
         }
 
         private void RendererFormSlimDX_FormClosing(object sender, FormClosingEventArgs e)
