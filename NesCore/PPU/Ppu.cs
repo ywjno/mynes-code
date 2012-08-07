@@ -328,6 +328,10 @@ namespace myNES.Core.PPU
                 }
             }
         }
+        public void SetupPalette(int [] colors)
+        {
+            this.colors = colors;
+        }
 
         public class Fetch
         {

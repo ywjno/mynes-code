@@ -55,6 +55,7 @@
     <Compile Include="Boards\Nintendo\NROM256.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="Debug\DefaultCommands\OffCommand.cs" />
+    <Compile Include="PPU\NTSCPaletteGenerator.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="ROM\INESHeader.cs" />
     <Compile Include="TimingInfo.cs" />
