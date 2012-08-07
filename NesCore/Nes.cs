@@ -28,7 +28,7 @@ namespace myNES.Core
         //events
         public static event System.EventHandler EmuShutdown;
 
-        private static TimingInfo.System emuSystem;
+        private static TimingInfo.System emuSystem = TimingInfo.NTSC;
 
         /// <summary>
         /// Create new nes emulation core
@@ -99,6 +99,9 @@ namespace myNES.Core
 
                 //everything is ok, initialize components
                 InitializeComponents();
+
+                PpuMemory.SwitchMirroring(header.Mirroring);
+
                 Console.WriteLine("Ready.", DebugCode.Good);
             }
             else
