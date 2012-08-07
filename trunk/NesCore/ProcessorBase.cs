@@ -18,7 +18,7 @@
         {
             while (timing.cycles < cycles)
             {
-                timing.cycles += cycles;
+                timing.cycles += timing.single;
 
                 Update();
             }

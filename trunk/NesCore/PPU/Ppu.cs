@@ -125,11 +125,13 @@ namespace myNES.Core.PPU
 
             if (nmi && ((value2000 & 0x80) == 0) && vbl)
                 Nes.Cpu.requestNmi = true;
+
             if ((vclock == 241 & hclock < 2) && !nmi)
             {
                 Nes.Cpu.requestNmi = false;
                 Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
             }
+
             value2000 = data;
         }
         private void Poke2001(int address, byte data)
