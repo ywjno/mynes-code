@@ -8,5 +8,8 @@
     <Setting Name="console_size" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">640, 480</Value>
     </Setting>
+    <Setting Name="CurrentRenderer" Type="myNES.SupportedRenderers" Scope="User">
+      <Value Profile="(Default)">SlimDX</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

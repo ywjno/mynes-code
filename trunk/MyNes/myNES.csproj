@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -34,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SevenZipSharp">
+      <HintPath>..\..\libraries\SevenZipSharp.dll</HintPath>
+    </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\SlimDX SDK (January 2012)\Bin\net40\x86\SlimDX.dll</HintPath>
@@ -77,11 +81,17 @@
     <Compile Include="Debug\FormConsole.Designer.cs">
       <DependentUpon>FormConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormGame.cs">
+    <Compile Include="FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormGame.Designer.cs">
-      <DependentUpon>FormGame.cs</DependentUpon>
+    <Compile Include="FormAbout.Designer.cs">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormFilesList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormFilesList.Designer.cs">
+      <DependentUpon>FormFilesList.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
@@ -97,6 +107,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderers\SlimDX\AudioDSD.cs" />
+    <Compile Include="Renderers\SlimDX\RendererFormSlimDX.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Renderers\SlimDX\RendererFormSlimDX.Designer.cs">
+      <DependentUpon>RendererFormSlimDX.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Renderers\SlimDX\VideoD3D.cs" />
+    <Compile Include="Renderers\SupportedRenderers.cs" />
     <EmbeddedResource Include="Debug\Controls\con_Memory.resx">
       <DependentUpon>con_Memory.cs</DependentUpon>
     </EmbeddedResource>
@@ -106,8 +125,11 @@
     <EmbeddedResource Include="Debug\FormDisassembler.resx">
       <DependentUpon>FormDisassembler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormGame.resx">
-      <DependentUpon>FormGame.cs</DependentUpon>
+    <EmbeddedResource Include="FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormFilesList.resx">
+      <DependentUpon>FormFilesList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
@@ -122,6 +144,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Renderers\SlimDX\RendererFormSlimDX.resx">
+      <DependentUpon>RendererFormSlimDX.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

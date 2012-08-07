@@ -46,5 +46,17 @@ namespace myNES.Properties {
                 this["console_size"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("SlimDX")]
+        public global::myNES.SupportedRenderers CurrentRenderer {
+            get {
+                return ((global::myNES.SupportedRenderers)(this["CurrentRenderer"]));
+            }
+            set {
+                this["CurrentRenderer"] = value;
+            }
+        }
     }
 }

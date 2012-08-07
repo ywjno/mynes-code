@@ -1,6 +1,6 @@
-﻿namespace myNES.Forms
+﻿namespace myNES
 {
-    partial class FormGame
+    partial class RendererFormSlimDX
     {
         /// <summary>
         /// Required designer variable.
@@ -30,16 +30,14 @@
         {
             this.SuspendLayout();
             // 
-            // FormGame
+            // RendererFormSlimDX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(284, 262);
-            this.Name = "FormGame";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "myNES v5 - Game";
-            this.Load += new System.EventHandler(this.FormGame_Load);
+            this.ClientSize = new System.Drawing.Size(507, 402);
+            this.Name = "RendererFormSlimDX";
+            this.Text = "RendererFormSlimDX";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RendererFormSlimDX_FormClosing);
             this.ResumeLayout(false);
 
         }

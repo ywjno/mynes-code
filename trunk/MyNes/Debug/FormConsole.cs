@@ -47,6 +47,17 @@ namespace myNES
         }
         void UpdateVscroll()
         {
+            if (!this.InvokeRequired)
+            {
+                this.UpdateVscroll1();
+            }
+            else
+            {
+                this.Invoke(new Action(UpdateVscroll1));
+            }
+        }
+        void UpdateVscroll1()
+        {
             if (consolePanel.StringHeight < consolePanel.Height)
             {
                 vScrollBar.Maximum = 1;
@@ -63,7 +74,6 @@ namespace myNES
             }
             consolePanel.Invalidate();
         }
-
         void ExecuteCommand()
         {
             if (!this.InvokeRequired)
