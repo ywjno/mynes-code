@@ -10,6 +10,7 @@ namespace myNES.Forms
     public partial class FormMain : Form
     {
         private FormConsole consoleForm;
+        private FormSpeed speedForm;
         private FormDisassembler disassemblerForm;
         private Thread gameThread;
 
@@ -263,6 +264,34 @@ namespace myNES.Forms
         {
             FormAbout frm = new FormAbout(Application.ProductVersion);
             frm.ShowDialog(this);
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Nes.Shutdown();
+        }
+
+        private void emulationSpeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (speedForm != null)
+            {
+                emulationSpeedToolStripMenuItem.Checked = false;
+                speedForm.Close();
+                speedForm = null;
+            }
+            else
+            {
+                emulationSpeedToolStripMenuItem.Checked = true;
+                speedForm = new FormSpeed();
+                speedForm.FormClosed += new FormClosedEventHandler(speedForm_FormClosed);
+                speedForm.Show();
+            }
+        }
+
+        void speedForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            speedForm = null;
+            emulationSpeedToolStripMenuItem.Checked = false;
         }
     }
 }
