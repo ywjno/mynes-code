@@ -14,7 +14,7 @@
         };
 
         public PpuMemory()
-            : base(1 << 14)
+            : base(1 << 15)
         {
             Hook(0x2000, 0x3EFF, PeekNmt, PokeNmt);
             Hook(0x3F00, 0x3FFF, PeekPal, PokePal);

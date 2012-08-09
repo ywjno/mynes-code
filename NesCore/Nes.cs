@@ -1,11 +1,12 @@
 ﻿using System.IO;
-using System.Threading;
 using myNES.Core.APU;
 using myNES.Core.Boards;
 using myNES.Core.Boards.Discreet;
 using myNES.Core.Boards.Nintendo;
+using myNES.Core.Controls;
 using myNES.Core.CPU;
 using myNES.Core.IO.Output;
+using myNES.Core.IO.Input;
 using myNES.Core.PPU;
 using myNES.Core.ROM;
 
@@ -19,12 +20,14 @@ namespace myNES.Core
         public static CpuMemory CpuMemory;
         public static PpuMemory PpuMemory;
         public static Board Board;
+        public static ControlsUnit ControlsUnit;
         //devices
         public static IVideoDevice VideoDevice;
         public static IAudioDevice AudioDevice;
         //emulation controls
         public static bool ON;
         public static bool Pause;
+        public static SpeedLimiter SpeedLimiter;
         //events
         public static event System.EventHandler EmuShutdown;
 
@@ -130,6 +133,9 @@ namespace myNES.Core
 
             Board.Initialize();
 
+            ControlsUnit = new Controls.ControlsUnit();
+            ControlsUnit.Initianlize();
+
             Cpu = new Cpu(emuSystem);
             Ppu = new Ppu(emuSystem);
             Apu = new Apu(emuSystem);
@@ -160,7 +166,7 @@ namespace myNES.Core
                 }
                 else
                 {
-                    Thread.Sleep(100);
+                    SpeedLimiter.SleepOnPause();
                 }
             }
         }
@@ -178,6 +184,7 @@ namespace myNES.Core
                 Ppu.Shutdown();
                 CpuMemory.Shutdown();
                 PpuMemory.Shutdown();
+                ControlsUnit.Shutdown();
                 VideoDevice.Shutdown();
                 AudioDevice.Shutdown();
 
@@ -198,6 +205,43 @@ namespace myNES.Core
             VideoDevice = videoDevice;
             AudioDevice = audioDevice;
             emuSystem = system;
+        }
+        /// <summary>
+        /// Setup input
+        /// </summary>
+        /// <param name="inputDevice">The input device</param>
+        /// <param name="joypad1">The player 1 joypad</param>
+        /// <param name="joypad2">The player 2 joypad</param>
+        public static void SetupInput(IInputDevice inputDevice, IJoypad joypad1, IJoypad joypad2)
+        {
+            SetupInput(inputDevice, joypad1, joypad2, null, null, false);
+        }
+        /// <summary>
+        /// Setup input
+        /// </summary>
+        /// <param name="inputDevice">The input device</param>
+        /// <param name="joypad1">The player 1 joypad</param>
+        /// <param name="joypad2">The player 2 joypad</param>
+        /// <param name="joypad3">The player 3 joypad</param>
+        /// <param name="joypad4">The player 4 joypad</param>
+        /// <param name="is4Players">Is 4 players enabled</param>
+        public static void SetupInput(IInputDevice inputDevice, IJoypad joypad1, IJoypad joypad2,
+            IJoypad joypad3, IJoypad joypad4, bool is4Players)
+        {
+            ControlsUnit.InputDevice = inputDevice;
+            ControlsUnit.IsFourPlayers = is4Players;
+            ControlsUnit.Joypad1 = joypad1;
+            ControlsUnit.Joypad2 = joypad2;
+            ControlsUnit.Joypad3 = joypad3;
+            ControlsUnit.Joypad4 = joypad4;
+        }
+        /// <summary>
+        /// Setup the speed limiter that should control emulation speed depending on emulation system
+        /// </summary>
+        /// <param name="timer">The timer</param>
+        public static void SetupLimiter(ITimer timer)
+        {
+            SpeedLimiter = new SpeedLimiter(timer, emuSystem);
         }
         public static void SetupPalette()
         {

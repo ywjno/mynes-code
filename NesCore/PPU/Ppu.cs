@@ -21,11 +21,7 @@ namespace myNES.Core.PPU
         private int oam_address;
         private int[] colors;
         private int[][] screen;
-
-        bool suppressNmi;
-        bool suppressVbl;
-        bool oddSwap;
-        byte value2000;
+        private bool oddSwap;
 
         public Ppu(TimingInfo.System system)
             : base(system)
@@ -75,19 +71,10 @@ namespace myNES.Core.PPU
         private byte Peek____(int address) { return 0; }
         private byte Peek2002(int address)
         {
-            //Read 1 cycle before vblank should suppress setting flag
-            if (vclock == 240 & hclock == 340)
-            {
-                suppressVbl = true; suppressNmi = true;
-            }
-            //Read 1 cycle before/after vblank should suppress nmi
-            if ((vclock == 241 & hclock < 2))
-            {
-                suppressNmi = true;
-            }
             byte data = 0;
 
-            if (vbl) data |= 0x80;
+            if (vbl)
+                data |= 0x80;
 
             vbl = false;
             scroll.swap = false;
@@ -124,17 +111,6 @@ namespace myNES.Core.PPU
             spr.rasters = (data & 0x20) != 0 ? 0x0010 : 0x0008;
 
             nmi = (data & 0x80) != 0;
-
-            if (nmi && ((value2000 & 0x80) == 0) && vbl)
-                Nes.Cpu.requestNmi = true;
-
-            if ((vclock == 241 & hclock < 2) && !nmi)
-            {
-                Nes.Cpu.requestNmi = false;
-                Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
-            }
-
-            value2000 = data;
         }
         private void Poke2001(int address, byte data)
         {
@@ -326,56 +302,42 @@ namespace myNES.Core.PPU
             }
 
             hclock++;
-
-            //Nmi occur after 2 cycles of vblank
-            if (vclock == 241)
+            //odd frame
+            if (hclock == 339)
             {
-                if (hclock == 2)
+                if (vclock == 0)
                 {
-                    if (!suppressNmi)
+                    oddSwap = !oddSwap;
+
+                    if (!oddSwap & bkg.enabled)
                     {
-                        if (nmi)
-                            Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
-                    }
-                    else
-                    {
-                        suppressNmi = false;
+                        hclock++;
                     }
                 }
             }
+
             if (hclock == 341)
             {
                 hclock = 0;
                 vclock++;
 
-                if (vclock == 241)
+                if (vclock == 242)
                 {
-                    if (!suppressVbl)
-                        vbl = true;
-                    else
-                        suppressVbl = false;
-                }
+                    vbl = true;
 
+                    if (nmi)
+                        Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                }
                 if (vclock == 262)
                 {
                     vclock = 0;
                     vbl = false;
 
+                    Nes.SpeedLimiter.Update();
                     Nes.VideoDevice.RenderFrame(screen);
                 }
             }
-            //odd frame ?
-            if (vclock == -1 && hclock == 339)
-            {
 
-                oddSwap = !oddSwap;
-
-                if (!oddSwap & bkg.enabled)
-                {
-                    hclock++;
-                }
-
-            }
         }
 
         public void SetupPalette(int[] colors)
@@ -418,9 +380,9 @@ namespace myNES.Core.PPU
 
                     switch (addr & 0x3E0)
                     {
-                    case 0x3A0: addr ^= 0xBA0; break;
-                    case 0x3E0: addr ^= 0x3E0; break;
-                    default: addr += 0x20; break;
+                        case 0x3A0: addr ^= 0xBA0; break;
+                        case 0x3E0: addr ^= 0x3E0; break;
+                        default: addr += 0x20; break;
                     }
                 }
             }
