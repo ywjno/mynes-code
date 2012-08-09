@@ -47,7 +47,7 @@ namespace myNES
             {
                 Size CharSize = TextRenderer.MeasureText("TEST", this.Font);
 
-                return CharSize.Height * debugLines.Count;
+                return (CharSize.Height - 1) * debugLines.Count;
             }
         }
         public int CharHeight
@@ -99,6 +99,9 @@ namespace myNES
         public void WriteLine(string line, DebugCode status = DebugCode.None)
         {
             debugLines.Add(new DebugLine(line, status));
+            //limit lines to 1000 lines
+            if (debugLines.Count == 1000)
+                debugLines.RemoveAt(0);
 
             if (DebugLinesUpdated != null)
                 DebugLinesUpdated(this, EventArgs.Empty);
