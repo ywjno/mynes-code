@@ -5,13 +5,14 @@
         private PeekRegister[] peek;
         private PokeRegister[] poke;
         private int size;
+        private int mask;
 
         public int Length { get { return size; } }
 
         public byte this[int address]
         {
-            get { return peek[address](address); }
-            set { poke[address](address, value); }
+            get { return peek[address &= mask](address); }
+            set { poke[address &= mask](address, value); }
         }
 
         public Memory(int size)
@@ -19,7 +20,7 @@
             this.peek = new PeekRegister[size];
             this.poke = new PokeRegister[size];
             this.size = size;
-
+            this.mask = size - 1;
             this.Hook(0, size - 1,
                 delegate { return 0; },
                 delegate { });

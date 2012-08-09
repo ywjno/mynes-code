@@ -53,8 +53,12 @@
     <Compile Include="Boards\Discreet\UOROM.cs" />
     <Compile Include="Boards\Nintendo\NROM128.cs" />
     <Compile Include="Boards\Nintendo\NROM256.cs" />
+    <Compile Include="Controls\ControlsUnit.cs" />
+    <Compile Include="Controls\SpeedLimiter.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="Debug\DefaultCommands\OffCommand.cs" />
+    <Compile Include="IO\Input\IInputDevice.cs" />
+    <Compile Include="IO\Input\IJoypad.cs" />
     <Compile Include="PPU\NTSCPaletteGenerator.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="ROM\INESHeader.cs" />
@@ -83,7 +87,6 @@
   <ItemGroup>
     <Folder Include="Boards\Konami\" />
     <Folder Include="Boards\Sunsoft\" />
-    <Folder Include="IO\Input\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

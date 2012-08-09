@@ -623,7 +623,7 @@ namespace myNES.Core.CPU
 
             Peek(aa.Value);
 
-            if (aa.LoByte < x)
+            if (aa.LoByte < y)
                 aa.HiByte++;
         }
         private void AmImm_a()
@@ -647,7 +647,7 @@ namespace myNES.Core.CPU
         {
             byte addr = Peek(pc.Value++);
 
-            addr += x;
+            addr += x; 
 
             aa.LoByte = Peek(addr++);
             aa.HiByte = Peek(addr++);
