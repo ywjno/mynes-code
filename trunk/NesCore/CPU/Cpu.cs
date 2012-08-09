@@ -55,7 +55,7 @@ namespace myNES.Core.CPU
         }
         private byte Pull()
         {
-            sp.LoByte++;
+            sp.LoByte++; 
             return Peek(sp.Value);
         }
         private void Push(int data)
@@ -165,10 +165,27 @@ namespace myNES.Core.CPU
         }
         private void OpBvc_m() { Branch(!sr.v); }
         private void OpBvs_m() { Branch(sr.v); }
-        private void OpClc_i() { sr.c = false; }
-        private void OpCld_i() { sr.d = false; }
-        private void OpCli_i() { sr.i = false; }
-        private void OpClv_i() { sr.v = false; }
+        private void OpClc_i()
+        { 
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
+            sr.c = false;
+        }
+        private void OpCld_i()
+        {    //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
+            sr.d = false;
+        }
+        private void OpCli_i()
+        {    //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
+            sr.i = false;
+        }
+        private void OpClv_i()
+        {    //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
+            sr.v = false;
+        }
         private void OpCmp_m()
         {
             int data = a - Peek(aa.Value);
@@ -207,13 +224,17 @@ namespace myNES.Core.CPU
             sr.z = (data & 0xFF) == 0;
         }
         private void OpDex_i()
-        {
+        { 
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             x--;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpDey_i()
-        {
+        { 
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             y--;
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
@@ -238,25 +259,29 @@ namespace myNES.Core.CPU
             sr.z = (data & 0xFF) == 0;
         }
         private void OpInx_i()
-        {
+        { 
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             x++;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpIny_i()
-        {
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             y++;
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
         }
         private void OpJmp_m()
         {
-            Dispatch();
+            //Dispatch(); // no need for this since high byte already fetched
             pc.Value = aa.Value;
         }
         private void OpJsr_m()
         {
-            Dispatch();
+            //Dispatch();
             pc.Value--;
 
             Push(pc.HiByte);
@@ -308,7 +333,10 @@ namespace myNES.Core.CPU
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
-        private void OpNop_i() { }
+        private void OpNop_i()
+        {
+            Dispatch();
+        }
         private void OpOra_m()
         {
             a |= Peek(aa.Value);
@@ -316,22 +344,36 @@ namespace myNES.Core.CPU
             sr.z = (a & 0xFF) == 0;
         }
         private void OpPha_i()
-        {
+        { 
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
             Push(a);
         }
         private void OpPhp_i()
-        {
+        {   
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
             Push(sr | 0x10);
         }
         private void OpPla_i()
-        {
-            a = Pull();
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
+
+            sp.LoByte++;
+            Dispatch();
+            a = Peek(sp.Value);
+
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
         private void OpPlp_i()
         {
-            sr = Pull();
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
+            //sr = Pull();
+            sp.LoByte++; Dispatch();
+            sr = Peek(sp.Value);
         }
         private void OpRol_a()
         {
@@ -385,15 +427,28 @@ namespace myNES.Core.CPU
         }
         private void OpRti_i()
         {
-            sr = Pull();
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
+
+            sp.LoByte++;
+            Dispatch();
+            sr = Peek(sp.Value);
+
             pc.LoByte = Pull();
             pc.HiByte = Pull();
 
             irq = (!sr.i && (irqRequestFlags != 0));
         }
         private void OpRts_i()
-        {
-            pc.LoByte = Pull();
+        {   
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1);
+
+            sp.LoByte++;
+            Dispatch();
+            pc.LoByte = Peek(sp.Value);
+
+            //pc.LoByte = Pull();
             pc.HiByte = Pull();
 
             pc.Value++; Dispatch();
@@ -409,42 +464,69 @@ namespace myNES.Core.CPU
             sr.c = (temp >> 0x8) != 0;
             a = (byte)(temp);
         }
-        private void OpSec_i() { sr.c = true; }
-        private void OpSed_i() { sr.d = true; }
-        private void OpSei_i() { sr.i = true; }
+        private void OpSec_i()
+        {
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
+            sr.c = true;
+        }
+        private void OpSed_i()
+        {
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
+            sr.d = true;
+        }
+        private void OpSei_i()
+        {
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
+            sr.i = true;
+        }
         private void OpSta_m() { Poke(aa.Value, a); }
         private void OpStx_m() { Poke(aa.Value, x); }
         private void OpSty_m() { Poke(aa.Value, y); }
         private void OpTax_i()
-        {
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             x = a;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpTay_i()
-        {
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             y = a;
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
         }
         private void OpTsx_i()
-        {
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             x = sp.LoByte;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpTxa_i()
-        {
+        { 
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             a = x;
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
         private void OpTxs_i()
-        {
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             sp.LoByte = x;
         }
         private void OpTya_i()
-        {
+        {  
+            //read next instruction byte (and throw it away)
+            Peek(pc.Value + 1); 
             a = y;
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
@@ -630,7 +712,7 @@ namespace myNES.Core.CPU
         {
             aa.Value = pc.Value++;
         }
-        private void AmImp_a() { }
+        private void AmImp_a()  {}
         private void AmInd_a()
         {
             aa.LoByte = Peek(pc.Value++);
@@ -647,7 +729,7 @@ namespace myNES.Core.CPU
         {
             byte addr = Peek(pc.Value++);
 
-            addr += x; 
+            addr += x; Dispatch();
 
             aa.LoByte = Peek(addr++);
             aa.HiByte = Peek(addr++);
