@@ -73,6 +73,7 @@
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutMyNesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.emulationSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -436,7 +437,8 @@
             // debugToolStripMenuItem
             // 
             this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.consoleToolStripMenuItem});
+            this.consoleToolStripMenuItem,
+            this.emulationSpeedToolStripMenuItem});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
             this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.debugToolStripMenuItem.Text = "&Debug";
@@ -444,7 +446,7 @@
             // consoleToolStripMenuItem
             // 
             this.consoleToolStripMenuItem.Name = "consoleToolStripMenuItem";
-            this.consoleToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.consoleToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.consoleToolStripMenuItem.Text = "&Console";
             this.consoleToolStripMenuItem.Click += new System.EventHandler(this.consoleToolStripMenuItem_Click);
             // 
@@ -478,6 +480,13 @@
             this.aboutMyNesToolStripMenuItem.Text = "&About myNES";
             this.aboutMyNesToolStripMenuItem.Click += new System.EventHandler(this.aboutMyNesToolStripMenuItem_Click);
             // 
+            // emulationSpeedToolStripMenuItem
+            // 
+            this.emulationSpeedToolStripMenuItem.Name = "emulationSpeedToolStripMenuItem";
+            this.emulationSpeedToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.emulationSpeedToolStripMenuItem.Text = "&Emulation Speed";
+            this.emulationSpeedToolStripMenuItem.Click += new System.EventHandler(this.emulationSpeedToolStripMenuItem_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -491,6 +500,7 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "myNES v5";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -545,6 +555,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripMenuItem emulationSpeedToolStripMenuItem;
     }
 }
 
