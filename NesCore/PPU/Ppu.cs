@@ -10,8 +10,6 @@ namespace myNES.Core.PPU
         private Sprite[] buffer = new Sprite[8];
         private Unit bkg = new Unit(272);
         private Unit spr = new Unit(256);
-        private bool nmi;
-        private bool vbl;
         private byte chr;
         private byte[] oam = new byte[256];
         private int clipping;
@@ -22,6 +20,12 @@ namespace myNES.Core.PPU
         private int[] colors;
         private int[][] screen;
         private bool oddSwap;
+        //nmi and vbl
+        private bool nmi;
+        private bool vbl;
+        private bool suppressVbl;
+        private bool suppressNmi;
+        private byte value2000;
 
         public Ppu(TimingInfo.System system)
             : base(system)
@@ -71,6 +75,16 @@ namespace myNES.Core.PPU
         private byte Peek____(int address) { return 0; }
         private byte Peek2002(int address)
         {
+            //Read 1 cycle before vblank should suppress setting flag
+            if (vclock == 241 & hclock == 340)
+            {
+                suppressVbl = true; suppressNmi = true;
+            }
+            //Read 1 cycle before/after vblank should suppress nmi
+            if ((vclock == 242 & hclock < 2))
+            {
+                suppressNmi = true;
+            }
             byte data = 0;
 
             if (vbl)
@@ -111,6 +125,15 @@ namespace myNES.Core.PPU
             spr.rasters = (data & 0x20) != 0 ? 0x0010 : 0x0008;
 
             nmi = (data & 0x80) != 0;
+
+            if (nmi && ((value2000 & 0x80) == 0) && vbl)
+                Nes.Cpu.requestNmi = true;
+            if ((vclock == 242 & hclock < 2) && !nmi)
+            {
+                Nes.Cpu.requestNmi = false;
+                Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
+            }
+            value2000 = data;
         }
         private void Poke2001(int address, byte data)
         {
@@ -302,6 +325,22 @@ namespace myNES.Core.PPU
             }
 
             hclock++;
+            //Nmi occur after 2 cycles of vblank
+            if (hclock == 2)
+            {
+                if (vclock == 242)
+                {
+                    if (!suppressNmi)
+                    {
+                        if (nmi)
+                            Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                    }
+                    else
+                    {
+                        suppressNmi = false;
+                    }
+                }
+            }
             //odd frame
             if (hclock == 339)
             {
@@ -323,10 +362,10 @@ namespace myNES.Core.PPU
 
                 if (vclock == 242)
                 {
-                    vbl = true;
-
-                    if (nmi)
-                        Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                    if (!suppressVbl)
+                        vbl = true;
+                    else
+                        suppressVbl = false;
                 }
                 if (vclock == 262)
                 {
