@@ -15,6 +15,16 @@ namespace myNES
         public FormSpeed()
         {
             InitializeComponent();
+            if (Nes.SpeedLimiter.ON)
+            {
+                button2.Text = "ON";
+                button2.FlatStyle = FlatStyle.Popup;
+            }
+            else
+            {
+                button2.Text = "OFF";
+                button2.FlatStyle = FlatStyle.Standard;
+            }
         }
         double min = 1000;
         double max = 0;
@@ -31,6 +41,21 @@ namespace myNES
                     max = fps;
                 textBox_fpsCanMake.Text = fps.ToString();
                 label_min_max.Text = "Min= " + min.ToString() + "\nMax= " + max.ToString();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Nes.SpeedLimiter.ON = !Nes.SpeedLimiter.ON;
+            if (Nes.SpeedLimiter.ON)
+            {
+                button2.Text = "ON";
+                button2.FlatStyle = FlatStyle.Popup;
+            }
+            else
+            {
+                button2.Text = "OFF";
+                button2.FlatStyle = FlatStyle.Standard;
             }
         }
     }

@@ -293,5 +293,10 @@ namespace myNES.Forms
             speedForm = null;
             emulationSpeedToolStripMenuItem.Checked = false;
         }
+
+        private void softResetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Nes.SoftReset();
+        }
     }
 }

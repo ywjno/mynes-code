@@ -193,6 +193,14 @@ namespace myNES.Core
                 Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
             }
         }
+        public static void SoftReset()
+        {
+            if (ON)
+            {
+                Cpu.SoftReset();
+                Console.WriteLine("SOFT RESET", DebugCode.Warning);
+            }
+        }
 
         /// <summary>
         /// Setup output devices

@@ -69,11 +69,14 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.emulationSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutMyNesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.emulationSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.softResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hardResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -399,7 +402,10 @@
             this.emulationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resumeToolStripMenuItem,
             this.haltToolStripMenuItem,
-            this.stopToolStripMenuItem});
+            this.stopToolStripMenuItem,
+            this.toolStripSeparator7,
+            this.softResetToolStripMenuItem,
+            this.hardResetToolStripMenuItem});
             this.emulationToolStripMenuItem.Name = "emulationToolStripMenuItem";
             this.emulationToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.emulationToolStripMenuItem.Text = "&Emulation";
@@ -408,7 +414,7 @@
             // 
             this.resumeToolStripMenuItem.Name = "resumeToolStripMenuItem";
             this.resumeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.resumeToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.resumeToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.resumeToolStripMenuItem.Text = "&Resume";
             this.resumeToolStripMenuItem.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
@@ -416,7 +422,7 @@
             // 
             this.haltToolStripMenuItem.Name = "haltToolStripMenuItem";
             this.haltToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.haltToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.haltToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.haltToolStripMenuItem.Text = "&Halt";
             this.haltToolStripMenuItem.Click += new System.EventHandler(this.buttonHalt_Click);
             // 
@@ -424,7 +430,7 @@
             // 
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
             this.stopToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.stopToolStripMenuItem.Text = "&Stop";
             this.stopToolStripMenuItem.Click += new System.EventHandler(this.buttonStop_Click);
             // 
@@ -449,6 +455,13 @@
             this.consoleToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.consoleToolStripMenuItem.Text = "&Console";
             this.consoleToolStripMenuItem.Click += new System.EventHandler(this.consoleToolStripMenuItem_Click);
+            // 
+            // emulationSpeedToolStripMenuItem
+            // 
+            this.emulationSpeedToolStripMenuItem.Name = "emulationSpeedToolStripMenuItem";
+            this.emulationSpeedToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.emulationSpeedToolStripMenuItem.Text = "&Emulation Speed";
+            this.emulationSpeedToolStripMenuItem.Click += new System.EventHandler(this.emulationSpeedToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -480,12 +493,25 @@
             this.aboutMyNesToolStripMenuItem.Text = "&About myNES";
             this.aboutMyNesToolStripMenuItem.Click += new System.EventHandler(this.aboutMyNesToolStripMenuItem_Click);
             // 
-            // emulationSpeedToolStripMenuItem
+            // toolStripSeparator7
             // 
-            this.emulationSpeedToolStripMenuItem.Name = "emulationSpeedToolStripMenuItem";
-            this.emulationSpeedToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.emulationSpeedToolStripMenuItem.Text = "&Emulation Speed";
-            this.emulationSpeedToolStripMenuItem.Click += new System.EventHandler(this.emulationSpeedToolStripMenuItem_Click);
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(164, 6);
+            // 
+            // softResetToolStripMenuItem
+            // 
+            this.softResetToolStripMenuItem.Name = "softResetToolStripMenuItem";
+            this.softResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.softResetToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.softResetToolStripMenuItem.Text = "So&ft reset";
+            this.softResetToolStripMenuItem.Click += new System.EventHandler(this.softResetToolStripMenuItem_Click);
+            // 
+            // hardResetToolStripMenuItem
+            // 
+            this.hardResetToolStripMenuItem.Name = "hardResetToolStripMenuItem";
+            this.hardResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.H)));
+            this.hardResetToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.hardResetToolStripMenuItem.Text = "Ha&rd reset";
             // 
             // FormMain
             // 
@@ -556,6 +582,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripMenuItem emulationSpeedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem softResetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hardResetToolStripMenuItem;
     }
 }
 
