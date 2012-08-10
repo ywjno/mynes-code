@@ -49,7 +49,7 @@ namespace myNES.Core.CPU
         {
             if (Nes.ON)
             {
-                Nes.Apu.Update();
+                Nes.Apu.Update(timing.single);
                 Nes.Ppu.Update(timing.single);
             }
         }
@@ -120,7 +120,6 @@ namespace myNES.Core.CPU
             sr.c = (a & 0x80) != 0;
 
             a <<= 1;
-            Dispatch();
 
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
@@ -141,8 +140,7 @@ namespace myNES.Core.CPU
         private void OpBpl_m() { Branch(!sr.n); }
         private void OpBrk_m()
         {
-            Dispatch();
-            pc.Value++;
+            Peek(pc.Value);
 
             Push(pc.HiByte);
             Push(pc.LoByte);
@@ -167,23 +165,18 @@ namespace myNES.Core.CPU
         private void OpBvs_m() { Branch(sr.v); }
         private void OpClc_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             sr.c = false;
         }
         private void OpCld_i()
-        {    //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
+        {
             sr.d = false;
         }
         private void OpCli_i()
-        {    //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
+        {
             sr.i = false;
         }
         private void OpClv_i()
-        {    //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
+        {
             sr.v = false;
         }
         private void OpCmp_m()
@@ -225,16 +218,12 @@ namespace myNES.Core.CPU
         }
         private void OpDex_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             x--;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpDey_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             y--;
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
@@ -260,16 +249,12 @@ namespace myNES.Core.CPU
         }
         private void OpInx_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             x++;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpIny_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             y++;
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
@@ -327,16 +312,12 @@ namespace myNES.Core.CPU
         {
             sr.c = (a & 0x01) != 0;
 
-            Peek(pc.Value);
             a >>= 1;
 
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
-        private void OpNop_i()
-        {
-            Dispatch();
-        }
+        private void OpNop_i() { }
         private void OpOra_m()
         {
             a |= Peek(aa.Value);
@@ -345,21 +326,14 @@ namespace myNES.Core.CPU
         }
         private void OpPha_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             Push(a);
         }
         private void OpPhp_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             Push(sr | 0x10);
         }
         private void OpPla_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
-
             sp.LoByte++;
             Dispatch();
             a = Peek(sp.Value);
@@ -369,8 +343,6 @@ namespace myNES.Core.CPU
         }
         private void OpPlp_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             //sr = Pull();
             sp.LoByte++; Dispatch();
             sr = Peek(sp.Value);
@@ -383,7 +355,6 @@ namespace myNES.Core.CPU
             sr.z = (temp & 0xFF) == 0;
             sr.c = (a & 0x80) != 0;
 
-            Peek(pc.Value);
             a = temp;
         }
         private void OpRol_m()
@@ -408,7 +379,6 @@ namespace myNES.Core.CPU
             sr.z = (temp & 0xFF) == 0;
             sr.c = (a & 0x01) != 0;
 
-            Peek(pc.Value);
             a = temp;
         }
         private void OpRor_m()
@@ -427,9 +397,6 @@ namespace myNES.Core.CPU
         }
         private void OpRti_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
-
             sp.LoByte++;
             Dispatch();
             sr = Peek(sp.Value);
@@ -441,9 +408,6 @@ namespace myNES.Core.CPU
         }
         private void OpRts_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
-
             sp.LoByte++;
             Dispatch();
             pc.LoByte = Peek(sp.Value);
@@ -466,20 +430,14 @@ namespace myNES.Core.CPU
         }
         private void OpSec_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             sr.c = true;
         }
         private void OpSed_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             sr.d = true;
         }
         private void OpSei_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             sr.i = true;
         }
         private void OpSta_m() { Poke(aa.Value, a); }
@@ -487,46 +445,34 @@ namespace myNES.Core.CPU
         private void OpSty_m() { Poke(aa.Value, y); }
         private void OpTax_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             x = a;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpTay_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             y = a;
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
         }
         private void OpTsx_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             x = sp.LoByte;
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpTxa_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             a = x;
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
         private void OpTxs_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             sp.LoByte = x;
         }
         private void OpTya_i()
         {
-            //read next instruction byte (and throw it away)
-            Peek(pc.Value + 1);
             a = y;
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
@@ -712,7 +658,10 @@ namespace myNES.Core.CPU
         {
             aa.Value = pc.Value++;
         }
-        private void AmImp_a() { }
+        private void AmImp_a()
+        {
+            Peek(pc.Value);
+        }
         private void AmInd_a()
         {
             aa.LoByte = Peek(pc.Value++);
@@ -807,7 +756,7 @@ namespace myNES.Core.CPU
             modes = new Action[256]
             {
                 // 0     1        2        3        4        5        6        7        8        9        A        B        C        D        E        F
-                AmImp_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 0
+                AmImm_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 0
                 AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // 1
                 AmAbs_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 2
                 AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // 3

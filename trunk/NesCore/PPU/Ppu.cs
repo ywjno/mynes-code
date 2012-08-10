@@ -244,7 +244,13 @@ namespace myNES.Core.PPU
                             case 0: FetchName_0(); break;
                             case 1: FetchName_1(); break;
                             case 2: FetchAttr_0(); break;
-                            case 3: FetchAttr_1(); scroll.ClockX(); break;
+                            case 3: FetchAttr_1();
+
+                                if (hclock == 251)
+                                    scroll.ClockY();
+                                else
+                                    scroll.ClockX();
+                                break;
                             case 4: FetchBit0_0(); break;
                             case 5: FetchBit0_1(); break;
                             case 6: FetchBit1_0(); break;
@@ -259,10 +265,7 @@ namespace myNES.Core.PPU
                     else if (hclock < 320)
                     {
                         if (hclock == 256)
-                        {
-                            scroll.ClockY();
                             scroll.ResetX();
-                        }
 
                         if (hclock == 304 && vclock == 261)
                             scroll.addr = scroll.temp;
@@ -462,8 +465,8 @@ namespace myNES.Core.PPU
 
             public int GetPixel(int hclock, int offset = 0)
             {
-                //if (!enabled || (clipped && hclock < 8))
-                //    return 0;
+                if (!enabled || (clipped && hclock < 8))
+                    return 0;
 
                 return pixels[hclock + offset];
             }

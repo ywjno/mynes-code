@@ -20,7 +20,7 @@ namespace myNES
         {
             InitializeComponent();
             InitializeRendrers();
-            base.ClientSize = new Size(256,240);
+            base.ClientSize = new Size(512, 448);
             Nes.EmuShutdown += new EventHandler(Nes_EmuShutdown);     
         }
 
@@ -31,7 +31,7 @@ namespace myNES
         void InitializeRendrers()
         {
             videoDevice = new VideoD3D(TimingInfo.NTSC, this);
-            videoDevice.InitializeDirect3D();
+            videoDevice.Initialize();
 
             audioDevice = new AudioDSD(this.Handle);
             // TODO: settings for input
@@ -48,7 +48,7 @@ namespace myNES
             joy1.Start.Input = "Keyboard.V";
 
             Nes.SetupOutput(TimingInfo.NTSC, videoDevice, audioDevice);
-            Nes.SetupLimiter(new TIMER());
+            Nes.SetupLimiter(new Timer());
             Nes.SetupInput(inputManager, joy1, joy2);
             Nes.SetupPalette();
         }
