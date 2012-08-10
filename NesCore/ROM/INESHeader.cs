@@ -15,6 +15,7 @@ namespace myNES.Core.ROM
         public bool HasTrainer;
         public bool HasSaveRam;
         public bool IsPalb;
+        public bool IsVram;
         public bool IsVSUnisystem;
         public bool IsPlaychoice10;
         public int Mirroring;
@@ -43,6 +44,8 @@ namespace myNES.Core.ROM
             PrgPages = header[4];
             ChrPages = header[5];
 
+            IsVram = ChrPages == 0;
+
             switch (header[6] & 0x9)
             {
                 case 0x0: this.Mirroring = Types.Mirroring.ModeHorz; break;
@@ -54,10 +57,10 @@ namespace myNES.Core.ROM
             HasSaveRam = (header[6] & 0x2) != 0x0;
             HasTrainer = (header[6] & 0x4) != 0x0;
 
-            if ((header[7] & 0x0F) == 0)
+           // if ((header[7] & 0x0F) == 0)
                 Mapper |= (byte)((header[7] & 0xF0) | (header[6] >> 4));
-            else
-                throw new Exception("Header is corrupted, please use the header cleaner tool");
+           // else
+           //     throw new Exception("Header is corrupted, please use the header cleaner tool");
 
             IsVSUnisystem = (header[7] & 0x01) != 0;
             IsPlaychoice10 = (header[7] & 0x02) != 0;
