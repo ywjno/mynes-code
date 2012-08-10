@@ -27,9 +27,11 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -57,6 +59,7 @@
     <Compile Include="Controls\SpeedLimiter.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="Debug\DefaultCommands\OffCommand.cs" />
+    <Compile Include="Debug\DefaultCommands\SoftResetCommand.cs" />
     <Compile Include="IO\Input\IInputDevice.cs" />
     <Compile Include="IO\Input\IJoypad.cs" />
     <Compile Include="PPU\NTSCPaletteGenerator.cs" />

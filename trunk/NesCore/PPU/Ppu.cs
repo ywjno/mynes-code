@@ -320,7 +320,16 @@ namespace myNES.Core.PPU
                 }
                 else
                 {
-                    // Rendering is off
+                    // Rendering is off, draw color at vram address if it in range 0x3F00 - 0x3FFF
+                    if (hclock < 255 & vclock >= 0 & vclock < 240)
+                    {
+                        int pixel = 0;//this will clear the previous line
+                        if ((scroll.addr & 0x3F00) == 0x3F00)
+                            pixel = colors[Nes.PpuMemory[scroll.addr & 0x3FFF] & clipping | emphasis];
+                        else
+                            pixel = colors[Nes.PpuMemory[0x3F00] & clipping | emphasis];
+                        screen[vclock][hclock] = pixel;
+                    }
                 }
             }
 
