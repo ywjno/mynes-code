@@ -18,7 +18,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SevenZipSharp">
-      <HintPath>..\..\libraries\SevenZipSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\SevenZipSharp.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -128,7 +128,7 @@
     <Compile Include="Renderers\SlimDX\RendererFormSlimDX.Designer.cs">
       <DependentUpon>RendererFormSlimDX.cs</DependentUpon>
     </Compile>
-    <Compile Include="Renderers\SlimDX\TIMER.cs" />
+    <Compile Include="Renderers\SlimDX\Timer.cs" />
     <Compile Include="Renderers\SlimDX\VideoD3D.cs" />
     <Compile Include="Renderers\SupportedRenderers.cs" />
     <EmbeddedResource Include="Debug\Controls\con_Memory.resx">
