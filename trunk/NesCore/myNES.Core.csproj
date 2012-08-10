@@ -53,6 +53,7 @@
     <Compile Include="Boards\INESBoardManager.cs" />
     <Compile Include="Boards\Discreet\UNROM.cs" />
     <Compile Include="Boards\Discreet\UOROM.cs" />
+    <Compile Include="Boards\Nintendo\MMC1.cs" />
     <Compile Include="Boards\Nintendo\NROM128.cs" />
     <Compile Include="Boards\Nintendo\NROM256.cs" />
     <Compile Include="Controls\ControlsUnit.cs" />

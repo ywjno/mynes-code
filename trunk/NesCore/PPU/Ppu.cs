@@ -324,7 +324,7 @@ namespace myNES.Core.PPU
                 else
                 {
                     // Rendering is off, draw color at vram address if it in range 0x3F00 - 0x3FFF
-                    if (hclock < 255 & vclock >= 0 & vclock < 240)
+                    if (hclock < 255 & vclock < 240)
                     {
                         int pixel = 0;//this will clear the previous line
                         if ((scroll.addr & 0x3F00) == 0x3F00)
