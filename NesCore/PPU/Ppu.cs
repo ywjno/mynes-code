@@ -202,7 +202,7 @@ namespace myNES.Core.PPU
         {
             var pos = (hclock + 9) % 336;
 
-            for (int i = 0; i < 8 && pos < 256; i++, pos++, fetch.bit0 <<= 1, fetch.bit1 <<= 1)
+            for (int i = 0; i < 8 && pos < 272; i++, pos++, fetch.bit0 <<= 1, fetch.bit1 <<= 1)
                 bkg.pixels[pos] = (fetch.attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
         }
         private void SynthesizeSprPixels()
