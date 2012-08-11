@@ -186,7 +186,7 @@ namespace myNES.Core
                 PpuMemory.Shutdown();
                 ControlsUnit.Shutdown();
                 VideoDevice.Shutdown();
-                AudioDevice.Shutdown();
+                AudioDevice.Dispose();
 
                 if (EmuShutdown != null)
                     EmuShutdown(null, null);
