@@ -3,24 +3,23 @@
 namespace myNES.Core.PPU
 {
     // Emulates the RP2C02/RP2C07 graphics synthesizer
-    public class Ppu : ProcessorBase
+    public partial class Ppu : ProcessorBase
     {
         private Fetch fetch = new Fetch();
+        private Oam oam = new Oam();
         private Scroll scroll = new Scroll();
-        private Sprite[] buffer = new Sprite[8];
         private Unit bkg = new Unit(272);
         private Unit spr = new Unit(256);
+        private bool oddSwap;
+        private bool spr0Hit;
+        private bool sprFlow;
         private byte chr;
-        private byte[] oam = new byte[256];
         private int clipping;
         private int emphasis;
         private int hclock;
         private int vclock;
-        private int oam_address;
         private int[] colors;
         private int[][] screen;
-        private bool oddSwap;
-        private bool spr0Hit;
         //nmi and vbl
         private bool nmi;
         private bool vbl;
@@ -38,37 +37,39 @@ namespace myNES.Core.PPU
 
             for (int i = 0; i < 240; i++)
                 screen[i] = new int[256];
+
+            EvaluateReset();
         }
 
-        private void FetchName_0()
+        private void FetchBkgName_0()
         {
             fetch.addr = 0x2000 | (scroll.addr & 0xFFF);
         }
-        private void FetchName_1()
+        private void FetchBkgName_1()
         {
             fetch.name = Nes.PpuMemory[fetch.addr];
         }
-        private void FetchAttr_0()
+        private void FetchBkgAttr_0()
         {
             fetch.addr = 0x23C0 | (scroll.addr & 0xC00) | (scroll.addr >> 4 & 0x38) | (scroll.addr >> 2 & 0x7);
         }
-        private void FetchAttr_1()
+        private void FetchBkgAttr_1()
         {
             fetch.attr = Nes.PpuMemory[fetch.addr] >> ((scroll.addr >> 4 & 0x04) | (scroll.addr & 0x02));
         }
-        private void FetchBit0_0()
+        private void FetchBkgBit0_0()
         {
             fetch.addr = bkg.address | (fetch.name << 4) | 0 | (scroll.addr >> 12 & 7);
         }
-        private void FetchBit0_1()
+        private void FetchBkgBit0_1()
         {
             fetch.bit0 = Nes.PpuMemory[fetch.addr];
         }
-        private void FetchBit1_0()
+        private void FetchBkgBit1_0()
         {
             fetch.addr = bkg.address | (fetch.name << 4) | 8 | (scroll.addr >> 12 & 7);
         }
-        private void FetchBit1_1()
+        private void FetchBkgBit1_1()
         {
             fetch.bit1 = Nes.PpuMemory[fetch.addr];
         }
@@ -88,17 +89,16 @@ namespace myNES.Core.PPU
             }
             byte data = 0;
 
-            if (vbl)
-                data |= 0x80;
-            if (spr0Hit)
-                data |= 0x40;
+            if (vbl) data |= 0x80;
+            if (spr0Hit) data |= 0x40;
+            if (sprFlow) data |= 0x20;
 
             vbl = false;
             scroll.swap = false;
 
             return data;
         }
-        private byte Peek2004(int address) { return oam[oam_address]; }
+        private byte Peek2004(int address) { return oam.Memory[oam.MemoryAddr]; }
         private byte Peek2007(int address)
         {
             byte tmp;
@@ -125,7 +125,7 @@ namespace myNES.Core.PPU
             scroll.step = (data & 0x04) != 0 ? 0x0020 : 0x0001;
             spr.address = (data & 0x08) != 0 ? 0x1000 : 0x0000;
             bkg.address = (data & 0x10) != 0 ? 0x1000 : 0x0000;
-            spr.rasters = (data & 0x20) != 0 ? 0x0010 : 0x0008;
+            oam.rasters = (data & 0x20) != 0 ? 0x0010 : 0x0008;
 
             nmi = (data & 0x80) != 0;
 
@@ -150,12 +150,12 @@ namespace myNES.Core.PPU
         }
         private void Poke2003(int address, byte data)
         {
-            oam_address = data;
+            oam.MemoryAddr = data;
         }
         private void Poke2004(int address, byte data)
         {
-            oam[oam_address] = data;
-            oam_address = ++oam_address & 0xFF;
+            oam.Memory[oam.MemoryAddr] = data;
+            oam.MemoryAddr = ++oam.MemoryAddr & 0xFF;
         }
         private void Poke2005(int address, byte data)
         {
@@ -192,9 +192,26 @@ namespace myNES.Core.PPU
         {
             var bkgPixel = 0x3F00 | bkg.GetPixel(hclock, scroll.fine);
             var sprPixel = 0x3F10 | spr.GetPixel(hclock);
+            int pixel;
 
-            // todo: handle priority and sprite-zero hit
-            var pixel = bkgPixel;
+            if ((bkgPixel & 0x03) == 0)
+            {
+                pixel = sprPixel & 0x3F1F;
+            }
+            else if ((sprPixel & 0x03) == 0)
+            {
+                pixel = bkgPixel;
+            }
+            else
+            {
+                if ((sprPixel & 0x8000) != 0)
+                    pixel = bkgPixel;
+                else
+                    pixel = sprPixel & 0x3F1F;
+
+                if ((sprPixel & 0x4000) != 0 && hclock < 0xFF)
+                    spr0Hit = true;
+            }
 
             screen[vclock][hclock] = colors[Nes.PpuMemory[pixel]];
         }
@@ -207,10 +224,16 @@ namespace myNES.Core.PPU
         }
         private void SynthesizeSprPixels()
         {
-            int pos = buffer[hclock >> 3 & 7].x;
+            var obj = oam.output[hclock >> 3 & 7];
+            int pos = obj.XPos;
 
             for (int i = 0; i < 8 && pos < 256; i++, pos++, fetch.bit0 <<= 1, fetch.bit1 <<= 1)
-                spr.pixels[pos] = (fetch.attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
+            {
+                var color = (obj.Attr << 10 & 0xC000) | (obj.Attr << 2 & 12) | (fetch.bit0 >> 7 & 1) | (fetch.bit1 >> 6 & 2);
+
+                if ((spr.pixels[pos] & 0x03) == 0 && (color & 0x03) != 0)
+                    spr.pixels[pos] = color;
+            }
         }
 
         public override void Initialize()
@@ -244,23 +267,29 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 7)
                         {
-                            case 0: FetchName_0(); break;
-                            case 1: FetchName_1(); break;
-                            case 2: FetchAttr_0(); break;
-                            case 3: FetchAttr_1();
+                        case 0: FetchBkgName_0(); EvaluateStep0(); break;
+                        case 1: FetchBkgName_1(); EvaluateStep1(); break;
+                        case 2: FetchBkgAttr_0(); EvaluateStep0(); break;
+                        case 3: FetchBkgAttr_1(); EvaluateStep1();
 
-                                if (hclock == 251)
-                                    scroll.ClockY();
-                                else
-                                    scroll.ClockX();
-                                break;
-                            case 4: FetchBit0_0(); break;
-                            case 5: FetchBit0_1(); break;
-                            case 6: FetchBit1_0(); break;
-                            case 7: FetchBit1_1(); SynthesizeBkgPixels(); break;
+                            if (hclock == 251)
+                                scroll.ClockY();
+                            else
+                                scroll.ClockX();
+                            break;
+                        case 4: FetchBkgBit0_0(); EvaluateStep0(); break;
+                        case 5: FetchBkgBit0_1(); EvaluateStep1(); break;
+                        case 6: FetchBkgBit1_0(); EvaluateStep0(); break;
+                        case 7: FetchBkgBit1_1(); EvaluateStep1(); SynthesizeBkgPixels(); break;
                         }
 
                         #endregion
+
+                        if (hclock == 63)
+                            EvaluateBegin();
+
+                        if (hclock == 255)
+                            EvaluateReset();
 
                         if (vclock < 240)
                             RenderPixel();
@@ -277,14 +306,14 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 7)
                         {
-                            case 0: FetchName_0(); break;
-                            case 1: FetchName_1(); break;
-                            case 2: FetchAttr_0(); break;
-                            case 3: FetchAttr_1(); break;
-                            case 4: /*   Bit0   */ break;
-                            case 5: /*   Bit0   */ break;
-                            case 6: /*   Bit1   */ break;
-                            case 7: /*   Bit1   */ SynthesizeSprPixels(); break;
+                        case 0: FetchBkgName_0(); break;
+                        case 1: FetchBkgName_1(); break;
+                        case 2: FetchBkgAttr_0(); break;
+                        case 3: FetchBkgAttr_1(); break;
+                        case 4: FetchSprBit0_0(); break;
+                        case 5: FetchSprBit0_1(); break;
+                        case 6: FetchSprBit1_0(); break;
+                        case 7: FetchSprBit1_1(); SynthesizeSprPixels(); break;
                         }
 
                         #endregion
@@ -295,14 +324,14 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 7)
                         {
-                            case 0: FetchName_0(); break;
-                            case 1: FetchName_1(); break;
-                            case 2: FetchAttr_0(); break;
-                            case 3: FetchAttr_1(); scroll.ClockX(); break;
-                            case 4: FetchBit0_0(); break;
-                            case 5: FetchBit0_1(); break;
-                            case 6: FetchBit1_0(); break;
-                            case 7: FetchBit1_1(); SynthesizeBkgPixels(); break;
+                        case 0: FetchBkgName_0(); break;
+                        case 1: FetchBkgName_1(); break;
+                        case 2: FetchBkgAttr_0(); break;
+                        case 3: FetchBkgAttr_1(); scroll.ClockX(); break;
+                        case 4: FetchBkgBit0_0(); break;
+                        case 5: FetchBkgBit0_1(); break;
+                        case 6: FetchBkgBit1_0(); break;
+                        case 7: FetchBkgBit1_1(); SynthesizeBkgPixels(); break;
                         }
 
                         #endregion
@@ -313,8 +342,8 @@ namespace myNES.Core.PPU
 
                         switch (hclock & 1)
                         {
-                            case 0: FetchName_0(); break;
-                            case 1: FetchName_1(); break;
+                        case 0: FetchBkgName_0(); break;
+                        case 1: FetchBkgName_1(); break;
                         }
 
                         #endregion
@@ -387,6 +416,7 @@ namespace myNES.Core.PPU
                     vclock = 0;
                     vbl = false;
                     spr0Hit = false;
+                    sprFlow = false;
 
                     Nes.SpeedLimiter.Update();
                     Nes.VideoDevice.RenderFrame(screen);
@@ -446,20 +476,11 @@ namespace myNES.Core.PPU
                 addr = (addr & ~0x41F) | (temp & 0x41F);
             }
         }
-
-        public struct Sprite
-        {
-            public byte y;
-            public byte name;
-            public byte attr;
-            public byte x;
-        }
         public class Unit
         {
             public bool clipped;
             public bool enabled;
             public int address;
-            public int rasters = 8;
             public int[] pixels;
 
             public Unit(int capacity)
