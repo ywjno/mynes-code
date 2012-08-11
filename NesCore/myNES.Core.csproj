@@ -64,6 +64,7 @@
     <Compile Include="IO\Input\IInputDevice.cs" />
     <Compile Include="IO\Input\IJoypad.cs" />
     <Compile Include="PPU\NTSCPaletteGenerator.cs" />
+    <Compile Include="PPU\Ppu.Spr.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="ROM\INESHeader.cs" />
     <Compile Include="TimingInfo.cs" />
