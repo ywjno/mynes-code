@@ -1,151 +1,124 @@
 ﻿using System;
-using System.Windows.Forms;
 using myNES.Core.IO.Output;
-using myNES.Core;
 using SlimDX.DirectSound;
 using SlimDX.Multimedia;
-using Console = myNES.Core.Console;
+using myNES.Core;
+
 namespace myNES
 {
     public class AudioDSD : IAudioDevice
     {
+        private DirectSound device;
+        private SecondarySoundBuffer buffer;
+        private IntPtr handle;
+        private bool firstRender;
+        private bool isPaused;
+        private int currWritePos;
+        private int lastWritePos;
+        private int renderPos;
+        private int sampleGetPos;
+        private int sampleSetPos;
+        private short[] renderBuffer;
+        private short[] sampleBuffer;
+
         public AudioDSD(IntPtr handle)
         {
-            _Handle = handle;
-        }
-        IntPtr _Handle;
-        public Control _Control;
-        //slimdx
-        public DirectSound _SoundDevice;
-        public SecondarySoundBuffer buffer;
+            this.firstRender = true;
+            this.handle = handle;
+            this.device = new DirectSound();
+            this.device.SetCooperativeLevel(this.handle, CooperativeLevel.Normal);
 
-        bool IsPaused;
-        public bool IsRendering = false;
-        bool _FirstRender = true;
-        public byte[] DATA = new byte[44100];
-        int BufferSize = 44100;
-        int W_Pos = 0;//Write position
-        int L_Pos = 0;//Last position
-        int D_Pos = 0;//Data position
+            var wave = new WaveFormat();
+            wave.FormatTag = WaveFormatTag.Pcm;
+            wave.SamplesPerSecond = 44100;
+            wave.Channels = 1;
+            wave.BitsPerSample = sizeof(short) * 8;
+            wave.AverageBytesPerSecond = (wave.Channels * (wave.BitsPerSample / 8) * wave.SamplesPerSecond);
+            wave.BlockAlignment = (short)(wave.Channels * (wave.BitsPerSample / 8));
 
-        public void Initialize(IntPtr handle)
-        {
-            _Handle = handle;
-            //Create the device
-            Console.WriteLine("Initializing SlimDX DirectSound for APU....");
-            _SoundDevice = new DirectSound();
-            _SoundDevice.SetCooperativeLevel(_Handle, CooperativeLevel.Normal);
-            //Create the wav format
-            WaveFormat wav = new WaveFormat();
-            wav.FormatTag = WaveFormatTag.Pcm;
-            wav.SamplesPerSecond = 44100;
-            wav.Channels = 1;
-            wav.BitsPerSample = 16;
-            wav.AverageBytesPerSecond = wav.SamplesPerSecond * wav.Channels * (wav.BitsPerSample / 8);
-            wav.BlockAlignment = (short)(wav.Channels * wav.BitsPerSample / 8);
-            BufferSize = wav.AverageBytesPerSecond;
-            //Description
-            SoundBufferDescription des = new SoundBufferDescription();
-            des.Format = wav;
-            des.SizeInBytes = BufferSize;
-            des.Flags = BufferFlags.ControlVolume | BufferFlags.ControlFrequency | BufferFlags.ControlPan |
-                BufferFlags.Software;
-            //buffer
-            DATA = new byte[BufferSize];
-            buffer = new SecondarySoundBuffer(_SoundDevice, des);
+            renderBuffer = new short[wave.SamplesPerSecond];
+            sampleBuffer = new short[wave.SamplesPerSecond];
+
+            buffer = new SecondarySoundBuffer(device, new SoundBufferDescription
+            {
+                Format = wave,
+                SizeInBytes = wave.AverageBytesPerSecond,
+                Flags = BufferFlags.ControlVolume | BufferFlags.ControlPan
+            });
             buffer.Play(0, PlayFlags.Looping);
-            Console.WriteLine("SlimDX DirectSound initialized OK.");
-        }
-        public void UpdateBuffer()//old way
-        {
-            if (buffer == null | buffer.Disposed)
-            { IsRendering = false; return; }
-            W_Pos = buffer.CurrentWritePosition;
-            if (_FirstRender)
-            {
-                _FirstRender = false;
-                D_Pos = buffer.CurrentWritePosition + 0x1000;
-                L_Pos = buffer.CurrentWritePosition;
-            }
-            int po = W_Pos - L_Pos;
-            int ps = D_Pos;
-            if (po < 0)
-            {
-                po = (BufferSize - L_Pos) + W_Pos;
-            }
-            if (po != 0)
-            {
-                for (int i = 0; i < po; i += 2)
-                {
-                    //Get the sample from the apu
-                    short OUT = 0;
-                    if (D_Pos < DATA.Length)
-                    {
-                        DATA[D_Pos] = (byte)((OUT & 0xFF00) >> 8);
-                        DATA[D_Pos + 1] = (byte)(OUT & 0xFF);
-                    }
-                    D_Pos += 2;
-                    D_Pos = D_Pos % BufferSize;
-                }
-                buffer.Write(DATA, 0, LockFlags.None);
-                L_Pos = W_Pos;
-            }
-        }
-        public void UpdateFrame()
-        {
-
         }
 
+        public void Dispose()
+        {
+            this.isPaused = true;
+
+            if (buffer != null)
+            {
+                buffer.Dispose();
+                buffer = null;
+            }
+
+            if (device != null)
+            {
+                device.Dispose();
+                device = null;
+            }
+        }
         public void Play()
         {
-            if (!IsPaused)
-            { return; }
-            if (buffer != null && !buffer.Disposed & !IsRendering)
+            if (isPaused && buffer != null && !buffer.Disposed)
             {
-                IsPaused = false;
-                try//Sometimes this line thorws an exception for unkown reason !!
-                {
-                    buffer.Play(0, PlayFlags.Looping);
-                }
-                catch { }
+                isPaused = false;
+                buffer.Play(0, PlayFlags.Looping);
             }
         }
         public void Stop()
         {
-            if (IsPaused)
-            { return; }
-            if (buffer != null && !buffer.Disposed & !IsRendering)
+            if (!isPaused)
             {
-                buffer.Stop();
-                IsPaused = true;
+                if (buffer != null && !buffer.Disposed)
+                {
+                    buffer.Stop();
+                    isPaused = true;
+                }
+
+                sampleGetPos = 0;
+                sampleSetPos = 0;
             }
         }
-        public void Shutdown()
+        public void Render()
         {
-            IsPaused = true;
-            while (IsRendering)
-            { }
-            if (buffer != null)
+            currWritePos = buffer.CurrentWritePosition;
+
+            if (firstRender)
             {
-                buffer.Stop();
-                buffer.Dispose();
+                firstRender = false;
+                renderPos = (currWritePos / sizeof(short)) + ((44100 * 3) / 60);
+                lastWritePos = currWritePos;
             }
-            if (_SoundDevice != null)
-                _SoundDevice.Dispose();
+
+            int size = currWritePos - lastWritePos;
+
+            if (size < 0)
+                size += buffer.Format.AverageBytesPerSecond;
+
+            if (size != 0)
+            {
+                for (int i = 0; i < size; i += sizeof(short))
+                {
+                    while (sampleGetPos >= sampleSetPos)
+                        Nes.Apu.Render();
+                        
+                    renderBuffer[renderPos++ % renderBuffer.Length] = sampleBuffer[sampleGetPos++ % sampleBuffer.Length];
+                }
+
+                buffer.Write(renderBuffer, 0, LockFlags.None);
+                lastWritePos = currWritePos;
+            }
         }
-        public void SetVolume(int Vol)
+        public void Sample(short sample)
         {
-            if (buffer != null && !buffer.Disposed & !IsRendering)
-            {
-                buffer.Volume = Vol;
-            }
-        }
-        public void SetPan(int Pan)
-        {
-            if (buffer != null && !buffer.Disposed & !IsRendering)
-            {
-                buffer.Pan = Pan;
-            }
+            sampleBuffer[sampleSetPos++ % sampleBuffer.Length] = sample;
         }
     }
 }

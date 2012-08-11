@@ -5,10 +5,11 @@
         /// <summary>
         /// Emu calls this when it needs to update a frame
         /// </summary>
-        void UpdateFrame();
+        void Render();
+        void Sample(short sample);
         /// <summary>
         /// Shutdown the device then dispose, emu calls this when it shutdown
         /// </summary>
-        void Shutdown();
+        void Dispose();
     }
 }

@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="APU\Apu.cs" />
+    <Compile Include="APU\Apu.Mixer.cs" />
     <Compile Include="APU\ChannelDmc.cs" />
     <Compile Include="APU\ChannelNoi.cs" />
     <Compile Include="APU\ChannelSq1.cs" />

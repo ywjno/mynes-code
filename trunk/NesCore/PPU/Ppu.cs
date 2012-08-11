@@ -418,8 +418,10 @@ namespace myNES.Core.PPU
                     spr0Hit = false;
                     sprFlow = false;
 
-                    Nes.SpeedLimiter.Update();
+                    Nes.AudioDevice.Render();
                     Nes.VideoDevice.RenderFrame(screen);
+
+                    Nes.SpeedLimiter.Update();
                 }
             }
 
