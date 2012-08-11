@@ -20,7 +20,7 @@ namespace myNES.Core.Boards
                     }
                     break;
 
-                case 1: return new MMC1(chr, prg, header.IsVram);
+                case 1: return new SxROM(chr, prg, header.IsVram);
 
                 case 2:
                     switch (header.PrgPages * 16384)
