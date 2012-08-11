@@ -13,7 +13,13 @@ namespace myNES.Debug.ConsoleCommands
         {
             get { return "open"; }
         }
-
+        public override string[] Parameters
+        {
+            get
+            {
+                return new string[]{"output","off","on"};
+            }
+        }
         public override void Execute(string parameters)
         {
             using (var form = new OpenFileDialog())
@@ -30,7 +36,11 @@ namespace myNES.Debug.ConsoleCommands
                         RendererFormSlimDX frm = new RendererFormSlimDX();
                         frm.Show();
                         //for tests, make result outputs on the console
-                        Nes.CpuMemory.Hook(0x6000, 0x7FFF, poke6004);
+                        if (parameters.Contains("output"))
+                        {
+                            if (parameters.Contains("on"))
+                                Nes.CpuMemory.Hook(0x6000, 0x7FFF, poke6004);
+                        }
                         //turn on
                         Nes.TurnOn();
                         //run the thread
