@@ -20,6 +20,7 @@ namespace myNES.Core.PPU
         private int[] colors;
         private int[][] screen;
         private bool oddSwap;
+        private bool spr0Hit;
         //nmi and vbl
         private bool nmi;
         private bool vbl;
@@ -89,6 +90,8 @@ namespace myNES.Core.PPU
 
             if (vbl)
                 data |= 0x80;
+            if (spr0Hit)
+                data |= 0x40;
 
             vbl = false;
             scroll.swap = false;
@@ -383,6 +386,7 @@ namespace myNES.Core.PPU
                 {
                     vclock = 0;
                     vbl = false;
+                    spr0Hit = false;
 
                     Nes.SpeedLimiter.Update();
                     Nes.VideoDevice.RenderFrame(screen);

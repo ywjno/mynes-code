@@ -102,12 +102,12 @@ namespace myNES
                     if (command.Parameters.Length == 0 && code.Length > 1)
                     {
                         Console.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAS NO PARAMETER", DebugCode.Warning);
-                        showCommandHelp = true;
+                        command.Execute(comboBoxHistory.Text);
                     }
                     else if (command.Parameters.Length > 0 && code.Length == 1)
                     {
-                        Console.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Error);
-                        showCommandHelp = true;
+                        Console.WriteLine("] " + comboBoxHistory.Text + ": THIS COMAND HAVE PARAMETERS AND NO PARAMETER PASSED", DebugCode.Warning);
+                        command.Execute(comboBoxHistory.Text);
                     }
                     else
                     {

@@ -33,6 +33,7 @@ namespace myNES.Core.Boards.Nintendo
                 prgPage[0] = 0x8000;
                 prgPage[1] = 15 << 14;
                 MODE = true;
+                Console.WriteLine("MMC1 switch to mode 1 for 512k", DebugCode.Warning);
             }
             //setup chr
             if (isVram)
@@ -122,11 +123,11 @@ P=1, S=1:    |     $E000     |     {$0F}     |
             shift = buffer = 0;
 
             //  $8000-9FFF:  [...C PSMM]
-            if (!MODE)
+            if (!MODE)//Normal mode + [SOROM]
             {
                 switch (address)
                 {
-                    case 0:
+                    case 0://reg 1 - written to via $8000-$9FFF
                         /*
                        M = Mirroring control:
                        %00 = 1ScA
@@ -150,8 +151,8 @@ P=1, S=1:    |     $E000     |     {$0F}     |
                         }
                         break;
 
-                    case 1://C = CHR Mode (0=8k mode, 1=4k mode)
-
+                    case 1://reg 2 - written to via $A000-$BFFF
+                        //C = CHR Mode (0=8k mode, 1=4k mode)
                         if (!isVram)
                         {
                             if ((reg[0] & 0x10) != 0)
@@ -174,7 +175,7 @@ P=1, S=1:    |     $E000     |     {$0F}     |
                         }
                         break;
 
-                    case 2:
+                    case 2://reg 3 - written to via $C000-$DFFF
 
                         if (!isVram)
                         {
@@ -198,7 +199,7 @@ P=1, S=1:    |     $E000     |     {$0F}     |
                         }
                         break;
 
-                    case 3:
+                    case 3://reg 4  - written to via $E000-$FFFF
                         /*
                             S = Slot select:
                             0 = $C000 swappable, $8000 fixed to page $00 (mode A)
@@ -233,7 +234,7 @@ P=1, S=1:    |     $E000     |     {$0F}     |
                         break;
                 }
             }
-            else//roms with 512K and larger
+            else//roms with 512K and larger [SUROM]+[SXROM]
             {
                 int BASE = reg[1] & 0x10;
 
