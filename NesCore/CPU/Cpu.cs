@@ -47,11 +47,8 @@ namespace myNES.Core.CPU
         }
         private void Dispatch()
         {
-            if (Nes.ON)
-            {
-                Nes.Apu.Update(timing.single);
-                Nes.Ppu.Update(timing.single);
-            }
+            Nes.Ppu.Update(timing.single);
+            Nes.Apu.Update(timing.single);
         }
         private byte Pull()
         {
@@ -63,17 +60,18 @@ namespace myNES.Core.CPU
             Poke(sp.Value, (byte)data);
             sp.LoByte--;
         }
-        private byte Peek(int address)
+
+        public byte Peek(int address)
         {
             Dispatch();
 
-            return Nes.CpuMemory[address];
+            return Nes.CpuMemory.Peek(address);
         }
-        private void Poke(int address, byte data)
+        public void Poke(int address, byte data)
         {
             Dispatch();
 
-            Nes.CpuMemory[address] = data;
+            Nes.CpuMemory.Poke(address, data);
         }
 
         #region Codes
@@ -524,14 +522,36 @@ namespace myNES.Core.CPU
         }
         private void OpDcp_m()
         {
-            OpDec_m();
-            OpCmp_m();
+            var data = Peek(aa.Value);
+            Poke(aa.Value, data--);
+            Poke(aa.Value, data);
+
+            var temp = a - data;
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xff) == 0;
+            sr.c = ((~temp >> 8) & 1) != 0;
         }
-        private void OpDop_i() { }
+        private void OpDop_i()
+        {
+            Peek(pc.Value);
+        }
         private void OpIsc_m()
         {
-            OpInc_m();
-            OpSbc_m();
+            var data = Peek(aa.Value);
+
+            Poke(aa.Value, data++);
+            Poke(aa.Value, data);
+
+            data ^= 0xff;
+
+            var temp = (a + data) + (sr.c ? 1 : 0);
+
+            sr.n = (temp & 0x80) != 0;
+            sr.v = ((temp ^ a) & ~(data ^ a) & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (temp >> 0x8) != 0;
+
+            a = (byte)temp;
         }
         private void OpJam_m()
         {
@@ -549,36 +569,70 @@ namespace myNES.Core.CPU
         }
         private void OpLax_m()
         {
-            OpLda_m();
-            OpLdx_m();
+            a = Peek(aa.Value);
+            x = a;
+            sr.n = (x & 0x80) != 0;
+            sr.z = (x & 0xff) == 0;
         }
         private void OpRla_m()
         {
-            OpRol_m();
-            OpAnd_m();
+            var data = Peek(aa.Value);
+            var flag = (data & 0x80) != 0;
+            Poke(aa.Value, data);
+            data = (byte)((data << 1) | (sr.c ? 0x01 : 0));
+            Poke(aa.Value, data);
+            a &= data;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xff) == 0;
+            sr.c = flag;
         }
         private void OpRra_m()
         {
-            OpRor_m();
-            OpAdc_m();
+            var data = Peek(aa.Value);
+            var flag = (data & 1) != 0;
+            Poke(aa.Value, data);
+            data = (byte)((data >> 1) | (sr.c ? 0x80 : 0));
+            Poke(aa.Value, data);
+            sr.c = flag;
+            int num2 = (a + data) + (sr.c ? 1 : 0);
+            sr.n = (num2 & 0x80) != 0;
+            sr.v = (((num2 ^ a) & ~(data ^ a)) & 0x80) != 0;
+            sr.z = (num2 & 0xff) == 0;
+            sr.c = (num2 >> 8) != 0;
+            a = (byte)num2;
         }
         private void OpSax_m()
         {
             Poke(aa.Value, (byte)(x & a));
         }
-        private void OpShx_m() { }
-        private void OpShy_m() { }
+        private void OpShx_m() { Peek(pc.Value); }
+        private void OpShy_m() { Peek(pc.Value); }
         private void OpSlo_m()
         {
-            OpAsl_m();
-            OpOra_m();
+            var data = Peek(aa.Value);
+            sr.c = (data & 0x80) != 0;
+            Poke(aa.Value, data);
+            data <<= 1;
+            Poke(aa.Value, data);
+            a |= data;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xff) == 0;
         }
         private void OpSre_m()
         {
-            OpLsr_m();
-            OpEor_m();
+            var data = Peek(aa.Value);
+            sr.c = (data & 0x01) != 0;
+            Poke(aa.Value, data);
+            data >>= 1;
+            Poke(aa.Value, data);
+            a ^= data;
+            sr.n = (a & 0x80) != 0;
+            sr.z = (a & 0xff) == 0;
         }
-        private void OpTop_i() { }
+        private void OpTop_i()
+        {
+            Peek(pc.Value);
+        }
         private void OpXaa_m()
         {
             a = (byte)(x & Peek(aa.Value));
@@ -587,7 +641,7 @@ namespace myNES.Core.CPU
         }
         private void OpXas_m()
         {
-            sp.LoByte = (byte)(a & x & ((Peek(aa.Value) >> 8) + 1));
+            sp.LoByte = (byte)(a & x & (aa.HiByte + 1));
 
             Poke(aa.Value, sp.LoByte);
         }
@@ -678,7 +732,8 @@ namespace myNES.Core.CPU
         {
             byte addr = Peek(pc.Value++);
 
-            addr += x; Dispatch();
+            Dispatch();
+            addr += x;
 
             aa.LoByte = Peek(addr++);
             aa.HiByte = Peek(addr++);
@@ -767,7 +822,7 @@ namespace myNES.Core.CPU
                 AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 8
                 AmImm_a, AmIny_w, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_a, AmAby_w, AmImp_a, AmAby_w, AmAbx_w, AmAbx_w, AmAby_w, AmAby_w, // 9
                 AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // A
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAby_r, AmAby_w, // B
+                AmImm_a, AmIny_r, AmImp_a, AmIny_r, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_a, AmAby_r, AmImp_a, AmAby_r, AmAbx_r, AmAbx_r, AmAby_r, AmAby_r, // B
                 AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // C
                 AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // D
                 AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // E
@@ -816,8 +871,7 @@ namespace myNES.Core.CPU
 
             Console.WriteLine("CPU initialized!", DebugCode.Good);
         }
-        public override void Shutdown() { }
-        public void SoftReset()
+        public override void SoftReset()
         {
             sr.i = true;
             sp.Value -= 3;

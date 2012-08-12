@@ -27,14 +27,14 @@
 
             if (step = !step)
             {
-                data = Nes.CpuMemory[addr];
+                data = Nes.Cpu.Peek(addr);
             }
             else
             {
-                Nes.CpuMemory[0x2004] = data;
+                Nes.Cpu.Poke(0x2004, data);
 
-                addr = (++addr) & 0xFFFF;
-                size = (--size) & 0xFFFF;
+                addr++;
+                size--;
 
                 if (size == 0)
                     Nes.Cpu.Unlock();

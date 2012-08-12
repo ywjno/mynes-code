@@ -11,11 +11,11 @@ namespace myNES.Core.Controls
         private byte inputData3;
         private byte inputData4;
         private byte inputStrobe;
-        public IInputDevice InputDevice;
-        public IJoypad Joypad1;
-        public IJoypad Joypad2;
-        public IJoypad Joypad3;
-        public IJoypad Joypad4;
+        public InputPort InputDevice;
+        public InputDevice Joypad1;
+        public InputDevice Joypad2;
+        public InputDevice Joypad3;
+        public InputDevice Joypad4;
 
         public bool IsFourPlayers = true;
 

@@ -18,7 +18,7 @@ namespace myNES.Core.PPU
         private int emphasis;
         private int hclock;
         private int vclock;
-        private int[] colors;
+        private int[] colors = NTSCPaletteGenerator.GeneratePalette();
         private int[][] screen;
         //nmi and vbl
         private bool nmi;
@@ -31,7 +31,7 @@ namespace myNES.Core.PPU
             : base(system)
         {
             timing.period = system.Master;
-            timing.single = system.Gpu;
+            timing.single = system.Ppu;
 
             screen = new int[240][];
 
@@ -39,39 +39,6 @@ namespace myNES.Core.PPU
                 screen[i] = new int[256];
 
             EvaluateReset();
-        }
-
-        private void FetchBkgName_0()
-        {
-            fetch.addr = 0x2000 | (scroll.addr & 0xFFF);
-        }
-        private void FetchBkgName_1()
-        {
-            fetch.name = Nes.PpuMemory[fetch.addr];
-        }
-        private void FetchBkgAttr_0()
-        {
-            fetch.addr = 0x23C0 | (scroll.addr & 0xC00) | (scroll.addr >> 4 & 0x38) | (scroll.addr >> 2 & 0x7);
-        }
-        private void FetchBkgAttr_1()
-        {
-            fetch.attr = Nes.PpuMemory[fetch.addr] >> ((scroll.addr >> 4 & 0x04) | (scroll.addr & 0x02));
-        }
-        private void FetchBkgBit0_0()
-        {
-            fetch.addr = bkg.address | (fetch.name << 4) | 0 | (scroll.addr >> 12 & 7);
-        }
-        private void FetchBkgBit0_1()
-        {
-            fetch.bit0 = Nes.PpuMemory[fetch.addr];
-        }
-        private void FetchBkgBit1_0()
-        {
-            fetch.addr = bkg.address | (fetch.name << 4) | 8 | (scroll.addr >> 12 & 7);
-        }
-        private void FetchBkgBit1_1()
-        {
-            fetch.bit1 = Nes.PpuMemory[fetch.addr];
         }
 
         private byte Peek____(int address) { return 0; }
@@ -105,13 +72,13 @@ namespace myNES.Core.PPU
 
             if ((scroll.addr & 0x3F00) == 0x3F00)
             {
-                tmp = Nes.PpuMemory[scroll.addr];
-                chr = Nes.PpuMemory[scroll.addr & 0x2FFF];
+                tmp = Nes.PpuMemory.Peek(scroll.addr);
+                chr = Nes.PpuMemory.Peek(scroll.addr & 0x2FFF);
             }
             else
             {
                 tmp = chr;
-                chr = Nes.PpuMemory[scroll.addr];
+                chr = Nes.PpuMemory.Peek(scroll.addr);
             }
 
             scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
@@ -183,7 +150,7 @@ namespace myNES.Core.PPU
         }
         private void Poke2007(int address, byte data)
         {
-            Nes.PpuMemory[scroll.addr] = data;
+            Nes.PpuMemory.Poke(scroll.addr, data);
 
             scroll.addr = (scroll.addr + scroll.step) & 0x7FFF;
         }
@@ -213,7 +180,7 @@ namespace myNES.Core.PPU
                     spr0Hit = true;
             }
 
-            screen[vclock][hclock] = colors[Nes.PpuMemory[pixel]];
+            screen[vclock][hclock] = colors[Nes.PpuMemory.Peek(pixel)];
         }
         private void SynthesizeBkgPixels()
         {
@@ -254,7 +221,6 @@ namespace myNES.Core.PPU
 
             Console.UpdateLine("Initializing PPU... Success!", DebugCode.Good);
         }
-        public override void Shutdown() { }
         public override void Update()
         {
             if (vclock < 240 || vclock == 261)
@@ -360,9 +326,9 @@ namespace myNES.Core.PPU
                     {
                         int pixel = 0;//this will clear the previous line
                         if ((scroll.addr & 0x3F00) == 0x3F00)
-                            pixel = colors[Nes.PpuMemory[scroll.addr & 0x3FFF] & clipping | emphasis];
+                            pixel = colors[Nes.PpuMemory.Peek(scroll.addr & 0x3FFF) & clipping | emphasis];
                         else
-                            pixel = colors[Nes.PpuMemory[0x3F00] & clipping | emphasis];
+                            pixel = colors[Nes.PpuMemory.Peek(0x3F00) & clipping | emphasis];
                         screen[vclock][hclock] = pixel;
                     }
                 }

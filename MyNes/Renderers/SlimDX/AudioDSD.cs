@@ -6,7 +6,7 @@ using myNES.Core;
 
 namespace myNES
 {
-    public class AudioDSD : IAudioDevice
+    public class AudioDSD : AudioDevice
     {
         private DirectSound device;
         private SecondarySoundBuffer buffer;
@@ -48,22 +48,6 @@ namespace myNES
             buffer.Play(0, PlayFlags.Looping);
         }
 
-        public void Dispose()
-        {
-            this.isPaused = true;
-
-            if (buffer != null)
-            {
-                buffer.Dispose();
-                buffer = null;
-            }
-
-            if (device != null)
-            {
-                device.Dispose();
-                device = null;
-            }
-        }
         public void Play()
         {
             if (isPaused && buffer != null && !buffer.Disposed)
@@ -86,7 +70,24 @@ namespace myNES
                 sampleSetPos = 0;
             }
         }
-        public void Render()
+
+        public override void Dispose()
+        {
+            this.isPaused = true;
+
+            if (buffer != null)
+            {
+                buffer.Dispose();
+                buffer = null;
+            }
+
+            if (device != null)
+            {
+                device.Dispose();
+                device = null;
+            }
+        }
+        public override void Render()
         {
             currWritePos = buffer.CurrentWritePosition;
 
@@ -116,7 +117,7 @@ namespace myNES
                 lastWritePos = currWritePos;
             }
         }
-        public void Sample(short sample)
+        public override void Sample(short sample)
         {
             sampleBuffer[sampleSetPos++ % sampleBuffer.Length] = sample;
         }

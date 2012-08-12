@@ -40,7 +40,7 @@ namespace myNES.Core.PPU
         private void EvaluatePhase1()
         {
             this.oam.Count++;
-            int num = (this.vclock - this.oam.Data) & int.MaxValue;
+            int num = (this.vclock - this.oam.Data) & 0xFFFF;
 
             if (num >= this.oam.rasters)
             {
@@ -97,7 +97,7 @@ namespace myNES.Core.PPU
         }
         private void EvaluatePhase5()
         {
-            int num = (this.vclock - this.oam.Data) & int.MaxValue;
+            int num = (this.vclock - this.oam.Data) & 0xFFFF;
 
             if (num >= this.oam.rasters)
             {
@@ -195,7 +195,7 @@ namespace myNES.Core.PPU
             }
             else
             {
-                fetch.bit0 = Nes.PpuMemory[fetch.addr];
+                fetch.bit0 = Nes.PpuMemory.Peek(fetch.addr);
             }
 
             if ((sprite.Attr & 0x40) != 0)
@@ -215,7 +215,7 @@ namespace myNES.Core.PPU
             }
             else
             {
-                fetch.bit1 = Nes.PpuMemory[fetch.addr];
+                fetch.bit1 = Nes.PpuMemory.Peek(fetch.addr);
             }
 
             if ((sprite.Attr & 0x40) != 0)

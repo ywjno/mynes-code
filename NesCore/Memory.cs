@@ -1,6 +1,6 @@
 ﻿namespace myNES.Core
 {
-    public class Memory
+    public class Memory : Component
     {
         private PeekRegister[] peek;
         private PokeRegister[] poke;
@@ -8,12 +8,6 @@
         private int mask;
 
         public int Length { get { return size; } }
-
-        public byte this[int address]
-        {
-            get { return peek[address &= mask](address); }
-            set { poke[address &= mask](address, value); }
-        }
 
         public Memory(int size)
         {
@@ -49,16 +43,16 @@
                 Hook(address, peek, poke);
         }
 
-        public virtual byte DebugPeek(int address)
+        public virtual byte Peek(int address)
         {
-            return this[address];
+            return peek[address &= mask](address);
         }
-        public virtual void DebugPoke(int address, byte data)
+        public virtual void Poke(int address, byte data)
         {
-            this[address] = data;
+            poke[address &= mask](address, data);
         }
 
-        public virtual void Initialize() { }
-        public virtual void Shutdown() { }
+        public virtual byte DebugPeek(int address) { return 0; }
+        public virtual void DebugPoke(int address, byte data) { }
     }
 }

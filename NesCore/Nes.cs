@@ -1,12 +1,10 @@
 ﻿using System.IO;
 using myNES.Core.APU;
 using myNES.Core.Boards;
-using myNES.Core.Boards.Discreet;
-using myNES.Core.Boards.Nintendo;
 using myNES.Core.Controls;
 using myNES.Core.CPU;
-using myNES.Core.IO.Output;
 using myNES.Core.IO.Input;
+using myNES.Core.IO.Output;
 using myNES.Core.PPU;
 using myNES.Core.ROM;
 
@@ -22,8 +20,8 @@ namespace myNES.Core
         public static Board Board;
         public static ControlsUnit ControlsUnit;
         //devices
-        public static IVideoDevice VideoDevice;
-        public static IAudioDevice AudioDevice;
+        public static VideoDevice VideoDevice;
+        public static AudioDevice AudioDevice;
         //emulation controls
         public static bool ON;
         public static bool Pause;
@@ -179,13 +177,13 @@ namespace myNES.Core
             if (ON)
             {
                 ON = false;
-                Apu.Shutdown();
-                Cpu.Shutdown();
-                Ppu.Shutdown();
-                CpuMemory.Shutdown();
-                PpuMemory.Shutdown();
+                Apu.Dispose();
+                Cpu.Dispose();
+                Ppu.Dispose();
+                CpuMemory.Dispose();
+                PpuMemory.Dispose();
                 ControlsUnit.Shutdown();
-                VideoDevice.Shutdown();
+                VideoDevice.Dispose();
                 AudioDevice.Dispose();
 
                 if (EmuShutdown != null)
@@ -208,7 +206,7 @@ namespace myNES.Core
         /// <param name="system">The emulation system</param>
         /// <param name="videoDevice">The video device</param>
         /// <param name="audioDevice"></param>
-        public static void SetupOutput(TimingInfo.System system, IVideoDevice videoDevice, IAudioDevice audioDevice)
+        public static void SetupOutput(TimingInfo.System system, VideoDevice videoDevice, AudioDevice audioDevice)
         {
             VideoDevice = videoDevice;
             AudioDevice = audioDevice;
@@ -220,7 +218,7 @@ namespace myNES.Core
         /// <param name="inputDevice">The input device</param>
         /// <param name="joypad1">The player 1 joypad</param>
         /// <param name="joypad2">The player 2 joypad</param>
-        public static void SetupInput(IInputDevice inputDevice, IJoypad joypad1, IJoypad joypad2)
+        public static void SetupInput(InputPort inputDevice, InputDevice joypad1, InputDevice joypad2)
         {
             SetupInput(inputDevice, joypad1, joypad2, null, null, false);
         }
@@ -233,8 +231,7 @@ namespace myNES.Core
         /// <param name="joypad3">The player 3 joypad</param>
         /// <param name="joypad4">The player 4 joypad</param>
         /// <param name="is4Players">Is 4 players enabled</param>
-        public static void SetupInput(IInputDevice inputDevice, IJoypad joypad1, IJoypad joypad2,
-            IJoypad joypad3, IJoypad joypad4, bool is4Players)
+        public static void SetupInput(InputPort inputDevice, InputDevice joypad1, InputDevice joypad2, InputDevice joypad3, InputDevice joypad4, bool is4Players)
         {
             ControlsUnit.InputDevice = inputDevice;
             ControlsUnit.IsFourPlayers = is4Players;
@@ -250,10 +247,6 @@ namespace myNES.Core
         public static void SetupLimiter(ITimer timer)
         {
             SpeedLimiter = new SpeedLimiter(timer, emuSystem);
-        }
-        public static void SetupPalette()
-        {
-            Ppu.SetupPalette(NTSCPaletteGenerator.GeneratePalette());
         }
     }
 }

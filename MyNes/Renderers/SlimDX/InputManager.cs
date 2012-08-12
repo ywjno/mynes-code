@@ -8,7 +8,7 @@ using myNES.Core.IO.Input;
 
 namespace myNES
 {
-    public class InputManager : IInputDevice
+    public class InputManager : InputPort
     {
         private IList<InputDevice> _devices;
 
@@ -34,7 +34,8 @@ namespace myNES
                 }
             }
         }
-        public void Update()
+
+        public override void Update()
         {
             for (int i = 0; i < _devices.Count; i++)
             {
