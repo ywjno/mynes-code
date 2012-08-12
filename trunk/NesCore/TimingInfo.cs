@@ -13,15 +13,15 @@
         {
             public int Master;
             public int Cpu;
-            public int Gpu;
-            public int Spu;
+            public int Ppu;
+            public int Apu;
 
-            public System(int master, int cpu, int gpu, int spu)
+            public System(int master, int cpu, int ppu, int apu)
             {
                 this.Master = master;
                 this.Cpu = cpu;
-                this.Gpu = gpu;
-                this.Spu = spu;
+                this.Ppu = ppu;
+                this.Apu = apu;
             }
         }
     }

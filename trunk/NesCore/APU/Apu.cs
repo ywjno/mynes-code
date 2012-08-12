@@ -19,7 +19,7 @@ namespace myNES.Core.APU
             : base(system)
         {
             timing.period = system.Master;
-            timing.single = system.Spu;
+            timing.single = system.Apu;
 
             Sq1 = new ChannelSq1(system);
             Sq2 = new ChannelSq2(system);
@@ -56,7 +56,6 @@ namespace myNES.Core.APU
 
             Nes.CpuMemory.Hook(0x4015, Poke4015);
         }
-        public override void Shutdown() { }
         public override void Update()
         {
             // todo: frame horse shit, length counter clocks, envelope clocks.. yuck

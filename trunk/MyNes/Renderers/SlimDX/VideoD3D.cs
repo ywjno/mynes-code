@@ -10,7 +10,7 @@ using Console = myNES.Core.Console;
 
 namespace myNES
 {
-    public unsafe class VideoD3D : IVideoDevice, IDisposable
+    public unsafe class VideoD3D : VideoDevice, IDisposable
     {
         private const int BUFFER_SIZE_NTSC = (256 * 224) * sizeof(int);
         private const int BUFFER_SIZE_PALB = (256 * 240) * sizeof(int);
@@ -100,12 +100,12 @@ namespace myNES
             }
         }
 
-        public void Begin()
+        public override void Begin()
         {
             if (canRender)
                 isRendering = true;
         }
-        public void Dispose()
+        public override void Dispose()
         {
             disposed = true;
 
@@ -114,7 +114,7 @@ namespace myNES
 
             this.DisposeDisplayObjects();
         }
-        public void Initialize()
+        public override void Initialize()
         {
             if (cutLinesInNTSC && system.Master == TimingInfo.NTSC.Master)
             {
@@ -190,7 +190,7 @@ namespace myNES
                 Console.WriteLine(e.Message);
             }
         }
-        public void RenderFrame(int[][] screen)
+        public override void RenderFrame(int[][] screen)
         {
             if (handle != null && canRender && !disposed && initialized)
             {
@@ -235,6 +235,7 @@ namespace myNES
                 isRendering = false;
             }
         }
+
         public void TakeSnapshot(string path, string format)
         {
             var bitmap = new Bitmap(256, scanlines);
@@ -264,10 +265,6 @@ namespace myNES
             }
 
             canRender = true;
-        }
-        public void Shutdown()
-        {
-            this.Dispose();
         }
     }
 }

@@ -215,11 +215,6 @@ namespace myNES.Forms
             buttonConsole_Click(sender, e);
         }
 
-        private void buttonConsole_CheckedChanged(object sender, EventArgs e)
-        {
-            consoleToolStripMenuItem.Checked = buttonConsole.Checked;
-        }
-
         private void toolStripToolStripMenuItem_Click(object sender, EventArgs e)
         {
             toolStripToolStripMenuItem.Checked = !toolStripToolStripMenuItem.Checked;

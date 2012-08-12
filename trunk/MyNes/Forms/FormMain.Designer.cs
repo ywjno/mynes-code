@@ -57,8 +57,6 @@
             this.openRomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addFolderToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,17 +64,16 @@
             this.resumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.haltToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.softResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hardResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.emulationSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutMyNesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.softResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hardResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -117,8 +114,8 @@
             this.toolStripButton1.Margin = new System.Windows.Forms.Padding(2, 1, 0, 2);
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "toolStripButton1";
-            this.toolStripButton1.ToolTipText = "Open rom";
+            this.toolStripButton1.Text = "Open File";
+            this.toolStripButton1.ToolTipText = "Open File";
             this.toolStripButton1.Click += new System.EventHandler(this.openRomToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
@@ -209,7 +206,6 @@
             this.buttonConsole.Name = "buttonConsole";
             this.buttonConsole.Size = new System.Drawing.Size(23, 22);
             this.buttonConsole.Text = "Console";
-            this.buttonConsole.CheckedChanged += new System.EventHandler(this.buttonConsole_CheckedChanged);
             this.buttonConsole.Click += new System.EventHandler(this.buttonConsole_Click);
             // 
             // buttonPalette
@@ -305,7 +301,6 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.browserToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.emulationToolStripMenuItem,
             this.settingsToolStripMenuItem,
@@ -347,22 +342,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // browserToolStripMenuItem
-            // 
-            this.browserToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addFolderToolStripMenuItem1});
-            this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
-            this.browserToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.browserToolStripMenuItem.Text = "&Browser";
-            // 
-            // addFolderToolStripMenuItem1
-            // 
-            this.addFolderToolStripMenuItem1.Name = "addFolderToolStripMenuItem1";
-            this.addFolderToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.addFolderToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
-            this.addFolderToolStripMenuItem1.Text = "&Add folder";
-            this.addFolderToolStripMenuItem1.Click += new System.EventHandler(this.buttonCreateFolder_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -415,7 +394,7 @@
             this.resumeToolStripMenuItem.Name = "resumeToolStripMenuItem";
             this.resumeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
             this.resumeToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.resumeToolStripMenuItem.Text = "&Resume";
+            this.resumeToolStripMenuItem.Text = "&Play";
             this.resumeToolStripMenuItem.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
             // haltToolStripMenuItem
@@ -434,6 +413,26 @@
             this.stopToolStripMenuItem.Text = "&Stop";
             this.stopToolStripMenuItem.Click += new System.EventHandler(this.buttonStop_Click);
             // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(164, 6);
+            // 
+            // softResetToolStripMenuItem
+            // 
+            this.softResetToolStripMenuItem.Name = "softResetToolStripMenuItem";
+            this.softResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.softResetToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.softResetToolStripMenuItem.Text = "So&ft reset";
+            this.softResetToolStripMenuItem.Click += new System.EventHandler(this.softResetToolStripMenuItem_Click);
+            // 
+            // hardResetToolStripMenuItem
+            // 
+            this.hardResetToolStripMenuItem.Name = "hardResetToolStripMenuItem";
+            this.hardResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.H)));
+            this.hardResetToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.hardResetToolStripMenuItem.Text = "Ha&rd reset";
+            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
@@ -443,18 +442,10 @@
             // debugToolStripMenuItem
             // 
             this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.consoleToolStripMenuItem,
             this.emulationSpeedToolStripMenuItem});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
             this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.debugToolStripMenuItem.Text = "&Debug";
-            // 
-            // consoleToolStripMenuItem
-            // 
-            this.consoleToolStripMenuItem.Name = "consoleToolStripMenuItem";
-            this.consoleToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.consoleToolStripMenuItem.Text = "&Console";
-            this.consoleToolStripMenuItem.Click += new System.EventHandler(this.consoleToolStripMenuItem_Click);
             // 
             // emulationSpeedToolStripMenuItem
             // 
@@ -492,26 +483,6 @@
             this.aboutMyNesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.aboutMyNesToolStripMenuItem.Text = "&About myNES";
             this.aboutMyNesToolStripMenuItem.Click += new System.EventHandler(this.aboutMyNesToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(164, 6);
-            // 
-            // softResetToolStripMenuItem
-            // 
-            this.softResetToolStripMenuItem.Name = "softResetToolStripMenuItem";
-            this.softResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.softResetToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.softResetToolStripMenuItem.Text = "So&ft reset";
-            this.softResetToolStripMenuItem.Click += new System.EventHandler(this.softResetToolStripMenuItem_Click);
-            // 
-            // hardResetToolStripMenuItem
-            // 
-            this.hardResetToolStripMenuItem.Name = "hardResetToolStripMenuItem";
-            this.hardResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.H)));
-            this.hardResetToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.hardResetToolStripMenuItem.Text = "Ha&rd reset";
             // 
             // FormMain
             // 
@@ -561,8 +532,6 @@
         private System.Windows.Forms.ToolStripMenuItem openRomToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem browserToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addFolderToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem contentToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
@@ -575,7 +544,6 @@
         private System.Windows.Forms.ToolStripMenuItem haltToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem consoleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
