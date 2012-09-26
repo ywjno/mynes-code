@@ -118,18 +118,38 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="richTextBox1.Text" xml:space="preserve">
-    <value>This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+    <value>Copyright © Ala Ibrahim Hadid 2009 - 2012
+Syria - Hamah - Alsalamiah
+Email: mailto:ahdsoftwares@hotmail.com
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+License:
+======
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
-</value>
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</value>
+  </data>
+  <data name="richTextBox3.Text" xml:space="preserve">
+    <value>
+Website: http://sourceforge.net/projects/mynes/
+
+Article: http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx
+
+Facebook: https://www.facebook.com/#!/pages/My-Nes/427707727244076
+
+Nes Wiki: http://wiki.nesdev.com/w/index.php/Nes_reference_guide</value>
+  </data>
+  <data name="richTextBox2.Text" xml:space="preserve">
+    <value>
+Developers:
+========
+Ala Ibrahim Hadid &lt;mailto:ahdsoftwares@hotmail.com&gt;
+Adam Backer &lt;mailto:beannaich@gmail.com&gt;
+
+Thanks To (for contributing in older versions):
+========
+wrathchild67, member at www.sourceforge.com
+Edison Henrique Andreassy, &lt;mailto:ehasis@hotmail.com&gt;</value>
   </data>
 </root>

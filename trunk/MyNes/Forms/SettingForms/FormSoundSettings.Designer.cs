@@ -305,7 +305,7 @@
             this.trackBar_latency.Size = new System.Drawing.Size(251, 33);
             this.trackBar_latency.TabIndex = 1;
             this.trackBar_latency.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.toolTip1.SetToolTip(this.trackBar_latency, "Adjust the latency in milliseconds. This required for some\r\nplayback profiles.");
+            this.toolTip1.SetToolTip(this.trackBar_latency, "Adjust the latency in milliseconds. Low values may currept the sound playback.");
             this.trackBar_latency.Value = 1;
             this.trackBar_latency.Scroll += new System.EventHandler(this.trackBar_latency_Scroll);
             // 

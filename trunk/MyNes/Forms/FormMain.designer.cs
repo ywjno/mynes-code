@@ -178,6 +178,8 @@ namespace MyNes.Forms
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.dANDYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -938,8 +940,10 @@ namespace MyNes.Forms
             // 
             this.emulationSystemToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.autoToolStripMenuItem,
+            this.toolStripSeparator24,
             this.nTSCToolStripMenuItem,
-            this.pALToolStripMenuItem});
+            this.pALToolStripMenuItem,
+            this.dANDYToolStripMenuItem});
             this.emulationSystemToolStripMenuItem.Name = "emulationSystemToolStripMenuItem";
             this.emulationSystemToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.emulationSystemToolStripMenuItem.Text = "&Emulation System";
@@ -948,21 +952,21 @@ namespace MyNes.Forms
             // autoToolStripMenuItem
             // 
             this.autoToolStripMenuItem.Name = "autoToolStripMenuItem";
-            this.autoToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.autoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.autoToolStripMenuItem.Text = "&Auto";
             this.autoToolStripMenuItem.Click += new System.EventHandler(this.autoToolStripMenuItem_Click);
             // 
             // nTSCToolStripMenuItem
             // 
             this.nTSCToolStripMenuItem.Name = "nTSCToolStripMenuItem";
-            this.nTSCToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.nTSCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.nTSCToolStripMenuItem.Text = "&NTSC";
             this.nTSCToolStripMenuItem.Click += new System.EventHandler(this.nTSCToolStripMenuItem_Click);
             // 
             // pALToolStripMenuItem
             // 
             this.pALToolStripMenuItem.Name = "pALToolStripMenuItem";
-            this.pALToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.pALToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pALToolStripMenuItem.Text = "&PAL";
             this.pALToolStripMenuItem.Click += new System.EventHandler(this.pALToolStripMenuItem_Click);
             // 
@@ -1358,6 +1362,18 @@ namespace MyNes.Forms
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip);
             // 
+            // dANDYToolStripMenuItem
+            // 
+            this.dANDYToolStripMenuItem.Name = "dANDYToolStripMenuItem";
+            this.dANDYToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dANDYToolStripMenuItem.Text = "&DANDY";
+            this.dANDYToolStripMenuItem.Click += new System.EventHandler(this.dANDYToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator24
+            // 
+            this.toolStripSeparator24.Name = "toolStripSeparator24";
+            this.toolStripSeparator24.Size = new System.Drawing.Size(149, 6);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1539,6 +1555,8 @@ namespace MyNes.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
+        private System.Windows.Forms.ToolStripMenuItem dANDYToolStripMenuItem;
     }
 }
 

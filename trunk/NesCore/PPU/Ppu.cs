@@ -556,19 +556,19 @@ namespace MyNes.Core.PPU
         public override void HardReset()
         {
             UseOddFrame = system.Master == TimingInfo.NTSC.Master;
-            if (system.Master == TimingInfo.PALB.Master)
+            if (system.Master == TimingInfo.NTSC.Master)
+            {
+                vbl_vclock_Start = 241;//20 scanlines for VBL
+                vbl_vclock_End = 261;
+                vbl_hclock = 7;
+                frameEnd = 262;
+            }
+            else if (system.Master == TimingInfo.PALB.Master)
             {
                 vbl_vclock_Start = 241;//70 scanlines for VBL
                 vbl_vclock_End = 311;
                 vbl_hclock = 7;
                 frameEnd = 312;
-            }
-            else if (system.Master == TimingInfo.NTSC.Master)
-            {
-                vbl_vclock_Start = 241;//20 scanlines for VBL
-                vbl_vclock_End = 261;
-                vbl_hclock = 7; 
-                frameEnd = 262;
             }
             else if (system.Master == TimingInfo.DANDY.Master)
             {

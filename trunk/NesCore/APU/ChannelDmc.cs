@@ -23,19 +23,32 @@ namespace MyNes.Core.APU
         public ChannelDmc(TimingInfo.System system)
             : base(system)
         {
-            isPAL = system.Master == TimingInfo.PALB.Master;
+            if (system.Master == TimingInfo.NTSC.Master)
+                systemIndex = 0;
+            else if (system.Master == TimingInfo.PALB.Master)
+                systemIndex = 1;
+            else if (system.Master == TimingInfo.DANDY.Master)
+                systemIndex = 2;
         }
-        private static readonly int[] FrequencyNTSC = 
+        private static readonly int[][] FrequencyTable = 
         { 
-             0xD6, 0xBE, 0xAA, 0xA0, 0x8F, 0x7F, 0x71, 0x6B,
-             0x5F, 0x50, 0x47, 0x40, 0x35, 0x2A, 0x24, 0x1B
+            new int[]//NTSC
+            { 
+              0xD6, 0xBE, 0xAA, 0xA0, 0x8F, 0x7F, 0x71, 0x6B,
+              0x5F, 0x50, 0x47, 0x40, 0x35, 0x2A, 0x24, 0x1B
+            },
+            new int[]//PAL
+            { 
+              0x31, 0x2C, 0x27, 0x25, 0x21, 0x1D, 0x1A, 0x18,
+              0x16, 0x12, 0x10, 0x0E, 0x0C, 0x09, 0x08, 0x06,
+            },  
+            new int[]//DANDY (same as pal for now)
+            { 
+              0x31, 0x2C, 0x27, 0x25, 0x21, 0x1D, 0x1A, 0x18,
+              0x16, 0x12, 0x10, 0x0E, 0x0C, 0x09, 0x08, 0x06,
+            },
         };
-        private static readonly int[] FrequencyPALB = 
-        { 
-            0x31, 0x2C, 0x27, 0x25, 0x21, 0x1D, 0x1A, 0x18,
-            0x16, 0x12, 0x10, 0x0E, 0x0C, 0x09, 0x08, 0x06,
-        };
-        private bool isPAL = false;
+        private int systemIndex = 0;
         public bool DeltaIrqOccur;
         private bool IrqEnabled;
         private bool dmaLooping;
@@ -60,10 +73,8 @@ namespace MyNes.Core.APU
                 DeltaIrqOccur = false;
                 Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Dmc, false);
             }
-            if (isPAL)
-                timing.single = GetCycles(FrequencyPALB[data & 0x0F]);
-            else
-                timing.single = GetCycles(FrequencyNTSC[data & 0x0F]);
+   
+                timing.single = GetCycles(FrequencyTable[systemIndex][data & 0x0F]);
         }
         protected override void PokeReg2(int address, byte data)
         {

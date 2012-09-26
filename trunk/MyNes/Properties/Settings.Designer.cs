@@ -324,18 +324,6 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public int SoundLatency {
-            get {
-                return ((int)(this["SoundLatency"]));
-            }
-            set {
-                this["SoundLatency"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::MyNes.ColumnWidthsCollection ColumnWidths {
             get {
                 return ((global::MyNes.ColumnWidthsCollection)(this["ColumnWidths"]));
@@ -364,6 +352,18 @@ namespace MyNes.Properties {
             }
             set {
                 this["RecentFiles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int SoundLatency {
+            get {
+                return ((int)(this["SoundLatency"]));
+            }
+            set {
+                this["SoundLatency"] = value;
             }
         }
     }
