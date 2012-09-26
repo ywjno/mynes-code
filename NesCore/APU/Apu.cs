@@ -1,232 +1,456 @@
-﻿using System;
-
-namespace myNES.Core.APU
+﻿/* This file is part of My Nes
+ * A Nintendo Entertainment System Emulator.
+ *
+ * Copyright © Ala I Hadid 2009 - 2012
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+using System.Collections.Generic;
+namespace MyNes.Core.APU
 {
-    public partial class Apu : ProcessorBase
+    public class Apu : ProcessorBase
     {
-        private const int DELAY = 3125;
-        private const int PHASE = 77;
+        public ChannelSq1 sq1;
+        public ChannelSq2 sq2;
+        public ChannelTri tri;
+        public ChannelNoi noi;
+        public ChannelDmc dmc;
+        public Channel[] extraChannels;
 
-        private int timer;
+        private int Cycles = 0;
+        private bool SequencingMode;
+        /*From PAL NES APU Tests (google it !)
+        Mode 0: 4-step sequence
 
-        public ChannelSq1 Sq1;
-        public ChannelSq2 Sq2;
-        public ChannelTri Tri;
-        public ChannelNoi Noi;
-        public ChannelDmc Dmc;
+        Action      Envelopes &     Length Counter& Interrupt   Delay to next
+                    Linear Counter  Sweep Units     Flag        NTSC     PAL
+        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        $4017=$00   -               -               -           7459    8315
+        Step 1      Clock           -               -           7456    8314
+        Step 2      Clock           Clock           -           7458    8312
+        Step 3      Clock           -               -           7458    8314
+        Step 4      Clock           Clock       Set if enabled  7458    8314
+
+
+        Mode 1: 5-step sequence
+
+        Action      Envelopes &     Length Counter& Interrupt   Delay to next
+                    Linear Counter  Sweep Units     Flag        NTSC     PAL
+        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        $4017=$80   -               -               -              1       1
+        Step 1      Clock           Clock           -           7458    8314
+        Step 2      Clock           -               -           7456    8314
+        Step 3      Clock           Clock           -           7458    8312
+        Step 4      Clock           -               -           7458    8314
+        Step 5      -               -               -           7452    8312
+        */
+        private int[][] SequenceMode0 =
+        { 
+            new int[] { 7459, 7456, 7458, 7457, 1, 1, 7457 }, // NTSC
+            new int[] { 8315, 8314, 8312, 8313, 1, 1, 8313 }, // PALB
+            new int[] { 7459, 7456, 7458, 7457, 1, 1, 7457  }, // DANDY
+        };
+        private int[][] SequenceMode1 = 
+        { 
+            new int[] { 1, 7458, 7456, 7458, 14910 } , // NTSC
+            new int[] { 1, 8314, 8314, 8312, 16626 } , // PALB
+            new int[] { 1, 7458, 7456, 7458, 14910 } , // DANDY
+        };
+        private int systemIndex = 0;//0=NTSC, 1=PALB, 2=DANDY
+        private byte CurrentSeq = 0;
+        private bool oddCycle = false;
+        private bool isClockingDuration = false;
+        private bool FrameIrqEnabled;
+        private bool FrameIrqFlag;
+        private bool EXenabled = false;//extra channels enable
+
+        //PLAYBACK
+        private int rPos;
+        private int wPos;
+        private int[] soundBuffer = new int[44100];
+
+        private float ClockFreq = 1789772f;
+        private float sampleDelay = (1789772f / 44100.00f);
+        private float sampleTimer;
+        private ApuMixerType mixer = ApuMixerType.Implementation;
 
         public Apu(TimingInfo.System system)
             : base(system)
         {
             timing.period = system.Master;
-            timing.single = system.Apu;
+            timing.single = system.Spu;
 
-            Sq1 = new ChannelSq1(system);
-            Sq2 = new ChannelSq2(system);
-            Tri = new ChannelTri(system);
-            Noi = new ChannelNoi(system);
-            Dmc = new ChannelDmc(system);
-        }
-
-        private byte Peek4015(int address)
-        {
-            return (byte)(
-                (Sq1.Status ? 0x01 : 0) |
-                (Sq2.Status ? 0x02 : 0) |
-                (Tri.Status ? 0x04 : 0) |
-                (Noi.Status ? 0x08 : 0) |
-                (Dmc.Status ? 0x10 : 0));
-        }
-        private void Poke4015(int address, byte data)
-        {
-            Sq1.Status = (data & 0x01) != 0;
-            Sq2.Status = (data & 0x02) != 0;
-            Tri.Status = (data & 0x04) != 0;
-            Noi.Status = (data & 0x08) != 0;
-            Dmc.Status = (data & 0x10) != 0;
+            sq1 = new ChannelSq1(system);
+            sq2 = new ChannelSq2(system);
+            tri = new ChannelTri(system);
+            noi = new ChannelNoi(system);
+            dmc = new ChannelDmc(system);
         }
 
         public override void Initialize()
         {
-            Sq1.Hook(0x4000);
-            Sq2.Hook(0x4004);
-            Tri.Hook(0x4008);
-            Noi.Hook(0x400C);
-            Dmc.Hook(0x4010);
+            sq1.Hook(0x4000);
+            sq2.Hook(0x4004);
+            tri.Hook(0x4008);
+            noi.Hook(0x400C);
+            dmc.Hook(0x4010);
 
-            Nes.CpuMemory.Hook(0x4015, Poke4015);
+            Nes.CpuMemory.Hook(0x4015, Peek4015, Poke4015);
+            Nes.CpuMemory.Hook(0x4017, Poke4017);
+
+            if (system.Master == TimingInfo.NTSC.Master)
+                systemIndex = 0;
+            else if (system.Master == TimingInfo.PALB.Master)
+                systemIndex = 1;
+            else if (system.Master == TimingInfo.DANDY.Master)
+                systemIndex = 2;
+            HardReset();
         }
-        public override void Update()
+        public override void HardReset()
         {
-            // todo: frame horse shit, length counter clocks, envelope clocks.. yuck
+            Cycles = SequenceMode0[systemIndex][0] - 10;
+            FrameIrqFlag = false;
+            FrameIrqEnabled = true;
+            SequencingMode = false;
+            CurrentSeq = 0;
+            oddCycle = false;
+            isClockingDuration = false;
+            wPos = rPos = 0;
+            soundBuffer = new int[soundBuffer.Length];
+            sampleTimer = 0;
+
+            sq1.HardReset();
+            sq2.HardReset();
+            tri.HardReset();
+            noi.HardReset();
+            dmc.HardReset();
+
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.HardReset();
+            }
         }
+        public override void SoftReset()
+        {
+            sq1.SoftReset();
+            sq2.SoftReset();
+            tri.SoftReset();
+            noi.SoftReset();
+            dmc.SoftReset();
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.SoftReset();
+            }
+            FrameIrqFlag = false;
+            FrameIrqEnabled = true;
+            Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Apu, false);
+            Cycles = SequenceMode0[systemIndex][0] - 10;
+            SequencingMode = false;
+            CurrentSeq = 0;
+            oddCycle = false;
+        }
+        public override void Shutdown() { }
+
+        public void SetupPlayback(ApuPlaybackDescription des)
+        {
+            ClockFreq = system.Master / system.Cpu;
+            sampleDelay = (ClockFreq / des.Frequency) - 1.1f;
+
+            soundBuffer = new int[des.Frequency];
+            this.mixer = des.MixerType;
+        }
+        public void AddExtraChannels(APU.Channel[] channels)
+        {
+            EXenabled = true;
+            extraChannels = channels;
+        }
+
+        private void ClockDuration()
+        {
+            ClockEnvelope();
+
+            sq1.ClockDuration();
+            sq2.ClockDuration();
+            noi.ClockDuration();
+            tri.ClockDuration();
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.ClockDuration();
+            }
+        }
+        private void ClockEnvelope()
+        {
+            sq1.ClockEnvelope();
+            sq2.ClockEnvelope();
+            noi.ClockEnvelope();
+            tri.ClockEnvelope();
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.ClockEnvelope();
+            }
+        }
+        private void ClockSingle()
+        {
+            sq1.ClockSingle(isClockingDuration);
+            sq2.ClockSingle(isClockingDuration);
+            tri.ClockSingle(isClockingDuration);
+            noi.ClockSingle(isClockingDuration);
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.ClockSingle(isClockingDuration);
+            }
+        }
+        private void UpdatePlayback()
+        {
+            if (sampleTimer > 0)
+            {
+                sampleTimer--;
+            }
+            else
+            {
+                sampleTimer += sampleDelay;
+                AddSample(sampleDelay);
+            }
+        }
+
+        private void CheckIrq()
+        {
+            if (FrameIrqEnabled)
+                FrameIrqFlag = true;
+        }
+        private void SetIrq()
+        {
+            if (FrameIrqFlag)
+                Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Apu, true);
+        }
+
         public override void Update(int cycles)
         {
-            base.Update(cycles);
-
-            timer += PHASE;
-
-            if (timer >= DELAY)
+            isClockingDuration = false;
+            Cycles--;
+            oddCycle = !oddCycle;
+            if (Cycles == 0)
             {
-                timer -= DELAY;
-                Render();
-            }
-        }
-
-        public void Render()
-        {
-            var sq1Sample = Sq1.Render(DELAY / 2);
-            var sq2Sample = Sq2.Render(DELAY / 2);
-
-            var triSample = Tri.Render(DELAY);
-
-            Nes.AudioDevice.Sample(
-                Mixer.MixSamples(sq1Sample, sq2Sample, triSample, 0, 0));
-        }
-
-        public class Channel : ProcessorBase
-        {
-            protected int frequency;
-
-            public virtual bool Status { get; set; }
-
-            public Channel(TimingInfo.System system)
-                : base(system)
-            {
-                timing.period = system.Master;
-                timing.single = GetCycles(frequency + 1);
-            }
-
-            protected int GetCycles(int cycles)
-            {
-                return cycles * PHASE;
-            }
-
-            protected virtual void PokeReg1(int address, byte data) { }
-            protected virtual void PokeReg2(int address, byte data) { }
-            protected virtual void PokeReg3(int address, byte data) { }
-            protected virtual void PokeReg4(int address, byte data) { }
-
-            public virtual void Hook(int address)
-            {
-                Nes.CpuMemory.Hook(address + 0, PokeReg1);
-                Nes.CpuMemory.Hook(address + 1, PokeReg2);
-                Nes.CpuMemory.Hook(address + 2, PokeReg3);
-                Nes.CpuMemory.Hook(address + 3, PokeReg4);
-            }
-
-            public virtual void ClockDuration() { }
-            public virtual void ClockEnvelope() { }
-            public virtual byte Render(int cycles) { return 0; }
-        }
-
-        public class Duty
-        {
-            private byte[][] table;
-            private int form;
-            private int step;
-            private int mask;
-
-            public int Form
-            {
-                get { return form; }
-                set { form = value; }
-            }
-
-            public Duty(int steps, params int[] forms)
-            {
-                if ((steps & (steps - 1)) != 0 || steps == 0)
-                    throw new Exception("'steps' must be a non-zero power of two.");
-
-                mask = (steps - 1);
-
-                table = new byte[forms.Length][];
-
-                for (int i = 0; i < forms.Length; i++)
+                if (!SequencingMode)
                 {
-                    int form = forms[i];
-
-                    table[i] = new byte[steps];
-
-                    for (int j = 0; j < steps; j++)
+                    switch (CurrentSeq)
                     {
-                        table[i][j] = (byte)(form & 0x01);
-                        form >>= 1;
+                        case 0: ClockEnvelope(); break;
+                        case 1: ClockDuration(); isClockingDuration = true; break;
+                        case 2: ClockEnvelope(); break;
+                        case 3: CheckIrq(); break;
+                        case 4: CheckIrq(); SetIrq(); ClockDuration(); isClockingDuration = true; break;
+                        case 5: CheckIrq(); break;
                     }
-                }
-            }
-
-            public void Clock() { step = ++step & mask; }
-            public void Reset() { step = 0; }
-            public byte Value() { return table[form][step]; }
-        }
-        public class Duration
-        {
-            public static readonly int[] LookupTable = new int[]
-            { 
-                0x0A, 0xFE, 0x14, 0x02, 0x28, 0x04, 0x50, 0x06, 0xA0, 0x08, 0x3C, 0x0A, 0x0E, 0x0C, 0x1A, 0x0E,
-                0x0C, 0x10, 0x18, 0x12, 0x30, 0x14, 0x60, 0x16, 0xC0, 0x18, 0x48, 0x1A, 0x10, 0x1C, 0x20, 0x1E
-            };
-
-            public bool Halt;
-            public int Enabled;
-            public int Counter;
-
-            public void Clock()
-            {
-                if (Counter != 0 && !Halt)
-                    Counter--;
-            }
-            public void SetEnabled(bool value)
-            {
-                Enabled = (value) ? 0xFF : 0x00;
-                Counter &= Enabled;
-            }
-            public void SetCounter(byte value)
-            {
-                Counter = LookupTable[value >> 3] & Enabled;
-            }
-        }
-        public class Envelope
-        {
-            private bool reset;
-            private int[] regs = new int[2];
-            private int count;
-
-            public int level;
-
-            private void UpdateLevel()
-            {
-                level = (regs[regs[1] >> 4 & 1] & 0xF);
-            }
-
-            public void Clock()
-            {
-                if (!reset)
-                {
-                    if (count != 0)
-                    {
-                        count--;
-                        return;
-                    }
-
-                    if (regs[0] != 0 || (regs[1] & 0x20) != 0)
-                        regs[0] = --regs[0] & 0xF;
+                    CurrentSeq++;
+                    Cycles += SequenceMode0[systemIndex][CurrentSeq];
+                    if (CurrentSeq == 6)
+                        CurrentSeq = 0;
                 }
                 else
                 {
-                    reset = false;
-                    regs[0] = 0xF;
+                    switch (CurrentSeq)
+                    {
+                        case 0:
+                        case 2: ClockDuration(); isClockingDuration = true; break;
+                        case 1:
+                        case 3: ClockEnvelope(); break;
+                    }
+                    CurrentSeq++;
+                    Cycles = SequenceMode1[systemIndex][CurrentSeq];
+                    if (CurrentSeq == 4)
+                        CurrentSeq = 0;
                 }
-
-                count = regs[1] & 0x0F;
-                UpdateLevel();
             }
-            public void PokeReg(byte data)
+            ClockSingle();
+            UpdatePlayback();
+            base.Update(cycles);
+        }
+        public override void Update()
+        {
+            sq1.Update(timing.single);
+            sq2.Update(timing.single);
+            noi.Update(timing.single);
+            tri.Update(timing.single);
+            dmc.Update(timing.single);
+            if (EXenabled)
             {
-                regs[1] = data;
-                UpdateLevel();
+                foreach (Channel chn in extraChannels)
+                    chn.Update(timing.single);
             }
+        }
+
+        private byte Peek4015(int addr)
+        {
+            byte data = 0;
+
+            if (sq1.Status) data |= 0x01;
+            if (sq2.Status) data |= 0x02;
+            if (tri.Status) data |= 0x04;
+            if (noi.Status) data |= 0x08;
+            if (dmc.Status) data |= 0x10;
+            if (FrameIrqFlag) data |= 0x40;
+            if (dmc.DeltaIrqOccur) data |= 0x80;
+
+            FrameIrqFlag = false;
+            Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Apu, false);
+
+            return data;
+        }
+        private void Poke4015(int address, byte data)
+        {
+            sq1.Status = (data & 0x01) != 0;
+            sq2.Status = (data & 0x02) != 0;
+            tri.Status = (data & 0x04) != 0;
+            noi.Status = (data & 0x08) != 0;
+            dmc.Status = (data & 0x10) != 0;
+        }
+        private void Poke4017(int addr, byte data)
+        {
+            SequencingMode = (data & 0x80) != 0;
+            FrameIrqEnabled = (data & 0x40) == 0;
+
+            CurrentSeq = 0;
+
+            if (!SequencingMode)
+                Cycles = SequenceMode0[systemIndex][0];
+            else
+                Cycles = SequenceMode1[systemIndex][0];
+
+            if (!oddCycle)
+                Cycles++;
+            else
+                Cycles += 2;
+
+            if (!FrameIrqEnabled)
+            {
+                FrameIrqFlag = false;
+                Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Apu, false);
+            }
+        }
+
+        private void AddSample(float sampleRate)
+        {
+            int output = (int)(MixSamples());
+
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    output += chn.GetSample();
+            }
+
+            //if (output > 128)
+            //    output = 128;
+            //if (output < 0)
+            //    output = 0;
+
+            this.soundBuffer[wPos++ % this.soundBuffer.Length] = output;
+        }
+        public int PullSample()
+        {
+            while (rPos >= wPos)
+            {
+                AddSample(sampleDelay);
+            }
+            return soundBuffer[rPos++ % soundBuffer.Length];
+        }
+        private float MixSamples()
+        {
+            float tndSample = 0;
+            float sqrSample = 0;
+            switch (mixer)
+            {
+                case ApuMixerType.Implementation:
+                    sqrSample += Nes.Apu.sq1.GetSample();
+                    sqrSample += Nes.Apu.sq2.GetSample();
+
+                    tndSample += Nes.Apu.tri.GetSample() * 3;
+                    tndSample += Nes.Apu.noi.GetSample() * 2;
+                    tndSample += Nes.Apu.dmc.GetSample() * 1;
+
+                    return ((95.52f / (8128.00f / sqrSample + 100)) + (163.67f / (24329.00f / tndSample + 100))) * 128;
+
+                case ApuMixerType.LinearApproximation:
+                    sqrSample += Nes.Apu.sq1.GetSample();
+                    sqrSample += Nes.Apu.sq2.GetSample();
+
+                    tndSample += Nes.Apu.tri.GetSample() * 0.00851f;
+                    tndSample += Nes.Apu.noi.GetSample() * 0.00494f;
+                    tndSample += Nes.Apu.dmc.GetSample() * 0.00335f;
+
+                    return ((0.00752f * sqrSample) + tndSample) * 128;
+
+                case ApuMixerType.Normal:
+                    sqrSample += Nes.Apu.sq1.GetSample();
+                    sqrSample += Nes.Apu.sq2.GetSample();
+
+                    tndSample += Nes.Apu.tri.GetSample();
+                    tndSample += Nes.Apu.noi.GetSample();
+                    tndSample += Nes.Apu.dmc.GetSample();
+
+                    return (sqrSample + tndSample);
+            }
+            return 0;
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            sq1.SaveState(stream);
+            sq2.SaveState(stream);
+            tri.SaveState(stream);
+            noi.SaveState(stream);
+            dmc.SaveState(stream);
+
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.SaveState(stream);
+            }
+
+            stream.Write(Cycles);
+            stream.Write(CurrentSeq);
+            stream.Write(SequencingMode, oddCycle, isClockingDuration, FrameIrqEnabled, FrameIrqFlag);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            sq1.LoadState(stream);
+            sq2.LoadState(stream);
+            tri.LoadState(stream);
+            noi.LoadState(stream);
+            dmc.LoadState(stream);
+
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    chn.LoadState(stream);
+            }
+
+            Cycles = stream.ReadInt32();
+            CurrentSeq = stream.ReadByte();
+            bool[] flags = stream.ReadBooleans();
+            SequencingMode = flags[0];
+            oddCycle = flags[1];
+            isClockingDuration = flags[2];
+            FrameIrqEnabled = flags[3];
+            FrameIrqFlag = flags[4];
         }
     }
 }

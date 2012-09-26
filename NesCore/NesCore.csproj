@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E91AC0C3-2A35-4197-AB9B-4A24DB83F613}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyNes.Core</RootNamespace>
+    <AssemblyName>NesCore</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|AnyCPU'">
+    <OutputPath>bin\x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\x86\</OutputPath>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|AnyCPU'">
+    <OutputPath>bin\x64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x86'">
+    <OutputPath>bin\x86\x64\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\x64\</OutputPath>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="APU\Apu.cs" />
+    <Compile Include="APU\ApuChannel.cs" />
+    <Compile Include="APU\ApuPlaybackDescription.cs" />
+    <Compile Include="APU\ChannelDmc.cs" />
+    <Compile Include="APU\ChannelNoi.cs" />
+    <Compile Include="APU\ChannelSq1.cs" />
+    <Compile Include="APU\ChannelSq2.cs" />
+    <Compile Include="APU\ChannelTri.cs" />
+    <Compile Include="APU\MMC5\MMC5PcmSoundChannel.cs" />
+    <Compile Include="APU\MMC5\MMC5SqrSoundChannel.cs" />
+    <Compile Include="Boards\Discreet\AxROM.cs" />
+    <Compile Include="Boards\Board.cs" />
+    <Compile Include="Boards\Discreet\Camerica.cs" />
+    <Compile Include="Boards\Discreet\CNROM.cs" />
+    <Compile Include="Boards\Discreet\UNROM.cs" />
+    <Compile Include="Boards\Discreet\UOROM.cs" />
+    <Compile Include="Boards\INESBoardManager.cs" />
+    <Compile Include="Boards\Nintendo\MMC1.cs" />
+    <Compile Include="Boards\Nintendo\MMC1_SUROM.cs" />
+    <Compile Include="Boards\Nintendo\MMC3.cs" />
+    <Compile Include="Boards\Nintendo\MMC5.cs" />
+    <Compile Include="Boards\Nintendo\NROM128.cs" />
+    <Compile Include="Boards\Nintendo\NROM256.cs" />
+    <Compile Include="Controls\ControlsUnit.cs" />
+    <Compile Include="Controls\SpeedLimiter.cs" />
+    <Compile Include="CPU\Cpu.cs" />
+    <Compile Include="CPU\CpuMemory.cs" />
+    <Compile Include="CPU\Dma.cs" />
+    <Compile Include="CPU\Types\Flags.cs" />
+    <Compile Include="CPU\Types\Register.cs" />
+    <Compile Include="Database\NesDatabase.cs" />
+    <Compile Include="Database\NesDatabaseGameInfo.cs" />
+    <Compile Include="Debug\Console.cs" />
+    <Compile Include="Debug\ConsoleCommand.cs" />
+    <Compile Include="Debug\ConsoleCommands.cs" />
+    <Compile Include="Debug\DebugCode.cs" />
+    <Compile Include="Debug\DebugEventArgs.cs" />
+    <Compile Include="Debug\DebugLine.cs" />
+    <Compile Include="Debug\DefaultCommands\GameGenieCommands.cs" />
+    <Compile Include="Debug\DefaultCommands\HardResetCommand.cs" />
+    <Compile Include="Debug\DefaultCommands\HelpCommand.cs" />
+    <Compile Include="Debug\DefaultCommands\OffCommand.cs" />
+    <Compile Include="Debug\DefaultCommands\PPUConsoleCommands.cs" />
+    <Compile Include="Debug\DefaultCommands\RomInfoCommands.cs" />
+    <Compile Include="Debug\DefaultCommands\SoftResetCommand.cs" />
+    <Compile Include="Delegates.cs" />
+    <Compile Include="Exceptions\NotSupportedMapperException.cs" />
+    <Compile Include="Exceptions\ReadRomFailedException.cs" />
+    <Compile Include="GameGenie\GameGenie.cs" />
+    <Compile Include="GameGenie\GameGenieCode.cs" />
+    <Compile Include="IO\Input\IInputDevice.cs" />
+    <Compile Include="IO\Input\IJoypad.cs" />
+    <Compile Include="IO\Input\IVSunisystemDIP.cs" />
+    <Compile Include="IO\Input\IZapper.cs" />
+    <Compile Include="IO\Output\IAudioDevice.cs" />
+    <Compile Include="IO\Output\IVideoDevice.cs" />
+    <Compile Include="Memory.cs" />
+    <Compile Include="Nes.cs" />
+    <Compile Include="PPU\NTSCPaletteGenerator.cs" />
+    <Compile Include="PPU\PALBPaletteGenerator.cs" />
+    <Compile Include="PPU\Ppu.cs" />
+    <Compile Include="PPU\PpuMemory.cs" />
+    <Compile Include="PPU\PPUTypes.cs" />
+    <Compile Include="ProcessorBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ROM\INESHeader.cs" />
+    <Compile Include="ROM\RomInfo.cs" />
+    <Compile Include="TimingInfo.cs" />
+    <Compile Include="Types\EmulationSystem.cs" />
+    <Compile Include="Types\Mirroring.cs" />
+    <Compile Include="Types\StateStream.cs" />
+    <Compile Include="VSUnisystem.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Boards\Konami\" />
+    <Folder Include="Boards\Sunsoft\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

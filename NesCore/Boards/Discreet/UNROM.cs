@@ -1,35 +1,39 @@
-﻿namespace myNES.Core.Boards.Discreet
+﻿/* This file is part of My Nes
+ * A Nintendo Entertainment System Emulator.
+ *
+ * Copyright © Ala I Hadid 2009 - 2012
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace MyNes.Core.Boards.Discreet
 {
+    [BoardName("UNROM")]
     public class UNROM : Board
     {
         public UNROM(byte[] chr, byte[] prg)
             : base(chr, prg)
         {
-            prgPage = new int[2];
-            prgPage[0] = 0x0 << 14;
-            prgPage[1] = 0x7 << 14;
         }
-
-        protected override int DecodePrgAddress(int address)
+        public override void HardReset()
         {
-            // r rraa aaaa aaaa aaaa
-            // |  ||               |
-            // |  |+---------------+- address bits  ($3FFF)
-            // +--+------------------ pagesel bits ($1C000)
-            //                                     ($1FFFF) = (128 * 1024) - 1
-
-            switch (address & 0xC000)
-            {
-                case 0x8000: return (address & 0x3FFF) | prgPage[0]; // first bank switchable
-                case 0xC000: return (address & 0x3FFF) | prgPage[1]; // second bank fixed to last page ($7 << 14)
-            }
-
-            return (address & 0x3FFF) | prgPage[address >> 14 & 1]; // simplified, one-line version of above
+            base.HardReset();
+            base.Switch16KPRG(0, 0x8000);
+            base.Switch16KPRG(0x07, 0xC000);
         }
-
         protected override void PokePrg(int address, byte data)
         {
-            prgPage[0] = (data & 0x07) << 14; // UNROM uses bits d:[2-0]
+            base.Switch16KPRG((data & 0x07), 0x8000);
         }
     }
 }

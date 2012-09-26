@@ -1,14 +1,33 @@
-﻿using System;
+﻿/* This file is part of My Nes
+ * A Nintendo Entertainment System Emulator.
+ *
+ * Copyright © Ala I Hadid 2009 - 2012
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.IO;
+using MyNes.Core.Types;
 
-namespace myNES.Core.ROM
+namespace MyNes.Core.ROM
 {
     /// <summary>
     /// Encapsulates an INES format header
     /// </summary>
     public class INESHeader
     {
-        public INESResult Result;
+        public bool IsValid;
         public byte ChrPages;
         public byte PrgPages;
         public byte Mapper;
@@ -18,7 +37,7 @@ namespace myNES.Core.ROM
         public bool IsVram;
         public bool IsVSUnisystem;
         public bool IsPlaychoice10;
-        public int Mirroring;
+        public Mirroring Mirroring;
 
         /// <summary>
         /// Create a new instance of INES format header
@@ -26,8 +45,8 @@ namespace myNES.Core.ROM
         /// <param name="romPath">The absolute ROM path</param>
         public INESHeader(string romPath)
         {
-            var stream = new FileStream(romPath, FileMode.Open, FileAccess.Read);
-            var header = new byte[16];
+            FileStream stream = new FileStream(romPath, FileMode.Open, FileAccess.Read);
+            byte[] header = new byte[16];
 
             stream.Read(header, 0, 16);
             stream.Close();
@@ -37,7 +56,7 @@ namespace myNES.Core.ROM
                 header[2] != 'S' ||
                 header[3] != 0x1A)
             {
-                Result = INESResult.InvalidHeader;
+                IsValid = false;
                 return;
             }
 
@@ -51,30 +70,24 @@ namespace myNES.Core.ROM
                 case 0x0: this.Mirroring = Types.Mirroring.ModeHorz; break;
                 case 0x1: this.Mirroring = Types.Mirroring.ModeVert; break;
                 case 0x8:
-                case 0x9: throw new Exception("4-screen mirroring isn't supported.");
+                case 0x9: this.Mirroring = Types.Mirroring.ModeFull; break;
             }
 
             HasSaveRam = (header[6] & 0x2) != 0x0;
             HasTrainer = (header[6] & 0x4) != 0x0;
 
-           // if ((header[7] & 0x0F) == 0)
-                Mapper |= (byte)((header[7] & 0xF0) | (header[6] >> 4));
-           // else
-           //     throw new Exception("Header is corrupted, please use the header cleaner tool");
+            // if ((header[7] & 0x0F) == 0)
+            Mapper |= (byte)((header[7] & 0xF0) | (header[6] >> 4));
+            // else
+            //     throw new Exception("Header is corrupted, please use the header cleaner tool");
 
             IsVSUnisystem = (header[7] & 0x01) != 0;
             IsPlaychoice10 = (header[7] & 0x02) != 0;
 
-            // TODO: pal system detect
-            IsPalb = false;
-            Result = INESResult.Valid;
-        }
-
-        public enum INESResult
-        {
-            InvalidHeader = -2,
-            InvalidMapper = -1,
-            Valid = 0,
+            //Pal system detect, Though in the official specification, very few emulators honor this 
+            //bit as virtually no ROM images in circulation make use of it. 
+            IsPalb = (header[9] & 1) == 1;
+            IsValid = true;
         }
     }
 }

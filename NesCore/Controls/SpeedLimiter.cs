@@ -1,5 +1,23 @@
-﻿using System.Threading;
-namespace myNES.Core.Controls
+﻿/* This file is part of My Nes
+ * A Nintendo Entertainment System Emulator.
+ *
+ * Copyright © Ala I Hadid 2009 - 2012
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+using System.Threading;
+namespace MyNes.Core.Controls
 {
     /// <summary>
     /// The speed limiter which should control speed depending on emulation system
@@ -10,6 +28,12 @@ namespace myNES.Core.Controls
         {
             this.timer = timer;
             this.emuSystem = emuSystem;
+
+            if (emuSystem.Master == TimingInfo.NTSC.Master)
+                FramePeriod = (1.0 / 60.0988);
+            else//PALB
+                FramePeriod = (1.0 / 50.0070);
+
             this.ON = true;
         }
         private ITimer timer;
@@ -19,7 +43,7 @@ namespace myNES.Core.Controls
         public double CurrentFrameTime;
         public double DeadTime;
         public double LastFrameTime;
-        public double FramePeriod = (1.0 / 60.0);
+        public double FramePeriod = (1.0 / 60.0988);
 
         /// <summary>
         /// Call this when a frame completed
@@ -30,8 +54,10 @@ namespace myNES.Core.Controls
             DeadTime = FramePeriod - CurrentFrameTime;
             if (ON)
             {
-                if (DeadTime > 0)
-                    Thread.Sleep((int)(DeadTime * 1000));
+                //This should relieve the pc's cpu for the dead time
+                //but after monitoring performance this has no effect.
+                //if (DeadTime > 0)
+                //    Thread.Sleep((int)(DeadTime * 1000));
 
                 while (CurrentFrameTime < FramePeriod)
                 {

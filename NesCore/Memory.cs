@@ -1,6 +1,25 @@
-﻿namespace myNES.Core
+﻿/* This file is part of My Nes
+ * A Nintendo Entertainment System Emulator.
+ *
+ * Copyright © Ala I Hadid 2009 - 2012
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+using MyNes.Core.Types;
+namespace MyNes.Core
 {
-    public class Memory : Component
+    public class Memory
     {
         private PeekRegister[] peek;
         private PokeRegister[] poke;
@@ -8,6 +27,12 @@
         private int mask;
 
         public int Length { get { return size; } }
+
+        public byte this[int address]
+        {
+            get { return peek[address &= mask](address); }
+            set { poke[address &= mask](address, value); }
+        }
 
         public Memory(int size)
         {
@@ -43,16 +68,20 @@
                 Hook(address, peek, poke);
         }
 
-        public virtual byte Peek(int address)
+        public virtual byte DebugPeek(int address)
         {
-            return peek[address &= mask](address);
+            return this[address];
         }
-        public virtual void Poke(int address, byte data)
+        public virtual void DebugPoke(int address, byte data)
         {
-            poke[address &= mask](address, data);
+            this[address] = data;
         }
 
-        public virtual byte DebugPeek(int address) { return 0; }
-        public virtual void DebugPoke(int address, byte data) { }
+        public virtual void Initialize() { }
+        public virtual void Shutdown() { }
+        public virtual void HardReset() { }
+        public virtual void SoftReset() { }
+        public virtual void SaveState(StateStream stream) { }
+        public virtual void LoadState(StateStream stream) { }
     }
 }

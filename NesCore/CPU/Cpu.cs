@@ -1,24 +1,44 @@
-﻿using System;
-using myNES.Core.CPU.Types;
+﻿/* This file is part of My Nes
+ * A Nintendo Entertainment System Emulator.
+ *
+ * Copyright © Ala I Hadid 2009 - 2012
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
+using MyNes.Core.CPU.Types;
 
-namespace myNES.Core.CPU
+namespace MyNes.Core.CPU
 {
     public class Cpu : ProcessorBase
     {
         private Action[] codes;
         private Action[] modes;
-        private Dma dma = new Dma();
+        public Dma dma = new Dma();
         private Flags sr; // Processor Status
-        private Register aa;
         private Register pc; // Program Counter
         private Register sp; // Stack Pointer
-        private bool irq;
-        private bool nmi;
-        private bool requestIrq;
-        public bool requestNmi;
         private byte a; // Accumulator
         private byte x; // Index Register X
         private byte y; // Index Register Y
+        private Register aa;
+        private byte dummyVal = 0;//needed by some instructions
+        private bool irq;
+        private bool nmi;
+        private bool brk;
+        public bool requestNmi;
+        public byte DMCdmaCycles = 0;
         private byte code;
         private int irqRequestFlags;
         private bool locked;
@@ -40,15 +60,20 @@ namespace myNES.Core.CPU
                 aa.Value = (ushort)(pc.Value + (sbyte)data);
 
                 if (aa.HiByte != pc.HiByte)
+                {
                     Dispatch();
+                }
 
                 pc.Value = aa.Value;
             }
         }
-        private void Dispatch()
+        public void Dispatch()
         {
-            Nes.Ppu.Update(timing.single);
-            Nes.Apu.Update(timing.single);
+            if (Nes.ON)
+            {
+                Nes.Apu.Update(timing.single);
+                Nes.Ppu.Update(timing.single);
+            }
         }
         private byte Pull()
         {
@@ -60,18 +85,42 @@ namespace myNES.Core.CPU
             Poke(sp.Value, (byte)data);
             sp.LoByte--;
         }
-
-        public byte Peek(int address)
+        private byte Peek(int address)
         {
+            if (DMCdmaCycles > 0)
+            {
+                byte _DMCdmaCycles = DMCdmaCycles;
+                DMCdmaCycles = 0;
+                if ((address == 0x4016) || (address == 0x4017))
+                {
+                    // The 2A03 DMC gets fetch by pulling RDY low internally. 
+                    // This causes the CPU to pause during the next read cycle, until RDY goes high again.
+                    // The DMC unit holds RDY low for 4 cycles.
+
+                    // Consecutive controller port reads from this are treated as one
+                    if (_DMCdmaCycles-- > 0)
+                        Peek(address);
+                    while (--_DMCdmaCycles > 0)
+                        Dispatch();
+                }
+                else
+                {
+                    // but other addresses see multiple reads as expected
+                    while (--_DMCdmaCycles > 0)
+                        Peek(address);
+                }
+                Nes.Apu.dmc.DoFetch();
+            }
             Dispatch();
 
-            return Nes.CpuMemory.Peek(address);
+            return Nes.CpuMemory[address];
         }
-        public void Poke(int address, byte data)
+        private void Poke(int address, byte data)
         {
             Dispatch();
-
-            Nes.CpuMemory.Poke(address, data);
+            if (DMCdmaCycles > 0)
+                DMCdmaCycles--;
+            Nes.CpuMemory[address] = data;
         }
 
         #region Codes
@@ -89,6 +138,7 @@ namespace myNES.Core.CPU
             sr.n = (temp & 0x80) != 0;
             sr.v = ((temp ^ a) & (temp ^ data) & 0x80) != 0;
             sr.z = (temp & 0xFF) == 0;
+
             sr.c = (temp >> 0x8) != 0;
             a = (byte)(temp);
         }
@@ -138,26 +188,9 @@ namespace myNES.Core.CPU
         private void OpBpl_m() { Branch(!sr.n); }
         private void OpBrk_m()
         {
-            Peek(pc.Value);
-
-            Push(pc.HiByte);
-            Push(pc.LoByte);
-            Push(sr | 0x10);
-
-            sr.i = true;
-
-            if (nmi)
-            {
-                nmi = false;
-                requestNmi = false;
-                pc.LoByte = Peek(0xFFFA);
-                pc.HiByte = Peek(0xFFFB);
-            }
-            else
-            {
-                pc.LoByte = Peek(0xFFFE);
-                pc.HiByte = Peek(0xFFFF);
-            }
+            Dispatch();
+            //brk disable irqs
+            brk = true; irq = false;
         }
         private void OpBvc_m() { Branch(!sr.v); }
         private void OpBvs_m() { Branch(sr.v); }
@@ -259,7 +292,6 @@ namespace myNES.Core.CPU
         }
         private void OpJmp_m()
         {
-            //Dispatch(); // no need for this since high byte already fetched
             pc.Value = aa.Value;
         }
         private void OpJsr_m()
@@ -341,7 +373,6 @@ namespace myNES.Core.CPU
         }
         private void OpPlp_i()
         {
-            //sr = Pull();
             sp.LoByte++; Dispatch();
             sr = Peek(sp.Value);
         }
@@ -522,36 +553,39 @@ namespace myNES.Core.CPU
         }
         private void OpDcp_m()
         {
-            var data = Peek(aa.Value);
-            Poke(aa.Value, data--);
+            byte data = Peek(aa.Value);
+
             Poke(aa.Value, data);
 
-            var temp = a - data;
-            sr.n = (temp & 0x80) != 0;
-            sr.z = (temp & 0xff) == 0;
-            sr.c = ((~temp >> 8) & 1) != 0;
+            data--;
+
+            Poke(aa.Value, data);
+
+            int data1 = a - data;
+
+            sr.n = (data1 & 0x80) != 0;
+            sr.z = (data1 & 0xFF) == 0;
+            sr.c = (~data1 >> 8) != 0;
         }
-        private void OpDop_i()
-        {
-            Peek(pc.Value);
-        }
+        private void OpDop_i() { Dispatch(); }
         private void OpIsc_m()
         {
-            var data = Peek(aa.Value);
+            byte data = Peek(aa.Value);
 
-            Poke(aa.Value, data++);
             Poke(aa.Value, data);
 
-            data ^= 0xff;
+            data++;
 
-            var temp = (a + data) + (sr.c ? 1 : 0);
+            Poke(aa.Value, data);
+
+            int data1 = data ^ 0xFF;
+            int temp = (a + data1 + (sr.c ? 1 : 0));
 
             sr.n = (temp & 0x80) != 0;
-            sr.v = ((temp ^ a) & ~(data ^ a) & 0x80) != 0;
+            sr.v = ((temp ^ a) & (temp ^ data1) & 0x80) != 0;
             sr.z = (temp & 0xFF) == 0;
             sr.c = (temp >> 0x8) != 0;
-
-            a = (byte)temp;
+            a = (byte)(temp);
         }
         private void OpJam_m()
         {
@@ -569,70 +603,99 @@ namespace myNES.Core.CPU
         }
         private void OpLax_m()
         {
-            a = Peek(aa.Value);
-            x = a;
+            x = a = Peek(aa.Value);
+
             sr.n = (x & 0x80) != 0;
-            sr.z = (x & 0xff) == 0;
+            sr.z = (x & 0xFF) == 0;
         }
         private void OpRla_m()
         {
-            var data = Peek(aa.Value);
-            var flag = (data & 0x80) != 0;
+            byte data = Peek(aa.Value);
+
             Poke(aa.Value, data);
-            data = (byte)((data << 1) | (sr.c ? 0x01 : 0));
-            Poke(aa.Value, data);
-            a &= data;
+
+            byte temp = (byte)((data << 1) | (sr.c ? 0x01 : 0x00));
+
+            Poke(aa.Value, temp);
+
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (data & 0x80) != 0;
+
+            a &= temp;
             sr.n = (a & 0x80) != 0;
-            sr.z = (a & 0xff) == 0;
-            sr.c = flag;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpRra_m()
         {
-            var data = Peek(aa.Value);
-            var flag = (data & 1) != 0;
+            //OpRor_m();
+            //OpAdc_m();
+            byte data = Peek(aa.Value);
+
             Poke(aa.Value, data);
-            data = (byte)((data >> 1) | (sr.c ? 0x80 : 0));
-            Poke(aa.Value, data);
-            sr.c = flag;
-            int num2 = (a + data) + (sr.c ? 1 : 0);
-            sr.n = (num2 & 0x80) != 0;
-            sr.v = (((num2 ^ a) & ~(data ^ a)) & 0x80) != 0;
-            sr.z = (num2 & 0xff) == 0;
-            sr.c = (num2 >> 8) != 0;
-            a = (byte)num2;
+
+            byte temp = (byte)((data >> 1) | (sr.c ? 0x80 : 0x00));
+
+            Poke(aa.Value, temp);
+
+            sr.n = (temp & 0x80) != 0;
+            sr.z = (temp & 0xFF) == 0;
+            sr.c = (data & 0x01) != 0;
+
+            data = temp;
+            int temp1 = (a + data + (sr.c ? 1 : 0));
+
+            sr.n = (temp1 & 0x80) != 0;
+            sr.v = ((temp1 ^ a) & (temp1 ^ data) & 0x80) != 0;
+            sr.z = (temp1 & 0xFF) == 0;
+            sr.c = (temp1 >> 0x8) != 0;
+            a = (byte)(temp1);
         }
         private void OpSax_m()
         {
             Poke(aa.Value, (byte)(x & a));
         }
-        private void OpShx_m() { Peek(pc.Value); }
-        private void OpShy_m() { Peek(pc.Value); }
+        private void OpShx_m() { Dispatch(); }
+        private void OpShy_m() { Dispatch(); }
         private void OpSlo_m()
         {
-            var data = Peek(aa.Value);
+            byte data = Peek(aa.Value);
+
             sr.c = (data & 0x80) != 0;
+
             Poke(aa.Value, data);
+
             data <<= 1;
+
             Poke(aa.Value, data);
+
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
+
             a |= data;
             sr.n = (a & 0x80) != 0;
-            sr.z = (a & 0xff) == 0;
+            sr.z = (a & 0xFF) == 0;
         }
         private void OpSre_m()
         {
-            var data = Peek(aa.Value);
+            byte data = Peek(aa.Value);
+
             sr.c = (data & 0x01) != 0;
+
             Poke(aa.Value, data);
+
             data >>= 1;
+
             Poke(aa.Value, data);
+
+            sr.n = (data & 0x80) != 0;
+            sr.z = (data & 0xFF) == 0;
+
             a ^= data;
             sr.n = (a & 0x80) != 0;
-            sr.z = (a & 0xff) == 0;
+            sr.z = (a & 0xFF) == 0;
         }
-        private void OpTop_i()
-        {
-            Peek(pc.Value);
-        }
+        private void OpTop_i() { Dispatch(); }
         private void OpXaa_m()
         {
             a = (byte)(x & Peek(aa.Value));
@@ -641,7 +704,7 @@ namespace myNES.Core.CPU
         }
         private void OpXas_m()
         {
-            sp.LoByte = (byte)(a & x & (aa.HiByte + 1));
+            sp.LoByte = (byte)(a & x & ((dummyVal >> 8) + 1));
 
             Poke(aa.Value, sp.LoByte);
         }
@@ -703,7 +766,7 @@ namespace myNES.Core.CPU
 
             aa.LoByte += y;
 
-            Peek(aa.Value);
+            dummyVal = Peek(aa.Value);
 
             if (aa.LoByte < y)
                 aa.HiByte++;
@@ -732,8 +795,7 @@ namespace myNES.Core.CPU
         {
             byte addr = Peek(pc.Value++);
 
-            Dispatch();
-            addr += x;
+            addr += x; Dispatch();
 
             aa.LoByte = Peek(addr++);
             aa.HiByte = Peek(addr++);
@@ -760,7 +822,7 @@ namespace myNES.Core.CPU
 
             aa.LoByte += y;
 
-            Peek(aa.Value);
+            dummyVal = Peek(aa.Value);
 
             if (aa.LoByte < y)
                 aa.HiByte++;
@@ -793,6 +855,12 @@ namespace myNES.Core.CPU
                 case IsrType.Ppu: nmi = asserted; break;
                 case IsrType.Apu:
                 case IsrType.Dmc:
+                    if (asserted)
+                    { irqRequestFlags |= (int)type; }
+                    else
+                    { irqRequestFlags &= ~(int)type; }
+                    irq = (!sr.i && (irqRequestFlags != 0));
+                    break;
                 case IsrType.Mmc:
                     if (asserted)
                         irqRequestFlags |= (int)type;
@@ -849,28 +917,13 @@ namespace myNES.Core.CPU
                 OpBeq_m, OpSbc_m, OpJam_m, OpIsc_m, OpDop_i, OpSbc_m, OpInc_m, OpIsc_m, OpSed_i, OpSbc_m, OpNop_i, OpIsc_m, OpTop_i, OpSbc_m, OpInc_m, OpIsc_m, // F
             };
 
-            Poke(0x0008, 0xF7);
-            Poke(0x0008, 0xF7);
-            Poke(0x0009, 0xEF);
-            Poke(0x000A, 0xDF);
-            Poke(0x000F, 0xBF);
-
-            a = 0x00;
-            x = 0x00;
-            y = 0x00;
-
-            sp.LoByte = 0xFD;
-            sp.HiByte = 0x01;
-
-            pc.LoByte = Peek(0xFFFC);
-            pc.HiByte = Peek(0xFFFD);
-
-            sr.i = true;
+            HardReset();
 
             Nes.CpuMemory.Hook(0x4014, dma.OamTransfer);
 
             Console.WriteLine("CPU initialized!", DebugCode.Good);
         }
+        public override void Shutdown() { }
         public override void SoftReset()
         {
             sr.i = true;
@@ -878,6 +931,28 @@ namespace myNES.Core.CPU
 
             pc.LoByte = Peek(0xFFFC);
             pc.HiByte = Peek(0xFFFD);
+        }
+        public override void HardReset()
+        {
+            //registers
+            a = 0x00;
+            x = 0x00;
+            y = 0x00;
+
+            sp.LoByte = 0xFD;
+            sp.HiByte = 0x01;
+
+            pc.LoByte = Nes.CpuMemory[0xFFFC];
+            pc.HiByte = Nes.CpuMemory[0xFFFD];
+            sr = 0;
+            sr.i = true;
+            aa.Value = 0;
+            //interrupts
+            irqRequestFlags = 0;
+            irq = nmi = brk = requestNmi = false;
+            //others
+            locked = false;
+            code = dummyVal = 0;
         }
         public override void Update()
         {
@@ -901,36 +976,81 @@ namespace myNES.Core.CPU
 
                 Push(pc.HiByte);
                 Push(pc.LoByte);
-                Push(sr);
-
+                Push(sr | (brk ? 0x10 : 0));
+                //if br/irq occurred here, set i flag nothing else (with B if brk)
+                if (irq | brk)
+                    sr.i = true;
                 pc.LoByte = Peek(0xFFFA);
                 pc.HiByte = Peek(0xFFFB);
             }
-            else if (irq)
+            else if (irq | brk)
             {
                 Push(pc.HiByte);
                 Push(pc.LoByte);
-                Push(sr);
+                Push(sr | (brk ? 0x10 : 0));
 
                 sr.i = true;
-
-                pc.LoByte = Peek(0xFFFE);
-                pc.HiByte = Peek(0xFFFF);
+                //if nmi occurred here, change vector and set B flag
+                if (nmi)
+                {
+                    nmi = false;
+                    requestNmi = false;
+                    pc.LoByte = Peek(0xFFFA);
+                    pc.HiByte = Peek(0xFFFB);
+                }
+                else
+                {
+                    pc.LoByte = Peek(0xFFFE);
+                    pc.HiByte = Peek(0xFFFF);
+                }
             }
-
+            brk = false;
             if (requestNmi)
             {
                 requestNmi = false;
                 nmi = true;
             }
-
-            if (requestIrq)
-            {
-                requestIrq = false;
-                Interrupt(IsrType.Mmc, true);
-            }
         }
 
+        public override void SaveState(Core.Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            dma.SaveState(stream);
+            stream.Write((byte)sr);
+            stream.Write(pc.Value);
+            stream.Write(sp.Value);
+            stream.Write(a);
+            stream.Write(x);
+            stream.Write(y);
+            stream.Write(aa.Value);
+            stream.Write(dummyVal);
+            stream.Write(irq, nmi, brk, requestNmi, locked);
+            stream.Write(DMCdmaCycles);
+            stream.Write(code);
+            stream.Write(irqRequestFlags);
+        }
+        public override void LoadState(Core.Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            dma.LoadState(stream);
+            sr = stream.ReadByte();
+            pc.Value = stream.ReadUshort();
+            sp.Value = stream.ReadUshort();
+            a = stream.ReadByte();
+            x = stream.ReadByte();
+            y = stream.ReadByte();
+            aa.Value = stream.ReadUshort();
+            dummyVal = stream.ReadByte();
+            bool[] flags = stream.ReadBooleans();
+            irq = flags[0];
+            nmi = flags[1];
+            brk = flags[2];
+            requestNmi = flags[3];
+            locked = flags[4];
+            DMCdmaCycles = stream.ReadByte();
+            code = stream.ReadByte();
+            irqRequestFlags = stream.ReadInt32();
+        }
         public enum IsrType
         {
             Ppu = 0,
