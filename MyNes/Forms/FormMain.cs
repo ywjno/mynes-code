@@ -757,16 +757,25 @@ namespace MyNes.Forms
                     autoToolStripMenuItem.Checked = true;
                     nTSCToolStripMenuItem.Checked = false;
                     pALToolStripMenuItem.Checked = false;
+                    dANDYToolStripMenuItem.Checked = false;
                     break;
                 case EmulationSystem.NTSC:
                     autoToolStripMenuItem.Checked = false;
                     nTSCToolStripMenuItem.Checked = true;
                     pALToolStripMenuItem.Checked = false;
+                    dANDYToolStripMenuItem.Checked = false;
                     break;
                 case EmulationSystem.PALB:
                     autoToolStripMenuItem.Checked = false;
                     nTSCToolStripMenuItem.Checked = false;
                     pALToolStripMenuItem.Checked = true;
+                    dANDYToolStripMenuItem.Checked = false;
+                    break;
+                case EmulationSystem.DANDY:
+                    autoToolStripMenuItem.Checked = false;
+                    nTSCToolStripMenuItem.Checked = false;
+                    pALToolStripMenuItem.Checked = false;
+                    dANDYToolStripMenuItem.Checked = true;
                     break;
             }
         }
@@ -968,6 +977,10 @@ namespace MyNes.Forms
 
             try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.CoverPath); }
             catch { }
+        }
+        private void dANDYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.EmuSystem = EmulationSystem.DANDY;
         }
     }
 }

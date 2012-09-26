@@ -340,7 +340,7 @@ namespace MyNes.Core
             Cpu.HardReset();
             Apu.HardReset();
             Ppu.HardReset();
-
+            SetupPalette();
             if (RomInfo.HasSaveRam)
                 LoadSram();
         }
@@ -437,7 +437,7 @@ namespace MyNes.Core
         {
             if (emuSystem.Master == TimingInfo.NTSC.Master)
                 Ppu.SetupPalette(NTSCPaletteGenerator.GeneratePalette());
-            else
+            else//use pal palette for pal and dandy
                 Ppu.SetupPalette(PALBPaletteGenerator.GeneratePalette());
         }
         /// <summary>

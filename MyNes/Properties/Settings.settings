@@ -77,9 +77,6 @@
     <Setting Name="SoundMixerType" Type="MyNes.Core.APU.ApuMixerType" Scope="User">
       <Value Profile="(Default)">Implementation</Value>
     </Setting>
-    <Setting Name="SoundLatency" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">10</Value>
-    </Setting>
     <Setting Name="ColumnWidths" Type="MyNes.ColumnWidthsCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -88,6 +85,9 @@
     </Setting>
     <Setting Name="RecentFiles" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SoundLatency" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
     </Setting>
   </Settings>
 </SettingsFile>

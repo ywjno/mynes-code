@@ -21,28 +21,41 @@ namespace MyNes.Core.APU
     public class ChannelNoi : Channel
     {
         public ChannelNoi(TimingInfo.System system)
-            : base(system) { isPAL = system.Master == TimingInfo.PALB.Master; }
-        private bool isPAL;
+            : base(system)
+        {
+            if (system.Master == TimingInfo.NTSC.Master)
+                systemIndex = 0;
+            else if (system.Master == TimingInfo.PALB.Master)
+                systemIndex = 1;
+            else if (system.Master == TimingInfo.DANDY.Master)
+                systemIndex = 2;
+        }
+        private int systemIndex = 0;
         private bool ModeFlag = false;
         private int ShiftRegister = 1;
 
-        private static readonly int[] FrequencyTableNTSC = 
+        private static readonly int[][] FrequencyTable = 
         { 
-            0x002,0x004,0x008,0x010,0x020,0x030,0x040,0x050,
-            0x065,0x07F,0x0BE,0x0FE,0x17D,0x1FC,0x3F9,0x7F2
-        };
-        private static readonly int[] FrequencyTablePALB =
-        { 
-           0x002,0x003,0x007,0x00F,0x01E,0x02C,0x03B,0x04A,
-	       0x05E,0x076,0x0B1,0x0EC,0x162,0x1D8,0x3B1,0x761
+             new int [] //NTSC
+         {  
+             0x002,0x004,0x008,0x010,0x020,0x030,0x040,0x050,
+             0x065,0x07F,0x0BE,0x0FE,0x17D,0x1FC,0x3F9,0x7F2
+         },
+             new int [] //PAL
+         {  
+             0x002,0x003,0x007,0x00F,0x01E,0x02C,0x03B,0x04A,
+	         0x05E,0x076,0x0B1,0x0EC,0x162,0x1D8,0x3B1,0x761
+         },
+             new int [] //DANDY (same as pal for now)
+         {  
+             0x002,0x003,0x007,0x00F,0x01E,0x02C,0x03B,0x04A,
+	         0x05E,0x076,0x0B1,0x0EC,0x162,0x1D8,0x3B1,0x761
+         }
         };
 
         protected override void PokeReg3(int address, byte data)
         {
-            if (isPAL)
-                timing.single = GetCycles(FrequencyTablePALB[data & 0x0F]);
-            else
-                timing.single = GetCycles(FrequencyTableNTSC[data & 0x0F]);
+            timing.single = GetCycles(FrequencyTable[systemIndex][data & 0x0F]);
             ModeFlag = (data & 0x80) == 0x80;
         }
 
