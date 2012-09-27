@@ -622,7 +622,7 @@ namespace MyNes.Core.PPU
         public override void Update()
         {
             CycleTimer();
-            if (vclock < 240 || vclock == 261)
+            if (vclock < 240 || vclock == vbl_vclock_End)
             {
                 if (IsRenderingOn())
                 {
@@ -669,7 +669,7 @@ namespace MyNes.Core.PPU
                     {
                         if (hclock == 256)
                             scroll.ResetX();
-                        else if (hclock == 304 && vclock == 261)
+                        else if (hclock == 304 && vclock == vbl_vclock_End)
                             scroll.ResetY();
                         #region Spr Fetches
 
