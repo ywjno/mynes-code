@@ -39,6 +39,7 @@ namespace MyNes.Core.CPU
         private bool brk;
         public bool requestNmi;
         public byte DMCdmaCycles = 0;
+        public byte DMAcycles = 0;
         private byte code;
         private int irqRequestFlags;
         private bool locked;
@@ -61,7 +62,7 @@ namespace MyNes.Core.CPU
 
                 if (aa.HiByte != pc.HiByte)
                 {
-                    Dispatch();
+                    Dispatch_LastCycle();
                 }
 
                 pc.Value = aa.Value;
@@ -75,14 +76,37 @@ namespace MyNes.Core.CPU
                 Nes.Ppu.Update(timing.single);
             }
         }
+        /// <summary>
+        /// Is it the last cycle of the instruction ? if so process interrupt sequence before clock components
+        /// </summary>
+        public void Dispatch_LastCycle()
+        {
+            //check for interrupt before update
+            irq = (!sr.i && (irqRequestFlags != 0));
+            if (Nes.ON)
+            {
+                Nes.Apu.Update(timing.single);
+                Nes.Ppu.Update(timing.single);
+            }
+        }
         private byte Pull()
         {
             sp.LoByte++;
             return Peek(sp.Value);
         }
+        private byte Pull_LastCycle()
+        {
+            sp.LoByte++;
+            return Peek_LastCycle(sp.Value);
+        }
         private void Push(int data)
         {
             Poke(sp.Value, (byte)data);
+            sp.LoByte--;
+        }
+        private void Push_LastCycle(int data)
+        {
+            Poke_LastCycle(sp.Value, (byte)data);
             sp.LoByte--;
         }
         private byte Peek(int address)
@@ -115,6 +139,36 @@ namespace MyNes.Core.CPU
 
             return Nes.CpuMemory[address];
         }
+        private byte Peek_LastCycle(int address)
+        {
+            if (DMCdmaCycles > 0)
+            {
+                byte _DMCdmaCycles = DMCdmaCycles;
+                DMCdmaCycles = 0;
+                if ((address == 0x4016) || (address == 0x4017))
+                {
+                    // The 2A03 DMC gets fetch by pulling RDY low internally. 
+                    // This causes the CPU to pause during the next read cycle, until RDY goes high again.
+                    // The DMC unit holds RDY low for 4 cycles.
+
+                    // Consecutive controller port reads from this are treated as one
+                    if (_DMCdmaCycles-- > 0)
+                        Peek(address);
+                    while (--_DMCdmaCycles > 0)
+                        Dispatch();
+                }
+                else
+                {
+                    // but other addresses see multiple reads as expected
+                    while (--_DMCdmaCycles > 0)
+                        Peek(address);
+                }
+                Nes.Apu.dmc.DoFetch();
+            }
+            Dispatch_LastCycle();
+
+            return Nes.CpuMemory[address];
+        }
         private void Poke(int address, byte data)
         {
             Dispatch();
@@ -122,7 +176,13 @@ namespace MyNes.Core.CPU
                 DMCdmaCycles--;
             Nes.CpuMemory[address] = data;
         }
-
+        private void Poke_LastCycle(int address, byte data)
+        {
+            if (DMCdmaCycles > 0)
+                DMCdmaCycles--;
+            Dispatch_LastCycle();
+            Nes.CpuMemory[address] = data;
+        }
         #region Codes
 
         // _m = memory
@@ -132,7 +192,7 @@ namespace MyNes.Core.CPU
 
         private void OpAdc_m()
         {
-            byte data = Peek(aa.Value);
+            byte data = Peek_LastCycle(aa.Value);
             int temp = (a + data + (sr.c ? 1 : 0));
 
             sr.n = (temp & 0x80) != 0;
@@ -144,7 +204,7 @@ namespace MyNes.Core.CPU
         }
         private void OpAnd_m()
         {
-            a &= Peek(aa.Value);
+            a &= Peek_LastCycle(aa.Value);
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
@@ -158,7 +218,7 @@ namespace MyNes.Core.CPU
 
             data <<= 1;
 
-            Poke(aa.Value, data);
+            Poke_LastCycle(aa.Value, data);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -177,7 +237,7 @@ namespace MyNes.Core.CPU
         private void OpBeq_m() { Branch(sr.z); }
         private void OpBit_m()
         {
-            var data = Peek(aa.Value);
+            var data = Peek_LastCycle(aa.Value);
 
             sr.n = (data & 0x80) != 0;
             sr.v = (data & 0x40) != 0;
@@ -189,8 +249,8 @@ namespace MyNes.Core.CPU
         private void OpBrk_m()
         {
             Dispatch();
-            //brk disable irqs
-            brk = true; irq = false;
+            irq = false;//disable irqs
+            brk = true;
         }
         private void OpBvc_m() { Branch(!sr.v); }
         private void OpBvs_m() { Branch(sr.v); }
@@ -212,7 +272,7 @@ namespace MyNes.Core.CPU
         }
         private void OpCmp_m()
         {
-            int data = a - Peek(aa.Value);
+            int data = a - Peek_LastCycle(aa.Value);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -220,7 +280,7 @@ namespace MyNes.Core.CPU
         }
         private void OpCpx_m()
         {
-            int data = x - Peek(aa.Value);
+            int data = x - Peek_LastCycle(aa.Value);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -228,7 +288,7 @@ namespace MyNes.Core.CPU
         }
         private void OpCpy_m()
         {
-            int data = y - Peek(aa.Value);
+            int data = y - Peek_LastCycle(aa.Value);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -242,7 +302,7 @@ namespace MyNes.Core.CPU
 
             data--;
 
-            Poke(aa.Value, data);
+            Poke_LastCycle(aa.Value, data);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -261,7 +321,7 @@ namespace MyNes.Core.CPU
         }
         private void OpEor_m()
         {
-            a ^= Peek(aa.Value);
+            a ^= Peek_LastCycle(aa.Value);
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
@@ -273,7 +333,7 @@ namespace MyNes.Core.CPU
 
             data++;
 
-            Poke(aa.Value, data);
+            Poke_LastCycle(aa.Value, data);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -302,24 +362,24 @@ namespace MyNes.Core.CPU
             Push(pc.HiByte);
             Push(pc.LoByte);
 
-            Dispatch();
+            Dispatch_LastCycle();
             pc.Value = aa.Value;
         }
         private void OpLda_m()
         {
-            a = Peek(aa.Value);
+            a = Peek_LastCycle(aa.Value);
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
         private void OpLdx_m()
         {
-            x = Peek(aa.Value);
+            x = Peek_LastCycle(aa.Value);
             sr.n = (x & 0x80) != 0;
             sr.z = (x & 0xFF) == 0;
         }
         private void OpLdy_m()
         {
-            y = Peek(aa.Value);
+            y = Peek_LastCycle(aa.Value);
             sr.n = (y & 0x80) != 0;
             sr.z = (y & 0xFF) == 0;
         }
@@ -333,7 +393,7 @@ namespace MyNes.Core.CPU
 
             data >>= 1;
 
-            Poke(aa.Value, data);
+            Poke_LastCycle(aa.Value, data);
 
             sr.n = (data & 0x80) != 0;
             sr.z = (data & 0xFF) == 0;
@@ -350,31 +410,32 @@ namespace MyNes.Core.CPU
         private void OpNop_i() { }
         private void OpOra_m()
         {
-            a |= Peek(aa.Value);
+            a |= Peek_LastCycle(aa.Value);
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
         private void OpPha_i()
         {
-            Push(a);
+            Push_LastCycle(a);
         }
         private void OpPhp_i()
         {
-            Push(sr | 0x10);
+            Push_LastCycle(sr | 0x10);
         }
         private void OpPla_i()
         {
             sp.LoByte++;
             Dispatch();
-            a = Peek(sp.Value);
+            a = Peek_LastCycle(sp.Value);
 
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
         private void OpPlp_i()
         {
-            sp.LoByte++; Dispatch();
-            sr = Peek(sp.Value);
+            sp.LoByte++;
+            Dispatch();
+            sr = Peek_LastCycle(sp.Value);
         }
         private void OpRol_a()
         {
@@ -394,7 +455,7 @@ namespace MyNes.Core.CPU
 
             byte temp = (byte)((data << 1) | (sr.c ? 0x01 : 0x00));
 
-            Poke(aa.Value, temp);
+            Poke_LastCycle(aa.Value, temp);
 
             sr.n = (temp & 0x80) != 0;
             sr.z = (temp & 0xFF) == 0;
@@ -418,7 +479,7 @@ namespace MyNes.Core.CPU
 
             byte temp = (byte)((data >> 1) | (sr.c ? 0x80 : 0x00));
 
-            Poke(aa.Value, temp);
+            Poke_LastCycle(aa.Value, temp);
 
             sr.n = (temp & 0x80) != 0;
             sr.z = (temp & 0xFF) == 0;
@@ -431,8 +492,8 @@ namespace MyNes.Core.CPU
             sr = Peek(sp.Value);
 
             pc.LoByte = Pull();
-            pc.HiByte = Pull();
-
+            pc.HiByte = Pull_LastCycle();
+            //The RTI instruction affects IRQ inhibition immediately
             irq = (!sr.i && (irqRequestFlags != 0));
         }
         private void OpRts_i()
@@ -444,11 +505,11 @@ namespace MyNes.Core.CPU
             //pc.LoByte = Pull();
             pc.HiByte = Pull();
 
-            pc.Value++; Dispatch();
+            pc.Value++; Dispatch_LastCycle();
         }
         private void OpSbc_m()
         {
-            int data = Peek(aa.Value) ^ 0xFF;
+            int data = Peek_LastCycle(aa.Value) ^ 0xFF;
             int temp = (a + data + (sr.c ? 1 : 0));
 
             sr.n = (temp & 0x80) != 0;
@@ -469,9 +530,9 @@ namespace MyNes.Core.CPU
         {
             sr.i = true;
         }
-        private void OpSta_m() { Poke(aa.Value, a); }
-        private void OpStx_m() { Poke(aa.Value, x); }
-        private void OpSty_m() { Poke(aa.Value, y); }
+        private void OpSta_m() { Poke_LastCycle(aa.Value, a); }
+        private void OpStx_m() { Poke_LastCycle(aa.Value, x); }
+        private void OpSty_m() { Poke_LastCycle(aa.Value, y); }
         private void OpTax_i()
         {
             x = a;
@@ -567,7 +628,7 @@ namespace MyNes.Core.CPU
             sr.z = (data1 & 0xFF) == 0;
             sr.c = (~data1 >> 8) != 0;
         }
-        private void OpDop_i() { Dispatch(); }
+        private void OpDop_i() { Dispatch_LastCycle(); }
         private void OpIsc_m()
         {
             byte data = Peek(aa.Value);
@@ -655,8 +716,8 @@ namespace MyNes.Core.CPU
         {
             Poke(aa.Value, (byte)(x & a));
         }
-        private void OpShx_m() { Dispatch(); }
-        private void OpShy_m() { Dispatch(); }
+        private void OpShx_m() { Dispatch_LastCycle(); }
+        private void OpShy_m() { Dispatch_LastCycle(); }
         private void OpSlo_m()
         {
             byte data = Peek(aa.Value);
@@ -695,7 +756,7 @@ namespace MyNes.Core.CPU
             sr.n = (a & 0x80) != 0;
             sr.z = (a & 0xFF) == 0;
         }
-        private void OpTop_i() { Dispatch(); }
+        private void OpTop_i() { Dispatch_LastCycle(); }
         private void OpXaa_m()
         {
             a = (byte)(x & Peek(aa.Value));
@@ -715,11 +776,17 @@ namespace MyNes.Core.CPU
         // _a = access (read and write)
         // _r = read
         // _w = write
+        // _lc = read/write on the last cycle
 
         private void AmAbs_a()
         {
             aa.LoByte = Peek(pc.Value++);
             aa.HiByte = Peek(pc.Value++);
+        }
+        private void AmAbs_lc()
+        {
+            aa.LoByte = Peek(pc.Value++);
+            aa.HiByte = Peek_LastCycle(pc.Value++);
         }
         private void AmAbx_r()
         {
@@ -779,6 +846,10 @@ namespace MyNes.Core.CPU
         {
             Peek(pc.Value);
         }
+        private void AmImp_lc()
+        {
+            Peek_LastCycle(pc.Value);
+        }
         private void AmInd_a()
         {
             aa.LoByte = Peek(pc.Value++);
@@ -788,7 +859,7 @@ namespace MyNes.Core.CPU
 
             aa.LoByte++; // only increment the low byte, causing the "JMP ($nnnn)" bug
 
-            aa.HiByte = Peek(aa.Value);
+            aa.HiByte = Peek_LastCycle(aa.Value);
             aa.LoByte = addr;
         }
         private void AmInx_a()
@@ -855,12 +926,6 @@ namespace MyNes.Core.CPU
                 case IsrType.Ppu: nmi = asserted; break;
                 case IsrType.Apu:
                 case IsrType.Dmc:
-                    if (asserted)
-                    { irqRequestFlags |= (int)type; }
-                    else
-                    { irqRequestFlags &= ~(int)type; }
-                    irq = (!sr.i && (irqRequestFlags != 0));
-                    break;
                 case IsrType.Mmc:
                     if (asserted)
                         irqRequestFlags |= (int)type;
@@ -878,23 +943,23 @@ namespace MyNes.Core.CPU
 
             modes = new Action[256]
             {
-                // 0     1        2        3        4        5        6        7        8        9        A        B        C        D        E        F
-                AmImm_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 0
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // 1
-                AmAbs_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 2
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // 3
-                AmImp_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 4
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // 5
-                AmImp_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmInd_a, AmAbs_a, AmAbs_a, AmAbs_a, // 6
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // 7
-                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // 8
-                AmImm_a, AmIny_w, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_a, AmAby_w, AmImp_a, AmAby_w, AmAbx_w, AmAbx_w, AmAby_w, AmAby_w, // 9
-                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // A
-                AmImm_a, AmIny_r, AmImp_a, AmIny_r, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_a, AmAby_r, AmImp_a, AmAby_r, AmAbx_r, AmAbx_r, AmAby_r, AmAby_r, // B
-                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // C
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // D
-                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a, AmImm_a, AmImp_a, AmImm_a, AmAbs_a, AmAbs_a, AmAbs_a, AmAbs_a, // E
-                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_a, AmAby_r, AmImp_a, AmAby_w, AmAbx_r, AmAbx_r, AmAbx_w, AmAbx_w, // F
+                // 0     1        2        3        4        5        6        7        8         9        A         B        C         D        E        F
+                AmImm_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a,  AmImm_a, AmImp_lc, AmImm_a, AmAbs_a,  AmAbs_a, AmAbs_a, AmAbs_a, // 0
+                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_w, AmAbx_r,  AmAbx_r, AmAbx_w, AmAbx_w, // 1
+                AmAbs_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a,  AmImm_a, AmImp_lc, AmImm_a, AmAbs_a,  AmAbs_a, AmAbs_a, AmAbs_a, // 2
+                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_w, AmAbx_r,  AmAbx_r, AmAbx_w, AmAbx_w, // 3
+                AmImp_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a,  AmImm_a, AmImp_lc, AmImm_a, AmAbs_lc, AmAbs_a, AmAbs_a, AmAbs_a, // 4
+                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_w, AmAbx_r,  AmAbx_r, AmAbx_w, AmAbx_w, // 5
+                AmImp_a, AmInx_a, AmImp_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_a,  AmImm_a, AmImp_lc, AmImm_a, AmInd_a,  AmAbs_a, AmAbs_a, AmAbs_a, // 6
+                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_w, AmAbx_r,  AmAbx_r, AmAbx_w, AmAbx_w, // 7
+                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_lc, AmImm_a, AmImp_lc, AmImm_a, AmAbs_a,  AmAbs_a, AmAbs_a, AmAbs_a, // 8
+                AmImm_a, AmIny_w, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_lc, AmAby_w, AmImp_lc, AmAby_w, AmAbx_w,  AmAbx_w, AmAby_w, AmAby_w, // 9
+                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_lc, AmImm_a, AmImp_lc, AmImm_a, AmAbs_a,  AmAbs_a, AmAbs_a, AmAbs_a, // A
+                AmImm_a, AmIny_r, AmImp_a, AmIny_r, AmZpx_a, AmZpx_a, AmZpy_a, AmZpy_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_r, AmAbx_r,  AmAbx_r, AmAby_r, AmAby_r, // B
+                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_lc, AmImm_a, AmImp_lc, AmImm_a, AmAbs_a,  AmAbs_a, AmAbs_a, AmAbs_a, // C
+                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_w, AmAbx_r,  AmAbx_r, AmAbx_w, AmAbx_w, // D
+                AmImm_a, AmInx_a, AmImm_a, AmInx_a, AmZpg_a, AmZpg_a, AmZpg_a, AmZpg_a, AmImp_lc, AmImm_a, AmImp_lc, AmImm_a, AmAbs_a,  AmAbs_a, AmAbs_a, AmAbs_a, // E
+                AmImm_a, AmIny_r, AmImp_a, AmIny_w, AmZpx_a, AmZpx_a, AmZpx_a, AmZpx_a, AmImp_lc, AmAby_r, AmImp_lc, AmAby_w, AmAbx_r,  AmAbx_r, AmAbx_w, AmAbx_w, // F
             };
             codes = new Action[256]
             {
@@ -949,21 +1014,25 @@ namespace MyNes.Core.CPU
             aa.Value = 0;
             //interrupts
             irqRequestFlags = 0;
-            irq = nmi = brk = requestNmi = false;
+            irq = nmi = requestNmi = false;
             //others
             locked = false;
             code = dummyVal = 0;
         }
         public override void Update()
         {
+            if (DMAcycles > 0)
+            {
+                DMAcycles--;
+                Dispatch();
+                return;
+            }
+
             if (locked)
             {
                 dma.Update();
                 return;
             }
-
-            irq = (!sr.i && (irqRequestFlags != 0));
-
             code = Peek(pc.Value++);
 
             modes[code]();
@@ -973,24 +1042,24 @@ namespace MyNes.Core.CPU
             {
                 nmi = false;
                 requestNmi = false;
-
                 Push(pc.HiByte);
                 Push(pc.LoByte);
                 Push(sr | (brk ? 0x10 : 0));
-                //if br/irq occurred here, set i flag nothing else (with B if brk)
-                if (irq | brk)
+                //if brk is pending or an irq occure simply set i flag
+                if (brk || (!sr.i && (irqRequestFlags != 0)))
                     sr.i = true;
+
                 pc.LoByte = Peek(0xFFFA);
                 pc.HiByte = Peek(0xFFFB);
             }
-            else if (irq | brk)
+            else if (irq || brk)
             {
                 Push(pc.HiByte);
                 Push(pc.LoByte);
                 Push(sr | (brk ? 0x10 : 0));
 
                 sr.i = true;
-                //if nmi occurred here, change vector and set B flag
+                //if nmi occurred here, change vector without problems
                 if (nmi)
                 {
                     nmi = false;
@@ -1004,6 +1073,7 @@ namespace MyNes.Core.CPU
                     pc.HiByte = Peek(0xFFFF);
                 }
             }
+
             brk = false;
             if (requestNmi)
             {
@@ -1024,7 +1094,7 @@ namespace MyNes.Core.CPU
             stream.Write(y);
             stream.Write(aa.Value);
             stream.Write(dummyVal);
-            stream.Write(irq, nmi, brk, requestNmi, locked);
+            stream.Write(irq, nmi, requestNmi, locked);
             stream.Write(DMCdmaCycles);
             stream.Write(code);
             stream.Write(irqRequestFlags);
@@ -1044,9 +1114,8 @@ namespace MyNes.Core.CPU
             bool[] flags = stream.ReadBooleans();
             irq = flags[0];
             nmi = flags[1];
-            brk = flags[2];
-            requestNmi = flags[3];
-            locked = flags[4];
+            requestNmi = flags[2];
+            locked = flags[3];
             DMCdmaCycles = stream.ReadByte();
             code = stream.ReadByte();
             irqRequestFlags = stream.ReadInt32();

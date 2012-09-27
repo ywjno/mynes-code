@@ -503,7 +503,7 @@ namespace MyNes.Core.PPU
 
         render:
             if ((pixel & 0x03) != 0)
-                screen[vclock][hclock] = colors[paletteIndexes[Nes.PpuMemory[pixel] & clipping | emphasis]];
+                screen[vclock][hclock] = colors[paletteIndexes[Nes.PpuMemory[pixel] & (clipping | emphasis)]];
         }
         private void SynthesizeBkgPixels()
         {
@@ -597,7 +597,7 @@ namespace MyNes.Core.PPU
             spr = new Unit(256);
 
             chr = 0;
-            clipping = 0;
+            clipping = 0xF3;
             emphasis = 0;
             oddSwap = false;
             spr0Hit = false;

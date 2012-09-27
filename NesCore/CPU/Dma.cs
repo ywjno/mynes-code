@@ -26,20 +26,29 @@ namespace MyNes.Core.CPU
         private byte data;
         private int addr;
         private int size;
+
         public void OamTransfer(int address, byte data)
         {
-            if (size != 0)
+            if (size != 0 || (Nes.Cpu.DMCdmaCycles > 0))
                 return; // transfer already occuring
             step = false;
             addr = (data << 8);
             size = 256;
+
+            /*http://nesdev.com/6502_cpu.txt
+             -RDY is ignored during writes
+             (This is why you must wait 3 cycles before doing any DMA --
+             the maximum number of consecutive writes is 3, which occurs
+             during interrupts except -RESET.)
+             */
+            Nes.Cpu.DMAcycles = 2;
+
             Nes.Cpu.Lock();
         }
         public void Update()
         {
             if (size == 0)
                 return;
-
             if (step = !step)
             {
                 Nes.Cpu.Dispatch();
@@ -57,7 +66,7 @@ namespace MyNes.Core.CPU
                     Nes.Cpu.Unlock();
             }
         }
-        public virtual void SaveState(StateStream stream) 
+        public virtual void SaveState(StateStream stream)
         {
             stream.Write(step);
             stream.Write(data);
