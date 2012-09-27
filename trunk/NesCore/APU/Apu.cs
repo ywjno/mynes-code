@@ -235,9 +235,6 @@ namespace MyNes.Core.APU
         {
             if (FrameIrqEnabled)
                 FrameIrqFlag = true;
-        }
-        private void SetIrq()
-        {
             if (FrameIrqFlag)
                 Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Apu, true);
         }
@@ -257,7 +254,7 @@ namespace MyNes.Core.APU
                         case 1: ClockDuration(); isClockingDuration = true; break;
                         case 2: ClockEnvelope(); break;
                         case 3: CheckIrq(); break;
-                        case 4: CheckIrq(); SetIrq(); ClockDuration(); isClockingDuration = true; break;
+                        case 4: CheckIrq(); ClockDuration(); isClockingDuration = true; break;
                         case 5: CheckIrq(); break;
                     }
                     CurrentSeq++;

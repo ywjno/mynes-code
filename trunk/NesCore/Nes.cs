@@ -120,6 +120,10 @@ namespace MyNes.Core
                             else
                                 emuSystem = TimingInfo.NTSC;
                         }
+                        else
+                        {
+                            emuSystem = TimingInfo.NTSC;//set NTSC by default
+                        }
                         break;
                     case EmulationSystem.NTSC: emuSystem = TimingInfo.NTSC; break;
                     case EmulationSystem.PALB: emuSystem = TimingInfo.PALB; break;

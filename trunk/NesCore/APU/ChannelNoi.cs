@@ -23,12 +23,7 @@ namespace MyNes.Core.APU
         public ChannelNoi(TimingInfo.System system)
             : base(system)
         {
-            if (system.Master == TimingInfo.NTSC.Master)
-                systemIndex = 0;
-            else if (system.Master == TimingInfo.PALB.Master)
-                systemIndex = 1;
-            else if (system.Master == TimingInfo.DENDY.Master)
-                systemIndex = 2;
+
         }
         private int systemIndex = 0;
         private bool ModeFlag = false;
@@ -80,6 +75,12 @@ namespace MyNes.Core.APU
         }
         public override void HardReset()
         {
+            if (system.Master == TimingInfo.NTSC.Master)
+                systemIndex = 0;
+            else if (system.Master == TimingInfo.PALB.Master)
+                systemIndex = 1;
+            else if (system.Master == TimingInfo.DENDY.Master)
+                systemIndex = 2;
             ModeFlag = false;
             ShiftRegister = 1;
             base.HardReset();

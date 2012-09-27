@@ -73,8 +73,8 @@ namespace MyNes.Core.APU
                 DeltaIrqOccur = false;
                 Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Dmc, false);
             }
-   
-                timing.single = GetCycles(FrequencyTable[systemIndex][data & 0x0F]);
+
+            timing.single = GetCycles(FrequencyTable[systemIndex][data & 0x0F]);
         }
         protected override void PokeReg2(int address, byte data)
         {
@@ -132,7 +132,7 @@ namespace MyNes.Core.APU
                         dmaAddr = dmaAddrRefresh;
 
                         if (!bufferFull)
-                            Nes.Cpu.DMCdmaCycles = 4;
+                            Nes.Cpu.DMCdmaCycles = 3;
                     }
                 }
                 else
@@ -170,7 +170,7 @@ namespace MyNes.Core.APU
                     dmaEnabled = true;
                     dmaByte = dmaBuffer;
                     if (dmaSize > 0)
-                        Nes.Cpu.DMCdmaCycles = 4;
+                        Nes.Cpu.DMCdmaCycles = 3;
                 }
                 else
                 {
