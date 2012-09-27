@@ -570,7 +570,7 @@ namespace MyNes.Core.PPU
                 vbl_hclock = 7;
                 frameEnd = 312;
             }
-            else if (system.Master == TimingInfo.DANDY.Master)
+            else if (system.Master == TimingInfo.DENDY.Master)
             {
                 vbl_vclock_Start = 291;//51 dummy scanlines, 20 VBL's
                 vbl_vclock_End = 311;

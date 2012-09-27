@@ -23,7 +23,7 @@ namespace MyNes.Core
     {
         public static readonly System NTSC = new System("NTSC", 236250000, 132, 44, 264);//  1.78977267 MHz
         public static readonly System PALB = new System("PALB", 212813696, 128, 40, 256);//  1.662607 MHz
-        public static readonly System DANDY = new System("DANDY", 228774792, 129, 43, 258);//1.773448 MHz
+        public static readonly System DENDY = new System("DENDY", 228774792, 129, 43, 258);//1.773448 MHz
 
         public int cycles;
         public int period;

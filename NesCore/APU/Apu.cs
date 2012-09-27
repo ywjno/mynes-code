@@ -55,20 +55,20 @@ namespace MyNes.Core.APU
         Step 4      Clock           -               -           7458    8314
         Step 5      -               -               -           7452    8312
         */
-        //TODO: Dandy system values for Apu. It acts like PAL here for now.
+        //TODO: Dendy system values for Apu. It acts like PAL here for now.
         private int[][] SequenceMode0 =
         { 
             new int[] { 7459, 7456, 7458, 7457, 1, 1, 7457 }, // NTSC
             new int[] { 8315, 8314, 8312, 8313, 1, 1, 8313 }, // PALB
-            new int[] { 8315, 8314, 8312, 8313, 1, 1, 8313  }, // DANDY ??
+            new int[] { 8315, 8314, 8312, 8313, 1, 1, 8313  }, // DENDY ??
         };
         private int[][] SequenceMode1 = 
         { 
             new int[] { 1, 7458, 7456, 7458, 14910 } , // NTSC
             new int[] { 1, 8314, 8314, 8312, 16626 } , // PALB
-            new int[] { 1, 8314, 8314, 8312, 16626 } , // DANDY ??
+            new int[] { 1, 8314, 8314, 8312, 16626 } , // DENDY ??
         };
-        private int systemIndex = 0;//0=NTSC, 1=PALB, 2=DANDY
+        private int systemIndex = 0;//0=NTSC, 1=PALB, 2=DENDY
         private byte CurrentSeq = 0;
         private bool oddCycle = false;
         private bool isClockingDuration = false;
@@ -118,7 +118,7 @@ namespace MyNes.Core.APU
                 systemIndex = 0;
             else if (system.Master == TimingInfo.PALB.Master)
                 systemIndex = 1;
-            else if (system.Master == TimingInfo.DANDY.Master)
+            else if (system.Master == TimingInfo.DENDY.Master)
                 systemIndex = 2;
 
             Cycles = SequenceMode0[systemIndex][0] - 10;

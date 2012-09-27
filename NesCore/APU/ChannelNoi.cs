@@ -27,7 +27,7 @@ namespace MyNes.Core.APU
                 systemIndex = 0;
             else if (system.Master == TimingInfo.PALB.Master)
                 systemIndex = 1;
-            else if (system.Master == TimingInfo.DANDY.Master)
+            else if (system.Master == TimingInfo.DENDY.Master)
                 systemIndex = 2;
         }
         private int systemIndex = 0;
@@ -46,10 +46,10 @@ namespace MyNes.Core.APU
              0x002,0x003,0x007,0x00F,0x01E,0x02C,0x03B,0x04A,
 	         0x05E,0x076,0x0B1,0x0EC,0x162,0x1D8,0x3B1,0x761
          },
-             new int [] //DANDY (same as pal for now)
+             new int [] //DENDY (same as ntsc for now)
          {  
-             0x002,0x003,0x007,0x00F,0x01E,0x02C,0x03B,0x04A,
-	         0x05E,0x076,0x0B1,0x0EC,0x162,0x1D8,0x3B1,0x761
+             0x002,0x004,0x008,0x010,0x020,0x030,0x040,0x050,
+             0x065,0x07F,0x0BE,0x0FE,0x17D,0x1FC,0x3F9,0x7F2
          }
         };
 

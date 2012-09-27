@@ -115,15 +115,15 @@ namespace MyNes.Core
                         {
                             if (RomInfo.DatabaseCartInfo.System.ToUpper().Contains("PAL"))
                                 emuSystem = TimingInfo.PALB;
-                            else if (RomInfo.DatabaseCartInfo.System.ToUpper().Contains("DANDY"))
-                                emuSystem = TimingInfo.DANDY;
+                            else if (RomInfo.DatabaseCartInfo.System.ToUpper().Contains("DENDY"))
+                                emuSystem = TimingInfo.DENDY;
                             else
                                 emuSystem = TimingInfo.NTSC;
                         }
                         break;
                     case EmulationSystem.NTSC: emuSystem = TimingInfo.NTSC; break;
                     case EmulationSystem.PALB: emuSystem = TimingInfo.PALB; break;
-                    case EmulationSystem.DANDY: emuSystem = TimingInfo.DANDY; break;
+                    case EmulationSystem.DENDY: emuSystem = TimingInfo.DENDY; break;
                 }
                 Console.WriteLine("Switching to " + emuSystem.Name + " system.");
                 #endregion
@@ -336,6 +336,7 @@ namespace MyNes.Core
             CpuMemory.HardReset();
             PpuMemory.HardReset();
             ControlsUnit.HardReset();
+            SpeedLimiter.HardReset();
             Board.HardReset();
             Cpu.HardReset();
             Apu.HardReset();
@@ -437,7 +438,7 @@ namespace MyNes.Core
         {
             if (emuSystem.Master == TimingInfo.NTSC.Master)
                 Ppu.SetupPalette(NTSCPaletteGenerator.GeneratePalette());
-            else//use pal palette for pal and dandy
+            else//use pal palette for pal and dendy
                 Ppu.SetupPalette(PALBPaletteGenerator.GeneratePalette());
         }
         /// <summary>
