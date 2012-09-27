@@ -29,12 +29,9 @@ namespace MyNes.Core.Controls
             this.timer = timer;
             this.emuSystem = emuSystem;
 
-            if (emuSystem.Master == TimingInfo.NTSC.Master)
-                FramePeriod = (1.0 / 60.0988);
-            else//PALB
-                FramePeriod = (1.0 / 50.0070);
-
             this.ON = true;
+
+            HardReset();
         }
         private ITimer timer;
         private TimingInfo.System emuSystem;
@@ -72,6 +69,13 @@ namespace MyNes.Core.Controls
         public void SleepOnPause()
         {
             Thread.Sleep(100);
+        }
+        public void HardReset()
+        {
+            if (emuSystem.Master == TimingInfo.NTSC.Master)
+                FramePeriod = (1.0 / 60.0988);
+            else//PALB, DENDY
+                FramePeriod = (1.0 / 50.0070);
         }
     }
     public interface ITimer
