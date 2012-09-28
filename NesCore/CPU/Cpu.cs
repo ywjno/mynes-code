@@ -36,8 +36,7 @@ namespace MyNes.Core.CPU
         private byte dummyVal = 0;//needed by some instructions
         private bool irq;
         private bool nmi;
-        private bool brk;
-        public bool requestNmi;
+        private bool donmi;
         public byte DMCdmaCycles = 0;
         private byte code;
         private int irqRequestFlags;
@@ -56,9 +55,8 @@ namespace MyNes.Core.CPU
 
             if (flag)
             {
-                Dispatch(); 
+                Dispatch();
                 aa.Value = (ushort)(pc.Value + (sbyte)data);
-                irq = false;
                 if (aa.HiByte != pc.HiByte)
                 {
                     Dispatch_LastCycle();
@@ -82,6 +80,8 @@ namespace MyNes.Core.CPU
         {
             //check for interrupt before update
             irq = (!sr.i && (irqRequestFlags != 0));
+            nmi = donmi;
+
             if (Nes.ON)
             {
                 Nes.Apu.Update(timing.single);
@@ -247,9 +247,24 @@ namespace MyNes.Core.CPU
         private void OpBpl_m() { Branch(!sr.n); }
         private void OpBrk_m()
         {
-            Dispatch();
-            irq = false;//disable irqs
-            brk = true;
+            Peek(pc.Value);
+
+            Push(pc.HiByte);
+            Push(pc.LoByte);
+            Push_LastCycle(sr | 0x10);
+
+            sr.i = true;
+            if (nmi)
+            {
+                donmi = nmi = false;
+                pc.LoByte = Peek(0xFFFA);
+                pc.HiByte = Peek(0xFFFB);
+            }
+            else
+            {
+                pc.LoByte = Peek(0xFFFE);
+                pc.HiByte = Peek(0xFFFF);
+            }
         }
         private void OpBvc_m() { Branch(!sr.v); }
         private void OpBvs_m() { Branch(sr.v); }
@@ -859,6 +874,7 @@ namespace MyNes.Core.CPU
             aa.LoByte++; // only increment the low byte, causing the "JMP ($nnnn)" bug
 
             aa.HiByte = Peek_LastCycle(aa.Value);
+
             aa.LoByte = addr;
         }
         private void AmInx_a()
@@ -922,7 +938,7 @@ namespace MyNes.Core.CPU
         {
             switch (type)
             {
-                case IsrType.Ppu: nmi = asserted; break;
+                case IsrType.Ppu: donmi = asserted; break;
                 case IsrType.Apu:
                 case IsrType.Dmc:
                 case IsrType.Mmc:
@@ -1013,7 +1029,7 @@ namespace MyNes.Core.CPU
             aa.Value = 0;
             //interrupts
             irqRequestFlags = 0;
-            irq = nmi = requestNmi = false;
+            irq = nmi = donmi = false;
             //others
             locked = false;
             code = dummyVal = 0;
@@ -1032,30 +1048,27 @@ namespace MyNes.Core.CPU
 
             if (nmi)
             {
-                nmi = false;
-                requestNmi = false;
+                donmi = nmi = false;
                 Push(pc.HiByte);
                 Push(pc.LoByte);
-                Push(sr | (brk ? 0x10 : 0));
-                //if brk is pending or irq occured simply set i flag
-                if (brk || (!sr.i && (irqRequestFlags != 0)))
-                    sr.i = true;
+                Push(sr);
+
+                sr.i = true;
 
                 pc.LoByte = Peek(0xFFFA);
                 pc.HiByte = Peek(0xFFFB);
             }
-            else if (irq || brk)
+            else if (irq)
             {
                 Push(pc.HiByte);
                 Push(pc.LoByte);
-                Push(sr | (brk ? 0x10 : 0));
+                Push(sr);
 
                 sr.i = true;
-                //if nmi occurred here, change vector without problems
-                if (nmi)
+
+                if (donmi)
                 {
-                    nmi = false;
-                    requestNmi = false;
+                    donmi = nmi = false;
                     pc.LoByte = Peek(0xFFFA);
                     pc.HiByte = Peek(0xFFFB);
                 }
@@ -1064,13 +1077,6 @@ namespace MyNes.Core.CPU
                     pc.LoByte = Peek(0xFFFE);
                     pc.HiByte = Peek(0xFFFF);
                 }
-            }
-
-            brk = false;
-            if (requestNmi)
-            {
-                requestNmi = false;
-                nmi = true;
             }
         }
 
@@ -1086,7 +1092,7 @@ namespace MyNes.Core.CPU
             stream.Write(y);
             stream.Write(aa.Value);
             stream.Write(dummyVal);
-            stream.Write(irq, nmi, requestNmi, locked);
+            stream.Write(irq, nmi, locked);
             stream.Write(DMCdmaCycles);
             stream.Write(code);
             stream.Write(irqRequestFlags);
@@ -1106,8 +1112,7 @@ namespace MyNes.Core.CPU
             bool[] flags = stream.ReadBooleans();
             irq = flags[0];
             nmi = flags[1];
-            requestNmi = flags[2];
-            locked = flags[3];
+            locked = flags[2];
             DMCdmaCycles = stream.ReadByte();
             code = stream.ReadByte();
             irqRequestFlags = stream.ReadInt32();
