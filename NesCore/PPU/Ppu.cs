@@ -75,8 +75,6 @@ namespace MyNes.Core.PPU
         private bool nmi;
         private bool vbl;
         private bool suppressVbl;
-        private bool suppressNmi;
-        private byte value2000;
         //Timing
         public int vbl_vclock_Start = 241;
         public int vbl_vclock_End = 261;
@@ -226,21 +224,25 @@ namespace MyNes.Core.PPU
             else
             {
                 oam_address++;
-                OamPhase = EvaluatePhase2;
+
                 buffer[oamSlot].y = oamData;
                 buffer[oamSlot].zero = oamCount == 1;
+
+                OamPhase = EvaluatePhase2;
             }
         }
         private void EvaluatePhase2()
         {
             oam_address++;
             OamPhase = EvaluatePhase3;
+
             buffer[oamSlot].name = oamData;
         }
         private void EvaluatePhase3()
         {
             oam_address++;
             OamPhase = EvaluatePhase4;
+
             buffer[oamSlot].attr = oamData;
         }
         private void EvaluatePhase4()
@@ -338,14 +340,12 @@ namespace MyNes.Core.PPU
         private byte Peek2002(int address)
         {
             //Read 1 cycle before vblank should suppress setting flag
-            if (vclock == vbl_vclock_Start & hclock == vbl_hclock - 1)
+            if (vclock == vbl_vclock_Start)
             {
-                suppressVbl = true; suppressNmi = true;
-            }
-            //Read 1 cycle before/after vblank should suppress nmi
-            if (vclock == vbl_vclock_Start && NmiSuppressTime())
-            {
-                suppressNmi = true;
+                if (hclock == vbl_hclock - 1)
+                    suppressVbl = true;
+                if (((hclock >= vbl_hclock - 1) & (hclock <= vbl_hclock + 1)) && vbl)
+                    Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
             }
             byte data = 0;
 
@@ -394,15 +394,7 @@ namespace MyNes.Core.PPU
 
             nmi = (data & 0x80) != 0;
 
-            if (nmi && ((value2000 & 0x80) == 0) && vbl)
-            {
-                Nes.Cpu.requestNmi = true;
-            }
-            if ((vclock == vbl_vclock_Start & NmiSuppressTime()) && !nmi)
-            {
-                Nes.Cpu.requestNmi = false;
-            }
-            value2000 = data;
+            Nes.Cpu.requestNmi = nmi && vbl;
         }
         private void Poke2001(int address, byte data)
         {
@@ -606,8 +598,6 @@ namespace MyNes.Core.PPU
             nmi = false;
             vbl = false;
             suppressVbl = false;
-            suppressNmi = false;
-            value2000 = 0;
             hclock = 0;
             vclock = 0;
 
@@ -756,45 +746,30 @@ namespace MyNes.Core.PPU
                 }
             }
             #region VBLANK & NMI
-            //Clear flags 2 clocks before vbl
-            else if (hclock == vbl_hclock - 2)
-            {
-                if (vclock == vbl_vclock_End)
-                {
-                    spr0Hit = false;
-                    sprOverflow = false;
-                }
-            }
-            else if (hclock == vbl_hclock)
+            if (hclock == vbl_hclock)
             {
                 //set vbl
                 if (vclock == vbl_vclock_Start)
                 {
                     if (!suppressVbl)
                         vbl = true;
-                    else
-                        suppressVbl = false;
+                    
+                    suppressVbl = false;
                 }
                 //clear vbl
                 if (vclock == vbl_vclock_End)
                 {
+                    spr0Hit = false;
+                    sprOverflow = false;
                     vbl = false;
                 }
             }
-            //nmi occur after 2 clocks of vbl
+            //Nmi occure 2 clocks after vbl
             else if (hclock == vbl_hclock + 2)
             {
                 if (vclock == vbl_vclock_Start)
                 {
-                    if (!suppressNmi)
-                    {
-                        if (nmi)
-                            Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
-                    }
-                    else
-                    {
-                        suppressNmi = false;
-                    }
+                    Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, nmi && vbl);
                 }
             }
             #endregion
@@ -830,10 +805,6 @@ namespace MyNes.Core.PPU
         {
         }
 
-        private bool NmiSuppressTime()
-        {
-            return ((hclock >= vbl_hclock - 1) & (hclock <= vbl_hclock + 1));
-        }
         public bool IsBGFetchTime()
         {
             return (hclock < 256 | hclock >= 320);
@@ -888,8 +859,7 @@ namespace MyNes.Core.PPU
             stream.Write(chr);
             stream.Write(clipping);
             stream.Write(emphasis);
-            stream.Write(oddSwap, spr0Hit, sprOverflow, nmi, vbl, suppressVbl, suppressNmi);
-            stream.Write(value2000);
+            stream.Write(oddSwap, spr0Hit, sprOverflow, nmi, vbl, suppressVbl);
             stream.Write(hclock);
             stream.Write(vclock);
             stream.Write(oam_address);
@@ -943,9 +913,7 @@ namespace MyNes.Core.PPU
             nmi = flags[3];
             vbl = flags[4];
             suppressVbl = flags[5];
-            suppressNmi = flags[6];
 
-            value2000 = stream.ReadByte();
             hclock = stream.ReadInt32();
             vclock = stream.ReadInt32();
             oam_address = stream.ReadByte();

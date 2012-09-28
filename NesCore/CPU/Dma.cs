@@ -26,6 +26,7 @@ namespace MyNes.Core.CPU
         private byte data;
         private int addr;
         private int size;
+        private int timer = 0;
 
         public void OamTransfer(int address, byte data)
         {
@@ -41,7 +42,7 @@ namespace MyNes.Core.CPU
              the maximum number of consecutive writes is 3, which occurs
              during interrupts except -RESET.)
              */
-            Nes.Cpu.DMAcycles = 2;
+            timer = 2;
 
             Nes.Cpu.Lock();
         }
@@ -49,6 +50,12 @@ namespace MyNes.Core.CPU
         {
             if (size == 0)
                 return;
+            if (timer > 0) 
+            {
+                Nes.Cpu.Dispatch();
+                timer--;
+                return;
+            }
             if (step = !step)
             {
                 Nes.Cpu.Dispatch();

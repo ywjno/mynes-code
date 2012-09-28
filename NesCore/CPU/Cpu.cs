@@ -39,7 +39,6 @@ namespace MyNes.Core.CPU
         private bool brk;
         public bool requestNmi;
         public byte DMCdmaCycles = 0;
-        public byte DMAcycles = 0;
         private byte code;
         private int irqRequestFlags;
         private bool locked;
@@ -57,9 +56,9 @@ namespace MyNes.Core.CPU
 
             if (flag)
             {
-                Dispatch();
+                Dispatch(); 
                 aa.Value = (ushort)(pc.Value + (sbyte)data);
-
+                irq = false;
                 if (aa.HiByte != pc.HiByte)
                 {
                     Dispatch_LastCycle();
@@ -1021,13 +1020,6 @@ namespace MyNes.Core.CPU
         }
         public override void Update()
         {
-            if (DMAcycles > 0)
-            {
-                DMAcycles--;
-                Dispatch();
-                return;
-            }
-
             if (locked)
             {
                 dma.Update();
@@ -1045,7 +1037,7 @@ namespace MyNes.Core.CPU
                 Push(pc.HiByte);
                 Push(pc.LoByte);
                 Push(sr | (brk ? 0x10 : 0));
-                //if brk is pending or an irq occure simply set i flag
+                //if brk is pending or irq occured simply set i flag
                 if (brk || (!sr.i && (irqRequestFlags != 0)))
                     sr.i = true;
 
