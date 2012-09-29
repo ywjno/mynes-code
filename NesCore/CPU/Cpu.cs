@@ -55,6 +55,8 @@ namespace MyNes.Core.CPU
 
             if (flag)
             {
+                irq = false;
+                nmi = false;
                 Dispatch();
                 aa.Value = (ushort)(pc.Value + (sbyte)data);
                 if (aa.HiByte != pc.HiByte)

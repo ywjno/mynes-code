@@ -20,21 +20,23 @@ namespace MyNes.Core.APU
 {
     public struct ApuPlaybackDescription
     {
+        private ApuMixerType type;
+        private int frequency;
+
+        public ApuMixerType MixerType { get { return type; } }
+        public int Frequency { get { return frequency; } }
+
         public ApuPlaybackDescription(int frequency, ApuMixerType type)
         {
             this.frequency = frequency;
             this.type = type;
         }
-        private int frequency;
-        private ApuMixerType type;
-
-        public int Frequency
-        { get { return frequency; } }
-        public ApuMixerType MixerType
-        { get { return type; } }
     }
+
     public enum ApuMixerType
     {
-        Normal, Implementation, LinearApproximation
+        Normal,
+        Implementation,
+        LinearApproximation
     }
 }

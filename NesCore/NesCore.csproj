@@ -141,6 +141,7 @@
     <Compile Include="IO\Input\IZapper.cs" />
     <Compile Include="IO\Output\IAudioDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
+    <Compile Include="MathHelper.cs" />
     <Compile Include="Memory.cs" />
     <Compile Include="Nes.cs" />
     <Compile Include="PPU\NTSCPaletteGenerator.cs" />
