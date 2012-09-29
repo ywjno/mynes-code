@@ -311,7 +311,7 @@ namespace MyNes.Core.APU
 
             return data;
         }
-        private void Poke4015(int address, byte data)
+        private void Poke4015(int addr, byte data)
         {
             sq1.Status = (data & 0x01) != 0;
             sq2.Status = (data & 0x02) != 0;
