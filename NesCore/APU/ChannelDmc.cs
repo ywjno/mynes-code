@@ -132,7 +132,7 @@ namespace MyNes.Core.APU
                         dmaAddr = dmaAddrRefresh;
 
                         if (!bufferFull)
-                            Nes.Cpu.DMCdmaCycles = 3;
+                            Nes.Cpu.DMCdmaCycles = 4;
                     }
                 }
                 else
@@ -170,7 +170,7 @@ namespace MyNes.Core.APU
                     dmaEnabled = true;
                     dmaByte = dmaBuffer;
                     if (dmaSize > 0)
-                        Nes.Cpu.DMCdmaCycles = 3;
+                        Nes.Cpu.DMCdmaCycles = 4;
                 }
                 else
                 {
