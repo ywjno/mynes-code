@@ -34,7 +34,6 @@ namespace MyNes.Core.Debug.DefaultCommands
             get
             {
                 return new ConsoleCommandParameter[]{
-                       new ConsoleCommandParameter("vbl_h", "Set vblank hclock, the next parameter must be the value '3 - 328'"),
                        new ConsoleCommandParameter("vbl_s", "Set vblank start scanline, the next parameter must be the value 'x >= 241'"),
                        new ConsoleCommandParameter("vbl_e", "Set vblank end scanline, the next parameter must be the value 'x >= 241'"),
                 };
@@ -55,13 +54,7 @@ namespace MyNes.Core.Debug.DefaultCommands
             string[] codes = parameters.Split(new char[] { ' ' });
             for (int i = 0; i < codes.Length; i++)
             {
-                if (codes[i].ToLower() == "vbl_h")
-                {
-                    i++;
-                    Nes.Ppu.vbl_hclock = int.Parse(codes[i]);
-                    Console.WriteLine("Vblank hclock = " + codes[i], DebugCode.Good);
-                }
-                else if (codes[i].ToLower() == "vbl_s")
+                if (codes[i].ToLower() == "vbl_s")
                 {
                     i++;
                     Nes.Ppu.vbl_vclock_Start = int.Parse(codes[i]);

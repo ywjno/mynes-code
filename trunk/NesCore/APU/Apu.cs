@@ -243,6 +243,7 @@ namespace MyNes.Core.APU
             isClockingDuration = false;
             Cycles--;
             oddCycle = !oddCycle;
+
             if (Cycles == 0)
             {
                 if (!SequencingMode)
