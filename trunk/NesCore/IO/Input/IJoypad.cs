@@ -25,6 +25,8 @@ namespace MyNes.Core.IO.Input
         /// </summary>
         /// <returns>The data</returns>
         byte GetData();
+
+        bool Turbo { get; set; }
     }
 }
 

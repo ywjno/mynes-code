@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 using MyNes.Core.IO.Input;
+
 namespace MyNes
 {
    public  class VSUnisystemDIP : IVSunisystemDIP

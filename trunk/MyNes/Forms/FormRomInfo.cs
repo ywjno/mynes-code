@@ -45,7 +45,7 @@ namespace MyNes
                 textBox_fileName.Text = Nes.RomInfo.Path;
                 textBox_sha1.Text = Nes.RomInfo.SHA1.ToUpper();
                 textBox_prg.Text = Nes.RomInfo.PRGcount + " [" + (Nes.RomInfo.PRGcount * 16) + " KB]";
-                textBox_chr.Text = Nes.RomInfo.CHRcount + " KB";
+                textBox_chr.Text = Nes.RomInfo.CHRcount + " [" + (Nes.RomInfo.CHRcount * 8) + " KB]";
                 switch (Nes.RomInfo.Mirroring)
                 {
                     case Core.Types.Mirroring.Mode1ScA: textBox_mirroring.Text = "One-Screen A"; break;

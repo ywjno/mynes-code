@@ -145,18 +145,6 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public int SoundPlaybackBit {
-            get {
-                return ((int)(this["SoundPlaybackBit"]));
-            }
-            set {
-                this["SoundPlaybackBit"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool SoundEnabled {
             get {
@@ -312,18 +300,6 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Implementation")]
-        public global::MyNes.Core.APU.ApuMixerType SoundMixerType {
-            get {
-                return ((global::MyNes.Core.APU.ApuMixerType)(this["SoundMixerType"]));
-            }
-            set {
-                this["SoundMixerType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::MyNes.ColumnWidthsCollection ColumnWidths {
             get {
                 return ((global::MyNes.ColumnWidthsCollection)(this["ColumnWidths"]));
@@ -357,7 +333,7 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
         public int SoundLatency {
             get {
                 return ((int)(this["SoundLatency"]));

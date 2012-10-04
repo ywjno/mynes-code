@@ -34,32 +34,15 @@ namespace MyNes
             InitializeComponent();
             //TODO: find a way to detect supported frequencies and bitdepths.
             //Add frequencies
-            comboBox1.Items.Add(8000);
-            comboBox1.Items.Add(11025);
-            comboBox1.Items.Add(22050);
             comboBox1.Items.Add(44100);
             comboBox1.Items.Add(48000);
-            comboBox1.Items.Add(56000);
-            comboBox1.Items.Add(64000);
-            comboBox1.Items.Add(96000);
-            comboBox1.Items.Add(192000);
 
-            comboBox_bitrate.Items.Add(8);
-            comboBox_bitrate.Items.Add(16);
-            comboBox_bitrate.Items.Add(24);
-            comboBox_bitrate.Items.Add(32);
 
             checkBox_enableSound.Checked = Program.Settings.SoundEnabled;
             comboBox1.SelectedItem = Program.Settings.SoundPlaybackFreq;
-            comboBox_bitrate.SelectedItem = Program.Settings.SoundPlaybackBit;
             trackBar1.Value = Program.Settings.Volume;
             label_volLevel.Text = ((((100 * (3000 - trackBar1.Value)) / 3000) - 200) * -1).ToString() + " %";
-            switch (Program.Settings.SoundMixerType)
-            {
-                case Core.APU.ApuMixerType.Implementation: radioButton_Implementation.Checked = true; break;
-                case Core.APU.ApuMixerType.LinearApproximation: radioButton_Linear.Checked = true; break;
-                case Core.APU.ApuMixerType.Normal: radioButton_Normal.Checked = true; break;
-            }
+
             trackBar_latency.Value = Program.Settings.SoundLatency / 10;
             label_latency.Text = Program.Settings.SoundLatency.ToString();
         }
@@ -73,14 +56,6 @@ namespace MyNes
         {
             Program.Settings.SoundEnabled = checkBox_enableSound.Checked;
             Program.Settings.SoundPlaybackFreq = (int)comboBox1.SelectedItem;
-            Program.Settings.SoundPlaybackBit = (int)comboBox_bitrate.SelectedItem;
-
-            if (radioButton_Implementation.Checked)
-                Program.Settings.SoundMixerType = Core.APU.ApuMixerType.Implementation;
-            else if (radioButton_Linear.Checked)
-                Program.Settings.SoundMixerType = Core.APU.ApuMixerType.LinearApproximation;
-            else if (radioButton_Normal.Checked)
-                Program.Settings.SoundMixerType = Core.APU.ApuMixerType.Normal;
 
             Program.Settings.Volume = trackBar1.Value;
             Program.Settings.SoundLatency = (trackBar_latency.Value * 10);
@@ -92,44 +67,12 @@ namespace MyNes
         {
             checkBox_enableSound.Checked = true;
             comboBox1.SelectedItem = 44100;
-            comboBox_bitrate.SelectedItem = 16;
-            radioButton_Implementation.Checked = true;
             trackBar1.Value = 0;
         }
         //cancel
         private void button2_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void linkLabel5_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            comboBox1.SelectedItem = 22050;
-            comboBox_bitrate.SelectedItem = 8;
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            comboBox1.SelectedItem = 44100;
-            comboBox_bitrate.SelectedItem = 16;
-        }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            comboBox1.SelectedItem = 48000;
-            comboBox_bitrate.SelectedItem = 16;
-        }
-
-        private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            comboBox1.SelectedItem = 48000;
-            comboBox_bitrate.SelectedItem = 24;
-        }
-
-        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            comboBox1.SelectedItem = 192000;
-            comboBox_bitrate.SelectedItem = 32;
         }
 
         private void trackBar_latency_Scroll(object sender, EventArgs e)

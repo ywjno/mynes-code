@@ -54,7 +54,7 @@ namespace MyNes.Core.Boards
 
         protected virtual byte PeekChr(int address)
         {
-            return chr[((address & 0x03FF) | chrPage[address >> 10 & 0x07]) & chrMask];
+            return chr[DecodeChrAddress(address) & chrMask];
         }
         protected virtual byte PeekPrg(int address)
         {
@@ -73,7 +73,7 @@ namespace MyNes.Core.Boards
                             }
                             else
                             {
-                                return code.Value; 
+                                return code.Value;
                             }
 
                             break;
@@ -85,7 +85,7 @@ namespace MyNes.Core.Boards
         }
         protected virtual void PokeChr(int address, byte data)
         {
-            chr[((address & 0x03FF) | chrPage[address >> 10 & 0x07]) & chrMask] = data;
+            chr[DecodeChrAddress(address) & chrMask] = data;
         }
         protected virtual void PokePrg(int address, byte data) { }
 
@@ -100,7 +100,21 @@ namespace MyNes.Core.Boards
             }
             return address;
         }
-
+        protected virtual int DecodeChrAddress(int address)
+        {
+            switch (address & 0x1C00)
+            {
+                case 0x0000: return (address & 0x03FF) | chrPage[0];
+                case 0x0400: return (address & 0x03FF) | chrPage[1];
+                case 0x0800: return (address & 0x03FF) | chrPage[2];
+                case 0x0C00: return (address & 0x03FF) | chrPage[3];
+                case 0x1000: return (address & 0x03FF) | chrPage[4];
+                case 0x1400: return (address & 0x03FF) | chrPage[5];
+                case 0x1800: return (address & 0x03FF) | chrPage[6];
+                case 0x1C00: return (address & 0x03FF) | chrPage[7];
+            }
+            return address;
+        }
         public virtual void Initialize()
         {
             Nes.CpuMemory.Hook(0x8000, 0xFFFF, PeekPrg, PokePrg);

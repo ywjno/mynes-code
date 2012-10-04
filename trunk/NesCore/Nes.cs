@@ -16,19 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System.IO;
 using MyNes.Core.APU;
 using MyNes.Core.Boards;
-using MyNes.Core.Boards.Discreet;
-using MyNes.Core.Boards.Nintendo;
 using MyNes.Core.Controls;
 using MyNes.Core.CPU;
-using MyNes.Core.IO.Output;
+using MyNes.Core.Exceptions;
 using MyNes.Core.IO.Input;
+using MyNes.Core.IO.Output;
 using MyNes.Core.PPU;
 using MyNes.Core.ROM;
 using MyNes.Core.Types;
-using MyNes.Core.Exceptions;
+using System.IO;
+
 namespace MyNes.Core
 {
     public class Nes
@@ -116,7 +115,7 @@ namespace MyNes.Core
                             if (RomInfo.DatabaseCartInfo.System.ToUpper().Contains("PAL"))
                                 emuSystem = TimingInfo.PALB;
                             else if (RomInfo.DatabaseCartInfo.System.ToUpper().Contains("DENDY"))
-                                emuSystem = TimingInfo.DENDY;
+                                emuSystem = TimingInfo.Dendy;
                             else
                                 emuSystem = TimingInfo.NTSC;
                         }
@@ -127,7 +126,7 @@ namespace MyNes.Core
                         break;
                     case EmulationSystem.NTSC: emuSystem = TimingInfo.NTSC; break;
                     case EmulationSystem.PALB: emuSystem = TimingInfo.PALB; break;
-                    case EmulationSystem.DENDY: emuSystem = TimingInfo.DENDY; break;
+                    case EmulationSystem.DENDY: emuSystem = TimingInfo.Dendy; break;
                 }
                 Console.WriteLine("Switching to " + emuSystem.Name + " system.");
                 #endregion
@@ -161,8 +160,8 @@ namespace MyNes.Core
 
                 if (chr.Length == 0)
                 {
-                    Console.WriteLine("No chr, VRAM");
-                    chr = new byte[8192]; // assume 8kb vram
+                    Console.WriteLine("No chr, activated VRAM");
+                    chr = new byte[0x2000]; // assume 8kb vram
                 }
 
                 reader.Close();
@@ -279,6 +278,7 @@ namespace MyNes.Core
             SpeedLimiter.Update();
             //for shortcuts
             ControlsUnit.InputDevice.UpdateEvents();
+            ControlsUnit.FinishFrame();
         }
 
         /// <summary>
@@ -394,8 +394,7 @@ namespace MyNes.Core
         /// <param name="system">The emulation system</param>
         /// <param name="videoDevice">The video device</param>
         /// <param name="audioDevice"></param>
-        public static void SetupOutput(IVideoDevice videoDevice,
-            IAudioDevice audioDevice, ApuPlaybackDescription des)
+        public static void SetupOutput(IVideoDevice videoDevice, IAudioDevice audioDevice, ApuPlaybackDescription des)
         {
             VideoDevice = videoDevice;
             AudioDevice = audioDevice;
@@ -420,8 +419,7 @@ namespace MyNes.Core
         /// <param name="joypad3">The player 3 joypad</param>
         /// <param name="joypad4">The player 4 joypad</param>
         /// <param name="is4Players">Is 4 players enabled</param>
-        public static void SetupInput(IInputDevice inputDevice, IJoypad joypad1, IJoypad joypad2,
-            IJoypad joypad3, IJoypad joypad4, bool is4Players)
+        public static void SetupInput(IInputDevice inputDevice, IJoypad joypad1, IJoypad joypad2, IJoypad joypad3, IJoypad joypad4, bool is4Players)
         {
             ControlsUnit.InputDevice = inputDevice;
             ControlsUnit.IsFourPlayers = is4Players;

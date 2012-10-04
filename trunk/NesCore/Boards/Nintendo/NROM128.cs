@@ -28,5 +28,9 @@ namespace MyNes.Core.Boards.Nintendo
         {
             return address & 0x3FFF; // 128 kbit (((128 * 1024) / 8) bytes)
         }
+        protected override int DecodeChrAddress(int address)
+        {
+            return address & 0x1FFF;
+        }
     }
 }

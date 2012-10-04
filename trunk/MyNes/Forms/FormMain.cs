@@ -16,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-using System.Windows.Forms;
 using MyNes.Core;
+using MyNes.Core.Exceptions;
 using MyNes.Core.ROM;
 using MyNes.Core.Types;
-using MyNes.Core.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
+
 namespace MyNes.Forms
 {
     public partial class FormMain : Form
@@ -42,9 +43,9 @@ namespace MyNes.Forms
             {
                 savedb = value;
                 if (value)
-                    this.Text = "MyNes* 5";
+                    this.Text = "My Nes 5 ALPHA * ";
                 else
-                    this.Text = "MyNes 5";
+                    this.Text = "My Nes 5 ALPHA";
             }
         }
 
@@ -71,7 +72,7 @@ namespace MyNes.Forms
                 Program.Settings.ColumnWidths = new ColumnWidthsCollection();
             for (int w = 0; w < Program.Settings.ColumnWidths.Count; w++)
             {
-                listView1.Columns[w].Width = Program.Settings.ColumnWidths[w];
+                listView.Columns[w].Width = Program.Settings.ColumnWidths[w];
             }
             //spliters
             splitContainer1.SplitterDistance = Program.Settings.SplitContainer1;
@@ -96,19 +97,19 @@ namespace MyNes.Forms
             }
             //columns
             Program.Settings.ColumnWidths = new ColumnWidthsCollection();
-            for (int w = 0; w < listView1.Columns.Count; w++)
+            for (int w = 0; w < listView.Columns.Count; w++)
             {
-                Program.Settings.ColumnWidths.Add(listView1.Columns[w].Width);
+                Program.Settings.ColumnWidths.Add(listView.Columns[w].Width);
             }
             //save
             Program.Settings.Save();
         }
         private void PlaySelectedRom()
         {
-            if (listView1.SelectedItems.Count != 1)
+            if (listView.SelectedItems.Count != 1)
                 return;
 
-            string path = ((ListViewItemBRom)listView1.SelectedItems[0]).BRom.Path;
+            string path = ((ListViewItemBRom)listView.SelectedItems[0]).BRom.Path;
 
             if (File.Exists(path))
                 OpenRom(path);
@@ -188,7 +189,7 @@ namespace MyNes.Forms
         private void RefreshFolders()
         {
             treeView.Nodes.Clear();
-            listView1.Items.Clear();
+            listView.Items.Clear();
 
             foreach (BFolder folder in Program.BDatabaseManager.BrowserDatabase.Folders)
             {
@@ -204,7 +205,7 @@ namespace MyNes.Forms
         {
             ProgressBar1.Visible = true;
             StatusLabel.Text = "Building cache, please wait ..";
-            statusStrip1.Refresh();
+            statusStrip.Refresh();
 
             List<string> files = new List<string>(Directory.GetFiles(folder.Path));
             folder.BRoms = new List<BRom>();
@@ -282,18 +283,18 @@ namespace MyNes.Forms
         }
         private void RefreshFilesFromFolder(BFolder folder)
         {
-            listView1.Items.Clear();
-            listView1.Visible = false;
+            listView.Items.Clear();
+            listView.Visible = false;
             ProgressBar1.Visible = true;
             StatusLabel.Text = "Loading roms list ..";
-            statusStrip1.Refresh();
+            statusStrip.Refresh();
             ProgressBar1.Maximum = folder.BRoms.Count;
             int x = 0;
             foreach (BRom rom in folder.BRoms)
             {
                 ListViewItemBRom item = new ListViewItemBRom();
                 item.BRom = rom;
-                item.ImageIndex = (Path.GetExtension(rom.Path).ToLower() == ".nes") ? 2 : 3;
+                item.ImageIndex = (Path.GetExtension(rom.Path).ToLower() == ".nes") ? 1 : 2;
                 item.SubItems.Add(rom.Size);
                 item.SubItems.Add(rom.Mapper);
                 item.SubItems.Add(rom.Mirroring);
@@ -302,12 +303,12 @@ namespace MyNes.Forms
                 item.SubItems.Add(rom.IsPc10);
                 item.SubItems.Add(rom.IsVsUnisystem);
                 item.SubItems.Add(rom.Path);
-                listView1.Items.Add(item);
+                listView.Items.Add(item);
 
                 ProgressBar1.Value = x;
                 x++;
             }
-            listView1.Visible = true;
+            listView.Visible = true;
             ProgressBar1.Visible = false;
             StatusLabel.Text = "Ready.";
         }
@@ -420,11 +421,12 @@ namespace MyNes.Forms
         }
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            deleteFolderToolStripMenuItem.Enabled = false;
+            buttonDeleteFolder.Enabled = false;
+
             if (treeView.SelectedNode == null)
                 return;
 
-            deleteFolderToolStripMenuItem.Enabled = (treeView.SelectedNode.Parent == null);
+            buttonDeleteFolder.Enabled = (treeView.SelectedNode.Parent == null);
 
             if (((TreeNodeBFolder)treeView.SelectedNode).BFolder.CacheBuilt)
             {
@@ -463,7 +465,7 @@ namespace MyNes.Forms
         }
         private void menuStripToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            menuStrip1.Visible = menuStripToolStripMenuItem.Checked;
+            menuStrip.Visible = menuStripToolStripMenuItem.Checked;
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -477,7 +479,7 @@ namespace MyNes.Forms
         private void openRomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog op = new OpenFileDialog();
-            op.Filter = "INES (*.nes)|*.nes;*.NES";
+            op.Filter = "All Supported Files |*.nes;*.NES;*.7z;*.7Z;*.rar;*.RAR;*.zip;*.ZIP|INES rom (*.nes)|*.nes;*.NES|Archives (*.7z *.rar *.zip)|*.7z;*.7Z;*.rar;*.RAR;*.zip;*.ZIP";
             if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 OpenRom(op.FileName);
@@ -485,7 +487,7 @@ namespace MyNes.Forms
         }
         private void aboutMyNesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FormAbout frm = new FormAbout(Application.ProductVersion);
+            FormAbout frm = new FormAbout();
             frm.ShowDialog(this);
         }
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -603,7 +605,7 @@ namespace MyNes.Forms
         }
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            this.listView1.ListViewItemSorter = new ListViewItemComparer(e.Column, sortAZ);
+            this.listView.ListViewItemSorter = new ListViewItemComparer(e.Column, sortAZ);
             sortAZ = !sortAZ;
         }
         private void rebuildCacheToolStripMenuItem_Click(object sender, EventArgs e)
@@ -613,10 +615,6 @@ namespace MyNes.Forms
             BuildCachForFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
             RefreshFilesFromFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
             SaveDB = true;
-        }
-        private void deleteFolderToolStripMenuItem_EnabledChanged(object sender, EventArgs e)
-        {
-            deleteToolStripMenuItem.Enabled = buttonDeleteFolder.Enabled = deleteFolderToolStripMenuItem.Enabled;
         }
         private void deleteFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -911,12 +909,12 @@ namespace MyNes.Forms
         }
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count != 1)
+            if (listView.SelectedItems.Count != 1)
             {
                 imageViewer_covers.ImageToView = imageViewer_snaps.ImageToView = null;
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView1.SelectedItems[0]).BRom;
+            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
             if (File.Exists(rom.CoverPath))
                 imageViewer_covers.ImageToView = (Bitmap)Image.FromFile(rom.CoverPath);
             else
@@ -936,44 +934,44 @@ namespace MyNes.Forms
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count != 1)
+            if (listView.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView1.SelectedItems[0]).BRom;
+            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start(rom.SnapshotPath); }
             catch { }
         }
         private void openContainerFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count != 1)
+            if (listView.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView1.SelectedItems[0]).BRom;
+            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.SnapshotPath); }
             catch { }
         }
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count != 1)
+            if (listView.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView1.SelectedItems[0]).BRom;
+            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start(rom.CoverPath); }
             catch { }
         }
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count != 1)
+            if (listView.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView1.SelectedItems[0]).BRom;
+            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.CoverPath); }
             catch { }
@@ -981,6 +979,36 @@ namespace MyNes.Forms
         private void dENDYToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.Settings.EmuSystem = EmulationSystem.DENDY;
+        }
+        private void buttonDeleteFolder_EnabledChanged(object sender, EventArgs e)
+        {
+            deleteToolStripMenuItem.Enabled = deleteFolderToolStripMenuItem.Enabled = buttonDeleteFolder.Enabled;
+        }
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                SaveFileDialog sav = new SaveFileDialog();
+                sav.Title = "Save state as";
+                sav.Filter = "My Nes State (*.mns)|*.mns";
+                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    Nes.SaveStateAs(sav.FileName);
+                }
+            }
+        }
+        private void loadAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                OpenFileDialog op = new OpenFileDialog();
+                op.Title = "Load state as";
+                op.Filter = "My Nes State (*.mns)|*.mns";
+                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    Nes.LoadStateAs(op.FileName);
+                }
+            }
         }
     }
 }

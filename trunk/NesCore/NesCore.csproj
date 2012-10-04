@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="APU\Apu.cs" />
+    <Compile Include="APU\Apu.Mixer.cs" />
     <Compile Include="APU\ApuChannel.cs" />
     <Compile Include="APU\ApuPlaybackDescription.cs" />
     <Compile Include="APU\ChannelDmc.cs" />
@@ -141,7 +142,7 @@
     <Compile Include="IO\Input\IZapper.cs" />
     <Compile Include="IO\Output\IAudioDevice.cs" />
     <Compile Include="IO\Output\IVideoDevice.cs" />
-    <Compile Include="MathHelper.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Memory.cs" />
     <Compile Include="Nes.cs" />
     <Compile Include="PPU\NTSCPaletteGenerator.cs" />

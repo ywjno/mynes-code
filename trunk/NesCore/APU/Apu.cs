@@ -16,10 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System.Collections.Generic;
 namespace MyNes.Core.APU
 {
-    public class Apu : ProcessorBase
+    public partial class Apu : ProcessorBase
     {
         public ChannelSq1 sq1;
         public ChannelSq2 sq2;
@@ -30,7 +29,7 @@ namespace MyNes.Core.APU
 
         private int Cycles = 0;
         private bool SequencingMode;
-        /*From PAL NES APU Tests (google it !)
+        /*
         Mode 0: 4-step sequence
 
         Action      Envelopes &     Length Counter& Interrupt   Delay to next
@@ -67,7 +66,7 @@ namespace MyNes.Core.APU
             new int[] { 1, 8314, 8314, 8312, 16626 } , // PALB
             new int[] { 1, 7458, 7456, 7458, 14910 } , // DENDY (acts like NTSC)
         };
-        private int systemIndex = 0;//0=NTSC, 1=PALB, 2=DENDY
+
         private byte CurrentSeq = 0;
         private bool oddCycle = false;
         private bool isClockingDuration = false;
@@ -78,12 +77,12 @@ namespace MyNes.Core.APU
         //PLAYBACK
         private int rPos;
         private int wPos;
-        private int[] soundBuffer = new int[44100];
+        private short[] soundBuffer = new short[44100];
 
-        private float ClockFreq = 1789772f;
-        private float sampleDelay = (1789772f / 44100.00f);
-        private float sampleTimer;
-        private ApuMixerType mixer = ApuMixerType.Implementation;
+        // default to 44.1KHz settings
+        private int sampleCycles;
+        private int sampleSingle = 77;
+        private int samplePeriod = 3125;
 
         public Apu(TimingInfo.System system)
             : base(system)
@@ -113,14 +112,7 @@ namespace MyNes.Core.APU
         }
         public override void HardReset()
         {
-            if (system.Master == TimingInfo.NTSC.Master)
-                systemIndex = 0;
-            else if (system.Master == TimingInfo.PALB.Master)
-                systemIndex = 1;
-            else if (system.Master == TimingInfo.DENDY.Master)
-                systemIndex = 2;
-
-            Cycles = SequenceMode0[systemIndex][0] - 10;
+            Cycles = SequenceMode0[system.Serial][0] - 10;
             FrameIrqFlag = false;
             FrameIrqEnabled = true;
             SequencingMode = false;
@@ -128,8 +120,8 @@ namespace MyNes.Core.APU
             oddCycle = false;
             isClockingDuration = false;
             wPos = rPos = 0;
-            soundBuffer = new int[soundBuffer.Length];
-            sampleTimer = 0;
+            soundBuffer = new short[soundBuffer.Length];
+            sampleCycles = 0;
 
             sq1.HardReset();
             sq2.HardReset();
@@ -158,20 +150,21 @@ namespace MyNes.Core.APU
             FrameIrqFlag = false;
             FrameIrqEnabled = true;
             Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Apu, false);
-            Cycles = SequenceMode0[systemIndex][0] - 10;
+            Cycles = SequenceMode0[system.Serial][0] - 10;
             SequencingMode = false;
             CurrentSeq = 0;
             oddCycle = false;
         }
         public override void Shutdown() { }
 
-        public void SetupPlayback(ApuPlaybackDescription des)
+        public void SetupPlayback(ApuPlaybackDescription description)
         {
-            ClockFreq = system.Master / system.Cpu;
-            sampleDelay = (ClockFreq / des.Frequency) - 1.1f;
+            samplePeriod = system.Master;
+            sampleSingle = system.Cpu * description.Frequency;
 
-            soundBuffer = new int[des.Frequency];
-            this.mixer = des.MixerType;
+            Helper.Reduce(ref samplePeriod, ref sampleSingle);
+
+            soundBuffer = new short[description.Frequency];
         }
         public void AddExtraChannels(APU.Channel[] channels)
         {
@@ -219,14 +212,12 @@ namespace MyNes.Core.APU
         }
         private void UpdatePlayback()
         {
-            if (sampleTimer > 0)
+            sampleCycles += sampleSingle;
+
+            if (sampleCycles >= samplePeriod)
             {
-                sampleTimer--;
-            }
-            else
-            {
-                sampleTimer += sampleDelay;
-                AddSample(sampleDelay);
+                sampleCycles -= samplePeriod;
+                AddSample();
             }
         }
 
@@ -258,7 +249,7 @@ namespace MyNes.Core.APU
                         case 5: CheckIrq(); break;
                     }
                     CurrentSeq++;
-                    Cycles += SequenceMode0[systemIndex][CurrentSeq];
+                    Cycles += SequenceMode0[system.Serial][CurrentSeq];
                     if (CurrentSeq == 6)
                         CurrentSeq = 0;
                 }
@@ -272,7 +263,7 @@ namespace MyNes.Core.APU
                         case 3: ClockEnvelope(); break;
                     }
                     CurrentSeq++;
-                    Cycles = SequenceMode1[systemIndex][CurrentSeq];
+                    Cycles = SequenceMode1[system.Serial][CurrentSeq];
                     if (CurrentSeq == 4)
                         CurrentSeq = 0;
                 }
@@ -328,9 +319,9 @@ namespace MyNes.Core.APU
             CurrentSeq = 0;
 
             if (!SequencingMode)
-                Cycles = SequenceMode0[systemIndex][0];
+                Cycles = SequenceMode0[system.Serial][0];
             else
-                Cycles = SequenceMode1[systemIndex][0];
+                Cycles = SequenceMode1[system.Serial][0];
 
             if (!oddCycle)
                 Cycles++;
@@ -344,9 +335,9 @@ namespace MyNes.Core.APU
             }
         }
 
-        private void AddSample(float sampleRate)
+        private void AddSample()
         {
-            int output = (int)(MixSamples());
+            short output = MixSamples();
 
             if (EXenabled)
             {
@@ -354,58 +345,24 @@ namespace MyNes.Core.APU
                     output += chn.GetSample();
             }
 
-            //if (output > 128)
-            //    output = 128;
-            //if (output < 0)
-            //    output = 0;
-
             this.soundBuffer[wPos++ % this.soundBuffer.Length] = output;
         }
         public int PullSample()
         {
             while (rPos >= wPos)
             {
-                AddSample(sampleDelay);
+                AddSample();
             }
             return soundBuffer[rPos++ % soundBuffer.Length];
         }
-        private float MixSamples()
+        private short MixSamples()
         {
-            float tndSample = 0;
-            float sqrSample = 0;
-            switch (mixer)
-            {
-                case ApuMixerType.Implementation:
-                    sqrSample += Nes.Apu.sq1.GetSample();
-                    sqrSample += Nes.Apu.sq2.GetSample();
-
-                    tndSample += Nes.Apu.tri.GetSample() * 3;
-                    tndSample += Nes.Apu.noi.GetSample() * 2;
-                    tndSample += Nes.Apu.dmc.GetSample() * 1;
-
-                    return ((95.52f / (8128.00f / sqrSample + 100)) + (163.67f / (24329.00f / tndSample + 100))) * 128;
-
-                case ApuMixerType.LinearApproximation:
-                    sqrSample += Nes.Apu.sq1.GetSample();
-                    sqrSample += Nes.Apu.sq2.GetSample();
-
-                    tndSample += Nes.Apu.tri.GetSample() * 0.00851f;
-                    tndSample += Nes.Apu.noi.GetSample() * 0.00494f;
-                    tndSample += Nes.Apu.dmc.GetSample() * 0.00335f;
-
-                    return ((0.00752f * sqrSample) + tndSample) * 128;
-
-                case ApuMixerType.Normal:
-                    sqrSample += Nes.Apu.sq1.GetSample();
-                    sqrSample += Nes.Apu.sq2.GetSample();
-
-                    tndSample += Nes.Apu.tri.GetSample();
-                    tndSample += Nes.Apu.noi.GetSample();
-                    tndSample += Nes.Apu.dmc.GetSample();
-
-                    return (sqrSample + tndSample);
-            }
-            return 0;
+            return Mixer.MixSamples(
+                sq1.GetSample(),
+                sq2.GetSample(),
+                tri.GetSample(),
+                noi.GetSample(),
+                dmc.GetSample());
         }
 
         public override void SaveState(Types.StateStream stream)

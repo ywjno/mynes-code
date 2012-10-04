@@ -76,10 +76,10 @@ namespace MyNes.Core.ROM
             HasSaveRam = (header[6] & 0x2) != 0x0;
             HasTrainer = (header[6] & 0x4) != 0x0;
 
-            // if ((header[7] & 0x0F) == 0)
-            Mapper |= (byte)((header[7] & 0xF0) | (header[6] >> 4));
-            // else
-            //     throw new Exception("Header is corrupted, please use the header cleaner tool");
+            if ((header[7] & 0x0F) == 0)
+                Mapper = (byte)((header[7] & 0xF0) | (header[6] >> 4));
+            else
+                Mapper = (byte)((header[6] >> 4));
 
             IsVSUnisystem = (header[7] & 0x01) != 0;
             IsPlaychoice10 = (header[7] & 0x02) != 0;
