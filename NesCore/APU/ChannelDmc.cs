@@ -27,7 +27,7 @@ namespace MyNes.Core.APU
                 systemIndex = 0;
             else if (system.Master == TimingInfo.PALB.Master)
                 systemIndex = 1;
-            else if (system.Master == TimingInfo.DENDY.Master)
+            else if (system.Master == TimingInfo.Dendy.Master)
                 systemIndex = 2;
         }
         private static readonly int[][] FrequencyTable = 
@@ -48,6 +48,7 @@ namespace MyNes.Core.APU
               0x5F, 0x50, 0x47, 0x40, 0x35, 0x2A, 0x24, 0x1B
             },
         };
+        private const int dmaCycles = 4;
         private int systemIndex = 0;
         public bool DeltaIrqOccur;
         private bool IrqEnabled;
@@ -96,8 +97,8 @@ namespace MyNes.Core.APU
             dmaBuffer = Nes.CpuMemory[dmaAddr];
             if (++dmaAddr == 0x10000)
                 dmaAddr = 0x8000;
-
             dmaSize--;
+
             if (dmaSize == 0)
             {
                 if (dmaLooping)
@@ -132,7 +133,7 @@ namespace MyNes.Core.APU
                         dmaAddr = dmaAddrRefresh;
 
                         if (!bufferFull)
-                            Nes.Cpu.DMCdmaCycles = 4;
+                            Nes.Cpu.DMCdmaCycles = dmaCycles;
                     }
                 }
                 else
@@ -170,7 +171,7 @@ namespace MyNes.Core.APU
                     dmaEnabled = true;
                     dmaByte = dmaBuffer;
                     if (dmaSize > 0)
-                        Nes.Cpu.DMCdmaCycles = 4;
+                        Nes.Cpu.DMCdmaCycles = dmaCycles;
                 }
                 else
                 {

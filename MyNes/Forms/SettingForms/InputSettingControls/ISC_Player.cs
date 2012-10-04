@@ -64,6 +64,8 @@ namespace MyNes
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Right = textBox_right.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.A = textBox_a.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.B = textBox_b.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.TurboA = textBox_turboA.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.TurboB = textBox_turboB.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Select = textBox_select.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Start = textBox_start.Text;
                     break;
@@ -74,6 +76,8 @@ namespace MyNes
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Right = textBox_right.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.A = textBox_a.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.B = textBox_b.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.TurboA = textBox_turboA.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.TurboB = textBox_turboB.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Select = textBox_select.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Start = textBox_start.Text;
                     break;
@@ -84,6 +88,8 @@ namespace MyNes
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Right = textBox_right.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.A = textBox_a.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.B = textBox_b.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.TurboA = textBox_turboA.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.TurboB = textBox_turboB.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Select = textBox_select.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Start = textBox_start.Text;
                     break;
@@ -94,6 +100,8 @@ namespace MyNes
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Right = textBox_right.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.A = textBox_a.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.B = textBox_b.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.TurboA = textBox_turboA.Text;
+                    Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.TurboB = textBox_turboB.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Select = textBox_select.Text;
                     Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Start = textBox_start.Text;
                     break;
@@ -110,6 +118,8 @@ namespace MyNes
                     textBox_right.Text = "Keyboard.RightArrow";
                     textBox_a.Text = "Keyboard.X";
                     textBox_b.Text = "Keyboard.Z";
+                    textBox_turboA.Text = "Keyboard.S";
+                    textBox_turboB .Text= "Keyboard.A";
                     textBox_select.Text = "Keyboard.C";
                     textBox_start.Text = "Keyboard.V";
                     break;
@@ -120,30 +130,37 @@ namespace MyNes
                     textBox_right.Text = "Keyboard.D";
                     textBox_a.Text = "Keyboard.K";
                     textBox_b.Text = "Keyboard.J";
+                    textBox_turboA.Text = "Keyboard.I";
+                    textBox_turboB .Text= "Keyboard.U";
                     textBox_select.Text = "Keyboard.Q";
                     textBox_start.Text = "Keyboard.E";
                     break;
                 case 3:
-                    textBox_up.Text = "Keyboard.T";
-                    textBox_down.Text = "Keyboard.G";
-                    textBox_left.Text = "Keyboard.F";
-                    textBox_right.Text = "Keyboard.H";
-                    textBox_a.Text = "Keyboard.M";
-                    textBox_b.Text = "Keyboard.N";
-                    textBox_select.Text = "Keyboard.U";
-                    textBox_start.Text = "Keyboard.Y";
+                    textBox_up.Text = "";
+                    textBox_down.Text = "";
+                    textBox_left.Text = "";
+                    textBox_right.Text = "";
+                    textBox_a.Text = "";
+                    textBox_b.Text = "";
+                    textBox_turboA.Text = "";
+                    textBox_turboB .Text= "";
+                    textBox_select.Text = "";
+                    textBox_start.Text = "";
                     break;
                 case 4:
-                    textBox_up.Text = "Keyboard.B";
-                    textBox_down.Text = "Keyboard.G";
-                    textBox_left.Text = "Keyboard.P";
-                    textBox_right.Text = "Keyboard.L";
-                    textBox_a.Text = "Keyboard.I";
-                    textBox_b.Text = "Keyboard.O";
-                    textBox_select.Text = "Keyboard.F11";
-                    textBox_start.Text = "Keyboard.R";
+                    textBox_up.Text = "";
+                    textBox_down.Text = "";
+                    textBox_left.Text = "";
+                    textBox_right.Text = "";
+                    textBox_a.Text = "";
+                    textBox_b.Text = "";
+                    textBox_turboA.Text = "";
+                    textBox_turboB .Text= "";
+                    textBox_select.Text = "";
+                    textBox_start.Text = "";
                     break;
             }
+            SaveSettings();
         }
         public override void OnSettingsSelect()
         {
@@ -162,6 +179,8 @@ namespace MyNes
                     textBox_b.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.B;
                     textBox_select.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Select;
                     textBox_start.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Start;
+                    textBox_turboA.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.TurboA;
+                    textBox_turboB.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.TurboB;
                     break;
                 case 2:
                     textBox_up.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Up;
@@ -172,6 +191,8 @@ namespace MyNes
                     textBox_b.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.B;
                     textBox_select.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Select;
                     textBox_start.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Start;
+                    textBox_turboA.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.TurboA;
+                    textBox_turboB.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.TurboB;
                     break;
                 case 3:
                     textBox_up.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Up;
@@ -182,6 +203,8 @@ namespace MyNes
                     textBox_b.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.B;
                     textBox_select.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Select;
                     textBox_start.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Start;
+                    textBox_turboA.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.TurboA;
+                    textBox_turboB.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.TurboB;
                     break;
                 case 4:
                     textBox_up.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Up;
@@ -192,6 +215,8 @@ namespace MyNes
                     textBox_b.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.B;
                     textBox_select.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Select;
                     textBox_start.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Start;
+                    textBox_turboA.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.TurboA;
+                    textBox_turboB.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.TurboB;
                     break;
             }
         }
@@ -267,6 +292,24 @@ namespace MyNes
         {
             if (e.KeyData == Keys.Return)
                 ChangeControlMapping(textBox_a);
+        }
+        private void textBox_turboB_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ChangeControlMapping(textBox_turboB);
+        }
+        private void textBox_turboB_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Return)
+                ChangeControlMapping(textBox_turboB);
+        }
+        private void textBox_turboA_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ChangeControlMapping(textBox_turboA);
+        }
+        private void textBox_turboA_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Return)
+                ChangeControlMapping(textBox_turboA);
         }
     }
 }

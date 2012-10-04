@@ -66,6 +66,8 @@ namespace MyNes
 
                 profile.Player1.A = "Keyboard.X";
                 profile.Player1.B = "Keyboard.Z";
+                profile.Player1.TurboA = "Keyboard.S";
+                profile.Player1.TurboB = "Keyboard.A";
                 profile.Player1.Left = "Keyboard.LeftArrow";
                 profile.Player1.Right = "Keyboard.RightArrow";
                 profile.Player1.Up = "Keyboard.UpArrow";
@@ -75,30 +77,14 @@ namespace MyNes
 
                 profile.Player2.A = "Keyboard.K";
                 profile.Player2.B = "Keyboard.J";
+                profile.Player2.TurboA = "Keyboard.I";
+                profile.Player2.TurboB = "Keyboard.U";
                 profile.Player2.Left = "Keyboard.A";
                 profile.Player2.Right = "Keyboard.D";
                 profile.Player2.Up = "Keyboard.W";
                 profile.Player2.Down = "Keyboard.S";
                 profile.Player2.Start = "Keyboard.E";
                 profile.Player2.Select = "Keyboard.Q";
-
-                profile.Player3.A = "Keyboard.M";
-                profile.Player3.B = "Keyboard.N";
-                profile.Player3.Left = "Keyboard.F";
-                profile.Player3.Right = "Keyboard.H";
-                profile.Player3.Up = "Keyboard.T";
-                profile.Player3.Down = "Keyboard.G";
-                profile.Player3.Start = "Keyboard.Y";
-                profile.Player3.Select = "Keyboard.U";
-
-                profile.Player4.A = "Keyboard.I";
-                profile.Player4.B = "Keyboard.O";
-                profile.Player4.Left = "Keyboard.P";
-                profile.Player4.Right = "Keyboard.L";
-                profile.Player4.Up = "Keyboard.B";
-                profile.Player4.Down = "Keyboard.G";
-                profile.Player4.Start = "Keyboard.R";
-                profile.Player4.Select = "Keyboard.F11";
 
                 profile.Shortcuts.ResumeEmulation = "Keyboard.F1";
                 profile.Shortcuts.PauseEmulation = "Keyboard.F2";

@@ -32,6 +32,9 @@ namespace MyNes.Core.Boards.Nintendo
             base.Initialize();
             //setup sram
             Nes.CpuMemory.Hook(0x6000, 0x7FFF, PeekSram, PokeSram);
+
+            Nes.Cpu.ClockCycle = ClockCpu;
+            timer = 0;
         }
         public override void HardReset()
         {
@@ -54,6 +57,8 @@ namespace MyNes.Core.Boards.Nintendo
             sram = new byte[0x2000]; 
             shift = 0;
             buffer = 0;
+
+
         }
         private bool isVram;
         private byte[] reg = new byte[4];
@@ -61,6 +66,7 @@ namespace MyNes.Core.Boards.Nintendo
         private byte shift = 0;
         private byte buffer = 0;
         private bool wramON = true;//enable sram, not sure about this but some docs mansion it
+        private int timer = 0;
 
         public override void SetSram(byte[] buffer)
         {
@@ -72,6 +78,12 @@ namespace MyNes.Core.Boards.Nintendo
         }
         protected override void PokePrg(int address, byte data)
         {
+            //Too close writes ignored
+            if (timer < 2)
+            {
+                return;
+            } 
+            timer = 0;
             //Temporary reg port ($8000-FFFF):
             //[r... ...d]
             //r = reset flag
@@ -173,6 +185,11 @@ namespace MyNes.Core.Boards.Nintendo
             if (wramON)
                 return sram[address - 0x6000];
             return 0;
+        }
+
+        private void ClockCpu()
+        {
+            timer++;
         }
         public override void SaveState(StateStream stream)
         {

@@ -62,6 +62,8 @@ namespace MyNes
                 profile.Player1.Select = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player1.Select;
                 profile.Player1.Start = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player1.Start;
                 profile.Player1.Up = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player1.Up;
+                profile.Player1.TurboA = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player1.TurboA;
+                profile.Player1.TurboB = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player1.TurboB;
 
                 profile.Player2.A = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.A;
                 profile.Player2.B = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.B;
@@ -71,6 +73,8 @@ namespace MyNes
                 profile.Player2.Select = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.Select;
                 profile.Player2.Start = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.Start;
                 profile.Player2.Up = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.Up;
+                profile.Player2.TurboA = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.TurboA;
+                profile.Player2.TurboB = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player2.TurboB;
 
                 profile.Player3.A = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.A;
                 profile.Player3.B = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.B;
@@ -80,6 +84,8 @@ namespace MyNes
                 profile.Player3.Select = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.Select;
                 profile.Player3.Start = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.Start;
                 profile.Player3.Up = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.Up;
+                profile.Player3.TurboA = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.TurboA;
+                profile.Player3.TurboB = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player3.TurboB;
 
                 profile.Player4.A = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.A;
                 profile.Player4.B = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.B;
@@ -89,6 +95,8 @@ namespace MyNes
                 profile.Player4.Select = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.Select;
                 profile.Player4.Start = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.Start;
                 profile.Player4.Up = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.Up;
+                profile.Player4.TurboA = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.TurboA;
+                profile.Player4.TurboB = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Player4.TurboB;
 
                 profile.Shortcuts.HardReset = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Shortcuts.HardReset;
                 profile.Shortcuts.LoadState = Program.Settings.ControlProfiles[frm.ProfileIndexToCopyFrom].Shortcuts.LoadState;

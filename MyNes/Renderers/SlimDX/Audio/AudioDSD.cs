@@ -27,9 +27,9 @@ namespace MyNes
 {
     public class AudioDSD : IAudioDevice
     {
-        public AudioDSD(IntPtr handle, int playbackFreq, short bitPerSample,int latency)
+        public AudioDSD(IntPtr handle, int playbackFreq, int latency)
         {
-            Initialize(handle, playbackFreq, bitPerSample, latency);
+            Initialize(handle, playbackFreq, latency);
         }
         public Control _Control;
         //slimdx
@@ -41,15 +41,13 @@ namespace MyNes
         private bool _FirstRender = true;
         public byte[] DATA = new byte[44100];
         private int BufferSize = 44100;
-        private short bitPerSample = 8;
         private int latency = 0x1000;
         private int W_Pos = 0;//Write position
         private int L_Pos = 0;//Last position
         private int D_Pos = 0;//Data position
 
-        public void Initialize(IntPtr handle, int playbackFreq, short bitPerSample, int latencyInMilliseconds)
+        public void Initialize(IntPtr handle, int playbackFreq, int latencyInMilliseconds)
         {
-            this.bitPerSample = bitPerSample;
             //Create the device
             Console.WriteLine("Initializing SlimDX DirectSound for APU....");
             _SoundDevice = new DirectSound();
@@ -59,7 +57,7 @@ namespace MyNes
             wav.FormatTag = WaveFormatTag.Pcm;
             wav.SamplesPerSecond = playbackFreq;
             wav.Channels = 1;
-            wav.BitsPerSample = bitPerSample;
+            wav.BitsPerSample = 16;
             wav.AverageBytesPerSecond = wav.SamplesPerSecond * wav.Channels * (wav.BitsPerSample / 8);
             wav.BlockAlignment = (short)(wav.Channels * wav.BitsPerSample / 8);
             BufferSize = wav.AverageBytesPerSecond;
@@ -71,7 +69,7 @@ namespace MyNes
                 BufferFlags.Software;
             //buffer (1 second length)
             DATA = new byte[BufferSize];
-            
+
             latency = (latencyInMilliseconds * BufferSize) / 1000;
 
             buffer = new SecondarySoundBuffer(_SoundDevice, des);
@@ -98,69 +96,20 @@ namespace MyNes
             }
             if (po != 0)
             {
-                switch (bitPerSample)
+                for (int i = 0; i < po; i += 2)
                 {
-                    case 8:
-                        for (int i = 0; i < po; i++)
-                        {
-                            //Get the sample from the apu
-                            byte OUT = (byte)Nes.Apu.PullSample();
+                    //Get the sample from the apu
+                    int OUT = Nes.Apu.PullSample();
 
-                            if (D_Pos < DATA.Length)
-                            {
-                                DATA[D_Pos] = OUT;
-                            }
-                            D_Pos++;
-                            D_Pos = D_Pos % BufferSize;
-                        }
-                        break;
-                    case 16:
-                        for (int i = 0; i < po; i += 2)
-                        {
-                            //Get the sample from the apu
-                            int OUT = Nes.Apu.PullSample();
-
-                            if (D_Pos < DATA.Length)
-                            {
-                                DATA[D_Pos] = (byte)((OUT & 0xFF00) >> 8);
-                                DATA[D_Pos + 1] = (byte)(OUT & 0xFF);
-                            }
-                            D_Pos += 2;
-                            D_Pos = D_Pos % BufferSize;
-                        }
-                        break;
-                    case 24:
-                        for (int i = 0; i < po; i += 3)
-                        {
-                            //Get the sample from the apu
-                            int OUT = Nes.Apu.PullSample();
-                            if (D_Pos < DATA.Length)
-                            {
-                                DATA[D_Pos] = (byte)((OUT & 0xFF0000) >> 16);
-                                DATA[D_Pos + 1] = (byte)((OUT & 0x00FF00) >> 8);
-                                DATA[D_Pos + 2] = (byte)(OUT & 0x0000FF);
-                            }
-                            D_Pos += 3;
-                            D_Pos = D_Pos % BufferSize;
-                        }
-                        break;
-                    case 32:
-                        for (int i = 0; i < po; i += 4)
-                        {
-                            //Get the sample from the apu
-                            int OUT = Nes.Apu.PullSample();
-                            if (D_Pos < DATA.Length)
-                            {
-                                DATA[D_Pos] = (byte)((OUT & 0xFF000000) >> 24);
-                                DATA[D_Pos + 1] = (byte)((OUT & 0x00FF0000) >> 16);
-                                DATA[D_Pos + 2] = (byte)((OUT & 0x0000FF00) >> 8);
-                                DATA[D_Pos + 3] = (byte)(OUT & 0x000000FF);
-                            }
-                            D_Pos += 4;
-                            D_Pos = D_Pos % BufferSize;
-                        }
-                        break;
+                    if (D_Pos < DATA.Length)
+                    {
+                        DATA[D_Pos] = (byte)((OUT & 0xFF00) >> 8);
+                        DATA[D_Pos + 1] = (byte)(OUT & 0xFF);
+                    }
+                    D_Pos += 2;
+                    D_Pos = D_Pos % BufferSize;
                 }
+
                 buffer.Write(DATA, 0, LockFlags.None);
                 L_Pos = W_Pos;
             }

@@ -120,16 +120,4 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="radioButton_Linear.ToolTip" xml:space="preserve">
-    <value>A linear approximation results in slightly louder DMC samples, 
-but otherwise fairly accurate operation since the wave channels use a
-small portion of the transfer curve. The overall volume will be reduced due to
-the headroom required by the DMC approximation.</value>
-  </data>
-  <data name="radioButton_Implementation.ToolTip" xml:space="preserve">
-    <value>The formulas can be efficiently implemented using two lookup tables: a 31-entry
-table for the two square channels and a 203-entry table for the remaining
-channels (due to the approximation of tnd_out, the numerators are adjusted
-slightly to preserve the normalized output range).</value>
-  </data>
 </root>

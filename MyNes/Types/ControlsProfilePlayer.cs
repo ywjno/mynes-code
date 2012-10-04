@@ -22,6 +22,8 @@ namespace MyNes
     {
         private string _A;
         private string _B;
+        private string _TurboA;
+        private string _TurboB;
         private string _Left;
         private string _Right;
         private string _Up;
@@ -33,6 +35,10 @@ namespace MyNes
         { get { return _A; } set { _A = value; } }
         public string B
         { get { return _B; } set { _B = value; } }
+        public string TurboA
+        { get { return _TurboA; } set { _TurboA = value; } }
+        public string TurboB
+        { get { return _TurboB; } set { _TurboB = value; } }
         public string Left
         { get { return _Left; } set { _Left = value; } }
         public string Right

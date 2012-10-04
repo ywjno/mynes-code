@@ -31,7 +31,7 @@ namespace MyNes.Core.Boards
             switch (header.Mapper)
             {
                 case 0:
-                    switch (header.PrgPages * 16384)
+                    switch (header.PrgPages * 0x4000)
                     {
                         case 0x4000: return new NROM128(chr, prg); // 128 kb PRG, 8kB CHR-RAM
                         case 0x8000: return new NROM256(chr, prg); // 256 kb PRG, 8kB CHR-RAM

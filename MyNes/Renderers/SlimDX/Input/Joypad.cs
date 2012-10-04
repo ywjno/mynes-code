@@ -16,12 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SlimDX;
-using SlimDX.DirectInput;
 using MyNes.Core.IO.Input;
 
 namespace MyNes
@@ -38,11 +32,15 @@ namespace MyNes
         public JoyButton Start { get { return _buttons[5]; } }
         public JoyButton A { get { return _buttons[6]; } }
         public JoyButton B { get { return _buttons[7]; } }
+        public JoyButton TurboA { get { return _buttons[8]; } }
+        public JoyButton TurboB { get { return _buttons[9]; } }
+
+        private bool turbo;
 
         public Joypad(InputManager manager)
         {
-            _buttons = new JoyButton[8];
-            for (int i = 0; i < 8; i++)
+            _buttons = new JoyButton[10];
+            for (int i = 0; i < 10; i++)
             {
                 _buttons[i] = new JoyButton(manager);
             }
@@ -58,6 +56,15 @@ namespace MyNes
 
             if (B.IsPressed())
                 num |= 2;
+
+            if (turbo)
+            {
+                if (TurboA.IsPressed())
+                    num |= 1;
+
+                if (TurboB.IsPressed())
+                    num |= 2;
+            }
 
             if (Select.IsPressed())
                 num |= 4;
@@ -78,6 +85,18 @@ namespace MyNes
                 num |= 0x80;
 
             return num;
+        }
+
+        public bool Turbo
+        {
+            get
+            {
+                return turbo;
+            }
+            set
+            {
+                turbo = value;
+            }
         }
     }
 }

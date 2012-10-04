@@ -33,7 +33,7 @@ namespace MyNes.Core.APU
         private byte Step;
         private bool LinearCounterHalt;
         private bool HALT;
-     
+
         public override void ClockEnvelope()
         {
             if (HALT)
@@ -79,8 +79,8 @@ namespace MyNes.Core.APU
 
         public override byte GetSample()
         {
-            //if (DurationCounter > 0 && linearCounter > 0 && frequency >4)
-                return output;
+            // if (DurationCounter > 0 && linearCounter > 0 && frequency >4)
+            return output;
         }
         public override void Update()
         {

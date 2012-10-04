@@ -110,6 +110,16 @@ namespace MyNes.Core.Controls
         {
 
         }
+        public void FinishFrame()
+        {
+            Joypad1.Turbo = !Joypad1.Turbo;
+            Joypad2.Turbo = !Joypad2.Turbo;
+            if (IsFourPlayers)
+            {
+                Joypad3.Turbo = !Joypad3.Turbo;
+                Joypad4.Turbo = !Joypad4.Turbo;
+            }
+        }
         public virtual void SoftReset()
         {
             inputData1 = 0;

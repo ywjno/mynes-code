@@ -18,7 +18,7 @@
  */
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("NROM128")]
+    [BoardName("NROM256")]
     public class NROM256 : Board
     {
         public NROM256(byte[] chr, byte[] prg)
@@ -27,6 +27,10 @@ namespace MyNes.Core.Boards.Nintendo
         protected override int DecodePrgAddress(int address)
         {
             return address & 0x7FFF; // 256 kbit (((256 * 1024) / 8) bytes)
+        }
+        protected override int DecodeChrAddress(int address)
+        {
+            return address & 0x1FFF;
         }
     }
 }

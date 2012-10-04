@@ -62,8 +62,8 @@ namespace MyNes.Core.Debug.DefaultCommands
                     if (codes[i] == "all")
                     {
                         Console.WriteLine("SHA1: " + Nes.RomInfo.SHA1);
-                        Console.WriteLine("PRGs: " + Nes.RomInfo.PRGcount + " (" + (Nes.RomInfo.PRGcount * 4) + " KB)");
-                        Console.WriteLine("CHRs: " + Nes.RomInfo.CHRcount + " (" + Nes.RomInfo.CHRcount + " KB)");
+                        Console.WriteLine("PRGs: " + Nes.RomInfo.PRGcount + " (" + (Nes.RomInfo.PRGcount * 16) + " KB)");
+                        Console.WriteLine("CHRs: " + Nes.RomInfo.CHRcount + " (" + (Nes.RomInfo.CHRcount * 8) + " KB)");
                         Console.WriteLine("Mirroring: " + Nes.RomInfo.Mirroring);
                         Console.WriteLine("Is Battery Backed: " + (Nes.RomInfo.HasSaveRam ? "Yes" : "No"));
                         Console.WriteLine("Is VsUnisystem: " + (Nes.RomInfo.VSUnisystem ? "Yes" : "No"));

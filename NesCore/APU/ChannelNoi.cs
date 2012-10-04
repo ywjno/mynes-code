@@ -77,7 +77,7 @@ namespace MyNes.Core.APU
                 systemIndex = 0;
             else if (system.Master == TimingInfo.PALB.Master)
                 systemIndex = 1;
-            else if (system.Master == TimingInfo.DENDY.Master)
+            else if (system.Master == TimingInfo.Dendy.Master)
                 systemIndex = 2;
             ModeFlag = false;
             ShiftRegister = 1;

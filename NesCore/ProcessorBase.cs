@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 using MyNes.Core.Types;
+
 namespace MyNes.Core
 {
     public class ProcessorBase
@@ -36,14 +37,8 @@ namespace MyNes.Core
         public virtual void Update() { }
         public virtual void Update(int cycles)
         {
-            while (timing.cycles < cycles)
-            {
-                timing.cycles += timing.single;
-
+            for (timing.cycles += cycles; timing.cycles >= timing.single; timing.cycles -= timing.single)
                 Update();
-            }
-
-            timing.cycles -= cycles;
         }
         public virtual void SaveState(StateStream stream) { timing.SaveState(stream); }
         public virtual void LoadState(StateStream stream) { timing.LoadState(stream); }

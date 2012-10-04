@@ -84,8 +84,7 @@ namespace MyNes
         }
         void InitializeAudio()
         {
-            audioDevice = new AudioDSD(this.Handle, Program.Settings.SoundPlaybackFreq,
-                (short)Program.Settings.SoundPlaybackBit, Program.Settings.SoundLatency);
+            audioDevice = new AudioDSD(this.Handle, Program.Settings.SoundPlaybackFreq, Program.Settings.SoundLatency);
             ((AudioDSD)audioDevice).SetVolume(Program.Settings.Volume);
             Nes.SoundEnabled = Program.Settings.SoundEnabled;
         }
@@ -99,25 +98,25 @@ namespace MyNes
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.LoadState;
             inputManager.MyNesShortcuts.SaveState.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SaveState;
-            inputManager.MyNesShortcuts.SelecteSlot0.Input =
+            inputManager.MyNesShortcuts.SelectedSlot0.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot0;
-            inputManager.MyNesShortcuts.SelecteSlot1.Input =
+            inputManager.MyNesShortcuts.SelectedSlot1.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot1;
-            inputManager.MyNesShortcuts.SelecteSlot2.Input =
+            inputManager.MyNesShortcuts.SelectedSlot2.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot2;
-            inputManager.MyNesShortcuts.SelecteSlot3.Input =
+            inputManager.MyNesShortcuts.SelectedSlot3.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot3;
-            inputManager.MyNesShortcuts.SelecteSlot4.Input =
+            inputManager.MyNesShortcuts.SelectedSlot4.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot4;
-            inputManager.MyNesShortcuts.SelecteSlot5.Input =
+            inputManager.MyNesShortcuts.SelectedSlot5.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot5;
-            inputManager.MyNesShortcuts.SelecteSlot6.Input =
+            inputManager.MyNesShortcuts.SelectedSlot6.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot6;
-            inputManager.MyNesShortcuts.SelecteSlot7.Input =
+            inputManager.MyNesShortcuts.SelectedSlot7.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot7;
-            inputManager.MyNesShortcuts.SelecteSlot8.Input =
+            inputManager.MyNesShortcuts.SelectedSlot8.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot8;
-            inputManager.MyNesShortcuts.SelecteSlot9.Input =
+            inputManager.MyNesShortcuts.SelectedSlot9.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot9;
             inputManager.MyNesShortcuts.ShutdownEmulation.Input =
                 Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ShutdownEmulation;
@@ -138,6 +137,8 @@ namespace MyNes
             Joypad joy2 = new Joypad(inputManager);
             joy1.A.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.A;
             joy1.B.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.B;
+            joy1.TurboA.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.TurboA;
+            joy1.TurboB.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.TurboB;
             joy1.Down.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Down;
             joy1.Left.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Left;
             joy1.Right.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player1.Right;
@@ -147,6 +148,8 @@ namespace MyNes
 
             joy2.A.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.A;
             joy2.B.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.B;
+            joy2.TurboA.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.TurboA;
+            joy2.TurboB.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.TurboB;
             joy2.Down.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Down;
             joy2.Left.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Left;
             joy2.Right.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player2.Right;
@@ -159,6 +162,8 @@ namespace MyNes
                 Joypad joy4 = new Joypad(inputManager);
                 joy3.A.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.A;
                 joy3.B.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.B;
+                joy3.TurboA.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.TurboA;
+                joy3.TurboB.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.TurboB;
                 joy3.Down.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Down;
                 joy3.Left.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Left;
                 joy3.Right.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player3.Right;
@@ -168,6 +173,8 @@ namespace MyNes
 
                 joy4.A.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.A;
                 joy4.B.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.B;
+                joy4.TurboA.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.TurboA;
+                joy4.TurboB.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.TurboB;
                 joy4.Down.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Down;
                 joy4.Left.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Left;
                 joy4.Right.Input = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Player4.Right;
@@ -210,8 +217,7 @@ namespace MyNes
 
             InitializeInput();
 
-            Nes.SetupOutput(videoDevice, audioDevice, new ApuPlaybackDescription(Program.Settings.SoundPlaybackFreq,
-                Program.Settings.SoundMixerType));
+            Nes.SetupOutput(videoDevice, audioDevice, new ApuPlaybackDescription(Program.Settings.SoundPlaybackFreq));
             Nes.SetupLimiter(new Timer());
 
             //palette

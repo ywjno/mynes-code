@@ -21,20 +21,12 @@ namespace MyNes.Core.PPU
 {
     public class PpuMemory : Memory
     {
-        public byte[] nmtBank = new byte[4];
-        private byte[] pal = new byte[] // Miscellaneous, real NES loads values similar to these during power up
-        {
-           0x09, 0x01, 0x00, 0x01, 0x00, 0x02, 0x02, 0x0D, 0x08, 0x10, 0x08, 0x24, 0x00, 0x00, 0x04, 0x2C, // Bkg palette
-           0x09, 0x01, 0x34, 0x03, 0x00, 0x04, 0x00, 0x14, 0x08, 0x3A, 0x00, 0x02, 0x00, 0x20, 0x2C, 0x08  // Spr palette
-        };
-        public byte[][] nmt = new byte[4][]
-        {
-            new byte[0x0400],new byte[0x0400],new byte[0x0400],new byte[0x0400]
-            /*Only 2 nmt banks should be used in normal state*/
-        };
+        public byte[] nmtBank;
+        private byte[] pal;
+        public byte[][] nmt;
 
         public PpuMemory()
-            : base(1 << 14)
+            : base(0x4000)
         {
         }
 
@@ -81,6 +73,7 @@ namespace MyNes.Core.PPU
         public override void HardReset()
         {
             nmtBank = new byte[4];
+            SwitchMirroring(Nes.RomInfo.Mirroring);
             pal = new byte[] // Miscellaneous, real NES loads values similar to these during power up
             {
                0x09, 0x01, 0x00, 0x01, 0x00, 0x02, 0x02, 0x0D, 0x08, 0x10, 0x08, 0x24, 0x00, 0x00, 0x04, 0x2C, // Bkg palette
@@ -91,7 +84,6 @@ namespace MyNes.Core.PPU
                new byte[0x0400],new byte[0x0400],new byte[0x0400],new byte[0x0400]
                /*Only 2 nmt banks should be used in normal state*/
             };
-            SwitchMirroring(Nes.RomInfo.Mirroring);
         }
 
         public override void SaveState(StateStream stream)

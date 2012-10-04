@@ -72,15 +72,12 @@ namespace MyNes.Core.PPU
         private bool spr0Hit;
         private bool sprOverflow;
         //nmi and vbl
-        private bool nmi;
-        private bool vbl;
+        private bool nmi_output;
+        private bool nmi_ocurred;
         private bool suppressVbl;
-        private bool suppressNmi;
-        private byte value2000;
         //Timing
         public int vbl_vclock_Start = 241;
         public int vbl_vclock_End = 261;
-        public int vbl_hclock = 7;//cycle when vbl set
         private int frameEnd = 262;
         private int hclock;
         private int vclock;
@@ -338,18 +335,22 @@ namespace MyNes.Core.PPU
         private byte Peek2002(int address)
         {
             //Read 1 cycle before vblank should suppress setting flag
-            if (vclock == vbl_vclock_Start & hclock == vbl_hclock - 1)
+            if (vclock == vbl_vclock_Start)
             {
-                suppressVbl = true; suppressNmi = true;
+                if (hclock == 0)
+                {
+                    suppressVbl = true;
+                    Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
+                }
+                else if (hclock < 3)
+                {
+                    Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
+                }
             }
-            //Read 1 cycle before/after vblank should suppress nmi
-            if (vclock == vbl_vclock_Start && NmiSuppressTime())
-            {
-                suppressNmi = true;
-            }
+
             byte data = 0;
 
-            if (vbl)
+            if (nmi_ocurred)
                 data |= 0x80;
 
             if (spr0Hit)
@@ -358,7 +359,7 @@ namespace MyNes.Core.PPU
             if (sprOverflow)
                 data |= 0x20;
 
-            vbl = false;
+            nmi_ocurred = false;
             scroll.swap = false;
 
             return data;
@@ -392,18 +393,14 @@ namespace MyNes.Core.PPU
             bkg.address = (data & 0x10) != 0 ? 0x1000 : 0x0000;
             spr.rasters = (data & 0x20) != 0 ? 0x0010 : 0x0008;
 
-            nmi = (data & 0x80) != 0;
+            bool oldNmi = nmi_output;
+            nmi_output = (data & 0x80) != 0;
 
-            if (nmi && ((value2000 & 0x80) == 0) && vbl)
-            {
-                Nes.Cpu.requestNmi = true;
-            }
-            if ((vclock == vbl_vclock_Start & NmiSuppressTime()) && !nmi)
-            {
-                Nes.Cpu.requestNmi = false;
-                Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, false);
-            }
-            value2000 = data;
+            if (vclock == vbl_vclock_Start & hclock < 3)
+                Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, nmi_output & nmi_ocurred);
+
+            if (!oldNmi & nmi_output & nmi_ocurred)
+                Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
         }
         private void Poke2001(int address, byte data)
         {
@@ -471,7 +468,7 @@ namespace MyNes.Core.PPU
         {
             //Render is enabled here, draw background color at 0x3F00
             byte bkgc = (byte)(Nes.PpuMemory[0x3F00]);
-            screen[vclock][hclock] = colors[paletteIndexes[bkgc]];
+            screen[vclock][hclock] = colors[paletteIndexes[bkgc & (clipping | emphasis)]];
 
             var bkgPixel = 0x3F00 | bkg.GetPixel(hclock, scroll.fine);
             var sprPixel = 0x3F10 | spr.GetPixel(hclock);
@@ -561,21 +558,18 @@ namespace MyNes.Core.PPU
             {
                 vbl_vclock_Start = 241;//20 scanlines for VBL
                 vbl_vclock_End = 261;
-                vbl_hclock = 5;
                 frameEnd = 262;
             }
             else if (system.Master == TimingInfo.PALB.Master)
             {
                 vbl_vclock_Start = 241;//70 scanlines for VBL
                 vbl_vclock_End = 311;
-                vbl_hclock = 4;
                 frameEnd = 312;
             }
-            else if (system.Master == TimingInfo.DENDY.Master)
+            else if (system.Master == TimingInfo.Dendy.Master)
             {
                 vbl_vclock_Start = 291;//51 dummy scanlines, 20 VBL's
                 vbl_vclock_End = 311;
-                vbl_hclock = 4;
                 frameEnd = 312;
             }
             screen = new int[240][];
@@ -604,11 +598,9 @@ namespace MyNes.Core.PPU
             spr0Hit = false;
             sprOverflow = false;
             //nmi and vbl
-            nmi = false;
-            vbl = false;
+            nmi_output = false;
+            nmi_ocurred = false;
             suppressVbl = false;
-            suppressNmi = false;
-            value2000 = 0;
             hclock = 0;
             vclock = 0;
 
@@ -625,6 +617,7 @@ namespace MyNes.Core.PPU
             CycleTimer();
             if (vclock < 240 || vclock == vbl_vclock_End)
             {
+                #region Rendering is on
                 if (IsRenderingOn())
                 {
                     if (hclock < 256)
@@ -670,7 +663,7 @@ namespace MyNes.Core.PPU
                     {
                         if (hclock == 256)
                             scroll.ResetX();
-                        else if (hclock == 304 && vclock == vbl_vclock_End)
+                        if (hclock == 304 && vclock == vbl_vclock_End)
                             scroll.ResetY();
                         #region Spr Fetches
 
@@ -723,6 +716,8 @@ namespace MyNes.Core.PPU
                         // Idle cycle
                     }
                 }
+                #endregion
+                #region Rendering is off
                 else
                 {
                     // Rendering is off, draw color at vram address if it in range 0x3F00 - 0x3FFF
@@ -736,9 +731,10 @@ namespace MyNes.Core.PPU
                         screen[vclock][hclock] = pixel;
                     }
                 }
+                #endregion
             }
             hclock++;
-            //odd frame
+            #region odd frame
             if (hclock == 328)
             {
                 if (UseOddFrame)
@@ -746,7 +742,6 @@ namespace MyNes.Core.PPU
                     if (vclock == vbl_vclock_End)
                     {
                         oddSwap = !oddSwap;
-
                         if (!oddSwap & bkg.enabled)
                         {
                             hclock++;
@@ -756,62 +751,47 @@ namespace MyNes.Core.PPU
                     }
                 }
             }
-            #region VBLANK & NMI
-            //Clear flags 2 clocks before vbl
-            else if (hclock == vbl_hclock - 2)
-            {
-                if (vclock == vbl_vclock_End)
-                {
-                    spr0Hit = false;
-                    sprOverflow = false;
-                }
-            }
-            else if (hclock == vbl_hclock)
+            #endregion
+            #region VBLANK, NMI and frame end
+            if (hclock == 1)
             {
                 //set vbl
                 if (vclock == vbl_vclock_Start)
                 {
                     if (!suppressVbl)
-                        vbl = true;
-                    else
-                        suppressVbl = false;
+                        nmi_ocurred = true;
+                    suppressVbl = false;
                 }
                 //clear vbl
                 if (vclock == vbl_vclock_End)
                 {
-                    vbl = false;
+                    spr0Hit = false;
+                    sprOverflow = false;
+                    nmi_ocurred = false;
                 }
             }
-            //nmi occur after 2 clocks of vbl
-            else if (hclock == vbl_hclock + 2)
-            {
-                if (vclock == vbl_vclock_Start)
-                {
-                    if (!suppressNmi)
-                    {
-                        if (nmi)
-                            Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
-                    }
-                    else
-                    {
-                        suppressNmi = false;
-                    }
-                }
-            }
-            #endregion
+
             //frame end
-            else if (hclock == 341)
+            if (hclock == 341)
             {
                 hclock = 0;
                 vclock++;
 
                 ScanlineTimer();
+                //set vbl
+                if (vclock == vbl_vclock_Start)
+                {
+                    if (nmi_output)
+                        Nes.Cpu.Interrupt(Cpu.IsrType.Ppu, true);
+                }
+
                 if (vclock == frameEnd)
                 {
                     vclock = 0;
                     Nes.FinishFrame(screen);
                 }
             }
+            #endregion
         }
         public int GetPixel(int x, int y)
         {
@@ -831,10 +811,6 @@ namespace MyNes.Core.PPU
         {
         }
 
-        private bool NmiSuppressTime()
-        {
-            return ((hclock >= vbl_hclock - 1) & (hclock <= vbl_hclock + 1));
-        }
         public bool IsBGFetchTime()
         {
             return (hclock < 256 | hclock >= 320);
@@ -889,8 +865,7 @@ namespace MyNes.Core.PPU
             stream.Write(chr);
             stream.Write(clipping);
             stream.Write(emphasis);
-            stream.Write(oddSwap, spr0Hit, sprOverflow, nmi, vbl, suppressVbl, suppressNmi);
-            stream.Write(value2000);
+            stream.Write(oddSwap, spr0Hit, sprOverflow, nmi_output, nmi_ocurred, suppressVbl);
             stream.Write(hclock);
             stream.Write(vclock);
             stream.Write(oam_address);
@@ -941,12 +916,10 @@ namespace MyNes.Core.PPU
             oddSwap = flags[0];
             spr0Hit = flags[1];
             sprOverflow = flags[2];
-            nmi = flags[3];
-            vbl = flags[4];
+            nmi_output = flags[3];
+            nmi_ocurred = flags[4];
             suppressVbl = flags[5];
-            suppressNmi = flags[6];
 
-            value2000 = stream.ReadByte();
             hclock = stream.ReadInt32();
             vclock = stream.ReadInt32();
             oam_address = stream.ReadByte();

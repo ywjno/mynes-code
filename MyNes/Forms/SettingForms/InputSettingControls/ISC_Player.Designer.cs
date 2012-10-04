@@ -62,6 +62,10 @@ namespace MyNes
             this.textBox_b = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox_a = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBox_turboB = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textBox_turboA = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -147,7 +151,7 @@ namespace MyNes
             // textBox_select
             // 
             this.textBox_select.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_select.Location = new System.Drawing.Point(45, 171);
+            this.textBox_select.Location = new System.Drawing.Point(45, 227);
             this.textBox_select.Name = "textBox_select";
             this.textBox_select.ReadOnly = true;
             this.textBox_select.Size = new System.Drawing.Size(250, 22);
@@ -158,7 +162,7 @@ namespace MyNes
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 175);
+            this.label5.Location = new System.Drawing.Point(3, 231);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 13);
             this.label5.TabIndex = 9;
@@ -167,7 +171,7 @@ namespace MyNes
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 203);
+            this.label6.Location = new System.Drawing.Point(3, 259);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(31, 13);
             this.label6.TabIndex = 11;
@@ -176,7 +180,7 @@ namespace MyNes
             // textBox_start
             // 
             this.textBox_start.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_start.Location = new System.Drawing.Point(45, 199);
+            this.textBox_start.Location = new System.Drawing.Point(45, 255);
             this.textBox_start.Name = "textBox_start";
             this.textBox_start.ReadOnly = true;
             this.textBox_start.Size = new System.Drawing.Size(250, 22);
@@ -224,10 +228,54 @@ namespace MyNes
             this.textBox_a.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_a_KeyDown);
             this.textBox_a.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.textBox_a_MouseDoubleClick);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 203);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(42, 13);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "TurboA";
+            // 
+            // textBox_turboB
+            // 
+            this.textBox_turboB.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox_turboB.Location = new System.Drawing.Point(45, 171);
+            this.textBox_turboB.Name = "textBox_turboB";
+            this.textBox_turboB.ReadOnly = true;
+            this.textBox_turboB.Size = new System.Drawing.Size(250, 22);
+            this.textBox_turboB.TabIndex = 18;
+            this.textBox_turboB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_turboB_KeyDown);
+            this.textBox_turboB.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.textBox_turboB_MouseDoubleClick);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 175);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(41, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "TurboB";
+            // 
+            // textBox_turboA
+            // 
+            this.textBox_turboA.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox_turboA.Location = new System.Drawing.Point(45, 199);
+            this.textBox_turboA.Name = "textBox_turboA";
+            this.textBox_turboA.ReadOnly = true;
+            this.textBox_turboA.Size = new System.Drawing.Size(250, 22);
+            this.textBox_turboA.TabIndex = 16;
+            this.textBox_turboA.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_turboA_KeyDown);
+            this.textBox_turboA.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.textBox_turboA_MouseDoubleClick);
+            // 
             // ISC_Player
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.textBox_turboB);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.textBox_turboA);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.textBox_b);
             this.Controls.Add(this.label8);
@@ -245,7 +293,7 @@ namespace MyNes
             this.Controls.Add(this.textBox_up);
             this.Controls.Add(this.label1);
             this.Name = "ISC_Player";
-            this.Size = new System.Drawing.Size(333, 245);
+            this.Size = new System.Drawing.Size(333, 296);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -269,5 +317,9 @@ namespace MyNes
         private System.Windows.Forms.TextBox textBox_b;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox_a;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBox_turboB;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox textBox_turboA;
     }
 }

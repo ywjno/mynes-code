@@ -32,9 +32,6 @@
     <Setting Name="SoundPlaybackFreq" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">44100</Value>
     </Setting>
-    <Setting Name="SoundPlaybackBit" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">16</Value>
-    </Setting>
     <Setting Name="SoundEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -74,9 +71,6 @@
     <Setting Name="VideoStretchMultiply" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
-    <Setting Name="SoundMixerType" Type="MyNes.Core.APU.ApuMixerType" Scope="User">
-      <Value Profile="(Default)">Implementation</Value>
-    </Setting>
     <Setting Name="ColumnWidths" Type="MyNes.ColumnWidthsCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -87,7 +81,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SoundLatency" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
+      <Value Profile="(Default)">50</Value>
     </Setting>
   </Settings>
 </SettingsFile>

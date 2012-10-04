@@ -16,13 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SlimDX;
-using SlimDX.DirectInput;
-using MyNes.Core.IO.Input;
 using MyNes.Core;
 
 namespace MyNes
@@ -38,19 +31,20 @@ namespace MyNes
         public JoyButton ShutdownEmulation { get { return _buttons[5]; } }
         public JoyButton TakeSnapshot { get { return _buttons[6]; } }
         public JoyButton ToggleLimiter { get { return _buttons[7]; } }
-        public JoyButton SelecteSlot0 { get { return _buttons[8]; } }
-        public JoyButton SelecteSlot1 { get { return _buttons[9]; } }
-        public JoyButton SelecteSlot2 { get { return _buttons[10]; } }
-        public JoyButton SelecteSlot3 { get { return _buttons[11]; } }
-        public JoyButton SelecteSlot4 { get { return _buttons[12]; } }
-        public JoyButton SelecteSlot5 { get { return _buttons[13]; } }
-        public JoyButton SelecteSlot6 { get { return _buttons[14]; } }
-        public JoyButton SelecteSlot7 { get { return _buttons[15]; } }
-        public JoyButton SelecteSlot8 { get { return _buttons[16]; } }
-        public JoyButton SelecteSlot9 { get { return _buttons[17]; } }
+        public JoyButton SelectedSlot0 { get { return _buttons[8]; } }
+        public JoyButton SelectedSlot1 { get { return _buttons[9]; } }
+        public JoyButton SelectedSlot2 { get { return _buttons[10]; } }
+        public JoyButton SelectedSlot3 { get { return _buttons[11]; } }
+        public JoyButton SelectedSlot4 { get { return _buttons[12]; } }
+        public JoyButton SelectedSlot5 { get { return _buttons[13]; } }
+        public JoyButton SelectedSlot6 { get { return _buttons[14]; } }
+        public JoyButton SelectedSlot7 { get { return _buttons[15]; } }
+        public JoyButton SelectedSlot8 { get { return _buttons[16]; } }
+        public JoyButton SelectedSlot9 { get { return _buttons[17]; } }
         public JoyButton PauseEmulation { get { return _buttons[18]; } }
         public JoyButton ResumeEmulation { get { return _buttons[19]; } }
         public JoyButton Fullscreen { get { return _buttons[20]; } }
+
         public MyNesShortcuts(InputManager manager)
         {
             _buttons = new JoyButton[21];
@@ -81,25 +75,25 @@ namespace MyNes
 
             else if (ToggleLimiter.IsPressed())
                 Nes.SpeedLimiter.ON = !Nes.SpeedLimiter.ON;
-            else if (SelecteSlot0.IsPressed())
+            else if (SelectedSlot0.IsPressed())
                 Nes.StateSlot = 0;
-            else if (SelecteSlot1.IsPressed())
+            else if (SelectedSlot1.IsPressed())
                 Nes.StateSlot = 1;
-            else if (SelecteSlot2.IsPressed())
+            else if (SelectedSlot2.IsPressed())
                 Nes.StateSlot = 2;
-            else if (SelecteSlot3.IsPressed())
+            else if (SelectedSlot3.IsPressed())
                 Nes.StateSlot = 3;
-            else if (SelecteSlot4.IsPressed())
+            else if (SelectedSlot4.IsPressed())
                 Nes.StateSlot = 4;
-            else if (SelecteSlot5.IsPressed())
+            else if (SelectedSlot5.IsPressed())
                 Nes.StateSlot = 5;
-            else if (SelecteSlot6.IsPressed())
+            else if (SelectedSlot6.IsPressed())
                 Nes.StateSlot = 6;
-            else if (SelecteSlot7.IsPressed())
+            else if (SelectedSlot7.IsPressed())
                 Nes.StateSlot = 7;
-            else if (SelecteSlot8.IsPressed())
+            else if (SelectedSlot8.IsPressed())
                 Nes.StateSlot = 8;
-            else if (SelecteSlot9.IsPressed())
+            else if (SelectedSlot9.IsPressed())
                 Nes.StateSlot = 9;
             else if (PauseEmulation.IsPressed())
                 Nes.TogglePause(true);

@@ -25,25 +25,29 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace MyNes
 {
     public partial class FormAbout : Form
     {
-        public FormAbout(string version)
+        public FormAbout()
         {
             InitializeComponent();
-            label_version.Text = "version " + version;
-        }
+            Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+            label_version.Text = "Version: " + ver.Major + "." + ver.Minor + " Build " + ver.Build;
 
+            Assembly asm = Assembly.LoadFile
+                (System.IO.Path.Combine(Application.StartupPath,
+                    "NesCore.dll"));
+
+            ver = asm.GetName().Version;
+
+            label_coreVersion.Text = "Core version: " + ver.Major + "." + ver.Minor + " Build " + ver.Build;
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start("mailto:ahdsoftwares@hotmail.com");
         }
     }
 }

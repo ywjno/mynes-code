@@ -357,67 +357,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\File_unkown.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\File_RAR.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\nes_j.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\noneRating.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\star_1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\star_2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\star_3.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\star_4.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\star_5.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\MyNes.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\full_palette_1.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\monitor.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sound.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder_add.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Help Windows.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder_delete.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Joy.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder_rebuildCache.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\MyNesImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder_detectImages.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FileGame-genie-nes-front.ico" />
