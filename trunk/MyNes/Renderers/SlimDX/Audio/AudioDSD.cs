@@ -35,6 +35,7 @@ namespace MyNes
         //slimdx
         public DirectSound _SoundDevice;
         public SecondarySoundBuffer buffer;
+        private WaveRecorder Recorder = new WaveRecorder();
 
         private bool IsPaused;
         public bool IsRendering = false;
@@ -45,9 +46,11 @@ namespace MyNes
         private int W_Pos = 0;//Write position
         private int L_Pos = 0;//Last position
         private int D_Pos = 0;//Data position
+        private int playbackFreq;
 
         public void Initialize(IntPtr handle, int playbackFreq, int latencyInMilliseconds)
         {
+            this.playbackFreq = playbackFreq;
             //Create the device
             Console.WriteLine("Initializing SlimDX DirectSound for APU....");
             _SoundDevice = new DirectSound();
@@ -99,8 +102,10 @@ namespace MyNes
                 for (int i = 0; i < po; i += 2)
                 {
                     //Get the sample from the apu
-                    int OUT = Nes.Apu.PullSample();
-
+                    short OUT = Nes.Apu.PullSample();
+                    //RECORD
+                    if (Recorder.IsRecording)
+                        Recorder.AddSample(OUT);
                     if (D_Pos < DATA.Length)
                     {
                         DATA[D_Pos] = (byte)((OUT & 0xFF00) >> 8);
@@ -165,6 +170,8 @@ namespace MyNes
             }
             if (_SoundDevice != null)
                 _SoundDevice.Dispose();
+            if (Recorder.IsRecording)
+                Recorder.Stop();
         }
         public void SetVolume(int Vol)
         {
@@ -179,6 +186,22 @@ namespace MyNes
             {
                 buffer.Pan = Pan;
             }
+        }
+        public bool IsRecording
+        {
+            get { return Recorder.IsRecording; }
+        }
+        public void Record(string filePath)
+        {
+            Recorder.Record(filePath, playbackFreq);
+        }
+        public void RecordStop()
+        {
+            Recorder.Stop();
+        }
+        public int RecordTime
+        {
+            get { return Recorder.Time; }
         }
     }
 }

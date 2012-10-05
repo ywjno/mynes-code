@@ -898,6 +898,18 @@ namespace MyNes.Forms
                 item.ToolTipText = file;
                 recentFilesToolStripMenuItem.DropDownItems.Add(item);
             }
+
+            //others
+            if (Nes.ON)
+            {
+                recordSoundToolStripMenuItem.Enabled = true;
+                recordSoundToolStripMenuItem.Text = Nes.AudioDevice.IsRecording ? "Stop re&codring sound" : "Re&cord sound";
+            }
+            else
+            {
+                recordSoundToolStripMenuItem.Enabled = false;
+                recordSoundToolStripMenuItem.Text = "Re&cord sound";
+            }
         }
         private void recentFilesToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -1008,6 +1020,26 @@ namespace MyNes.Forms
                 {
                     Nes.LoadStateAs(op.FileName);
                 }
+            }
+        }
+        private void recordSoundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                Nes.TogglePause(true);
+                if (Nes.AudioDevice.IsRecording)
+                {
+                    Nes.AudioDevice.RecordStop();
+                }
+                else
+                {
+                    SaveFileDialog sav = new SaveFileDialog();
+                    sav.Title = "Save wav file";
+                    sav.Filter = "PCM Wav (*.wav)|*.wav";
+                    if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                        Nes.AudioDevice.Record(sav.FileName);
+                } 
+                Nes.TogglePause(false);
             }
         }
     }
