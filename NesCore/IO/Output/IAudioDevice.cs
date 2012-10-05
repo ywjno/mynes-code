@@ -41,5 +41,22 @@ namespace MyNes.Core.IO.Output
         /// Pause
         /// </summary>
         void Stop();
+        /// <summary>
+        /// Get if the device is recording sound
+        /// </summary>
+        bool IsRecording { get; }
+        /// <summary>
+        /// Record the sound
+        /// </summary>
+        /// <param name="filePath">The complete wav file path</param>
+        void Record(string filePath);
+        /// <summary>
+        /// Stop recording
+        /// </summary>
+        void RecordStop();
+        /// <summary>
+        /// Get the record time in seconds
+        /// </summary>
+        int RecordTime { get; }
     }
 }

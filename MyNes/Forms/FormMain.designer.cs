@@ -168,7 +168,9 @@ namespace MyNes.Forms
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.imageViewer_snaps = new MyNes.ImageViewer();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.imageViewer_covers = new MyNes.ImageViewer();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -183,8 +185,8 @@ namespace MyNes.Forms
             this.detectCoversToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.imageViewer_snaps = new MyNes.ImageViewer();
-            this.imageViewer_covers = new MyNes.ImageViewer();
+            this.recordSoundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.contextMenuStripSnapshot.SuspendLayout();
             this.contextMenuStripCover.SuspendLayout();
@@ -247,6 +249,8 @@ namespace MyNes.Forms
             this.saveDatabaseToolStripMenuItem1,
             this.saveDatabaseasToolStripMenuItem1,
             this.toolStripSeparator9,
+            this.recordSoundToolStripMenuItem,
+            this.toolStripSeparator15,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -1228,6 +1232,20 @@ namespace MyNes.Forms
             this.tabPage1.Text = "Snapshot";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // imageViewer_snaps
+            // 
+            this.imageViewer_snaps.BackColor = System.Drawing.Color.White;
+            this.imageViewer_snaps.ContextMenuStrip = this.contextMenuStripSnapshot;
+            this.imageViewer_snaps.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
+            this.imageViewer_snaps.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageViewer_snaps.ImageToView = null;
+            this.imageViewer_snaps.Location = new System.Drawing.Point(3, 3);
+            this.imageViewer_snaps.Name = "imageViewer_snaps";
+            this.imageViewer_snaps.Size = new System.Drawing.Size(194, 99);
+            this.imageViewer_snaps.TabIndex = 0;
+            this.imageViewer_snaps.Text = "imageViewer1";
+            this.imageViewer_snaps.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_snaps_MouseDoubleClick);
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.imageViewer_covers);
@@ -1239,6 +1257,20 @@ namespace MyNes.Forms
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Cover";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // imageViewer_covers
+            // 
+            this.imageViewer_covers.BackColor = System.Drawing.Color.White;
+            this.imageViewer_covers.ContextMenuStrip = this.contextMenuStripCover;
+            this.imageViewer_covers.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
+            this.imageViewer_covers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageViewer_covers.ImageToView = null;
+            this.imageViewer_covers.Location = new System.Drawing.Point(3, 3);
+            this.imageViewer_covers.Name = "imageViewer_covers";
+            this.imageViewer_covers.Size = new System.Drawing.Size(194, 99);
+            this.imageViewer_covers.TabIndex = 0;
+            this.imageViewer_covers.Text = "imageViewer1";
+            this.imageViewer_covers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_covers_MouseDoubleClick);
             // 
             // tabPage3
             // 
@@ -1386,33 +1418,18 @@ namespace MyNes.Forms
             this.splitContainer2.SplitterDistance = 235;
             this.splitContainer2.TabIndex = 1;
             // 
-            // imageViewer_snaps
+            // recordSoundToolStripMenuItem
             // 
-            this.imageViewer_snaps.BackColor = System.Drawing.Color.White;
-            this.imageViewer_snaps.ContextMenuStrip = this.contextMenuStripSnapshot;
-            this.imageViewer_snaps.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
-            this.imageViewer_snaps.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer_snaps.ImageToView = null;
-            this.imageViewer_snaps.Location = new System.Drawing.Point(3, 3);
-            this.imageViewer_snaps.Name = "imageViewer_snaps";
-            this.imageViewer_snaps.Size = new System.Drawing.Size(194, 99);
-            this.imageViewer_snaps.TabIndex = 0;
-            this.imageViewer_snaps.Text = "imageViewer1";
-            this.imageViewer_snaps.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_snaps_MouseDoubleClick);
+            this.recordSoundToolStripMenuItem.Enabled = false;
+            this.recordSoundToolStripMenuItem.Name = "recordSoundToolStripMenuItem";
+            this.recordSoundToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.recordSoundToolStripMenuItem.Text = "Re&cord sound";
+            this.recordSoundToolStripMenuItem.Click += new System.EventHandler(this.recordSoundToolStripMenuItem_Click);
             // 
-            // imageViewer_covers
+            // toolStripSeparator15
             // 
-            this.imageViewer_covers.BackColor = System.Drawing.Color.White;
-            this.imageViewer_covers.ContextMenuStrip = this.contextMenuStripCover;
-            this.imageViewer_covers.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
-            this.imageViewer_covers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer_covers.ImageToView = null;
-            this.imageViewer_covers.Location = new System.Drawing.Point(3, 3);
-            this.imageViewer_covers.Name = "imageViewer_covers";
-            this.imageViewer_covers.Size = new System.Drawing.Size(194, 99);
-            this.imageViewer_covers.TabIndex = 0;
-            this.imageViewer_covers.Text = "imageViewer1";
-            this.imageViewer_covers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_covers_MouseDoubleClick);
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(226, 6);
             // 
             // FormMain
             // 
@@ -1598,6 +1615,8 @@ namespace MyNes.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator21;
         private System.Windows.Forms.ToolStripMenuItem detectSnapshotsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem detectCoversToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recordSoundToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
     }
 }
 

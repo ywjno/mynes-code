@@ -171,6 +171,7 @@
     <Compile Include="Controls\ImageViewer.Designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Renderers\SlimDX\Audio\WaveRecorder.cs" />
     <Compile Include="Renderers\SlimDX\Input\MyNesShortcuts.cs" />
     <Compile Include="Renderers\SlimDX\Input\VSUnisystemDIP.cs" />
     <Compile Include="Renderers\SlimDX\Input\Zapper.cs" />

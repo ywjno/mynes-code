@@ -347,7 +347,7 @@ namespace MyNes.Core.APU
 
             this.soundBuffer[wPos++ % this.soundBuffer.Length] = output;
         }
-        public int PullSample()
+        public short PullSample()
         {
             while (rPos >= wPos)
             {
