@@ -26,11 +26,10 @@ namespace MyNes.Core.Boards
     {
         protected byte[] chr;
         protected byte[] prg;
-        protected int chrMask;
-        protected int prgMask;
         protected int[] chrPage;
         protected int[] prgPage;
         private string name;
+        private int mapperNumber;
         private bool isGameGenieActive;
         private GameGenieCode[] gameGenieCodes;
 
@@ -39,22 +38,23 @@ namespace MyNes.Core.Boards
             this.chr = chr;
             this.prg = prg;
 
-            this.chrMask = (this.chr.Length - 1);
-            this.prgMask = (this.prg.Length - 1);
-
             this.chrPage = new int[8];
             this.prgPage = new int[4];
 
             foreach (Attribute attr in Attribute.GetCustomAttributes(this.GetType()))
             {
                 if (attr.GetType() == typeof(BoardName))
-                { this.name = ((BoardName)attr).Name; break; }
+                {
+                    this.name = ((BoardName)attr).Name;
+                    this.mapperNumber = ((BoardName)attr).InesMapperNumber;
+                    break;
+                }
             }
         }
 
         protected virtual byte PeekChr(int address)
         {
-            return chr[DecodeChrAddress(address) & chrMask];
+            return chr[DecodeChrAddress(address)];
         }
         protected virtual byte PeekPrg(int address)
         {
@@ -68,7 +68,7 @@ namespace MyNes.Core.Boards
                         {
                             if (code.IsCompare)
                             {
-                                if (code.Compare == prg[DecodePrgAddress(address) & prgMask])
+                                if (code.Compare == prg[DecodePrgAddress(address)])
                                     return code.Value;
                             }
                             else
@@ -81,11 +81,11 @@ namespace MyNes.Core.Boards
                     }
                 }
             }
-            return prg[DecodePrgAddress(address) & prgMask];
+            return prg[DecodePrgAddress(address)];
         }
         protected virtual void PokeChr(int address, byte data)
         {
-            chr[DecodeChrAddress(address) & chrMask] = data;
+            chr[DecodeChrAddress(address)] = data;
         }
         protected virtual void PokePrg(int address, byte data) { }
 
@@ -146,6 +146,11 @@ namespace MyNes.Core.Boards
         /// </summary>
         public virtual string Name
         { get { return name; } }
+        /// <summary>
+        /// Get the board name
+        /// </summary>
+        public virtual int INESMapperNumber
+        { get { return mapperNumber; } }
         /// <summary>
         /// Get the save-ram array that need to be saved
         /// </summary>
@@ -271,12 +276,15 @@ namespace MyNes.Core.Boards
     }
     public class BoardName : Attribute
     {
-        public BoardName(string name)
+        public BoardName(string name, int inesMapperNumber)
         {
             this.name = name;
+            this.inesMapperNumber = inesMapperNumber;
         }
         private string name;
+        private int inesMapperNumber;
 
         public string Name { get { return name; } }
+        public int InesMapperNumber { get { return inesMapperNumber; } }
     }
 }

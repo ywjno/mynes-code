@@ -18,7 +18,7 @@
  */
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("AxROM")]
+    [BoardName("AxROM", 7)]
     class AxROM : Board
     {
         public AxROM(byte[] chr, byte[] prg)

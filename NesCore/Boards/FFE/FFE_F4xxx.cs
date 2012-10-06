@@ -16,24 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace MyNes.Core.Boards.Discreet
+namespace MyNes.Core.Boards.FFE
 {
-    [BoardName("UOROM")]
-    public class UOROM : Board
+    [BoardName("FFE F4xxx", 6)]
+    class FFE_F4xxx : FFE
     {
-        public UOROM(byte[] chr, byte[] prg)
-            : base(chr, prg)
+        public FFE_F4xxx(byte[] chr, byte[] prg, byte[] trainer, bool isVram) :
+            base(chr, prg, trainer, isVram)
         {
         }
         public override void HardReset()
         {
             base.HardReset();
-            base.Switch16KPRG(0, 0x8000);
-            base.Switch16KPRG(0xF, 0xC000);
+            base.Switch16KPRG(7, 0xC000);
         }
         protected override void PokePrg(int address, byte data)
         {
-            base.Switch16KPRG((data & 0x0F), 0x8000);
+            base.PokePrg(address, data);
+            if (address >= 0x8000 && address <= 0xFFFF)
+            {
+                base.Switch16KPRG(((data & 0x3C) >> 2), 0x8000);
+
+                base.Switch08kCHR((data & 0x3));
+            }
         }
     }
 }

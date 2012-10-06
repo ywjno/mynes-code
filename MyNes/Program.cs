@@ -21,6 +21,7 @@ using System.IO;
 using System.Windows.Forms;
 using MyNes.Properties;
 using MyNes.Forms;
+using MyNes.Core;
 using MyNes.Core.Database;
 
 namespace MyNes
@@ -35,8 +36,8 @@ namespace MyNes
 
             settings.Reload();
             FixDefaultSettings();
-            if (File.Exists(Path.GetFullPath(".\\database.xml")))
-                NesDatabase.LoadDatabase(Path.GetFullPath(".\\database.xml"));
+
+            Nes.StartUp();
 
             Application.Run(new FormMain(args));
         }

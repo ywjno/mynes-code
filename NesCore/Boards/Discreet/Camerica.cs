@@ -18,7 +18,7 @@
  */
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Camerica")]
+    [BoardName("Camerica", 71)]
     class Camerica : Board
     {
         public Camerica(byte[] chr, byte[] prg)
@@ -53,7 +53,7 @@ namespace MyNes.Core.Boards.Discreet
                             Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScA);
                         break;
                 }
-     
+
         }
     }
 }

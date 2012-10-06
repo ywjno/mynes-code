@@ -19,7 +19,7 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("MMC1")]
+    [BoardName("MMC1", 1)]
     class MMC1 : Board
     {
         public MMC1(byte[] chr, byte[] prg, bool isVram)
@@ -54,7 +54,7 @@ namespace MyNes.Core.Boards.Nintendo
             base.Switch08kCHR(0);
 
             wramON = true;
-            sram = new byte[0x2000]; 
+            sram = new byte[0x2000];
             shift = 0;
             buffer = 0;
 
@@ -82,7 +82,7 @@ namespace MyNes.Core.Boards.Nintendo
             if (timer < 2)
             {
                 return;
-            } 
+            }
             timer = 0;
             //Temporary reg port ($8000-FFFF):
             //[r... ...d]

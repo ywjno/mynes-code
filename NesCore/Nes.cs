@@ -26,6 +26,7 @@ using MyNes.Core.IO.Output;
 using MyNes.Core.PPU;
 using MyNes.Core.ROM;
 using MyNes.Core.Types;
+using MyNes.Core.Database;
 using System.IO;
 
 namespace MyNes.Core
@@ -137,11 +138,12 @@ namespace MyNes.Core
 
                 stream.Seek(16L, SeekOrigin.Begin);
 
-                // Skip trainer if presented
+                // Read trainer if presented
+                byte[] trainer = new byte[512];
                 if (header.HasTrainer)
                 {
-                    Console.WriteLine("Trainer found! Skipping...");
-                    stream.Seek(512L, SeekOrigin.Current);
+                    Console.WriteLine("Trainer found! reading...");
+                    stream.Read(trainer, 0, 512);
                 }
 
                 // Get PRG dump
@@ -168,7 +170,7 @@ namespace MyNes.Core
 
                 #endregion
 
-                Board = INESBoardManager.GetBoard(header, chr, prg);
+                Board = INESBoardManager.GetBoard(header, chr, prg, trainer);
          
                 if (Board == null)
                 {
@@ -386,6 +388,17 @@ namespace MyNes.Core
                 str.Close();
                 str.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Call this at the start of your program (in Main() method in Program.cs for example) to load up boards, database ..etc
+        /// </summary>
+        public static void StartUp()
+        {
+            //load database
+            if (File.Exists(Path.GetFullPath(".\\database.xml")))
+                NesDatabase.LoadDatabase(Path.GetFullPath(".\\database.xml"));
+            //load boards
         }
 
         /// <summary>
