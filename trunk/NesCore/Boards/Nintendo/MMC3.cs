@@ -20,7 +20,7 @@ using MyNes.Core.Types;
 using MyNes.Core.Debug;
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("MMC3")]
+    [BoardName("MMC3", 4)]
     class MMC3 : Board
     {
         public MMC3(byte[] chr, byte[] prg, bool isVram)
@@ -140,7 +140,7 @@ namespace MyNes.Core.Boards.Nintendo
 
                 case 0xC000: irqReload = data; break;
                 case 0xC001: if (mmc3_alt_behavior) clear = true; irqCounter = 0; break;
-                case 0xE000: IrqEnable = false; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, false); break;
+                case 0xE000: IrqEnable = false; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false); break;
                 case 0xE001: IrqEnable = true; break;
             }
         }
@@ -242,7 +242,7 @@ PRG Mode 1:  | { -2} |  R:7  |  R:6  | { -1} |
                         irqCounter = (byte)(irqCounter - 1);
 
                     if ((!mmc3_alt_behavior || old != 0 || clear) && irqCounter == 0 && IrqEnable)
-                        Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, true);
+                        Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, true);
 
                     clear = false;
                 }

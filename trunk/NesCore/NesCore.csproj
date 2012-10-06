@@ -100,8 +100,10 @@
     <Compile Include="Boards\Board.cs" />
     <Compile Include="Boards\Discreet\Camerica.cs" />
     <Compile Include="Boards\Discreet\CNROM.cs" />
-    <Compile Include="Boards\Discreet\UNROM.cs" />
-    <Compile Include="Boards\Discreet\UOROM.cs" />
+    <Compile Include="Boards\FFE\UNROM.cs" />
+    <Compile Include="Boards\FFE\UOROM.cs" />
+    <Compile Include="Boards\FFE\FFE.cs" />
+    <Compile Include="Boards\FFE\FFE_F4xxx.cs" />
     <Compile Include="Boards\INESBoardManager.cs" />
     <Compile Include="Boards\Nintendo\MMC1.cs" />
     <Compile Include="Boards\Nintendo\MMC1_SUROM.cs" />

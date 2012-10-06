@@ -19,7 +19,7 @@
 using MyNes.Core.APU.MMC5;
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("MMC5")]
+    [BoardName("MMC5",5)]
     class MMC5 : Board
     {
         public MMC5(byte[] chr, byte[] prg, bool isVram)
@@ -342,8 +342,8 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
                 case 0x5202: split_page = data; break;
 
                 //IRQ Operation
-                case 0x5203: irq_line = data; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, false); break;
-                case 0x5204: irq_enable = data; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, false); break;
+                case 0x5203: irq_line = data; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false); break;
+                case 0x5204: irq_enable = data; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false); break;
 
                 //8 * 8 -> 16 Multiplier
                 case 0x5205: Multiplier_A = data; break;
@@ -388,7 +388,7 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
                     case 0x5204:
                         data = (byte)IRQStatus;
                         IRQStatus &= ~0x80;
-                        Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, false);
+                        Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false);
                         break;
                     case 0x5205:
                         return (byte)(Multiplier_A * Multiplier_B);
@@ -414,7 +414,7 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
             if (ExRAMmode != 1)
             {
                 if (Nes.Ppu.IsBGFetchTime() & Nes.Ppu.IsOamSize())
-                    return chr[((address & 0x03FF) | chrBGPage[address >> 10 & 0x07]) & chrMask];
+                    return chr[((address & 0x03FF) | chrBGPage[address >> 10 & 0x07])];
                 else
                     return base.PeekChr(address);
             }
@@ -424,7 +424,7 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
                 {
                     int EXtilenumber = Nes.PpuMemory.nmt[2][lastAccessVRAM] & 0x3F;
                     Switch04kCHRExtra(EXtilenumber, address & 0x1000);
-                    return chr[((address & 0x03FF) | EXChrBank[address >> 10 & 0x07]) & chrMask];
+                    return chr[((address & 0x03FF) | EXChrBank[address >> 10 & 0x07])];
                 }
                 else//Sprites are not effected
                     return base.PeekChr(address);
@@ -433,7 +433,7 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
         protected override void PokeChr(int address, byte data)
         {
             if (Nes.Ppu.IsBGFetchTime() & Nes.Ppu.IsOamSize())
-                chr[((address & 0x03FF) | chrBGPage[address >> 10 & 0x07]) & chrMask] = data;
+                chr[((address & 0x03FF) | chrBGPage[address >> 10 & 0x07])] = data;
             else
                 base.PokeChr(address, data);
         }
@@ -505,11 +505,11 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
                 IRQStatus &= ~0x80;
                 IRQStatus &= ~0x40;
 
-                Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, false);
+                Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false);
             }
 
             if ((irq_enable & 0x80) == 0x80 && (IRQStatus & 0x80) == 0x80 && (IRQStatus & 0x40) == 0x40)
-                Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Mmc, true);
+                Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, true);
         }
         /*New switches for bg chr*/
         /// <summary>

@@ -18,7 +18,7 @@
  */
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("NROM128")]
+    [BoardName("NROM128",0)]
     public class NROM128 : Board
     {
         public NROM128(byte[] chr, byte[] prg)

@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace MyNes.Core.Boards.Discreet
+namespace MyNes.Core.Boards.FFE
 {
-    [BoardName("UNROM")]
+    [BoardName("UNROM", 2)]
     public class UNROM : Board
     {
         public UNROM(byte[] chr, byte[] prg)

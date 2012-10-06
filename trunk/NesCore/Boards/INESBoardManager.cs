@@ -18,13 +18,14 @@
  */
 using MyNes.Core.Boards.Discreet;
 using MyNes.Core.Boards.Nintendo;
+using MyNes.Core.Boards.FFE;
 using MyNes.Core.ROM;
 
 namespace MyNes.Core.Boards
 {
     public static class INESBoardManager
     {
-        public static Board GetBoard(INESHeader header, byte[] chr, byte[] prg)
+        public static Board GetBoard(INESHeader header, byte[] chr, byte[] prg, byte[] trainer)
         {
             // todo: add more cases, until a proprietary format is devised to store all of this information
 
@@ -57,6 +58,8 @@ namespace MyNes.Core.Boards
                 case 4: return new MMC3(chr, prg, header.IsVram);
 
                 case 5: return new MMC5(chr, prg, header.IsVram);
+
+                case 6: return new FFE_F4xxx(chr, prg, trainer, header.IsVram);
 
                 case 7: return new AxROM(chr, prg);
 

@@ -938,7 +938,7 @@ namespace MyNes.Core.CPU
                 case IsrType.Ppu: nmi = asserted; break;
                 case IsrType.Apu:
                 case IsrType.Dmc:
-                case IsrType.Mmc:
+                case IsrType.Brd:
                     if (asserted)
                         irqRequestFlags |= (int)type;
                     else
@@ -1108,10 +1108,22 @@ namespace MyNes.Core.CPU
         }
         public enum IsrType
         {
+            /// <summary>
+            /// NMI
+            /// </summary>
             Ppu = 0,
+            /// <summary>
+            /// APU frame irq
+            /// </summary>
             Apu = 1,
+            /// <summary>
+            /// DMC irq
+            /// </summary>
             Dmc = 2,
-            Mmc = 4,
+            /// <summary>
+            /// Board irq
+            /// </summary>
+            Brd = 4,
         }
     }
 }

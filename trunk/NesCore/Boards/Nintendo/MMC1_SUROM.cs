@@ -19,7 +19,7 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("MMC1 [SUROM]")]
+    [BoardName("MMC1 [SUROM]", 1)]
     class MMC1_SUROM : Board
     {
         public MMC1_SUROM(byte[] chr, byte[] prg, bool isVram)
