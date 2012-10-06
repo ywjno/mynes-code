@@ -424,7 +424,8 @@ namespace MyNes
             Program.Settings.PaletteSettings.PALB_hue_tweak = PALBPaletteGenerator.hue_tweak;
             Program.Settings.PaletteSettings.PALB_saturation = PALBPaletteGenerator.saturation;
 
-            int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() : PALBPaletteGenerator.GeneratePalette();
+            int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() : 
+                PALBPaletteGenerator.GeneratePalette();
             ShowPalette(palette);
             if (Nes.ON)
                 Nes.Ppu.SetupPalette(palette);

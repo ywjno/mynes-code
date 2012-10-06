@@ -79,19 +79,18 @@ namespace MyNes.Core.APU
 
         public override byte GetSample()
         {
-            // if (DurationCounter > 0 && linearCounter > 0 && frequency >4)
             return output;
         }
         public override void Update()
         {
             if (DurationCounter > 0 && linearCounter > 0)
             {
-                Step++;
-                Step &= 0x1F;
-                if (frequency < 4)
-                    output = 0;
-                else
+                if (frequency >= 4)
+                {
+                    Step++;
+                    Step &= 0x1F;
                     output = StepSequence[Step];
+                }
             }
         }
 
