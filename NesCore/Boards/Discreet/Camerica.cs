@@ -21,10 +21,12 @@ namespace MyNes.Core.Boards.Discreet
     [BoardName("Camerica", 71)]
     class Camerica : Board
     {
-        public Camerica(byte[] chr, byte[] prg)
-            : base(chr, prg)
-        {
-        }
+        public Camerica()
+            : base()
+        { }
+        public Camerica(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
         public override void Initialize()
         {
             Nes.CpuMemory.Hook(0x4018, 0x7FFF, PokePrg);

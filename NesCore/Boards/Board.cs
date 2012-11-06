@@ -26,21 +26,41 @@ namespace MyNes.Core.Boards
     {
         protected byte[] chr;
         protected byte[] prg;
+        protected byte[] trainer;
         protected int[] chrPage;
         protected int[] prgPage;
+        protected byte[] sram = new byte[0x2000];
+        protected bool isVram;
+        protected int prgMask;
+        protected int chrMask;
         private string name;
         private int mapperNumber;
         private bool isGameGenieActive;
         private GameGenieCode[] gameGenieCodes;
 
-        public Board(byte[] chr, byte[] prg)
+        public Board()
+        {
+            //load information only
+            LoadAttributes();
+        }
+        public Board(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
         {
             this.chr = chr;
             this.prg = prg;
+            this.trainer = trainer;
+            this.isVram = isVram;
 
             this.chrPage = new int[8];
             this.prgPage = new int[4];
 
+            this.prgMask = prg.Length - 1;
+            this.chrMask = chr.Length - 1;
+
+            LoadAttributes();
+        }
+
+        private void LoadAttributes()
+        {
             foreach (Attribute attr in Attribute.GetCustomAttributes(this.GetType()))
             {
                 if (attr.GetType() == typeof(BoardName))
@@ -54,7 +74,7 @@ namespace MyNes.Core.Boards
 
         protected virtual byte PeekChr(int address)
         {
-            return chr[DecodeChrAddress(address)];
+            return chr[DecodeChrAddress(address) & chrMask];
         }
         protected virtual byte PeekPrg(int address)
         {
@@ -81,11 +101,11 @@ namespace MyNes.Core.Boards
                     }
                 }
             }
-            return prg[DecodePrgAddress(address)];
+            return prg[DecodePrgAddress(address) & prgMask];
         }
         protected virtual void PokeChr(int address, byte data)
         {
-            chr[DecodeChrAddress(address)] = data;
+            chr[DecodeChrAddress(address) & chrMask] = data;
         }
         protected virtual void PokePrg(int address, byte data) { }
 
@@ -115,18 +135,22 @@ namespace MyNes.Core.Boards
             }
             return address;
         }
+
         public virtual void Initialize()
         {
             Nes.CpuMemory.Hook(0x8000, 0xFFFF, PeekPrg, PokePrg);
             Nes.PpuMemory.Hook(0x0000, 0x1FFF, PeekChr, PokeChr);
+            Nes.CpuMemory.Hook(0x6000, 0x7FFF, PeekSram, PokeSram);
             HardReset();
         }
         public virtual void HardReset()
         {
+            sram = new byte[0x2000];
             Switch08kCHR(0);
             Switch32KPRG(0);
         }
         public virtual void SoftReset() { }
+
         public virtual void SaveState(StateStream stream)
         {
             if (Nes.RomInfo.CHRcount == 0)
@@ -141,30 +165,33 @@ namespace MyNes.Core.Boards
             stream.Read(chrPage);
             stream.Read(prgPage);
         }
-        /// <summary>
-        /// Get the board name
-        /// </summary>
-        public virtual string Name
-        { get { return name; } }
-        /// <summary>
-        /// Get the board name
-        /// </summary>
-        public virtual int INESMapperNumber
-        { get { return mapperNumber; } }
+
+        #region SRAM
         /// <summary>
         /// Get the save-ram array that need to be saved
         /// </summary>
         /// <returns></returns>
         public virtual byte[] GetSaveRam()
-        { return null; }
+        { return sram; }
         /// <summary>
         /// Set the sram from buffer
         /// </summary>
         /// <param name="buffer"></param>
         public virtual void SetSram(byte[] buffer)
         {
+            buffer.CopyTo(sram, 0);
         }
+        protected virtual void PokeSram(int address, byte data)
+        {
+            sram[address - 0x6000] = data;
+        }
+        protected virtual byte PeekSram(int address)
+        {
+            return sram[address - 0x6000];
+        }
+        #endregion
 
+        #region Switch Controls
         /// <summary>
         /// Switch 8k prg bank to area
         /// </summary>
@@ -263,6 +290,9 @@ namespace MyNes.Core.Boards
                 bank += 0x400;
             }
         }
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Get or set if the game genie is activated. GameGenieCodes MUST be set first otherwise null exception will be thrown.
         /// </summary>
@@ -273,6 +303,17 @@ namespace MyNes.Core.Boards
         /// </summary>
         public GameGenieCode[] GameGenieCodes
         { get { return gameGenieCodes; } set { gameGenieCodes = value; } }
+        /// <summary>
+        /// Get the board name
+        /// </summary>
+        public virtual string Name
+        { get { return name; } }
+        /// <summary>
+        /// Get the board name
+        /// </summary>
+        public virtual int INESMapperNumber
+        { get { return mapperNumber; } }
+        #endregion
     }
     public class BoardName : Attribute
     {

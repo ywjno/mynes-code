@@ -19,19 +19,18 @@
 using MyNes.Core.APU.MMC5;
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("MMC5",5)]
+    [BoardName("MMC5", 5)]
     class MMC5 : Board
     {
-        public MMC5(byte[] chr, byte[] prg, bool isVram)
-            : base(chr, prg)
-        {
-            this.isVram = isVram;
-        }
+        public MMC5()
+            : base()
+        { }
+        public MMC5(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
         MMC5SqrSoundChannel soundChn1;
         MMC5SqrSoundChannel soundChn2;
         MMC5PcmSoundChannel soundChn3;
-        private bool isVram;
-        private byte[] sram = new byte[0x10000];//64 kB
         private int sramPage = 0;
         private bool sramWritable = true;
 
@@ -96,9 +95,6 @@ namespace MyNes.Core.Boards.Nintendo
             base.Switch08KPRG((prg.Length - 0x2000) >> 13, 0xE000);
             //setup chr
             chrSelectMode = 3;
-            if (isVram)
-                chr = new byte[0x4000];//16 k
-            base.Switch08kCHR(0);
             Switch08kBGCHR(0);
 
             sram = new byte[0x10000];//64 kB
@@ -472,12 +468,12 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
             }
             Nes.PpuMemory.nmt[Nes.PpuMemory.nmtBank[addr >> 10 & 0x03]][addr & 0x03FF] = data;
         }
-        private void PokeSram(int address, byte data)
+        protected override void PokeSram(int address, byte data)
         {
             if (sramWritable)
                 sram[(address - 0x6000) | sramPage] = data;
         }
-        private byte PeekSram(int address)
+        protected override byte PeekSram(int address)
         {
             return sram[(address - 0x6000) | sramPage];
         }

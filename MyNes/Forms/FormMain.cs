@@ -388,8 +388,6 @@ namespace MyNes.Forms
                 }
             }
         }
-        private void buttonModifyFolder_Click(object sender, EventArgs e) { }
-        private void buttonDeleteFolder_Click(object sender, EventArgs e) { }
         private void buttonPlay_Click(object sender, EventArgs e)
         {
             Nes.Pause = !Nes.Pause;

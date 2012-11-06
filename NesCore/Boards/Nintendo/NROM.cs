@@ -16,24 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace MyNes.Core.Boards.FFE
+namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("UNROM", 2)]
-    public class UNROM : Board
+    [BoardName("NROM", 0)]
+    public class NROM : Board
     {
-        public UNROM(byte[] chr, byte[] prg)
-            : base(chr, prg)
-        {
-        }
-        public override void HardReset()
-        {
-            base.HardReset();
-            base.Switch16KPRG(0, 0x8000);
-            base.Switch16KPRG(0x07, 0xC000);
-        }
-        protected override void PokePrg(int address, byte data)
-        {
-            base.Switch16KPRG((data & 0x07), 0x8000);
-        }
+        public NROM()
+            : base()
+        { }
+        public NROM(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
     }
 }

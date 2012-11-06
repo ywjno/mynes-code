@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNes", "MyNes\MyNes.csproj", "{4321AB73-D9E4-48C8-BB41-A5DE6FB25096}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NesCore", "NesCore\NesCore.csproj", "{E91AC0C3-2A35-4197-AB9B-4A24DB83F613}"

@@ -23,35 +23,32 @@ namespace MyNes.Core.Boards.Nintendo
     [BoardName("MMC3", 4)]
     class MMC3 : Board
     {
-        public MMC3(byte[] chr, byte[] prg, bool isVram)
-            : base(chr, prg)
-        { this.isVram = isVram; }
+        public MMC3()
+            : base()
+        { }
+        public MMC3(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
+        protected bool chrmode = false;
+        protected bool prgmode = false;
+        protected int addrSelect = 0;
+        protected byte[] chrRegs = new byte[6];
+        protected byte[] prgRegs = new byte[2];
+        protected bool wramON = true;
+        protected bool wramReadOnly = false;
 
-        private bool isVram = false;
-        private bool chrmode = false;
-        private bool prgmode = false;
-        private int addrSelect = 0;
-        private byte[] chrRegs = new byte[6];
-        private byte[] prgRegs = new byte[2];
-        private byte[] sram = new byte[0x2000];
-        private bool wramON = true;
-        private bool wramReadOnly = false;
-
-        private byte irqReload = 0xFF;
-        private byte irqCounter = 0;
-        private bool IrqEnable = false;
+        protected byte irqReload = 0xFF;
+        protected byte irqCounter = 0;
+        protected bool IrqEnable = false;
         public bool mmc3_alt_behavior = false;//true=rev A, false= rev B
-        private bool clear = false;
-        private int oldA12;
-        private int newA12;
-        private int timer;
+        protected bool clear = false;
+        protected int oldA12;
+        protected int newA12;
+        protected int timer;
 
         public override void Initialize()
         {
             base.Initialize();
-
-            //setup sram
-            Nes.CpuMemory.Hook(0x6000, 0x7FFF, PeekSram, PokeSram);
 
             Nes.Ppu.AddressLineUpdating = this.PPU_AddressLineUpdating;
             Nes.Ppu.CycleTimer = this.TickPPU;
@@ -70,13 +67,6 @@ namespace MyNes.Core.Boards.Nintendo
             prgRegs[0] = 0;
             prgRegs[1] = 1;
             SetupPRG();
-
-
-            //setup chr
-            if (isVram)
-                chr = new byte[0x2000];//8 k
-            base.Switch08kCHR(0);
-
 
             sram = new byte[0x2000];
             wramON = true;
@@ -100,14 +90,7 @@ namespace MyNes.Core.Boards.Nintendo
                 }
             }
         }
-        public override void SetSram(byte[] buffer)
-        {
-            buffer.CopyTo(sram, 0);
-        }
-        public override byte[] GetSaveRam()
-        {
-            return sram;
-        }
+
         protected override void PokePrg(int address, byte data)
         {
             switch (address & 0xE001)
@@ -144,7 +127,7 @@ namespace MyNes.Core.Boards.Nintendo
                 case 0xE001: IrqEnable = true; break;
             }
         }
-        private void SetupPRG()
+        protected void SetupPRG()
         {
             /*
              PRG Setup:
@@ -172,7 +155,7 @@ PRG Mode 1:  | { -2} |  R:7  |  R:6  | { -1} |
                 base.Switch08KPRG((prg.Length - 0x2000) >> 13, 0xE000);
             }
         }
-        private void SetupCHR()
+        protected virtual void SetupCHR()
         {
             /*
              CHR Setup:
@@ -208,16 +191,15 @@ PRG Mode 1:  | { -2} |  R:7  |  R:6  | { -1} |
                 base.Switch01kCHR(chrRegs[5], 0x0C00);
             }
         }
-        private void PokeSram(int address, byte data)
+        protected override void PokeSram(int address, byte data)
         {
-            if (wramON)
-                if (!wramReadOnly)
-                    sram[address - 0x6000] = data;
+            if (wramON && !wramReadOnly)
+                base.PokeSram(address, data);
         }
-        private byte PeekSram(int address)
+        protected override byte PeekSram(int address)
         {
             if (wramON)
-                return sram[address - 0x6000];
+                return base.PeekSram(address);
             return 0;
         }
 

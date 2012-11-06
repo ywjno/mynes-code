@@ -23,12 +23,6 @@ namespace MyNes.Core.APU
         public ChannelDmc(TimingInfo.System system)
             : base(system)
         {
-            if (system.Master == TimingInfo.NTSC.Master)
-                systemIndex = 0;
-            else if (system.Master == TimingInfo.PALB.Master)
-                systemIndex = 1;
-            else if (system.Master == TimingInfo.Dendy.Master)
-                systemIndex = 2;
         }
         private static readonly int[][] FrequencyTable = 
         { 
@@ -48,8 +42,7 @@ namespace MyNes.Core.APU
               0x5F, 0x50, 0x47, 0x40, 0x35, 0x2A, 0x24, 0x1B
             },
         };
-        private const int dmaCycles = 4;
-        private int systemIndex = 0;
+        private const int dmaCycles = 5;
         public bool DeltaIrqOccur;
         private bool IrqEnabled;
         private bool dmaLooping;
@@ -75,7 +68,7 @@ namespace MyNes.Core.APU
                 Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Dmc, false);
             }
 
-            timing.single = GetCycles(FrequencyTable[systemIndex][data & 0x0F]);
+            timing.single = GetCycles(FrequencyTable[system.Serial][data & 0x0F]);
         }
         protected override void PokeReg2(int address, byte data)
         {
@@ -93,8 +86,8 @@ namespace MyNes.Core.APU
         public void DoFetch()
         {
             bufferFull = true;
-
             dmaBuffer = Nes.CpuMemory[dmaAddr];
+
             if (++dmaAddr == 0x10000)
                 dmaAddr = 0x8000;
             dmaSize--;

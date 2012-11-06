@@ -19,25 +19,22 @@
 
 namespace MyNes.Core.Boards.FFE
 {
-    class FFE : Board
+    //This is not a board, it's a master class for FFE boards.
+    abstract class FFE : Board
     {
-        public FFE(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : 
-            base(chr, prg)
-        {
-            this.trainer = trainer;
-            this.isVram = isVram;
-        }
-        protected bool isVram;
+        public FFE()
+            : base()
+        { }
+        public FFE(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
         protected bool IRQEnabled = false;
         protected int irq_counter = 0;
-        protected byte[] sram = new byte[0x2000];
-        protected byte[] trainer;
 
         public override void Initialize()
         {
             base.Initialize();
             Nes.CpuMemory.Hook(0x4018, 0x5FFF, PeekPrg, PokePrg);
-            Nes.CpuMemory.Hook(0x6000, 0x7FFF, PeekSram, PokeSram);
         }
         public override void HardReset()
         {
@@ -46,11 +43,6 @@ namespace MyNes.Core.Boards.FFE
             //trainer loaded into address 0x7000
             trainer.CopyTo(sram, 0x1000);
             Nes.Cpu.ClockCycle = TickIRQTimer;
-
-            //setup chr
-            if (isVram)
-                chr = new byte[0x10000];//64 k
-            base.Switch08kCHR(0);
         }
         protected override byte PeekPrg(int address)
         {
@@ -82,7 +74,7 @@ namespace MyNes.Core.Boards.FFE
         {
             if (IRQEnabled)
             {
-                irq_counter ++;
+                irq_counter++;
                 if (irq_counter >= 0xFFFF)
                 {
                     irq_counter = 0;
@@ -90,21 +82,18 @@ namespace MyNes.Core.Boards.FFE
                 }
             }
         }
-        private void PokeSram(int address, byte data)
+
+        public override void SaveState(Types.StateStream stream)
         {
-            sram[address - 0x6000] = data;
+            base.SaveState(stream);
+            stream.Write(IRQEnabled);
+            stream.Write(irq_counter);
         }
-        private byte PeekSram(int address)
+        public override void LoadState(Types.StateStream stream)
         {
-            return sram[address - 0x6000];
-        }
-        public override void SetSram(byte[] buffer)
-        {
-            buffer.CopyTo(sram, 0);
-        }
-        public override byte[] GetSaveRam()
-        {
-            return sram;
+            base.LoadState(stream);
+            IRQEnabled = stream.ReadBoolean();
+            irq_counter = stream.ReadInt32();
         }
     }
 }

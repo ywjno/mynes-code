@@ -16,21 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace MyNes.Core.Boards.Nintendo
+namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("NROM128",0)]
-    public class NROM128 : Board
+    [BoardName("CPROM", 13)]
+    class CPROM : Board
     {
-        public NROM128(byte[] chr, byte[] prg)
-            : base(chr, prg) { }
-
-        protected override int DecodePrgAddress(int address)
+        public CPROM()
+            : base()
+        { }
+        public CPROM(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
+        protected override void PokePrg(int address, byte data)
         {
-            return address & 0x3FFF; // 128 kbit (((128 * 1024) / 8) bytes)
-        }
-        protected override int DecodeChrAddress(int address)
-        {
-            return address & 0x1FFF;
+            base.Switch04kCHR(data & 0x3, 0x1000);
         }
     }
 }

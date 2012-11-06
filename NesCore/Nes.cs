@@ -163,14 +163,15 @@ namespace MyNes.Core
                 if (chr.Length == 0)
                 {
                     Console.WriteLine("No chr, activated VRAM");
-                    chr = new byte[0x2000]; // assume 8kb vram
+                    chr = new byte[0x10000]; // assume 64kb vram
                 }
 
                 reader.Close();
 
                 #endregion
 
-                Board = INESBoardManager.GetBoard(header, chr, prg, trainer);
+                //Board = INESBoardManager.GetBoard(header, chr, prg, trainer);
+                Board = BoardsManager.GetBoard(header, chr, prg, trainer);
          
                 if (Board == null)
                 {
@@ -399,6 +400,7 @@ namespace MyNes.Core
             if (File.Exists(Path.GetFullPath(".\\database.xml")))
                 NesDatabase.LoadDatabase(Path.GetFullPath(".\\database.xml"));
             //load boards
+            BoardsManager.LoadAvailableBoards();
         }
 
         /// <summary>

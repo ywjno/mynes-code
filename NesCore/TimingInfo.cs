@@ -22,8 +22,8 @@ namespace MyNes.Core
 {
     public struct TimingInfo
     {
-        public static readonly System NTSC  = new System("NTSC",  0x0, 236250000, 132, 44, 264); // 1.78977267~ MHz
-        public static readonly System PALB  = new System("PALB",  0x1, 212813696, 128, 40, 256); // 1.662607~ MHz
+        public static readonly System NTSC = new System("NTSC", 0x0, 236250000, 132, 44, 264); // 1.78977267~ MHz
+        public static readonly System PALB = new System("PALB", 0x1, 212813696, 128, 40, 256); // 1.662607~ MHz
         public static readonly System Dendy = new System("Dendy", 0x2, 228774792, 129, 43, 258); // 1.773448~ MHz
 
         public int cycles;

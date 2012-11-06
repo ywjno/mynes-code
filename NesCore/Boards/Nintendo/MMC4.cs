@@ -16,25 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace MyNes.Core.Boards.Discreet
+namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("AxROM", 7)]
-    class AxROM : Board
+    [BoardName("MMC4", 10)]
+    class MMC4 : MMC2
     {
-        public AxROM()
+        public MMC4()
             : base()
         { }
-        public AxROM(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+        public MMC4(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
             : base(chr, prg, trainer, isVram)
         { }
+        public override void HardReset()
+        {
+            base.HardReset();
+
+            base.Switch16KPRG(0, 0x8000);
+            base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
+        }
         protected override void PokePrg(int address, byte data)
         {
-            if ((data & 0x10) == 0x10)
-                Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScA);
+            if ((address & 0xF000) == 0xA000)
+                base.Switch16KPRG(data, 0x8000);
             else
-                Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScB);
-
-            base.Switch32KPRG((data & 0x07));
+                base.PokePrg(address, data);
         }
     }
 }

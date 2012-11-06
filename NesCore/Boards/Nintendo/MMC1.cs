@@ -22,17 +22,15 @@ namespace MyNes.Core.Boards.Nintendo
     [BoardName("MMC1", 1)]
     class MMC1 : Board
     {
-        public MMC1(byte[] chr, byte[] prg, bool isVram)
-            : base(chr, prg)
-        {
-            this.isVram = isVram;
-        }
+        public MMC1()
+            : base()
+        { }
+        public MMC1(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
         public override void Initialize()
         {
             base.Initialize();
-            //setup sram
-            Nes.CpuMemory.Hook(0x6000, 0x7FFF, PeekSram, PokeSram);
-
             Nes.Cpu.ClockCycle = ClockCpu;
             timer = 0;
         }
@@ -45,37 +43,30 @@ namespace MyNes.Core.Boards.Nintendo
             reg[1] = reg[2] = reg[3] = 0;
 
             //setup prg
-            base.Switch16KPRG(0, 0x8000);
-            base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
-
-            //setup chr
-            if (isVram)
-                chr = new byte[0x4000];//16 k
-            base.Switch08kCHR(0);
+            if (Nes.RomInfo.PRGcount < 32)
+            {
+                modeSUROM = false;
+                base.Switch16KPRG(0, 0x8000);
+                base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
+            }
+            else
+            {
+                modeSUROM = true;
+                base.Switch16KPRG(0, 0x8000);
+                base.Switch16KPRG(0xF, 0xC000);
+            }
 
             wramON = true;
-            sram = new byte[0x2000];
             shift = 0;
             buffer = 0;
-
-
         }
-        private bool isVram;
         private byte[] reg = new byte[4];
-        private byte[] sram = new byte[0x2000];
         private byte shift = 0;
         private byte buffer = 0;
         private bool wramON = true;//enable sram, not sure about this but some docs mansion it
         private int timer = 0;
+        private bool modeSUROM = false;
 
-        public override void SetSram(byte[] buffer)
-        {
-            buffer.CopyTo(sram, 0);
-        }
-        public override byte[] GetSaveRam()
-        {
-            return sram;
-        }
         protected override void PokePrg(int address, byte data)
         {
             //Too close writes ignored
@@ -108,10 +99,77 @@ namespace MyNes.Core.Boards.Nintendo
 
             // - temporary reg is reset (so that next write is the "first" write)
             shift = buffer = 0;
-
-            switch (address)
+            if (!modeSUROM)
             {
-                case 0:
+                switch (address)
+                {
+                    case 0:
+                        if ((reg[0] & 0x02) == 0x02)
+                        {
+                            if ((reg[0] & 0x01) != 0)
+                                Nes.PpuMemory.SwitchMirroring(Mirroring.ModeHorz);
+                            else
+                                Nes.PpuMemory.SwitchMirroring(Mirroring.ModeVert);
+                        }
+                        else
+                        {
+                            if ((reg[0] & 0x01) != 0)
+                                Nes.PpuMemory.SwitchMirroring(Mirroring.Mode1ScB);
+                            else
+                                Nes.PpuMemory.SwitchMirroring(Mirroring.Mode1ScA);
+                        }
+                        break;
+
+                    case 1:
+                        if ((reg[0] & 0x10) != 0)
+                        {
+                            base.Switch04kCHR(reg[1], 0);
+                            base.Switch04kCHR(reg[2], 0x1000);
+                        }
+                        else
+                        {
+                            base.Switch08kCHR(reg[1] >> 1);
+                        }
+                        break;
+                    case 2:
+                        if ((reg[0] & 0x10) != 0)
+                        {
+                            base.Switch04kCHR(reg[1], 0);
+                            base.Switch04kCHR(reg[2], 0x1000);
+                        }
+                        else
+                        {
+                            base.Switch08kCHR(reg[1] >> 1);
+                        }
+                        break;
+
+                    case 3:
+                        wramON = (reg[3] & 0x10) == 0;
+
+                        if ((reg[0] & 0x08) == 0)
+                        {
+                            base.Switch32KPRG(reg[3] >> 1);
+                        }
+                        else
+                        {
+                            if ((reg[0] & 0x04) != 0)
+                            {
+                                base.Switch16KPRG(reg[3], 0x8000);
+                                base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);//last bank
+                            }
+                            else
+                            {
+                                base.Switch16KPRG(0, 0x8000);
+                                base.Switch16KPRG(reg[3], 0xC000);
+                            }
+                        }
+                        break;
+                }
+            }
+            else//SUROM mode
+            {
+                if (address == 0)
+                {
                     if ((reg[0] & 0x02) == 0x02)
                     {
                         if ((reg[0] & 0x01) != 0)
@@ -126,64 +184,49 @@ namespace MyNes.Core.Boards.Nintendo
                         else
                             Nes.PpuMemory.SwitchMirroring(Mirroring.Mode1ScA);
                     }
-                    break;
+                }
 
-                case 1:
-                    if ((reg[0] & 0x10) != 0)
+                if ((reg[0] & 0x10) == 0x10)
+                {
+                    base.Switch04kCHR(reg[1], 0);
+                    base.Switch04kCHR(reg[2], 0x1000);
+                }
+                else
+                {
+                    base.Switch08kCHR(reg[1] >> 1);
+                }
+                int BASE = reg[1] & 0x10;
+                wramON = (reg[3] & 0x10) == 0;
+                if ((reg[0] & 0x08) == 0)
+                {
+                    base.Switch32KPRG((reg[3] & (0xF + BASE)) >> 1);
+                }
+                else
+                {
+                    if ((reg[0] & 0x04) == 0x04)
                     {
-                        base.Switch04kCHR(reg[1], 0);
-                        base.Switch04kCHR(reg[2], 0x1000);
+                        base.Switch16KPRG(BASE + (reg[3] & 0x0F), 0x8000);
+                        base.Switch16KPRG(BASE + 0xF, 0xC000);
                     }
                     else
                     {
-                        base.Switch08kCHR(reg[1] >> 1);
-                    }
-                    break;
-                case 2:
-                    if ((reg[0] & 0x10) != 0)
-                    {
-                        base.Switch04kCHR(reg[1], 0);
-                        base.Switch04kCHR(reg[2], 0x1000);
-                    }
-                    else
-                    {
-                        base.Switch08kCHR(reg[1] >> 1);
-                    }
-                    break;
 
-                case 3:
-                    wramON = (reg[3] & 0x10) == 0;
-
-                    if ((reg[0] & 0x08) == 0)
-                    {
-                        base.Switch32KPRG(reg[3] >> 1);
+                        base.Switch16KPRG(BASE, 0x8000);
+                        base.Switch16KPRG(BASE + (reg[3] & 0x0F), 0xC000);
                     }
-                    else
-                    {
-                        if ((reg[0] & 0x04) != 0)
-                        {
-                            base.Switch16KPRG(reg[3], 0x8000);
-                            base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);//last bank
-                        }
-                        else
-                        {
-                            base.Switch16KPRG(0, 0x8000);
-                            base.Switch16KPRG(reg[3], 0xC000);
-                        }
-                    }
-                    break;
+                }
             }
         }
 
-        private void PokeSram(int address, byte data)
+        protected override void PokeSram(int address, byte data)
         {
             if (wramON)
-                sram[address - 0x6000] = data;
+                base.PokeSram(address, data);
         }
-        private byte PeekSram(int address)
+        protected override byte PeekSram(int address)
         {
             if (wramON)
-                return sram[address - 0x6000];
+                return base.PeekSram(address);
             return 0;
         }
 

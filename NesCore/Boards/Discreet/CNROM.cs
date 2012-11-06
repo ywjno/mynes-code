@@ -21,8 +21,11 @@ namespace MyNes.Core.Boards.Discreet
     [BoardName("CNROM", 3)]
     class CNROM : Board
     {
-        public CNROM(byte[] chr, byte[] prg)
-            : base(chr, prg)
+        public CNROM()
+            : base()
+        { }
+        public CNROM(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
         { }
         protected override void PokePrg(int address, byte data)
         {

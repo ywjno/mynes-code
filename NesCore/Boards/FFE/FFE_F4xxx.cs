@@ -19,12 +19,15 @@
 namespace MyNes.Core.Boards.FFE
 {
     [BoardName("FFE F4xxx", 6)]
+    [System.ComponentModel.Browsable(true)]
     class FFE_F4xxx : FFE
     {
-        public FFE_F4xxx(byte[] chr, byte[] prg, byte[] trainer, bool isVram) :
-            base(chr, prg, trainer, isVram)
-        {
-        }
+        public FFE_F4xxx()
+            : base()
+        { }
+        public FFE_F4xxx(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
         public override void HardReset()
         {
             base.HardReset();

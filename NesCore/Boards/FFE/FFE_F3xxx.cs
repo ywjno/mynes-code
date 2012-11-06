@@ -16,21 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace MyNes.Core.Boards.Nintendo
+namespace MyNes.Core.Boards.FFE
 {
-    [BoardName("NROM256", 0)]
-    public class NROM256 : Board
+    [BoardName("FFE F3xxx", 8)]
+    class FFE_F3xxx : FFE
     {
-        public NROM256(byte[] chr, byte[] prg)
-            : base(chr, prg) { }
-
-        protected override int DecodePrgAddress(int address)
+        public FFE_F3xxx()
+            : base()
+        { }
+        public FFE_F3xxx(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
+        protected override void PokePrg(int address, byte data)
         {
-            return address & 0x7FFF; // 256 kbit (((256 * 1024) / 8) bytes)
-        }
-        protected override int DecodeChrAddress(int address)
-        {
-            return address & 0x1FFF;
+            base.PokePrg(address, data); 
+            if (address >= 0x8000 && address <= 0xFFFF)
+            {
+                base.Switch32KPRG((data >> 4) & 0x3);
+                base.Switch08kCHR(data & 0x3);
+            }
         }
     }
 }

@@ -18,23 +18,19 @@
  */
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("AxROM", 7)]
-    class AxROM : Board
+    [BoardName("Color Dreams", 11)]
+    class ColorDreams : Board
     {
-        public AxROM()
+        public ColorDreams()
             : base()
         { }
-        public AxROM(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+        public ColorDreams(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
             : base(chr, prg, trainer, isVram)
         { }
         protected override void PokePrg(int address, byte data)
         {
-            if ((data & 0x10) == 0x10)
-                Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScA);
-            else
-                Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScB);
-
-            base.Switch32KPRG((data & 0x07));
+            base.Switch32KPRG(data & 0xF);
+            base.Switch08kCHR((data >> 4) & 0xF);
         }
     }
 }

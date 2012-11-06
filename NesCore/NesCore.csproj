@@ -96,21 +96,26 @@
     <Compile Include="APU\ChannelTri.cs" />
     <Compile Include="APU\MMC5\MMC5PcmSoundChannel.cs" />
     <Compile Include="APU\MMC5\MMC5SqrSoundChannel.cs" />
+    <Compile Include="Boards\BoardsManager.cs" />
     <Compile Include="Boards\Discreet\AxROM.cs" />
     <Compile Include="Boards\Board.cs" />
+    <Compile Include="Boards\Discreet\Bandai.cs" />
     <Compile Include="Boards\Discreet\Camerica.cs" />
     <Compile Include="Boards\Discreet\CNROM.cs" />
-    <Compile Include="Boards\FFE\UNROM.cs" />
-    <Compile Include="Boards\FFE\UOROM.cs" />
+    <Compile Include="Boards\Discreet\ColorDreams.cs" />
+    <Compile Include="Boards\Discreet\CPROM.cs" />
+    <Compile Include="Boards\Discreet\Xin1_Contra_Function_16.cs" />
+    <Compile Include="Boards\FFE\FFE_F3xxx.cs" />
+    <Compile Include="Boards\FFE\FFE_F6xxx.cs" />
+    <Compile Include="Boards\FFE\UxROM.cs" />
     <Compile Include="Boards\FFE\FFE.cs" />
     <Compile Include="Boards\FFE\FFE_F4xxx.cs" />
-    <Compile Include="Boards\INESBoardManager.cs" />
     <Compile Include="Boards\Nintendo\MMC1.cs" />
-    <Compile Include="Boards\Nintendo\MMC1_SUROM.cs" />
+    <Compile Include="Boards\Nintendo\MMC2.cs" />
     <Compile Include="Boards\Nintendo\MMC3.cs" />
+    <Compile Include="Boards\Nintendo\MMC4.cs" />
     <Compile Include="Boards\Nintendo\MMC5.cs" />
-    <Compile Include="Boards\Nintendo\NROM128.cs" />
-    <Compile Include="Boards\Nintendo\NROM256.cs" />
+    <Compile Include="Boards\Nintendo\NROM.cs" />
     <Compile Include="Controls\ControlsUnit.cs" />
     <Compile Include="Controls\SpeedLimiter.cs" />
     <Compile Include="CPU\Cpu.cs" />
@@ -126,6 +131,7 @@
     <Compile Include="Debug\DebugCode.cs" />
     <Compile Include="Debug\DebugEventArgs.cs" />
     <Compile Include="Debug\DebugLine.cs" />
+    <Compile Include="Debug\DefaultCommands\boards.cs" />
     <Compile Include="Debug\DefaultCommands\GameGenieCommands.cs" />
     <Compile Include="Debug\DefaultCommands\HardResetCommand.cs" />
     <Compile Include="Debug\DefaultCommands\HelpCommand.cs" />
@@ -165,6 +171,9 @@
   <ItemGroup>
     <Folder Include="Boards\Konami\" />
     <Folder Include="Boards\Sunsoft\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Boards\readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

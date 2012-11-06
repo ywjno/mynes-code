@@ -30,12 +30,12 @@ namespace MyNes.Core.CPU
 
         public void OamTransfer(int address, byte data)
         {
-            if (size != 0 || (Nes.Cpu.DMCdmaCycles > 0))
+            if (size != 0)
                 return; // transfer already occuring
             step = false;
             addr = (data << 8);
             size = 256;
-
+   
             /*http://nesdev.com/6502_cpu.txt
              -RDY is ignored during writes
              (This is why you must wait 3 cycles before doing any DMA --
@@ -50,7 +50,7 @@ namespace MyNes.Core.CPU
         {
             if (size == 0)
                 return;
-            if (timer > 0) 
+            if (timer > 0)
             {
                 Nes.Cpu.Dispatch();
                 timer--;

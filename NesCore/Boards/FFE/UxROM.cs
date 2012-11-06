@@ -18,22 +18,34 @@
  */
 namespace MyNes.Core.Boards.FFE
 {
-    [BoardName("UOROM", 2)]
-    public class UOROM : Board
+    [BoardName("UxROM", 2)]
+    public class UxROM : Board
     {
-        public UOROM(byte[] chr, byte[] prg)
-            : base(chr, prg)
+        public UxROM()
+            : base()
+        { }
+        public UxROM(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+            : base(chr, prg, trainer, isVram)
+        { }
+        int mask = 0x7;
+        public override void Initialize()
         {
+            switch (Nes.RomInfo.PRGcount * 0x4000)
+            {
+                case 0x20000: mask = 0x7; break; // UNROM: 128 kB PRG, 8kB CHR-RAM
+                case 0x40000: mask = 0xF; break; // UOROM: 256 kB PRG, 8kB CHR-RAM
+            }
+            base.Initialize();
         }
         public override void HardReset()
         {
             base.HardReset();
             base.Switch16KPRG(0, 0x8000);
-            base.Switch16KPRG(0xF, 0xC000);
+            base.Switch16KPRG(mask, 0xC000);
         }
         protected override void PokePrg(int address, byte data)
         {
-            base.Switch16KPRG((data & 0x0F), 0x8000);
+            base.Switch16KPRG((data & mask), 0x8000);
         }
     }
 }

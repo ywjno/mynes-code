@@ -37,8 +37,14 @@ namespace MyNes.Core
         public virtual void Update() { }
         public virtual void Update(int cycles)
         {
-            for (timing.cycles += cycles; timing.cycles >= timing.single; timing.cycles -= timing.single)
+            while (timing.cycles < cycles)
+            {
+                timing.cycles += timing.single;
+
                 Update();
+            }
+
+            timing.cycles -= cycles;
         }
         public virtual void SaveState(StateStream stream) { timing.SaveState(stream); }
         public virtual void LoadState(StateStream stream) { timing.LoadState(stream); }

@@ -58,6 +58,8 @@ namespace MyNes.Forms
             this.saveDatabaseToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDatabaseasToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.recordSoundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -185,8 +187,6 @@ namespace MyNes.Forms
             this.detectCoversToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.recordSoundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.contextMenuStripSnapshot.SuspendLayout();
             this.contextMenuStripCover.SuspendLayout();
@@ -311,6 +311,19 @@ namespace MyNes.Forms
             this.toolStripSeparator9.Name = "toolStripSeparator9";
             this.toolStripSeparator9.Size = new System.Drawing.Size(226, 6);
             // 
+            // recordSoundToolStripMenuItem
+            // 
+            this.recordSoundToolStripMenuItem.Enabled = false;
+            this.recordSoundToolStripMenuItem.Name = "recordSoundToolStripMenuItem";
+            this.recordSoundToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.recordSoundToolStripMenuItem.Text = "Re&cord sound";
+            this.recordSoundToolStripMenuItem.Click += new System.EventHandler(this.recordSoundToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator15
+            // 
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(226, 6);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("exitToolStripMenuItem.Image")));
@@ -349,7 +362,7 @@ namespace MyNes.Forms
             this.deleteFolderToolStripMenuItem.Name = "deleteFolderToolStripMenuItem";
             this.deleteFolderToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.deleteFolderToolStripMenuItem.Text = "&Delete folder";
-            this.deleteFolderToolStripMenuItem.Click += new System.EventHandler(this.buttonDeleteFolder_Click);
+            this.deleteFolderToolStripMenuItem.Click += new System.EventHandler(this.deleteFolderToolStripMenuItem_Click);
             // 
             // toolStripSeparator8
             // 
@@ -1073,7 +1086,7 @@ namespace MyNes.Forms
             this.buttonDeleteFolder.Name = "buttonDeleteFolder";
             this.buttonDeleteFolder.Size = new System.Drawing.Size(23, 22);
             this.buttonDeleteFolder.Text = "Delete folder";
-            this.buttonDeleteFolder.Click += new System.EventHandler(this.buttonDeleteFolder_Click);
+            this.buttonDeleteFolder.Click += new System.EventHandler(this.deleteFolderToolStripMenuItem_Click);
             this.buttonDeleteFolder.EnabledChanged += new System.EventHandler(this.buttonDeleteFolder_EnabledChanged);
             // 
             // toolStripSeparator1
@@ -1347,7 +1360,7 @@ namespace MyNes.Forms
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.buttonDeleteFolder_Click);
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteFolderToolStripMenuItem_Click);
             // 
             // toolStripSeparator18
             // 
@@ -1417,19 +1430,6 @@ namespace MyNes.Forms
             this.splitContainer2.Size = new System.Drawing.Size(208, 371);
             this.splitContainer2.SplitterDistance = 235;
             this.splitContainer2.TabIndex = 1;
-            // 
-            // recordSoundToolStripMenuItem
-            // 
-            this.recordSoundToolStripMenuItem.Enabled = false;
-            this.recordSoundToolStripMenuItem.Name = "recordSoundToolStripMenuItem";
-            this.recordSoundToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
-            this.recordSoundToolStripMenuItem.Text = "Re&cord sound";
-            this.recordSoundToolStripMenuItem.Click += new System.EventHandler(this.recordSoundToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator15
-            // 
-            this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(226, 6);
             // 
             // FormMain
             // 
