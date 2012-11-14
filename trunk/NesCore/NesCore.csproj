@@ -104,9 +104,12 @@
     <Compile Include="Boards\Discreet\CNROM.cs" />
     <Compile Include="Boards\Discreet\ColorDreams.cs" />
     <Compile Include="Boards\Discreet\CPROM.cs" />
+    <Compile Include="Boards\Discreet\Jaleco_SS8806.cs" />
+    <Compile Include="Boards\Discreet\Namcot106.cs" />
     <Compile Include="Boards\Discreet\Xin1_Contra_Function_16.cs" />
     <Compile Include="Boards\FFE\FFE_F3xxx.cs" />
     <Compile Include="Boards\FFE\FFE_F6xxx.cs" />
+    <Compile Include="Boards\FFE\FFE_F8xxx.cs" />
     <Compile Include="Boards\FFE\UxROM.cs" />
     <Compile Include="Boards\FFE\FFE.cs" />
     <Compile Include="Boards\FFE\FFE_F4xxx.cs" />

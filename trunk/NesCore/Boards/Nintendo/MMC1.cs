@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*Written by Ala Ibrahim Hadid and Adam Becker*/
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Nintendo
 {
