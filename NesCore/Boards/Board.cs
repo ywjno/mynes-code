@@ -111,36 +111,40 @@ namespace MyNes.Core.Boards
 
         protected virtual int DecodePrgAddress(int address)
         {
-            switch (address & 0xE000)
-            {
-                case 0x8000: return (address & 0x1FFF) | prgPage[0];
-                case 0xA000: return (address & 0x1FFF) | prgPage[1];
-                case 0xC000: return (address & 0x1FFF) | prgPage[2];
-                case 0xE000: return (address & 0x1FFF) | prgPage[3];
-            }
-            return address;
+            if (address < 0xA000)
+                return (address & 0x1FFF) | prgPage[0];
+            else if (address < 0xC000)
+                return (address & 0x1FFF) | prgPage[1];
+            else if (address < 0xE000)
+                return (address & 0x1FFF) | prgPage[2];
+            else
+                return (address & 0x1FFF) | prgPage[3];
         }
         protected virtual int DecodeChrAddress(int address)
         {
-            switch (address & 0x1C00)
-            {
-                case 0x0000: return (address & 0x03FF) | chrPage[0];
-                case 0x0400: return (address & 0x03FF) | chrPage[1];
-                case 0x0800: return (address & 0x03FF) | chrPage[2];
-                case 0x0C00: return (address & 0x03FF) | chrPage[3];
-                case 0x1000: return (address & 0x03FF) | chrPage[4];
-                case 0x1400: return (address & 0x03FF) | chrPage[5];
-                case 0x1800: return (address & 0x03FF) | chrPage[6];
-                case 0x1C00: return (address & 0x03FF) | chrPage[7];
-            }
-            return address;
+            if (address < 0x0400)
+                return (address & 0x03FF) | chrPage[0];
+            if (address < 0x0800)
+                return (address & 0x03FF) | chrPage[1];
+            if (address < 0x0C00)
+                return (address & 0x03FF) | chrPage[2];
+            if (address < 0x1000)
+                return (address & 0x03FF) | chrPage[3];
+            if (address < 0x1400)
+                return (address & 0x03FF) | chrPage[4];
+            if (address < 0x1800)
+                return (address & 0x03FF) | chrPage[5];
+            if (address < 0x1C00)
+                return (address & 0x03FF) | chrPage[6];
+            else
+                return (address & 0x03FF) | chrPage[7];
         }
 
         public virtual void Initialize()
         {
             Nes.CpuMemory.Hook(0x8000, 0xFFFF, PeekPrg, PokePrg);
-            Nes.PpuMemory.Hook(0x0000, 0x1FFF, PeekChr, PokeChr);
             Nes.CpuMemory.Hook(0x6000, 0x7FFF, PeekSram, PokeSram);
+            Nes.PpuMemory.Hook(0x0000, 0x1FFF, PeekChr, PokeChr);
             HardReset();
         }
         public virtual void HardReset()

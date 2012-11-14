@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*Written by Ala Ibrahim Hadid*/
 namespace MyNes.Core.Boards.FFE
 {
     [BoardName("FFE F4xxx", 6)]
-    [System.ComponentModel.Browsable(true)]
     class FFE_F4xxx : FFE
     {
         public FFE_F4xxx()

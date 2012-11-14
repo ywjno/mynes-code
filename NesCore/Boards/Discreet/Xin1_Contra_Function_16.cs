@@ -27,6 +27,10 @@ namespace MyNes.Core.Boards.Discreet
         public Xin1_Contra_Function_16(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
             : base(chr, prg, trainer, isVram)
         { }
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
         protected override void PokePrg(int address, byte data)
         {
             byte lb = (byte)((data >> 7) & 1);
