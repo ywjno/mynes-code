@@ -244,19 +244,19 @@ namespace MyNes.Core.Boards
         /// Switch 1k chr bank to area
         /// </summary>
         /// <param name="index">The index within cart</param>
-        /// <param name="where">The area where to switch. 0x0000 to 0x1C00</param>
+        /// <param name="where">The area where to switch. 0x0000, 0x0400, 0x0800, 0x0C00, 0x1000, 0x1400, 0x1800 or 0x1800</param>
         protected void Switch01kCHR(int index, int where)
         {
-            chrPage[where >> 10 & 0x07] = index << 10;
+            chrPage[(where >> 10) & 0x07] = index << 10;
         }
         /// <summary>
         /// Switch 2k chr bank to area
         /// </summary>
         /// <param name="index">The index within cart</param>
-        /// <param name="where">The area where to switch. 0x0000, 0x800, 0x1000 or 1800</param>
+        /// <param name="where">The area where to switch. 0x0000, 0x800, 0x1000 or 0x1800</param>
         protected void Switch02kCHR(int index, int where)
         {
-            int area = where >> 10 & 0x07;
+            int area = (where >> 10) & 0x07;
             int bank = index << 11;
             for (int i = 0; i < 2; i++)
             {
@@ -272,7 +272,7 @@ namespace MyNes.Core.Boards
         /// <param name="where">The area where to switch. 0x0000, or 0x1000</param>
         protected void Switch04kCHR(int index, int where)
         {
-            int area = where >> 10 & 0x07;
+            int area = (where >> 10) & 0x07;
             int bank = index << 12;
             for (int i = 0; i < 4; i++)
             {

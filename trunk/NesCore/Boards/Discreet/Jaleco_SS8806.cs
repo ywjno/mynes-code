@@ -32,6 +32,7 @@ namespace MyNes.Core.Boards.Discreet
         private int irqCounter = 0;
         private bool irqEnable = false;
         private int irqMask = 0;
+
         public override void HardReset()
         {
             base.HardReset();
@@ -125,6 +126,29 @@ namespace MyNes.Core.Boards.Discreet
                     Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, true);
                 }
             }
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(prgs);
+            stream.Write(chrs);
+            stream.Write(wramON);
+            stream.Write(irqRelaod);
+            stream.Write(irqCounter);
+            stream.Write(irqEnable);
+            stream.Write(irqMask);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            stream.Read(prgs);
+            stream.Read(chrs);
+            wramON = stream.ReadBoolean();
+            irqRelaod = stream.ReadInt32();
+            irqCounter = stream.ReadInt32();
+            irqEnable = stream.ReadBoolean();
+            irqMask = stream.ReadInt32();
         }
     }
 }

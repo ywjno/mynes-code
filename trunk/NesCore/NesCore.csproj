@@ -61,6 +61,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -113,6 +114,10 @@
     <Compile Include="Boards\FFE\UxROM.cs" />
     <Compile Include="Boards\FFE\FFE.cs" />
     <Compile Include="Boards\FFE\FFE_F4xxx.cs" />
+    <Compile Include="Boards\Konami\VRC4.cs" />
+    <Compile Include="Boards\Konami\VRC4ac.cs" />
+    <Compile Include="Boards\Konami\VRC4bd.cs" />
+    <Compile Include="Boards\Konami\VRC4ef.cs" />
     <Compile Include="Boards\Nintendo\MMC1.cs" />
     <Compile Include="Boards\Nintendo\MMC2.cs" />
     <Compile Include="Boards\Nintendo\MMC3.cs" />
@@ -172,7 +177,6 @@
     <Compile Include="VSUnisystem.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Boards\Konami\" />
     <Folder Include="Boards\Sunsoft\" />
   </ItemGroup>
   <ItemGroup>
