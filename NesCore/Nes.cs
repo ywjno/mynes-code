@@ -207,11 +207,10 @@ namespace MyNes.Core
             Ppu = new Ppu(emuSystem);
             Apu = new Apu(emuSystem);
 
-            Board.Initialize();
-            Cpu.Initialize();
             Ppu.Initialize();
             Apu.Initialize();
-
+            Board.Initialize(); 
+            Cpu.Initialize();
             //load sram
             if (RomInfo.HasSaveRam)
                 LoadSram();

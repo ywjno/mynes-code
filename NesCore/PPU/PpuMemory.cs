@@ -32,7 +32,7 @@ namespace MyNes.Core.PPU
 
         public byte PeekNmt(int addr)
         {
-            return nmt[nmtBank[addr >> 10 & 0x03]][addr & 0x03FF];
+            return nmt[nmtBank[(addr >> 10) & 0x03]][addr & 0x03FF];
         }
         public byte PeekPal(int addr)
         {
@@ -40,7 +40,7 @@ namespace MyNes.Core.PPU
         }
         public void PokeNmt(int addr, byte data)
         {
-            nmt[nmtBank[addr >> 10 & 0x03]][addr & 0x03FF] = data;
+            nmt[nmtBank[(addr >> 10) & 0x03]][addr & 0x03FF] = data;
         }
         public void PokePal(int addr, byte data)
         {

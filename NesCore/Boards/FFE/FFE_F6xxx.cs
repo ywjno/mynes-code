@@ -80,5 +80,18 @@ namespace MyNes.Core.Boards.FFE
                 base.Switch01kCHR(chrRegs[5] + vb0, 0x0C00);
             }
         }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(vb0); 
+            stream.Write(vb1);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            vb0 = stream.ReadInt32();
+            vb1 = stream.ReadInt32();
+        }
     }
 }
