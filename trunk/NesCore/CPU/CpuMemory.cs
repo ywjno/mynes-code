@@ -23,7 +23,7 @@ namespace MyNes.Core.CPU
         private byte[] ram = new byte[2048];
 
         public CpuMemory()
-            : base(1 << 16)
+            : base(0x10000)
         {
             Hook(0x0000, 0x1FFF, PeekRam, PokeRam);
         }

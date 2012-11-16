@@ -19,44 +19,49 @@
 /*Written by Ala Ibrahim Hadid*/
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Camerica", 71)]
-    class Camerica : Board
+    [BoardName("Caltron 6-in-1", 41)]
+    class Caltron6in1 : Board
     {
-        public Camerica()
-            : base()
-        { }
-        public Camerica(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
-            : base(chr, prg, trainer, isVram)
-        { }
+        public Caltron6in1() : base() { }
+        public Caltron6in1(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+
+        private bool enableReg = false;
+        private int vromReg = 0;
+
         public override void Initialize()
         {
-            Nes.CpuMemory.Hook(0x4018, 0x7FFF, PokePrg);
+            // Maps prg writes to 0x8000 - 0xFFFF. Maps sram reads and writes to 0x6000 - 0x8000.
+            // Then do a hard reset.
             base.Initialize();
+            Nes.CpuMemory.Hook(0x6000, 0x67FF, PokePrg);
         }
         public override void HardReset()
         {
+            // Switch 32KB prg bank at 0x8000
+            // Switch 08KB chr bank at 0x0000
             base.HardReset();
-            base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
+
+            enableReg = true;
         }
         protected override void PokePrg(int address, byte data)
         {
-            if ((address & 0xE000) == 0x6000)
-                base.Switch16KPRG((data & 0x0F), 0x8000);
-            else
-                switch (address & 0xF000)
-                {
-                    case 0xF000:
-                    case 0xE000:
-                    case 0xD000:
-                    case 0xC000: base.Switch16KPRG((data & 0x0F), 0x8000); break;
-                    case 0x9000:
-                        if ((data & 0x10) != 0)
-                            Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScB);
-                        else
-                            Nes.PpuMemory.SwitchMirroring(MyNes.Core.Types.Mirroring.Mode1ScA);
-                        break;
-                }
+            if (address < 0x8000)
+            {
+                Switch32KPRG(address & 0x7);
+                enableReg = (address & 0x4) == 0x4;
 
+                vromReg = (vromReg & 0x03) | ((address >> 1) & 0x0C);
+                Switch08kCHR(vromReg);
+                Nes.PpuMemory.SwitchMirroring((address & 0x20) == 0x20 ? Types.Mirroring.ModeHorz : Types.Mirroring.ModeVert);
+            }
+            else
+            {
+                if (enableReg)
+                {
+                    vromReg = (vromReg & 0x0C) | (data & 0x3);
+                    Switch08kCHR(vromReg);
+                }
+            }
         }
     }
 }

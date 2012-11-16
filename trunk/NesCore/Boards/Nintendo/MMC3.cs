@@ -96,39 +96,65 @@ namespace MyNes.Core.Boards.Nintendo
         {
             switch (address & 0xE001)
             {
-                case 0x8000:
-                    chrmode = (data & 0x80) == 0x80;
-                    prgmode = (data & 0x40) == 0x40;
-                    addrSelect = data & 0x7;
-                    SetupPRG();
-                    SetupCHR();
-                    break;
-                case 0x8001:
-                    switch (addrSelect)
-                    {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5: chrRegs[addrSelect] = data; SetupCHR(); break;
-                        case 6: prgRegs[0] = (byte)(data & 0x3F); SetupPRG(); break;
-                        case 7: prgRegs[1] = (byte)(data & 0x3F); SetupPRG(); break;
-                    }
-                    break;
-                case 0xA000:
-                    if (Nes.RomInfo.Mirroring != Mirroring.ModeFull)
-                        Nes.PpuMemory.SwitchMirroring(((data & 1) == 0) ? Mirroring.ModeVert : Mirroring.ModeHorz);
-                    break;
-                case 0xA001: wramON = (data & 0x80) == 0x80; wramReadOnly = (data & 0x40) == 0x40; break;
-
-                case 0xC000: irqReload = data; break;
-                case 0xC001: if (mmc3_alt_behavior) clear = true; irqCounter = 0; break;
-                case 0xE000: IrqEnable = false; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false); break;
-                case 0xE001: IrqEnable = true; break;
+                case 0x8000: Poke8000(data); break;
+                case 0x8001: Poke8001(data); break;
+                case 0xA000: PokeA000(data); break;
+                case 0xA001: PokeA001(data); break;
+                case 0xC000: PokeC000(data); break;
+                case 0xC001: PokeC001(data); break;
+                case 0xE000: PokeE000(data); break;
+                case 0xE001: PokeE001(data); break;
             }
         }
-        protected void SetupPRG()
+        protected virtual void Poke8000(byte data)
+        {
+            chrmode = (data & 0x80) == 0x80;
+            prgmode = (data & 0x40) == 0x40;
+            addrSelect = data & 0x7;
+            SetupPRG();
+            SetupCHR();
+        }
+        protected virtual void Poke8001(byte data)
+        {
+            switch (addrSelect)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5: chrRegs[addrSelect] = data; SetupCHR(); break;
+                case 6: prgRegs[0] = (byte)(data & 0x3F); SetupPRG(); break;
+                case 7: prgRegs[1] = (byte)(data & 0x3F); SetupPRG(); break;
+            }
+        }
+        protected virtual void PokeA000(byte data)
+        {
+            if (Nes.RomInfo.Mirroring != Mirroring.ModeFull)
+                Nes.PpuMemory.SwitchMirroring(((data & 1) == 0) ? Mirroring.ModeVert : Mirroring.ModeHorz);
+        }
+        protected virtual void PokeA001(byte data)
+        {
+            wramON = (data & 0x80) == 0x80; wramReadOnly = (data & 0x40) == 0x40;
+        }
+        protected virtual void PokeC000(byte data)
+        {
+            irqReload = data;
+        }
+        protected virtual void PokeC001(byte data)
+        {
+            if (mmc3_alt_behavior) clear = true; irqCounter = 0;
+        }
+        protected virtual void PokeE000(byte data)
+        {
+            IrqEnable = false; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false);
+        }
+        protected virtual void PokeE001(byte data)
+        {
+            IrqEnable = true;
+        }
+
+        protected virtual void SetupPRG()
         {
             /*
              PRG Setup:
@@ -192,6 +218,7 @@ PRG Mode 1:  | { -2} |  R:7  |  R:6  | { -1} |
                 base.Switch01kCHR(chrRegs[5], 0x0C00);
             }
         }
+
         protected override void PokeSram(int address, byte data)
         {
             if (wramON && !wramReadOnly)

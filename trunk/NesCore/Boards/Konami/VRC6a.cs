@@ -17,21 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*Written by Ala Ibrahim Hadid*/
-namespace MyNes.Core.Boards.Discreet
+namespace MyNes.Core.Boards.Konami
 {
-    [BoardName("Color Dreams", 11)]
-    class ColorDreams : Board
+    [BoardName("VRC6a", 24)]
+    class VRC6a : VRC6
     {
-        public ColorDreams()
-            : base()
-        { }
-        public ColorDreams(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
-            : base(chr, prg, trainer, isVram)
-        { }
-        protected override void PokePrg(int address, byte data)
-        {
-            base.Switch32KPRG(data & 0xF);
-            base.Switch08kCHR((data >> 4) & 0xF);
-        }
+        public VRC6a() : base() { }
+        public VRC6a(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        /*No need to do anything since the VRC6 class set to act like a*/
     }
 }
