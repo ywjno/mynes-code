@@ -98,6 +98,7 @@
     <Compile Include="APU\MMC5\MMC5PcmSoundChannel.cs" />
     <Compile Include="APU\MMC5\MMC5SqrSoundChannel.cs" />
     <Compile Include="Boards\BoardsManager.cs" />
+    <Compile Include="Boards\Discreet\15in1ColorDreams.cs" />
     <Compile Include="Boards\Discreet\AxROM.cs" />
     <Compile Include="Boards\Board.cs" />
     <Compile Include="Boards\Discreet\Bandai.cs" />
@@ -111,8 +112,11 @@
     <Compile Include="Boards\Discreet\Jaleco_SS8806.cs" />
     <Compile Include="Boards\Discreet\Mapper43Xin1.cs" />
     <Compile Include="Boards\Discreet\Mapper447in1.cs" />
+    <Compile Include="Boards\Discreet\Mapper45Xin1.cs" />
+    <Compile Include="Boards\Discreet\Mapper472in1.cs" />
     <Compile Include="Boards\Discreet\MarioBaby.cs" />
     <Compile Include="Boards\Discreet\Namcot106.cs" />
+    <Compile Include="Boards\Discreet\TaitoTC0190.cs" />
     <Compile Include="Boards\Discreet\TaitoTC0350.cs" />
     <Compile Include="Boards\Discreet\Xin1_Contra_Function_16.cs" />
     <Compile Include="Boards\FFE\FFE_F3xxx.cs" />
@@ -192,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Boards\readme.txt" />
+    <Content Include="Boards\TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
