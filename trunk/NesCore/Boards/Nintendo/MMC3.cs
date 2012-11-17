@@ -34,7 +34,7 @@ namespace MyNes.Core.Boards.Nintendo
         protected bool prgmode = false;
         protected int addrSelect = 0;
         protected byte[] chrRegs = new byte[6];
-        protected byte[] prgRegs = new byte[2];
+        protected byte[] prgRegs = new byte[4];
         protected bool wramON = true;
         protected bool wramReadOnly = false;
 
@@ -61,14 +61,15 @@ namespace MyNes.Core.Boards.Nintendo
             prgmode = false;
             addrSelect = 0;
             chrRegs = new byte[6];
-            prgRegs = new byte[2];
+            prgRegs = new byte[4];
             for (int i = 0; i < 6; i++)
                 chrRegs[i] = 0;
 
             prgRegs[0] = 0;
             prgRegs[1] = 1;
+            prgRegs[2] = (byte)((prg.Length - 0x4000) >> 13);
+            prgRegs[3] = (byte)((prg.Length - 0x2000) >> 13);
             SetupPRG();
-
             sram = new byte[0x2000];
             wramON = true;
             wramReadOnly = false;
@@ -156,45 +157,23 @@ namespace MyNes.Core.Boards.Nintendo
 
         protected virtual void SetupPRG()
         {
-            /*
-             PRG Setup:
----------------------------
-
-               $8000   $A000   $C000   $E000  
-             +-------+-------+-------+-------+
-PRG Mode 0:  |  R:6  |  R:7  | { -2} | { -1} |
-             +-------+-------+-------+-------+
-PRG Mode 1:  | { -2} |  R:7  |  R:6  | { -1} |
-             +-------+-------+-------+-------+
-             */
             if (!prgmode)
             {
                 base.Switch08KPRG(prgRegs[0], 0x8000);
                 base.Switch08KPRG(prgRegs[1], 0xA000);
-                base.Switch08KPRG((prg.Length - 0x4000) >> 13, 0xC000);
-                base.Switch08KPRG((prg.Length - 0x2000) >> 13, 0xE000);
+                base.Switch08KPRG(prgRegs[2], 0xC000);
+                base.Switch08KPRG(prgRegs[3], 0xE000);
             }
             else
             {
-                base.Switch08KPRG((prg.Length - 0x4000) >> 13, 0x8000);
+                base.Switch08KPRG(prgRegs[2], 0x8000);
                 base.Switch08KPRG(prgRegs[1], 0xA000);
                 base.Switch08KPRG(prgRegs[0], 0xC000);
-                base.Switch08KPRG((prg.Length - 0x2000) >> 13, 0xE000);
+                base.Switch08KPRG(prgRegs[3], 0xE000);
             }
         }
         protected virtual void SetupCHR()
         {
-            /*
-             CHR Setup:
-            ---------------------------
-
-                           $0000   $0400   $0800   $0C00   $1000   $1400   $1800   $1C00 
-                         +---------------+---------------+-------+-------+-------+-------+
-            CHR Mode 0:  |     <R:0>     |     <R:1>     |  R:2  |  R:3  |  R:4  |  R:5  |
-                         +---------------+---------------+---------------+---------------+
-            CHR Mode 1:  |  R:2  |  R:3  |  R:4  |  R:5  |     <R:0>     |     <R:1>     |
-                         +-------+-------+-------+-------+---------------+---------------+
-             */
             if (!chrmode)
             {
                 base.Switch01kCHR(chrRegs[0], 0x0000);

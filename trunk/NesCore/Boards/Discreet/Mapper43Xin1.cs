@@ -26,7 +26,7 @@ namespace MyNes.Core.Boards.Discreet
         public Mapper43Xin1(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
         public override void Initialize()
         {
-            base.Initialize();
+            Nes.PpuMemory.Hook(0x0000, 0x1FFF, PeekChr, PokeChr);
             Nes.Cpu.ClockCycle = TickIRQTimer;
           
             for (int i = 0x4022; i <= 0xFFFF; i += 0x100)
@@ -42,7 +42,7 @@ namespace MyNes.Core.Boards.Discreet
         }
         public override void HardReset()
         {
-            base.HardReset();
+            Switch08kCHR(0);
             Switch08KPRG(1, 0x8000);
             Switch08KPRG(0, 0xA000); 
             Switch08KPRG(0, 0xC000);
