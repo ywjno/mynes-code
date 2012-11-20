@@ -19,36 +19,10 @@
 /*Written by Ala Ibrahim Hadid*/
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Taito TC0350", 33)]
-    class TaitoTC0350 : Board
+    [BoardName("Taito TC190V/TC0350", 48)]
+    class TaitoTC0350 : TaitoTC190V
     {
         public TaitoTC0350() : base() { }
         public TaitoTC0350(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
-
-        public override void HardReset()
-        {
-            // Switch 32KB prg bank at 0x8000
-            // Switch 08KB chr bank at 0x0000
-            base.HardReset();
-
-            Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
-        }
-        protected override void PokePrg(int address, byte data)
-        {
-            switch (address & 0xA003)
-            { 
-                case 0x8000:
-                    Switch08KPRG(data & 0x3F, 0x8000);
-                    Nes.PpuMemory.SwitchMirroring((data & 0x40) == 0x40 ? Types.Mirroring.ModeHorz : Types.Mirroring.ModeVert);
-                    break;
-                case 0x8001: Switch08KPRG(data & 0x3F, 0xA000); break;
-                case 0x8002: Switch02kCHR(data, 0x0000); break;
-                case 0x8003: Switch02kCHR(data, 0x0800); break;
-                case 0xA000: Switch01kCHR(data, 0x1000); break;
-                case 0xA001: Switch01kCHR(data, 0x1400); break;
-                case 0xA002: Switch01kCHR(data, 0x1800); break;
-                case 0xA003: Switch01kCHR(data, 0x1C00); break;
-            }
-        }
     }
 }
