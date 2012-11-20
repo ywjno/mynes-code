@@ -110,10 +110,14 @@
     <Compile Include="Boards\Discreet\CPROM.cs" />
     <Compile Include="Boards\Discreet\IremG101.cs" />
     <Compile Include="Boards\Discreet\Jaleco_SS8806.cs" />
+    <Compile Include="Boards\Discreet\Mapper50AltLevels.cs" />
     <Compile Include="Boards\Discreet\Mapper43Xin1.cs" />
     <Compile Include="Boards\Discreet\Mapper447in1.cs" />
     <Compile Include="Boards\Discreet\Mapper45Xin1.cs" />
     <Compile Include="Boards\Discreet\Mapper472in1.cs" />
+    <Compile Include="Boards\Discreet\Mapper494in1.cs" />
+    <Compile Include="Boards\Discreet\Mapper5111in1.cs" />
+    <Compile Include="Boards\Discreet\Mapper527in1.cs" />
     <Compile Include="Boards\Discreet\MarioBaby.cs" />
     <Compile Include="Boards\Discreet\Namcot106.cs" />
     <Compile Include="Boards\Discreet\TaitoTC0190.cs" />
