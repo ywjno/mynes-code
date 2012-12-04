@@ -35,6 +35,7 @@ namespace MyNes.Core.Boards.Discreet
         private int oldA12;
         private int newA12;
         private int timer;
+
         public override void Initialize()
         {
             base.Initialize();
@@ -140,6 +141,29 @@ namespace MyNes.Core.Boards.Discreet
                     timer = 0;
                 }
             }
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(irqReload);
+            stream.Write(irqCounter);
+            stream.Write(IrqEnable);
+            stream.Write(clear);
+            stream.Write(oldA12);
+            stream.Write(newA12);
+            stream.Write(timer);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            irqReload = stream.ReadByte();
+            irqCounter = stream.ReadByte();
+            IrqEnable = stream.ReadBoolean();
+            clear = stream.ReadBoolean();
+            oldA12 = stream.ReadInt32();
+            newA12 = stream.ReadInt32();
+            timer = stream.ReadInt32();
         }
     }
 }

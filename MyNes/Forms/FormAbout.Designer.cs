@@ -140,7 +140,7 @@ namespace MyNes
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(429, 183);
+            this.tabPage2.Size = new System.Drawing.Size(429, 149);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Credits";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -153,7 +153,7 @@ namespace MyNes
             this.richTextBox2.Location = new System.Drawing.Point(3, 3);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(423, 177);
+            this.richTextBox2.Size = new System.Drawing.Size(423, 143);
             this.richTextBox2.TabIndex = 4;
             this.richTextBox2.Text = resources.GetString("richTextBox2.Text");
             // 
@@ -163,7 +163,7 @@ namespace MyNes
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(429, 183);
+            this.tabPage3.Size = new System.Drawing.Size(429, 149);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Links";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -176,7 +176,7 @@ namespace MyNes
             this.richTextBox3.Location = new System.Drawing.Point(3, 3);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.ReadOnly = true;
-            this.richTextBox3.Size = new System.Drawing.Size(423, 177);
+            this.richTextBox3.Size = new System.Drawing.Size(423, 143);
             this.richTextBox3.TabIndex = 5;
             this.richTextBox3.Text = resources.GetString("richTextBox3.Text");
             // 

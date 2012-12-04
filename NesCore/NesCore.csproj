@@ -99,6 +99,7 @@
     <Compile Include="APU\MMC5\MMC5SqrSoundChannel.cs" />
     <Compile Include="Boards\BoardsManager.cs" />
     <Compile Include="Boards\Discreet\15in1ColorDreams.cs" />
+    <Compile Include="Boards\Discreet\AVENina3.cs" />
     <Compile Include="Boards\Discreet\AxROM.cs" />
     <Compile Include="Boards\Board.cs" />
     <Compile Include="Boards\Discreet\Bandai.cs" />
@@ -107,8 +108,14 @@
     <Compile Include="Boards\Discreet\Camerica.cs" />
     <Compile Include="Boards\Discreet\CNROM.cs" />
     <Compile Include="Boards\Discreet\ColorDreams.cs" />
+    <Compile Include="Boards\Discreet\Cony.cs" />
     <Compile Include="Boards\Discreet\CPROM.cs" />
+    <Compile Include="Boards\Discreet\GxROM.cs" />
+    <Compile Include="Boards\Discreet\Irem.cs" />
+    <Compile Include="Boards\Discreet\Irem74HC161.cs" />
     <Compile Include="Boards\Discreet\IremG101.cs" />
+    <Compile Include="Boards\Discreet\IremH3001.cs" />
+    <Compile Include="Boards\Discreet\JalecoEarly.cs" />
     <Compile Include="Boards\Discreet\Jaleco_SS8806.cs" />
     <Compile Include="Boards\Discreet\Mapper50AltLevels.cs" />
     <Compile Include="Boards\Discreet\Mapper43Xin1.cs" />
@@ -118,10 +125,22 @@
     <Compile Include="Boards\Discreet\Mapper494in1.cs" />
     <Compile Include="Boards\Discreet\Mapper5111in1.cs" />
     <Compile Include="Boards\Discreet\Mapper527in1.cs" />
+    <Compile Include="Boards\Discreet\Mapper53.cs" />
+    <Compile Include="Boards\Discreet\Mapper576in1.cs" />
+    <Compile Include="Boards\Discreet\Mapper58Xin1.cs" />
+    <Compile Include="Boards\Discreet\Mapper60.cs" />
+    <Compile Include="Boards\Discreet\Mapper61.cs" />
+    <Compile Include="Boards\Discreet\Mapper62.cs" />
+    <Compile Include="Boards\Discreet\Mapper70Bandai.cs" />
     <Compile Include="Boards\Discreet\MarioBaby.cs" />
+    <Compile Include="Boards\Discreet\Namco109.cs" />
     <Compile Include="Boards\Discreet\Namcot106.cs" />
+    <Compile Include="Boards\Discreet\PirateSMB3.cs" />
     <Compile Include="Boards\Discreet\TaitoTC0190.cs" />
     <Compile Include="Boards\Discreet\TaitoTC0350.cs" />
+    <Compile Include="Boards\Discreet\TaitoX005.cs" />
+    <Compile Include="Boards\Discreet\TaitoX117.cs" />
+    <Compile Include="Boards\Discreet\TengenRAMBO1.cs" />
     <Compile Include="Boards\Discreet\Xin1_Contra_Function_16.cs" />
     <Compile Include="Boards\FFE\FFE_F3xxx.cs" />
     <Compile Include="Boards\FFE\FFE_F6xxx.cs" />
@@ -129,7 +148,9 @@
     <Compile Include="Boards\FFE\UxROM.cs" />
     <Compile Include="Boards\FFE\FFE.cs" />
     <Compile Include="Boards\FFE\FFE_F4xxx.cs" />
+    <Compile Include="Boards\Konami\VRC1.cs" />
     <Compile Include="Boards\Konami\VRC2.cs" />
+    <Compile Include="Boards\Konami\VRC3.cs" />
     <Compile Include="Boards\Konami\VRC4.cs" />
     <Compile Include="Boards\Konami\VRC4ac.cs" />
     <Compile Include="Boards\Konami\VRC4bd.cs" />
@@ -143,6 +164,10 @@
     <Compile Include="Boards\Nintendo\MMC4.cs" />
     <Compile Include="Boards\Nintendo\MMC5.cs" />
     <Compile Include="Boards\Nintendo\NROM.cs" />
+    <Compile Include="Boards\Nintendo\PirateMMC3Variant.cs" />
+    <Compile Include="Boards\Sunsoft\Sunsoft3.cs" />
+    <Compile Include="Boards\Sunsoft\Sunsoft4.cs" />
+    <Compile Include="Boards\Sunsoft\Sunsoft5.cs" />
     <Compile Include="Controls\ControlsUnit.cs" />
     <Compile Include="Controls\SpeedLimiter.cs" />
     <Compile Include="CPU\Cpu.cs" />
@@ -195,9 +220,7 @@
     <Compile Include="Types\StateStream.cs" />
     <Compile Include="VSUnisystem.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Boards\Sunsoft\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Boards\readme.txt" />
     <Content Include="Boards\TODO.txt" />

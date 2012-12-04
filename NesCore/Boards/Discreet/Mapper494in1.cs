@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*Written by Ala Ibrahim Hadid*/
 using MyNes.Core.Boards.Nintendo;
 namespace MyNes.Core.Boards.Discreet
 {
@@ -26,6 +27,7 @@ namespace MyNes.Core.Boards.Discreet
         public Mapper494in1(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
         private byte exreg = 0;
+
         public override void HardReset()
         {
             base.HardReset(); 
@@ -90,6 +92,16 @@ namespace MyNes.Core.Boards.Discreet
                 base.Switch01kCHR((chrRegs[4] & 0x7F) | r, 0x0800);
                 base.Switch01kCHR((chrRegs[5] & 0x7F) | r, 0x0C00);
             }
+        }
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(exreg);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            exreg = stream.ReadByte();
         }
     }
 }
