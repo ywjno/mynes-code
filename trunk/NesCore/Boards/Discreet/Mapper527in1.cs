@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*Written by Ala Ibrahim Hadid*/
 using MyNes.Core.Boards.Nintendo;
 namespace MyNes.Core.Boards.Discreet
 {
@@ -82,8 +83,6 @@ namespace MyNes.Core.Boards.Discreet
                 base.Switch01kCHR(((chrRegs[0] + 1) & and) | or, 0x0400);
                 base.Switch01kCHR((chrRegs[1] & and) | or, 0x0800);
                 base.Switch01kCHR(((chrRegs[1] + 1) & and) | or, 0x0C00);
-                // base.Switch02kCHR((chrRegs[0] & and >> 1) | (or >> 1), 0x0000);
-                // base.Switch02kCHR((chrRegs[1] & and >> 1) | (or >> 1), 0x0800);
 
                 base.Switch01kCHR((chrRegs[2] & and) | or, 0x1000);
                 base.Switch01kCHR((chrRegs[3] & and) | or, 0x1400);
@@ -96,14 +95,25 @@ namespace MyNes.Core.Boards.Discreet
                 base.Switch01kCHR(((chrRegs[0] + 1) & and) | or, 0x1400);
                 base.Switch01kCHR((chrRegs[1] & and) | or, 0x1800);
                 base.Switch01kCHR(((chrRegs[1] + 1) & and) | or, 0x1C00);
-                //base.Switch02kCHR((chrRegs[0] & and >> 1) | (or >> 1), 0x1000);
-                //base.Switch02kCHR((chrRegs[1] & and >> 1) | (or >> 1), 0x1800);
 
                 base.Switch01kCHR((chrRegs[2] & and) | or, 0x0000);
                 base.Switch01kCHR((chrRegs[3] & and) | or, 0x0400);
                 base.Switch01kCHR((chrRegs[4] & and) | or, 0x0800);
                 base.Switch01kCHR((chrRegs[5] & and) | or, 0x0C00);
             }
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(exreg); 
+            stream.Write(enableWrite);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            exreg = stream.ReadByte();
+            enableWrite = stream.ReadBoolean();
         }
     }
 }

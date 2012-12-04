@@ -43,6 +43,7 @@ namespace MyNes.Core.Boards.Discreet
         private int chrAND = 0;
         private int prgOR = 0;
         private int prgAND = 0;
+
         protected override void PokeSram(int address, byte data)
         {
             if (LOCK)
@@ -109,6 +110,27 @@ namespace MyNes.Core.Boards.Discreet
                 base.Switch01kCHR((chrRegs[4] & chrAND) | chrOR, 0x0800);
                 base.Switch01kCHR((chrRegs[5] & chrAND) | chrOR, 0x0C00);
             }
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(LOCK);
+            stream.Write(writeRegister);
+            stream.Write(chrOR);
+            stream.Write(chrAND);
+            stream.Write(prgOR);
+            stream.Write(prgAND);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            LOCK = stream.ReadBoolean();
+            writeRegister = stream.ReadInt32();
+            chrOR = stream.ReadInt32();
+            chrAND = stream.ReadInt32();
+            prgOR = stream.ReadInt32();
+            prgAND = stream.ReadInt32();
         }
     }
 }

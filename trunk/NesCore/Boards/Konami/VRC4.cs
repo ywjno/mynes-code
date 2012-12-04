@@ -94,7 +94,7 @@ namespace MyNes.Core.Boards.Konami
         protected byte[] prgRegs = new byte[2];
         protected byte[] chrRegs = new byte[8];
 
-        protected byte irqReload = 0; 
+        protected byte irqReload = 0;
         protected byte irqCounter = 0;
         protected int irqPrescaler = 0;
         protected bool irqEnable;
@@ -106,12 +106,13 @@ namespace MyNes.Core.Boards.Konami
             // Switch 32KB prg bank at 0x8000
             // Switch 08KB chr bank at 0x0000
             base.HardReset();
-            base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000); 
+            base.Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
             Nes.Cpu.ClockCycle = TickIRQTimer;
         }
         protected override void PokePrg(int address, byte data)
         {
-            //Since we can't use const 'cause consts can't be overriden in C#, we must do it in this stupid way !
+            // Since we can't use switch 'cause we can't use const 'cause consts can't be overriden in C#,
+            // we must do it in this stupid way !
             if ((address == AD_8_0) ||
                 (address == AD_8_1) ||
                 (address == AD_8_1_1) ||
@@ -248,7 +249,7 @@ namespace MyNes.Core.Boards.Konami
             else
             {
                 base.Switch08KPRG((prg.Length - 0x4000) >> 13, 0x8000);
-                base.Switch08KPRG(prgRegs[1], 0xA000); 
+                base.Switch08KPRG(prgRegs[1], 0xA000);
                 base.Switch08KPRG(prgRegs[0], 0xC000);
                 base.Switch08KPRG((prg.Length - 0x2000) >> 13, 0xE000);
             }
@@ -282,6 +283,33 @@ namespace MyNes.Core.Boards.Konami
                     }
                 }
             }
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(prgMode);
+            stream.Write(prgRegs);
+            stream.Write(chrRegs);
+            stream.Write(irqReload);
+            stream.Write(irqCounter);
+            stream.Write(irqPrescaler);
+            stream.Write(irqEnable);
+            stream.Write(irqMode);
+            stream.Write(irqEnableOnAcknowledge);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            prgMode = stream.ReadBoolean();
+            stream.Read(prgRegs);
+            stream.Read(chrRegs);
+            irqReload = stream.ReadByte();
+            irqCounter = stream.ReadByte();
+            irqPrescaler = stream.ReadInt32();
+            irqEnable = stream.ReadBoolean();
+            irqMode = stream.ReadBoolean();
+            irqEnableOnAcknowledge = stream.ReadBoolean();
         }
     }
 }

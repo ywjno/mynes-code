@@ -19,74 +19,62 @@
 /*Written by Ala Ibrahim Hadid*/
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("11-in-1", 51)]
-    class Mapper5111in1 : Board
+    [BoardName("Unknown", 53)]
+    class Mapper53 : Board
     {
-        public Mapper5111in1() : base() { }
-        public Mapper5111in1(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper53() : base() { }
+        public Mapper53(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
-        private int bank = 0;
-        private int mode = 1;
+        private byte[] regs = new byte[2];
         private int sramBank = 0;
+        private bool epromFirst;
 
         public override void HardReset()
         {
             base.HardReset();
-            bank = 0;
-            mode = 1;
-            sramBank = 0;
+            regs = new byte[2];
+            sramBank = 0; epromFirst = true;
         }
         protected override void PokePrg(int address, byte data)
         {
-            switch (address & 0xE000)
-            {
-                case 0x8000:
-                case 0xE000: bank = data & 0xF; UpdateBanks(); break;
-                case 0xC000: bank = data & 0xF; mode = (data >> 3 & 0x2) | (mode & 0x1); UpdateBanks(); break;
-            }
+            regs[1] = data;
+            UpdatePrg();
         }
         protected override void PokeSram(int address, byte data)
         {
-            mode = (data >> 3 & 0x2) | (data >> 1 & 0x1);
-            UpdateBanks();
+            regs[0] = data;
+            UpdatePrg();
+            Nes.PpuMemory.SwitchMirroring((data & 0x20) == 0x20 ? Types.Mirroring.ModeHorz : Types.Mirroring.ModeVert);
         }
         protected override byte PeekSram(int address)
         {
-            return prg[(address & 0x1FFF) | sramBank];
+            return prg[address & 0x1FFF | sramBank];
         }
-        private void UpdateBanks()
+        private void UpdatePrg()
         {
-            int offset = 0;
+            int r = regs[0] << 3 & 0x78;
 
-            if ((mode & 0x1) == 0x1)
-            {
-                Switch32KPRG(bank);
-                offset = 0x23;
-            }
-            else
-            {
-                Switch08KPRG((bank << 1) | (mode >> 1), 0x8000);
-                Switch08KPRG(bank << 1 | 0x7, 0x8000);
-                offset = 0x2F;
-            }
+            sramBank = (r << 1 | 0xF) + (epromFirst ? 0x4 : 0x0) <<12;
 
-            sramBank = (offset | (bank << 2)) << 13;
-            Nes.PpuMemory.SwitchMirroring((mode == 0x3) ? Types.Mirroring.ModeHorz : Types.Mirroring.ModeVert);
+            Switch16KPRG((regs[0] & 0x10) == 0x10 ? (r | (regs[1] & 0x7))
+                + (epromFirst ? 0x2 : 0x0) : epromFirst ? 0x00 : 0x80, 0x8000);
+            Switch16KPRG((regs[0] & 0x10) == 0x10 ? (r | (0xFF & 0x7)) + (epromFirst ? 0x2 : 0x0) : epromFirst ? 0x01 : 0x81,
+                0xC000);
         }
 
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            stream.Write(bank);
-            stream.Write(mode); 
+            stream.Write(regs); 
             stream.Write(sramBank);
+            stream.Write(epromFirst);
         }
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
-            bank = stream.ReadInt32();
-            mode = stream.ReadInt32();
+            stream.Read(regs); 
             sramBank = stream.ReadInt32();
+            epromFirst = stream.ReadBoolean();
         }
     }
 }

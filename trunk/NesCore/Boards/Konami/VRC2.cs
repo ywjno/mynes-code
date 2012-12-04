@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*Written by Ala Ibrahim Hadid*/
+using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Konami
 {
     [BoardName("VRC2a", 22)]
@@ -79,8 +80,18 @@ namespace MyNes.Core.Boards.Konami
                 case 0xE002: chrRegs[6] = (byte)((chrRegs[6] & 0x0F) | (data & 0x0F) << 4); Switch01kCHR(chrRegs[6] >> 1, 0x1800); break;
                 case 0xE001: chrRegs[7] = (byte)((chrRegs[7] & 0xF0) | (data & 0x0F) << 0); Switch01kCHR(chrRegs[7] >> 1, 0x1C00); break;
                 case 0xE003: chrRegs[7] = (byte)((chrRegs[7] & 0x0F) | (data & 0x0F) << 4); Switch01kCHR(chrRegs[7] >> 1, 0x1C00); break;
-
             }
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(chrRegs);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            stream.Read(chrRegs);
         }
     }
 }
