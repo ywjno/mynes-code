@@ -58,7 +58,7 @@ namespace MyNes.Core.Boards.Discreet
                 {
                     Nes.CpuMemory.Hook(j + 0x300, j + 0x30F, Poke8300);
 
-                    if (chr.Length / 1024 == 512)
+                    if ((chr.Length / 1024) == 512)
                     {
                         Nes.CpuMemory.Hook(j + 0x310, j + 0x311, Poke8310_1);
                         Nes.CpuMemory.Hook(j + 0x316, j + 0x317, Poke8310_1);
@@ -77,19 +77,14 @@ namespace MyNes.Core.Boards.Discreet
         public override void HardReset()
         {
             base.HardReset();
-
-            dipSwitch = 0xFF;
+            Switch16KPRG((prg.Length - 0x4000 >> 14), 0xC000);
+            dipSwitch = 0;
             pr8 = 0;
             controlReg = 0;
             prgRegs = new byte[5];
-            irqStep = false;
+            irqStep = true;
             irqCounter = 0;
             irqEnabled = false;
-        }
-        protected override void PokePrg(int address, byte data)
-        {
-            // TODO: board writes 0x8000 - 0xFFFF are done here.
-            // If the board writes on 0x6000 - 0x7FFF, then use overriden PokeSram() method
         }
         protected override byte PeekSram(int address)
         {

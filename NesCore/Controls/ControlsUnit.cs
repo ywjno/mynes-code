@@ -74,7 +74,7 @@ namespace MyNes.Core.Controls
 
             return data;
         }
-        private void PokePad4016(int addr, byte data)
+        public void PokePad4016(int addr, byte data)
         {
             if (inputStrobe > (data & 0x01))
             {

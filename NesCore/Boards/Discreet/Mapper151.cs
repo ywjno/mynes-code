@@ -20,34 +20,27 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Jaleco Early", 72)]
-    class JalecoEarly : Board
+    [BoardName("Unknown", 151)]
+    class Mapper151 : Board
     {
-        public JalecoEarly() : base() { }
-        public JalecoEarly(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper151() : base() { }
+        public Mapper151(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
         public override void HardReset()
         {
             base.HardReset();
 
-            Switch16KPRG(prg.Length - 04000 >> 14, 0xC000);
+            Switch16KPRG((prg.Length - 0x4000) >> 14, 0xC000);
         }
         protected override void PokePrg(int address, byte data)
         {
-            if ((data & 0x40) == 0x40)
+            switch (address & 0xF000)
             {
-                Switch08kCHR(data & 0xF);
-            }
-
-            if ((data & 0x80) == 0x80)
-                Switch16KPRG(data & 0xF, 0x8000);
-        }
-        protected override void PokeSram(int address, byte data)
-        {
-            if (address == 0x6000)
-            {
-                Switch32KPRG(data >> 4 & 0x3);
-                Switch08kCHR((data >> 4 & 0x4) | (data & 0x3));
+                case 0x8000: Switch08KPRG(data, 0x8000); break;
+                case 0xA000: Switch08KPRG(data, 0xA000); break;
+                case 0xC000: Switch08KPRG(data, 0xC000); break;
+                case 0xE000: Switch04kCHR(data, 0x0000); break;
+                case 0xF000: Switch04kCHR(data, 0x1000); break;
             }
         }
     }

@@ -20,35 +20,29 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Jaleco Early", 72)]
-    class JalecoEarly : Board
+    [BoardName("Unknow", 171)]
+    class Mapper171 : Board
     {
-        public JalecoEarly() : base() { }
-        public JalecoEarly(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper171() : base() { }
+        public Mapper171(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
-        public override void HardReset()
+        public override void Initialize()
         {
-            base.HardReset();
+            base.Initialize();
 
-            Switch16KPRG(prg.Length - 04000 >> 14, 0xC000);
-        }
-        protected override void PokePrg(int address, byte data)
-        {
-            if ((data & 0x40) == 0x40)
+            for (int i = 0xF000; i <= 0xFFFF; i += 0x100)
             {
-                Switch08kCHR(data & 0xF);
+                Nes.CpuMemory.Hook(i + 0x00, i + 0x7F, Poke1);
+                Nes.CpuMemory.Hook(i + 0x80, i + 0xFF, Poke2);
             }
-
-            if ((data & 0x80) == 0x80)
-                Switch16KPRG(data & 0xF, 0x8000);
         }
-        protected override void PokeSram(int address, byte data)
+        private void Poke1(int address, byte data)
         {
-            if (address == 0x6000)
-            {
-                Switch32KPRG(data >> 4 & 0x3);
-                Switch08kCHR((data >> 4 & 0x4) | (data & 0x3));
-            }
+            Switch04kCHR(data, 0x0000);
+        }
+        private void Poke2(int address, byte data)
+        {
+            Switch04kCHR(data, 0x1000);
         }
     }
 }
