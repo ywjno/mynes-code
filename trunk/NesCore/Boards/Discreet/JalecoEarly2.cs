@@ -20,34 +20,18 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Jaleco Early", 72)]
-    class JalecoEarly : Board
+    [BoardName("Jaleco Early 2", 86)]
+    class JalecoEarly2 : Board
     {
-        public JalecoEarly() : base() { }
-        public JalecoEarly(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public JalecoEarly2() : base() { }
+        public JalecoEarly2(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
-        public override void HardReset()
-        {
-            base.HardReset();
-
-            Switch16KPRG(prg.Length - 04000 >> 14, 0xC000);
-        }
-        protected override void PokePrg(int address, byte data)
-        {
-            if ((data & 0x40) == 0x40)
-            {
-                Switch08kCHR(data & 0xF);
-            }
-
-            if ((data & 0x80) == 0x80)
-                Switch16KPRG(data & 0xF, 0x8000);
-        }
         protected override void PokeSram(int address, byte data)
         {
-            if (address == 0x6000)
+            if (address < 0x7000)
             {
-                Switch32KPRG(data >> 4 & 0x3);
-                Switch08kCHR((data >> 4 & 0x4) | (data & 0x3));
+                Switch32KPRG((data & 0x30) >> 4);
+                Switch08kCHR((data & 0x3) | ((data & 0x40) >> 4));
             }
         }
     }

@@ -103,7 +103,9 @@ namespace MyNes.Core
                 RomInfo.Mirroring = header.Mirroring;
                 RomInfo.MapperBoard = "Mapper " + header.Mapper;
                 RomInfo.HasSaveRam = header.HasSaveRam;
-                RomInfo.VSUnisystem = header.IsVSUnisystem;
+                // This is not a fix, 
+                // all mapper 99 roms are vsunisystem and doesn't have the flag set !
+                RomInfo.VSUnisystem = header.IsVSUnisystem || (header.Mapper == 99);
                 RomInfo.PC10 = header.IsPlaychoice10;
                 #region Select emulation system
                 switch (systemType)

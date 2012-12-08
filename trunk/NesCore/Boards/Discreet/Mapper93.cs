@@ -20,35 +20,23 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Discreet
 {
-    [BoardName("Jaleco Early", 72)]
-    class JalecoEarly : Board
+    [BoardName("Unknown", 93)]
+    class Mapper93 : Board
     {
-        public JalecoEarly() : base() { }
-        public JalecoEarly(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper93() : base() { }
+        public Mapper93(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+
 
         public override void HardReset()
         {
             base.HardReset();
 
-            Switch16KPRG(prg.Length - 04000 >> 14, 0xC000);
+            Switch16KPRG(prg.Length - 0x4000 >> 14, 0xC000);
         }
         protected override void PokePrg(int address, byte data)
         {
-            if ((data & 0x40) == 0x40)
-            {
-                Switch08kCHR(data & 0xF);
-            }
-
-            if ((data & 0x80) == 0x80)
-                Switch16KPRG(data & 0xF, 0x8000);
-        }
-        protected override void PokeSram(int address, byte data)
-        {
-            if (address == 0x6000)
-            {
-                Switch32KPRG(data >> 4 & 0x3);
-                Switch08kCHR((data >> 4 & 0x4) | (data & 0x3));
-            }
+            Switch16KPRG((data & 0xF0) >> 4, 0x8000);
+            Nes.PpuMemory.SwitchMirroring((data & 1) == 1 ? Mirroring.ModeHorz : Mirroring.ModeVert);
         }
     }
 }

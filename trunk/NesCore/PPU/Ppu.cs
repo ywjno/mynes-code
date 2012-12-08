@@ -80,7 +80,7 @@ namespace MyNes.Core.PPU
         public int vbl_vclock_End = 261;
         private int frameEnd = 262;
         private int hclock;
-        private int vclock;
+        public int vclock;
         public Action<int> AddressLineUpdating;
         /// <summary>
         /// Tick each ppu cycle
