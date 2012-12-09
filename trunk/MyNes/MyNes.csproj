@@ -228,7 +228,7 @@
     <Compile Include="Forms\FormMain.designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helper.cs" />
+    <Compile Include="Types\Helper.cs" />
     <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Player.cs">
       <SubType>UserControl</SubType>
     </Compile>
