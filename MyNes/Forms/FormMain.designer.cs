@@ -170,9 +170,7 @@ namespace MyNes.Forms
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.imageViewer_snaps = new MyNes.ImageViewer();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.imageViewer_covers = new MyNes.ImageViewer();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -187,6 +185,19 @@ namespace MyNes.Forms
             this.detectCoversToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.ComboBox_filter = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.ComboBox_filterBy = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
+            this.FilterOption_MatchCase = new System.Windows.Forms.ToolStripButton();
+            this.FilterOption_MachWord = new System.Windows.Forms.ToolStripButton();
+            this.StatusLabel_romsCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.imageViewer_snaps = new MyNes.ImageViewer();
+            this.imageViewer_covers = new MyNes.ImageViewer();
             this.menuStrip.SuspendLayout();
             this.contextMenuStripSnapshot.SuspendLayout();
             this.contextMenuStripCover.SuspendLayout();
@@ -208,6 +219,7 @@ namespace MyNes.Forms
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList
@@ -863,7 +875,9 @@ namespace MyNes.Forms
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel,
-            this.ProgressBar1});
+            this.ProgressBar1,
+            this.toolStripStatusLabel2,
+            this.StatusLabel_romsCount});
             this.statusStrip.Location = new System.Drawing.Point(0, 420);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(624, 22);
@@ -924,7 +938,7 @@ namespace MyNes.Forms
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(412, 371);
+            this.groupBox2.Size = new System.Drawing.Size(412, 346);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Roms list";
@@ -948,7 +962,7 @@ namespace MyNes.Forms
             this.listView.Location = new System.Drawing.Point(3, 16);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(406, 352);
+            this.listView.Size = new System.Drawing.Size(406, 327);
             this.listView.SmallImageList = this.imageList;
             this.listView.TabIndex = 0;
             this.listView.UseCompatibleStateImageBehavior = false;
@@ -1230,7 +1244,7 @@ namespace MyNes.Forms
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(208, 132);
+            this.tabControl1.Size = new System.Drawing.Size(208, 123);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -1240,24 +1254,10 @@ namespace MyNes.Forms
             this.tabPage1.Location = new System.Drawing.Point(4, 23);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(200, 105);
+            this.tabPage1.Size = new System.Drawing.Size(200, 96);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Snapshot";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // imageViewer_snaps
-            // 
-            this.imageViewer_snaps.BackColor = System.Drawing.Color.White;
-            this.imageViewer_snaps.ContextMenuStrip = this.contextMenuStripSnapshot;
-            this.imageViewer_snaps.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
-            this.imageViewer_snaps.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer_snaps.ImageToView = null;
-            this.imageViewer_snaps.Location = new System.Drawing.Point(3, 3);
-            this.imageViewer_snaps.Name = "imageViewer_snaps";
-            this.imageViewer_snaps.Size = new System.Drawing.Size(194, 99);
-            this.imageViewer_snaps.TabIndex = 0;
-            this.imageViewer_snaps.Text = "imageViewer1";
-            this.imageViewer_snaps.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_snaps_MouseDoubleClick);
             // 
             // tabPage2
             // 
@@ -1266,24 +1266,10 @@ namespace MyNes.Forms
             this.tabPage2.Location = new System.Drawing.Point(4, 23);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(200, 105);
+            this.tabPage2.Size = new System.Drawing.Size(200, 96);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Cover";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // imageViewer_covers
-            // 
-            this.imageViewer_covers.BackColor = System.Drawing.Color.White;
-            this.imageViewer_covers.ContextMenuStrip = this.contextMenuStripCover;
-            this.imageViewer_covers.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
-            this.imageViewer_covers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer_covers.ImageToView = null;
-            this.imageViewer_covers.Location = new System.Drawing.Point(3, 3);
-            this.imageViewer_covers.Name = "imageViewer_covers";
-            this.imageViewer_covers.Size = new System.Drawing.Size(194, 99);
-            this.imageViewer_covers.TabIndex = 0;
-            this.imageViewer_covers.Text = "imageViewer1";
-            this.imageViewer_covers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_covers_MouseDoubleClick);
             // 
             // tabPage3
             // 
@@ -1292,7 +1278,7 @@ namespace MyNes.Forms
             this.tabPage3.Location = new System.Drawing.Point(4, 23);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(200, 105);
+            this.tabPage3.Size = new System.Drawing.Size(200, 96);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Info";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1303,7 +1289,7 @@ namespace MyNes.Forms
             this.richTextBox1.Location = new System.Drawing.Point(3, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(194, 99);
+            this.richTextBox1.Size = new System.Drawing.Size(194, 90);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -1313,7 +1299,7 @@ namespace MyNes.Forms
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(208, 235);
+            this.groupBox1.Size = new System.Drawing.Size(208, 219);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Folders";
@@ -1327,7 +1313,7 @@ namespace MyNes.Forms
             this.treeView.Location = new System.Drawing.Point(3, 16);
             this.treeView.Name = "treeView";
             this.treeView.SelectedImageIndex = 0;
-            this.treeView.Size = new System.Drawing.Size(202, 216);
+            this.treeView.Size = new System.Drawing.Size(202, 200);
             this.treeView.TabIndex = 1;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             this.treeView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseDoubleClick);
@@ -1399,7 +1385,7 @@ namespace MyNes.Forms
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 49);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 74);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -1409,7 +1395,7 @@ namespace MyNes.Forms
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer1.Size = new System.Drawing.Size(624, 371);
+            this.splitContainer1.Size = new System.Drawing.Size(624, 346);
             this.splitContainer1.SplitterDistance = 208;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -1427,9 +1413,130 @@ namespace MyNes.Forms
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer2.Size = new System.Drawing.Size(208, 371);
-            this.splitContainer2.SplitterDistance = 235;
+            this.splitContainer2.Size = new System.Drawing.Size(208, 346);
+            this.splitContainer2.SplitterDistance = 219;
             this.splitContainer2.TabIndex = 1;
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel1,
+            this.ComboBox_filter,
+            this.toolStripLabel2,
+            this.ComboBox_filterBy,
+            this.toolStripButton9,
+            this.toolStripSeparator25,
+            this.FilterOption_MatchCase,
+            this.FilterOption_MachWord});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 49);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(624, 25);
+            this.toolStrip1.TabIndex = 6;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(36, 22);
+            this.toolStripLabel1.Text = "Filter:";
+            // 
+            // ComboBox_filter
+            // 
+            this.ComboBox_filter.Name = "ComboBox_filter";
+            this.ComboBox_filter.Size = new System.Drawing.Size(121, 25);
+            // 
+            // toolStripLabel2
+            // 
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripLabel2.Text = "By:";
+            // 
+            // ComboBox_filterBy
+            // 
+            this.ComboBox_filterBy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBox_filterBy.Items.AddRange(new object[] {
+            "Name",
+            "Mapper #"});
+            this.ComboBox_filterBy.Name = "ComboBox_filterBy";
+            this.ComboBox_filterBy.Size = new System.Drawing.Size(121, 25);
+            // 
+            // toolStripButton9
+            // 
+            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
+            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton9.Name = "toolStripButton9";
+            this.toolStripButton9.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton9.Text = "toolStripButton9";
+            this.toolStripButton9.ToolTipText = "Go";
+            this.toolStripButton9.Click += new System.EventHandler(this.DoFilter);
+            // 
+            // toolStripSeparator25
+            // 
+            this.toolStripSeparator25.Name = "toolStripSeparator25";
+            this.toolStripSeparator25.Size = new System.Drawing.Size(6, 25);
+            // 
+            // FilterOption_MatchCase
+            // 
+            this.FilterOption_MatchCase.CheckOnClick = true;
+            this.FilterOption_MatchCase.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterOption_MatchCase.Image = ((System.Drawing.Image)(resources.GetObject("FilterOption_MatchCase.Image")));
+            this.FilterOption_MatchCase.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterOption_MatchCase.Name = "FilterOption_MatchCase";
+            this.FilterOption_MatchCase.Size = new System.Drawing.Size(23, 22);
+            this.FilterOption_MatchCase.Text = "toolStripButton10";
+            this.FilterOption_MatchCase.ToolTipText = "Match case";
+            // 
+            // FilterOption_MachWord
+            // 
+            this.FilterOption_MachWord.CheckOnClick = true;
+            this.FilterOption_MachWord.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterOption_MachWord.Image = ((System.Drawing.Image)(resources.GetObject("FilterOption_MachWord.Image")));
+            this.FilterOption_MachWord.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterOption_MachWord.Name = "FilterOption_MachWord";
+            this.FilterOption_MachWord.Size = new System.Drawing.Size(23, 22);
+            this.FilterOption_MachWord.Text = "toolStripButton10";
+            this.FilterOption_MachWord.ToolTipText = "Match word";
+            // 
+            // StatusLabel_romsCount
+            // 
+            this.StatusLabel_romsCount.Name = "StatusLabel_romsCount";
+            this.StatusLabel_romsCount.Size = new System.Drawing.Size(43, 17);
+            this.StatusLabel_romsCount.Text = "0 roms";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(10, 17);
+            this.toolStripStatusLabel2.Text = "|";
+            // 
+            // imageViewer_snaps
+            // 
+            this.imageViewer_snaps.BackColor = System.Drawing.Color.White;
+            this.imageViewer_snaps.ContextMenuStrip = this.contextMenuStripSnapshot;
+            this.imageViewer_snaps.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
+            this.imageViewer_snaps.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageViewer_snaps.ImageToView = null;
+            this.imageViewer_snaps.Location = new System.Drawing.Point(3, 3);
+            this.imageViewer_snaps.Name = "imageViewer_snaps";
+            this.imageViewer_snaps.Size = new System.Drawing.Size(194, 90);
+            this.imageViewer_snaps.TabIndex = 0;
+            this.imageViewer_snaps.Text = "imageViewer1";
+            this.imageViewer_snaps.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_snaps_MouseDoubleClick);
+            // 
+            // imageViewer_covers
+            // 
+            this.imageViewer_covers.BackColor = System.Drawing.Color.White;
+            this.imageViewer_covers.ContextMenuStrip = this.contextMenuStripCover;
+            this.imageViewer_covers.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
+            this.imageViewer_covers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageViewer_covers.ImageToView = null;
+            this.imageViewer_covers.Location = new System.Drawing.Point(3, 3);
+            this.imageViewer_covers.Name = "imageViewer_covers";
+            this.imageViewer_covers.Size = new System.Drawing.Size(194, 90);
+            this.imageViewer_covers.TabIndex = 0;
+            this.imageViewer_covers.Text = "imageViewer1";
+            this.imageViewer_covers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_covers_MouseDoubleClick);
             // 
             // FormMain
             // 
@@ -1437,6 +1544,7 @@ namespace MyNes.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 442);
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
@@ -1471,6 +1579,8 @@ namespace MyNes.Forms
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1617,6 +1727,17 @@ namespace MyNes.Forms
         private System.Windows.Forms.ToolStripMenuItem detectCoversToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recordSoundToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripComboBox ComboBox_filter;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripComboBox ComboBox_filterBy;
+        private System.Windows.Forms.ToolStripButton toolStripButton9;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
+        private System.Windows.Forms.ToolStripButton FilterOption_MatchCase;
+        private System.Windows.Forms.ToolStripButton FilterOption_MachWord;
+        private System.Windows.Forms.ToolStripStatusLabel StatusLabel_romsCount;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
     }
 }
 
