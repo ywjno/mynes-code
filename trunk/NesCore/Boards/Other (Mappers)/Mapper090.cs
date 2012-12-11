@@ -21,15 +21,15 @@ using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Nintendo
 {
     [BoardName("Pirate MMC5-Style", 90)]
-    class PirateMMC5Style : Board
+    class Mapper090 : Board
     {
         /* TODO:
          * irq Funky Mode Reg not emulated yet
          * Only 2 irq counter modes are emulated, the cpu cycle and ppu's A12
          * Dipswitch is unknown and not emulated well here
          */
-        public PirateMMC5Style() : base() { }
-        public PirateMMC5Style(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper090() : base() { }
+        public Mapper090(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
         private int[] prgRegs = new int[4];
         private int[] chrRegs = new int[8];

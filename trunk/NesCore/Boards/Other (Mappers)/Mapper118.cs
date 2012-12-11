@@ -20,12 +20,11 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Nintendo
 {
-    [BoardName("Namcot MMC3-Style", 95)]
-    class NamcotMMC3Style : MMC3
+    [BoardName("Namcot MMC3-Style", 118)]
+    class Mapper118 : MMC3
     {
-        public NamcotMMC3Style() : base() { }
-        public NamcotMMC3Style(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
-
+        public Mapper118() : base() { }
+        public Mapper118(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
         public override void Initialize()
         {
             base.Initialize();
@@ -39,10 +38,10 @@ namespace MyNes.Core.Boards.Nintendo
         {
             switch ((addr >> 10) & 0x03)
             {
-                case 0: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 2 : 0] & 0x20) >> 5][(addr & 0x03FF)];
-                case 1: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 3 : 0] & 0x20) >> 5][(addr & 0x03FF)];
-                case 2: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 4 : 1] & 0x20) >> 5][(addr & 0x03FF)];
-                case 3: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 5 : 1] & 0x20) >> 5][(addr & 0x03FF)];
+                case 0: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 2 : 0] & 0x80) >> 7][(addr & 0x03FF)];
+                case 1: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 3 : 0] & 0x80) >> 7][(addr & 0x03FF)];
+                case 2: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 4 : 1] & 0x80) >> 7][(addr & 0x03FF)];
+                case 3: return Nes.PpuMemory.nmt[(chrRegs[chrmode ? 5 : 1] & 0x80) >> 7][(addr & 0x03FF)];
                 default: return 0;// make compiler happy !
             }
         }
@@ -50,10 +49,10 @@ namespace MyNes.Core.Boards.Nintendo
         {
             switch ((addr >> 10) & 0x03)
             {
-                case 0: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 2 : 0] & 0x20) >> 5][(addr & 0x03FF)] = data; break;
-                case 1: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 3 : 0] & 0x20) >> 5][(addr & 0x03FF)] = data; break;
-                case 2: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 4 : 1] & 0x20) >> 5][(addr & 0x03FF)] = data; break;
-                case 3: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 5 : 1] & 0x20) >> 5][(addr & 0x03FF)] = data; break;
+                case 0: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 2 : 0] & 0x80) >> 7][(addr & 0x03FF)] = data; break;
+                case 1: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 3 : 0] & 0x80) >> 7][(addr & 0x03FF)] = data; break;
+                case 2: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 4 : 1] & 0x80) >> 7][(addr & 0x03FF)] = data; break;
+                case 3: Nes.PpuMemory.nmt[(chrRegs[chrmode ? 5 : 1] & 0x80) >> 7][(addr & 0x03FF)] = data; break;
             }
         }
     }

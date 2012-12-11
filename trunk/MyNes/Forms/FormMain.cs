@@ -77,6 +77,17 @@ namespace MyNes.Forms
             //spliters
             splitContainer1.SplitterDistance = Program.Settings.SplitContainer1;
             splitContainer2.SplitterDistance = Program.Settings.SplitContainer2;
+            //filter
+            ComboBox_filterBy.SelectedIndex = Program.Settings.FilterIndex;
+            if (Program.Settings.FilterLatestItems == null)
+                Program.Settings.FilterLatestItems = new System.Collections.Specialized.StringCollection();
+            ComboBox_filter.Items.Clear();
+            foreach (string item in Program.Settings.FilterLatestItems)
+            {
+                ComboBox_filter.Items.Add(item);
+            }
+            if (ComboBox_filter.Items.Count > 0)
+                ComboBox_filter.SelectedIndex = ComboBox_filter.Items.Count - 1;
         }
         private void SaveSettings()
         {
@@ -100,6 +111,13 @@ namespace MyNes.Forms
             for (int w = 0; w < listView.Columns.Count; w++)
             {
                 Program.Settings.ColumnWidths.Add(listView.Columns[w].Width);
+            }
+            //filter
+            Program.Settings.FilterIndex = ComboBox_filterBy.SelectedIndex;
+            Program.Settings.FilterLatestItems = new System.Collections.Specialized.StringCollection();
+            foreach (string item in ComboBox_filter.Items)
+            {
+                Program.Settings.FilterLatestItems.Add(item);
             }
             //save
             Program.Settings.Save();
@@ -292,18 +310,7 @@ namespace MyNes.Forms
             int x = 0;
             foreach (BRom rom in folder.BRoms)
             {
-                ListViewItemBRom item = new ListViewItemBRom();
-                item.BRom = rom;
-                item.ImageIndex = (Path.GetExtension(rom.Path).ToLower() == ".nes") ? 1 : 2;
-                item.SubItems.Add(rom.Size);
-                item.SubItems.Add(rom.Mapper);
-                item.SubItems.Add(rom.Mirroring);
-                item.SubItems.Add(rom.HasTrainer);
-                item.SubItems.Add(rom.IsBattery);
-                item.SubItems.Add(rom.IsPc10);
-                item.SubItems.Add(rom.IsVsUnisystem);
-                item.SubItems.Add(rom.Path);
-                listView.Items.Add(item);
+                AddRomToList(rom);
 
                 ProgressBar1.Value = x;
                 x++;
@@ -311,6 +318,10 @@ namespace MyNes.Forms
             listView.Visible = true;
             ProgressBar1.Visible = false;
             StatusLabel.Text = "Ready.";
+            string st = " roms";
+            if (listView.Items.Count == 1)
+                st = " rom";
+            StatusLabel_romsCount.Text = listView.Items.Count + st;
         }
         private void LaunchTheRenderer()
         {
@@ -369,6 +380,137 @@ namespace MyNes.Forms
             }
             if (Nes.ON)
                 Nes.TogglePause(false);
+        }
+        private void AddRomToList(BRom rom)
+        {
+            ListViewItemBRom item = new ListViewItemBRom();
+            item.BRom = rom;
+            item.ImageIndex = (Path.GetExtension(rom.Path).ToLower() == ".nes") ? 1 : 2;
+            item.SubItems.Add(rom.Size);
+            item.SubItems.Add(rom.Mapper);
+            item.SubItems.Add(rom.Mirroring);
+            item.SubItems.Add(rom.HasTrainer);
+            item.SubItems.Add(rom.IsBattery);
+            item.SubItems.Add(rom.IsPc10);
+            item.SubItems.Add(rom.IsVsUnisystem);
+            item.SubItems.Add(rom.Path);
+            listView.Items.Add(item);
+        }
+        private void DoFilter(object sender, EventArgs e)
+        {
+            if (ComboBox_filter.Text == "")
+            {
+                MessageBox.Show("Please enter a text first !");
+                return;
+            }
+            if (treeView.SelectedNode == null)
+            {
+                MessageBox.Show("Please select a folder first !");
+                return;
+            }
+            if (!ComboBox_filter.Items.Contains(ComboBox_filter.Text))
+                ComboBox_filter.Items.Add(ComboBox_filter.Text);
+            // do the filter !
+            BFolder folder = ((TreeNodeBFolder)treeView.SelectedNode).BFolder;
+
+            listView.Items.Clear();
+            listView.Visible = false;
+            ProgressBar1.Visible = true;
+            StatusLabel.Text = "Filtering ..";
+            statusStrip.Refresh();
+            ProgressBar1.Maximum = folder.BRoms.Count;
+            int x = 0;
+
+            string FindWhat = ComboBox_filter.Text;
+            bool matchCase = FilterOption_MatchCase.Checked;
+            bool matchWord = FilterOption_MachWord.Checked;
+            foreach (BRom rom in folder.BRoms)
+            {
+                switch (ComboBox_filterBy.SelectedIndex)
+                {
+                    case 0:// name ?
+                        if (rom.Name.Length >= FindWhat.Length)
+                        {
+                            if (!matchWord)
+                            {
+                                for (int SearchWordIndex = 0; SearchWordIndex <
+                                        (rom.Name.Length - FindWhat.Length) + 1; SearchWordIndex++)
+                                {
+                                    string Ser = rom.Name.Substring(SearchWordIndex, FindWhat.Length);
+                                    if (!matchCase)
+                                    {
+                                        if (Ser.ToLower() == FindWhat.ToLower())
+                                        {
+                                            //this is it !
+                                            AddRomToList(rom);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Ser == FindWhat)
+                                        {
+                                            //this is it !
+                                            AddRomToList(rom);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                string[] wordToFind = FindWhat.Split(new char[] { ' ' });
+                                string[] texts = rom.Name.Split(new char[] { ' ' });
+                                int matched = 0;
+                                for (int j = 0; j < texts.Length; j++)
+                                {
+                                    for (int h = 0; h < wordToFind.Length; h++)
+                                    {
+                                        if (!matchCase)
+                                        {
+                                            if (texts[j].ToLower() == wordToFind[h].ToLower())
+                                            {
+                                                matched++;
+                                                wordToFind[h] = "";
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (texts[j] == wordToFind[h])
+                                            {
+                                                wordToFind[h] = "";
+                                                matched++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (matched >= wordToFind.Length)
+                                {
+                                    //this is it !
+                                    AddRomToList(rom);
+                                }
+                            }
+                        }
+                        break;
+                    case 1:// mapper #
+                        if (rom.Mapper == FindWhat)
+                        {
+                            //this is it !
+                            AddRomToList(rom);
+                        }
+                        break;
+                }
+
+                ProgressBar1.Value = x;
+                x++;
+            }
+            listView.Visible = true;
+            ProgressBar1.Visible = false;
+            StatusLabel.Text = "Done.";
+            string st = " roms";
+            if (listView.Items.Count == 1)
+                st = " rom";
+            StatusLabel_romsCount.Text = listView.Items.Count + st;
         }
 
         private void buttonCreateFolder_Click(object sender, EventArgs e)

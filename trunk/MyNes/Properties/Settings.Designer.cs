@@ -342,5 +342,28 @@ namespace MyNes.Properties {
                 this["SoundLatency"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int FilterIndex {
+            get {
+                return ((int)(this["FilterIndex"]));
+            }
+            set {
+                this["FilterIndex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection FilterLatestItems {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["FilterLatestItems"]));
+            }
+            set {
+                this["FilterLatestItems"] = value;
+            }
+        }
     }
 }

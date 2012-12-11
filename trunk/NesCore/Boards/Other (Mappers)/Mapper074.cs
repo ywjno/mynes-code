@@ -21,10 +21,10 @@ using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Nintendo
 {
     [BoardName("Pirate MMC3 variant", 74)]
-    class PirateMMC3Variant : MMC3
+    class Mapper074 : MMC3
     {
-        public PirateMMC3Variant() : base() { }
-        public PirateMMC3Variant(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper074() : base() { }
+        public Mapper074(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
        
         private byte[] exram = new byte[0x1000];
 
