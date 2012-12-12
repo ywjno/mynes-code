@@ -31,16 +31,16 @@ namespace MyNes.Core.Boards.Discreet
             switch (address & 0xE001)
             {
                 case 0x8000: break;
-                case 0x8001: PokeA000(data); break;
-                case 0xA000: Poke8000(data); break;
+                case 0x8001: PokeA000(address, data); break;
+                case 0xA000: Poke8000(address, data); break;
                 case 0xA001: break;
-                case 0xC000: Poke8001(data); break;
-                case 0xC001: PokeC000(data); PokeC001(data); break;
-                case 0xE000: PokeE000(data); break;
-                case 0xE001: PokeE001(data); break;
+                case 0xC000: Poke8001(address, data); break;
+                case 0xC001: PokeC000(address, data); PokeC001(address, data); break;
+                case 0xE000: PokeE000(address, data); break;
+                case 0xE001: PokeE001(address, data); break;
             }
         }
-        protected override void Poke8001(byte data)
+        protected override void Poke8001(int address, byte data)
         {
             switch (addrSelect)
             {

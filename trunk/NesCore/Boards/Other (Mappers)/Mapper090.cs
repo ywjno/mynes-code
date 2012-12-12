@@ -18,7 +18,7 @@
  */
 /*Written by Ala Ibrahim Hadid*/
 using MyNes.Core.Types;
-namespace MyNes.Core.Boards.Nintendo
+namespace MyNes.Core.Boards.Other__Mappers_
 {
     [BoardName("Pirate MMC5-Style", 90)]
     class Mapper090 : Board
@@ -434,7 +434,23 @@ namespace MyNes.Core.Boards.Nintendo
         }
         public void PokeNmt(int addr, byte data)
         {
-            Nes.PpuMemory.nmt[Nes.PpuMemory.nmtBank[(addr >> 10) & 0x03]][addr & 0x03FF] = data;
+           // Nes.PpuMemory.nmt[Nes.PpuMemory.nmtBank[(addr >> 10) & 0x03]][addr & 0x03FF] = data;
+            if (!EnableAdvancedMirroring)
+            {
+                Nes.PpuMemory.nmt[Nes.PpuMemory.nmtBank[(addr >> 10) & 0x03]][addr & 0x03FF] = data;
+            }
+            else
+            {
+                if (disableNTRAM)
+                {
+                    //return chr[(ntRegs[(addr >> 10) & 0x03] << 10) | (addr & 0x03FF)];// what do suppose to do ? lol
+                }
+                else
+                {
+                    if ((ntRegs[(addr >> 10) & 0x03] & 0x80) == 0x80 && NTRAM)
+                        Nes.PpuMemory.nmt[ntRegs[(addr >> 10) & 0x03] & 1][addr & 0x03FF] = data;
+                }
+            }
         }
         private void TickCPU()
         {

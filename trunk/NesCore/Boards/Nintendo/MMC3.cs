@@ -97,17 +97,17 @@ namespace MyNes.Core.Boards.Nintendo
         {
             switch (address & 0xE001)
             {
-                case 0x8000: Poke8000(data); break;
-                case 0x8001: Poke8001(data); break;
-                case 0xA000: PokeA000(data); break;
-                case 0xA001: PokeA001(data); break;
-                case 0xC000: PokeC000(data); break;
-                case 0xC001: PokeC001(data); break;
-                case 0xE000: PokeE000(data); break;
-                case 0xE001: PokeE001(data); break;
+                case 0x8000: Poke8000(address, data); break;
+                case 0x8001: Poke8001(address, data); break;
+                case 0xA000: PokeA000(address, data); break;
+                case 0xA001: PokeA001(address, data); break;
+                case 0xC000: PokeC000(address, data); break;
+                case 0xC001: PokeC001(address, data); break;
+                case 0xE000: PokeE000(address, data); break;
+                case 0xE001: PokeE001(address, data); break;
             }
         }
-        protected virtual void Poke8000(byte data)
+        protected virtual void Poke8000(int address, byte data)
         {
             chrmode = (data & 0x80) == 0x80;
             prgmode = (data & 0x40) == 0x40;
@@ -115,7 +115,7 @@ namespace MyNes.Core.Boards.Nintendo
             SetupPRG();
             SetupCHR();
         }
-        protected virtual void Poke8001(byte data)
+        protected virtual void Poke8001(int address, byte data)
         {
             switch (addrSelect)
             {
@@ -129,28 +129,28 @@ namespace MyNes.Core.Boards.Nintendo
                 case 7: prgRegs[1] = (byte)(data & 0x3F); SetupPRG(); break;
             }
         }
-        protected virtual void PokeA000(byte data)
+        protected virtual void PokeA000(int address, byte data)
         {
             if (Nes.RomInfo.Mirroring != Mirroring.ModeFull)
                 Nes.PpuMemory.SwitchMirroring(((data & 1) == 0) ? Mirroring.ModeVert : Mirroring.ModeHorz);
         }
-        protected virtual void PokeA001(byte data)
+        protected virtual void PokeA001(int address, byte data)
         {
             wramON = (data & 0x80) == 0x80; wramReadOnly = (data & 0x40) == 0x40;
         }
-        protected virtual void PokeC000(byte data)
+        protected virtual void PokeC000(int address, byte data)
         {
             irqReload = data;
         }
-        protected virtual void PokeC001(byte data)
+        protected virtual void PokeC001(int address, byte data)
         {
             if (mmc3_alt_behavior) clear = true; irqCounter = 0;
         }
-        protected virtual void PokeE000(byte data)
+        protected virtual void PokeE000(int address, byte data)
         {
             IrqEnable = false; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false);
         }
-        protected virtual void PokeE001(byte data)
+        protected virtual void PokeE001(int address, byte data)
         {
             IrqEnable = true;
         }

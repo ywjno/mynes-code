@@ -30,7 +30,7 @@ namespace MyNes.Core.Boards.Nintendo
             base.Initialize();
             Nes.PpuMemory.Hook(0x2000, 0x3EFF, PeekNmt, PokeNmt);
         }
-        protected override void PokeA000(byte data)
+        protected override void PokeA000(int address, byte data)
         {
             // ignore the mirroring bit
         }
