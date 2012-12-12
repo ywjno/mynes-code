@@ -129,6 +129,8 @@ namespace MyNes.Forms
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.StatusLabel_romsCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
@@ -170,7 +172,9 @@ namespace MyNes.Forms
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.imageViewer_snaps = new MyNes.ImageViewer();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.imageViewer_covers = new MyNes.ImageViewer();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -194,10 +198,6 @@ namespace MyNes.Forms
             this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
             this.FilterOption_MatchCase = new System.Windows.Forms.ToolStripButton();
             this.FilterOption_MachWord = new System.Windows.Forms.ToolStripButton();
-            this.StatusLabel_romsCount = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.imageViewer_snaps = new MyNes.ImageViewer();
-            this.imageViewer_covers = new MyNes.ImageViewer();
             this.menuStrip.SuspendLayout();
             this.contextMenuStripSnapshot.SuspendLayout();
             this.contextMenuStripCover.SuspendLayout();
@@ -896,6 +896,18 @@ namespace MyNes.Forms
             this.ProgressBar1.Size = new System.Drawing.Size(100, 16);
             this.ProgressBar1.Visible = false;
             // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(10, 17);
+            this.toolStripStatusLabel2.Text = "|";
+            // 
+            // StatusLabel_romsCount
+            // 
+            this.StatusLabel_romsCount.Name = "StatusLabel_romsCount";
+            this.StatusLabel_romsCount.Size = new System.Drawing.Size(43, 17);
+            this.StatusLabel_romsCount.Text = "0 roms";
+            // 
             // BottomToolStripPanel
             // 
             this.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
@@ -1259,6 +1271,20 @@ namespace MyNes.Forms
             this.tabPage1.Text = "Snapshot";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // imageViewer_snaps
+            // 
+            this.imageViewer_snaps.BackColor = System.Drawing.Color.White;
+            this.imageViewer_snaps.ContextMenuStrip = this.contextMenuStripSnapshot;
+            this.imageViewer_snaps.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
+            this.imageViewer_snaps.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageViewer_snaps.ImageToView = null;
+            this.imageViewer_snaps.Location = new System.Drawing.Point(3, 3);
+            this.imageViewer_snaps.Name = "imageViewer_snaps";
+            this.imageViewer_snaps.Size = new System.Drawing.Size(194, 90);
+            this.imageViewer_snaps.TabIndex = 0;
+            this.imageViewer_snaps.Text = "imageViewer1";
+            this.imageViewer_snaps.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_snaps_MouseDoubleClick);
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.imageViewer_covers);
@@ -1270,6 +1296,20 @@ namespace MyNes.Forms
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Cover";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // imageViewer_covers
+            // 
+            this.imageViewer_covers.BackColor = System.Drawing.Color.White;
+            this.imageViewer_covers.ContextMenuStrip = this.contextMenuStripCover;
+            this.imageViewer_covers.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
+            this.imageViewer_covers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageViewer_covers.ImageToView = null;
+            this.imageViewer_covers.Location = new System.Drawing.Point(3, 3);
+            this.imageViewer_covers.Name = "imageViewer_covers";
+            this.imageViewer_covers.Size = new System.Drawing.Size(194, 90);
+            this.imageViewer_covers.TabIndex = 0;
+            this.imageViewer_covers.Text = "imageViewer1";
+            this.imageViewer_covers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_covers_MouseDoubleClick);
             // 
             // tabPage3
             // 
@@ -1444,6 +1484,7 @@ namespace MyNes.Forms
             // 
             this.ComboBox_filter.Name = "ComboBox_filter";
             this.ComboBox_filter.Size = new System.Drawing.Size(121, 25);
+            this.ComboBox_filter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ComboBox_filter_KeyDown);
             // 
             // toolStripLabel2
             // 
@@ -1497,46 +1538,6 @@ namespace MyNes.Forms
             this.FilterOption_MachWord.Size = new System.Drawing.Size(23, 22);
             this.FilterOption_MachWord.Text = "toolStripButton10";
             this.FilterOption_MachWord.ToolTipText = "Match word";
-            // 
-            // StatusLabel_romsCount
-            // 
-            this.StatusLabel_romsCount.Name = "StatusLabel_romsCount";
-            this.StatusLabel_romsCount.Size = new System.Drawing.Size(43, 17);
-            this.StatusLabel_romsCount.Text = "0 roms";
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(10, 17);
-            this.toolStripStatusLabel2.Text = "|";
-            // 
-            // imageViewer_snaps
-            // 
-            this.imageViewer_snaps.BackColor = System.Drawing.Color.White;
-            this.imageViewer_snaps.ContextMenuStrip = this.contextMenuStripSnapshot;
-            this.imageViewer_snaps.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
-            this.imageViewer_snaps.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer_snaps.ImageToView = null;
-            this.imageViewer_snaps.Location = new System.Drawing.Point(3, 3);
-            this.imageViewer_snaps.Name = "imageViewer_snaps";
-            this.imageViewer_snaps.Size = new System.Drawing.Size(194, 90);
-            this.imageViewer_snaps.TabIndex = 0;
-            this.imageViewer_snaps.Text = "imageViewer1";
-            this.imageViewer_snaps.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_snaps_MouseDoubleClick);
-            // 
-            // imageViewer_covers
-            // 
-            this.imageViewer_covers.BackColor = System.Drawing.Color.White;
-            this.imageViewer_covers.ContextMenuStrip = this.contextMenuStripCover;
-            this.imageViewer_covers.DefaultImage = global::MyNes.Properties.Resources.MyNesImage;
-            this.imageViewer_covers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer_covers.ImageToView = null;
-            this.imageViewer_covers.Location = new System.Drawing.Point(3, 3);
-            this.imageViewer_covers.Name = "imageViewer_covers";
-            this.imageViewer_covers.Size = new System.Drawing.Size(194, 90);
-            this.imageViewer_covers.TabIndex = 0;
-            this.imageViewer_covers.Text = "imageViewer1";
-            this.imageViewer_covers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer_covers_MouseDoubleClick);
             // 
             // FormMain
             // 

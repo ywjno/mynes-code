@@ -36,7 +36,7 @@ namespace MyNes.Core.Boards.Other__Mappers_
             base.HardReset();
             Switch32KPRG(0);
         }
-        protected override void Poke8001(byte data)
+        protected override void Poke8001(int address, byte data)
         {
             switch (addrSelect)
             {

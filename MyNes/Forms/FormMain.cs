@@ -1182,5 +1182,10 @@ namespace MyNes.Forms
                 Nes.TogglePause(false);
             }
         }
+        private void ComboBox_filter_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+                DoFilter(this, new EventArgs());
+        }
     }
 }
