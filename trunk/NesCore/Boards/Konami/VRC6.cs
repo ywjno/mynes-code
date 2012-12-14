@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*Written by Ala Ibrahim Hadid*/
+using MyNes.Core.APU.VRC6;
 namespace MyNes.Core.Boards.Konami
 {
     [BoardName("VRC6", 0)]
@@ -71,6 +72,21 @@ namespace MyNes.Core.Boards.Konami
         protected bool irqMode;
         protected bool irqEnableOnAcknowledge;
 
+        protected VRC6pulseSoundChannel sndPulse1;
+        protected VRC6pulseSoundChannel sndPulse2;
+        protected VRC6sawtoothSoundChannel sndSawtooth;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            sndPulse1 = new VRC6pulseSoundChannel(Nes.emuSystem);
+            sndPulse1.Hook(AD_9_0, AD_9_1, AD_9_2, AD_9_3);
+            sndPulse2 = new VRC6pulseSoundChannel(Nes.emuSystem);
+            sndPulse2.Hook(AD_A_0, AD_A_1, AD_A_2, AD_9_3);
+            sndSawtooth = new VRC6sawtoothSoundChannel(Nes.emuSystem);
+            sndSawtooth.Hook(AD_B_0, AD_B_1, AD_B_2, AD_9_3);
+            Nes.Apu.AddExtraChannels(new APU.Channel[] { sndPulse1, sndPulse2, sndSawtooth });
+        }
         public override void HardReset()
         {
             // Switch 32KB prg bank at 0x8000
@@ -194,6 +210,9 @@ namespace MyNes.Core.Boards.Konami
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
+            sndPulse1.SaveState(stream);
+            sndPulse2.SaveState(stream);
+            sndSawtooth.SaveState(stream);
             stream.Write(irqReload);
             stream.Write(irqCounter);
             stream.Write(irqPrescaler);
@@ -204,6 +223,9 @@ namespace MyNes.Core.Boards.Konami
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
+            sndPulse1.LoadState(stream);
+            sndPulse2.LoadState(stream);
+            sndSawtooth.LoadState(stream);
             irqReload = stream.ReadByte();
             irqCounter = stream.ReadByte();
             irqPrescaler = stream.ReadInt32();

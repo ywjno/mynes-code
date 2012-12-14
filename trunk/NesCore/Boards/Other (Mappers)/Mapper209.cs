@@ -19,7 +19,7 @@
 /*Written by Ala Ibrahim Hadid*/
 namespace MyNes.Core.Boards.Other__Mappers_
 {
-    [BoardName("Mapper209", 209)]
+    [BoardName("Unknwon", 209)]
     class Mapper209 : Mapper090
     {
         public Mapper209() : base() { }

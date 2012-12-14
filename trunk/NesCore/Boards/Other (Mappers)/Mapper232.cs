@@ -20,17 +20,38 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Other__Mappers_
 {
-    [BoardName("Unknwon", 214)]
-    class Mapper214 : Board
+    [BoardName("Another Camerica/Codemasters", 232)]
+    class Mapper232 : Board
     {
-        public Mapper214() : base() { }
-        public Mapper214(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper232() : base() { }
+        public Mapper232(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
+        private bool mode = false;
+
+        public override void HardReset()
+        {
+            base.HardReset();
+
+            Switch16KPRG(3, 0xC000);
+        }
         protected override void PokePrg(int address, byte data)
         {
-            Switch16KPRG(address >> 2, 0x8000);
-            Switch16KPRG(address >> 2, 0xC000);
-            Switch08kCHR(address);
+            if (address >= 0x8000 & address < 0xC000)
+            {
+                if (mode)
+                    SetupPRG(data >> 1 & 0xC);
+                else
+                    SetupPRG((data & 0x8) | (data >> 2 & 0x4));
+            }
+            else
+            {
+                Switch16KPRG(((prgPage[0] >> 14) & 0xC) | (data & 0x3), 0x8000);
+            }
+        }
+        private void SetupPRG(int bs)
+        {
+            Switch16KPRG(bs | ((prgPage[0] >> 14) & 0x3), 0x8000);
+            Switch16KPRG(bs | 0x3, 0xC000);
         }
     }
 }

@@ -111,7 +111,13 @@ namespace MyNes.Core.APU
             Nes.CpuMemory.Hook(address++, PokeReg3);
             Nes.CpuMemory.Hook(address++, PokeReg4);
         }
-
+        public virtual void Hook(int address1, int address2, int address3, int address4)
+        {
+            Nes.CpuMemory.Hook(address1, PokeReg1);
+            Nes.CpuMemory.Hook(address2, PokeReg2);
+            Nes.CpuMemory.Hook(address3, PokeReg3);
+            Nes.CpuMemory.Hook(address4, PokeReg4);
+        }
         public virtual void ClockSingle(bool isClockingLength)
         {
             DurationHalt = DurationHaltRequset;

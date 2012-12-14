@@ -20,17 +20,22 @@
 using MyNes.Core.Types;
 namespace MyNes.Core.Boards.Other__Mappers_
 {
-    [BoardName("Unknwon", 214)]
-    class Mapper214 : Board
+    [BoardName("Unknown", 240)]
+    class Mapper240 : Board
     {
-        public Mapper214() : base() { }
-        public Mapper214(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+        public Mapper240() : base() { }
+        public Mapper240(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
 
-        protected override void PokePrg(int address, byte data)
+        public override void Initialize()
         {
-            Switch16KPRG(address >> 2, 0x8000);
-            Switch16KPRG(address >> 2, 0xC000);
-            Switch08kCHR(address);
+            base.Initialize();
+
+            Nes.CpuMemory.Hook(0x4020, 0x5FFF, PokeRegs);
+        }
+        private void PokeRegs(int address, byte data)
+        {
+            Switch08kCHR(data & 0xF);
+            Switch32KPRG(data >> 4 & 0xF);
         }
     }
 }

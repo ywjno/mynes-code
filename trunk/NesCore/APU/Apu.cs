@@ -357,12 +357,24 @@ namespace MyNes.Core.APU
         }
         private short MixSamples()
         {
-            return Mixer.MixSamples(
+            short output = 0;
+            output = Mixer.MixSamples(
                 sq1.GetSample(),
                 sq2.GetSample(),
                 tri.GetSample(),
                 noi.GetSample(),
                 dmc.GetSample());
+            if (EXenabled)
+            {
+                foreach (Channel chn in extraChannels)
+                    output += chn.GetSample();
+                // TODO: add mixer for extra channels (should be a mixer for each channel ?)
+                if (output > 75)
+                    output = 75;
+                if (output < -75)
+                    output = -75;
+            }
+            return output;
         }
 
         public override void SaveState(Types.StateStream stream)

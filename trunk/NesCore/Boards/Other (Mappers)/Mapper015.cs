@@ -20,12 +20,12 @@
 namespace MyNes.Core.Boards.Discreet
 {
     [BoardName("100-in-1 Contra Function 16", 15)]
-    class Xin1_Contra_Function_16 : Board
+    class Mapper015 : Board
     {
-        public Xin1_Contra_Function_16()
+        public Mapper015()
             : base()
         { }
-        public Xin1_Contra_Function_16(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
+        public Mapper015(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
             : base(chr, prg, trainer, isVram)
         { }
         public override void Initialize()
@@ -34,34 +34,28 @@ namespace MyNes.Core.Boards.Discreet
         }
         protected override void PokePrg(int address, byte data)
         {
-            byte lb = (byte)((data >> 7) & 1);
-            data <<= 1;
-            data &= 0xFE;
-
-            switch (address & 0xFFF)
+            switch (address & 0x3)
             {
                 case 0:
-                    base.Switch08KPRG((data + 0) ^ lb, 0x8000);
-                    base.Switch08KPRG((data + 1) ^ lb, 0xA000);
-                    base.Switch08KPRG((data + 2) ^ lb, 0xC000);
-                    base.Switch08KPRG((data + 3) ^ lb, 0xE000);
+                    Switch16KPRG(data, 0x8000);
+                    Switch16KPRG(data ^ 1, 0xC000);
                     break;
-
+                case 1:
+                    Switch16KPRG(data, 0x8000);
+                    Switch16KPRG(prg.Length - 0x4000 >> 14, 0xC000);
+                    break;
                 case 2:
-                    data |= lb;
+                    data <<= 1;
+                    data = (byte)((data & 0x7E) | ((data >> 7) & 1));
                     base.Switch08KPRG(data, 0x8000);
                     base.Switch08KPRG(data, 0xA000);
                     base.Switch08KPRG(data, 0xC000);
                     base.Switch08KPRG(data, 0xE000);
                     break;
 
-                case 1:
                 case 3:
-                    data |= lb;
-                    base.Switch08KPRG(data, 0x8000);
-                    base.Switch08KPRG(data + 1, 0xA000);
-                    base.Switch08KPRG(data + ((~address >> 1) & 1), 0xC000);
-                    base.Switch08KPRG(data + 1, 0xE000);
+                    Switch16KPRG(data, 0x8000);
+                    Switch16KPRG(data, 0xC000);
                     break;
 
             }
