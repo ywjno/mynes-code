@@ -97,6 +97,8 @@
     <Compile Include="APU\ChannelTri.cs" />
     <Compile Include="APU\MMC5\MMC5PcmSoundChannel.cs" />
     <Compile Include="APU\MMC5\MMC5SqrSoundChannel.cs" />
+    <Compile Include="APU\VRC6\VRC6pulseSoundChannel.cs" />
+    <Compile Include="APU\VRC6\VRC6sawtoothSoundChannel.cs" />
     <Compile Include="Boards\BoardsManager.cs" />
     <Compile Include="Boards\Discreet\15in1ColorDreams.cs" />
     <Compile Include="Boards\Discreet\Asder.cs" />
@@ -181,7 +183,7 @@
     <Compile Include="Boards\Discreet\TaitoX117.cs" />
     <Compile Include="Boards\Discreet\TengenRAMBO1.cs" />
     <Compile Include="Boards\Discreet\Unl22211.cs" />
-    <Compile Include="Boards\Discreet\Xin1_Contra_Function_16.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper015.cs" />
     <Compile Include="Boards\FFE\FFE_F3xxx.cs" />
     <Compile Include="Boards\FFE\FFE_F6xxx.cs" />
     <Compile Include="Boards\FFE\FFE_F8xxx.cs" />
@@ -238,6 +240,17 @@
     <Compile Include="Boards\Other %28Mappers%29\Mapper228.cs" />
     <Compile Include="Boards\Other %28Mappers%29\Mapper229.cs" />
     <Compile Include="Boards\Other %28Mappers%29\Mapper230.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper231.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper232.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper233.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper234.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper240.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper241.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper242.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper243.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper245.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper246.cs" />
+    <Compile Include="Boards\Other %28Mappers%29\Mapper255.cs" />
     <Compile Include="Boards\Sunsoft\Sunsoft.cs" />
     <Compile Include="Boards\Sunsoft\Sunsoft3.cs" />
     <Compile Include="Boards\Sunsoft\Sunsoft4.cs" />
@@ -299,6 +312,7 @@
   <ItemGroup>
     <Content Include="Boards\readme.txt" />
     <Content Include="Boards\TODO.txt" />
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

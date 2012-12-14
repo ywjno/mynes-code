@@ -176,10 +176,8 @@ namespace MyNes.Core.Boards.Nintendo
         {
             if (!chrmode)
             {
-                base.Switch01kCHR(chrRegs[0], 0x0000);
-                base.Switch01kCHR(chrRegs[0] + 1, 0x0400);
-                base.Switch01kCHR(chrRegs[1], 0x0800);
-                base.Switch01kCHR(chrRegs[1] + 1, 0x0C00);
+                base.Switch02kCHR(chrRegs[0] >> 1, 0x0000);
+                base.Switch02kCHR(chrRegs[1] >> 1, 0x0800);
                 base.Switch01kCHR(chrRegs[2], 0x1000);
                 base.Switch01kCHR(chrRegs[3], 0x1400);
                 base.Switch01kCHR(chrRegs[4], 0x1800);
@@ -187,10 +185,8 @@ namespace MyNes.Core.Boards.Nintendo
             }
             else
             {
-                base.Switch01kCHR(chrRegs[0], 0x1000);
-                base.Switch01kCHR(chrRegs[0] + 1, 0x1400);
-                base.Switch01kCHR(chrRegs[1], 0x1800);
-                base.Switch01kCHR(chrRegs[1] + 1, 0x1C00);
+                base.Switch02kCHR(chrRegs[0] >> 1, 0x1000);
+                base.Switch02kCHR(chrRegs[1] >> 1, 0x1800);
                 base.Switch01kCHR(chrRegs[2], 0x0000);
                 base.Switch01kCHR(chrRegs[3], 0x0400);
                 base.Switch01kCHR(chrRegs[4], 0x0800);

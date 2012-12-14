@@ -37,10 +37,13 @@ namespace MyNes.Core.Debug.DefaultCommands
         {
             List<Board> brds = new List<Board>(BoardsManager.AvailableBoards);
             brds.Sort(new BoardSorter(true, false));
+            int count = 0;
             foreach (Board brd in brds)
             {
                 Console.WriteLine(brd.Name + " [Mapper # " + brd.INESMapperNumber + "]");
+                count++;
             }
+            Console.WriteLine(count + " Total");
         }
     }
     class mappers : ConsoleCommand
@@ -59,11 +62,14 @@ namespace MyNes.Core.Debug.DefaultCommands
         public override void Execute(string parameters)
         {
             List<Board> brds = new List<Board>(BoardsManager.AvailableBoards);
-            brds.Sort(new BoardSorter(true, true));
+            brds.Sort(new BoardSorter(true, true)); 
+            int count = 0;
             foreach (Board brd in brds)
             {
-                Console.WriteLine("Mapper # " + brd.INESMapperNumber + " [Board: " + brd.Name + "]");
+                Console.WriteLine("Mapper # " + brd.INESMapperNumber + " [Board: " + brd.Name + "]"); count++;
             }
+
+            Console.WriteLine(count + " Total");
         }
     }
 }

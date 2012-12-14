@@ -49,9 +49,10 @@ namespace MyNes.Core.Boards.Other__Mappers_
             }
             else
             {
-                Nes.PpuMemory.SwitchMirroring(Mirroring.ModeHorz);
+                //Nes.PpuMemory.SwitchMirroring(Mirroring.ModeHorz);
                 Switch16KPRG(8, 0x8000);
                 Switch16KPRG(39, 0xC000);
+
             }
         }
         protected override void PokePrg(int address, byte data)
@@ -65,15 +66,10 @@ namespace MyNes.Core.Boards.Other__Mappers_
             else
             {
                 Nes.PpuMemory.SwitchMirroring((data & 0x40) == 0x40 ? Mirroring.ModeVert : Mirroring.ModeHorz);
-                if ((data & 0x20) == 0x20)
-                {
-                    Switch16KPRG((data & 0x1F) + 8, 0x8000);
-                    Switch16KPRG((data & 0x1F) + 8, 0xC000);
-                }
-                else
-                {
-                    Switch32KPRG(((data & 0x1F) >> 1)+4);
-                }
+
+                Switch16KPRG((data & 0x1F) + 8, 0x8000);
+                Switch16KPRG((data & 0x1F) + 8 | (~data >> 5 & 0x1), 0xC000);
+
             }
         }
     }

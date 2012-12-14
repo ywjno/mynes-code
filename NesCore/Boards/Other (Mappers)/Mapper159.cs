@@ -25,5 +25,12 @@ namespace MyNes.Core.Boards.Discreet
     {
         public Mapper159() : base() { }
         public Mapper159(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
+
+        public override void HardReset()
+        {
+            base.HardReset();
+            eprom = new Eprom(128);
+            eprom.HardReset();
+        }
     }
 }
