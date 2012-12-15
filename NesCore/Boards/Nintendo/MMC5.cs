@@ -29,9 +29,7 @@ namespace MyNes.Core.Boards.Nintendo
         public MMC5(byte[] chr, byte[] prg, byte[] trainer, bool isVram)
             : base(chr, prg, trainer, isVram)
         { }
-        MMC5SqrSoundChannel soundChn1;
-        MMC5SqrSoundChannel soundChn2;
-        MMC5PcmSoundChannel soundChn3;
+        MMC5ExternalSound externalSound;
         private int sramPage = 0;
         private bool sramWritable = true;
 
@@ -74,16 +72,8 @@ namespace MyNes.Core.Boards.Nintendo
             Nes.Ppu.ScanlineTimer = TickIRQTimer;
 
             //sound channels
-            soundChn1 = new MMC5SqrSoundChannel(Nes.emuSystem);
-            soundChn1.Hook(0x5000);
-
-            soundChn2 = new MMC5SqrSoundChannel(Nes.emuSystem);
-            soundChn2.Hook(0x5004);
-
-            soundChn3 = new MMC5PcmSoundChannel(Nes.emuSystem);
-            soundChn3.Hook(0x5010);
-
-            Nes.Apu.AddExtraChannels(new APU.Channel[] { soundChn1, soundChn2, soundChn3 });
+            externalSound = new MMC5ExternalSound();
+            Nes.Apu.AddExternalMixer(externalSound);
         }
         public override void HardReset()
         {
@@ -128,8 +118,8 @@ namespace MyNes.Core.Boards.Nintendo
             {
                 //Sound Channels (already mapped to 0x5000 -> 0x5014)
                 case 0x5015:
-                    soundChn1.Status = (data & 0x01) != 0;
-                    soundChn2.Status = (data & 0x02) != 0;
+                    externalSound.soundChn1.Status = (data & 0x01) != 0;
+                    externalSound.soundChn2.Status = (data & 0x02) != 0;
                     break;
 
                 //Misc Modes and Setup
@@ -377,9 +367,9 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
                 {
                     case 0x5015:
                         byte rt = 0;
-                        if (soundChn1.Status)
+                        if (externalSound.soundChn1.Status)
                             rt |= 0x01;
-                        if (soundChn2.Status)
+                        if (externalSound.soundChn2.Status)
                             rt |= 0x02;
                         return rt;
                     case 0x5204:
@@ -578,9 +568,7 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            soundChn1.SaveState(stream);
-            soundChn2.SaveState(stream);
-            soundChn3.SaveState(stream);
+            externalSound.SaveState(stream);
             stream.Write(sram);
             stream.Write(sramPage);
             stream.Write(sramWritable);
@@ -607,9 +595,7 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
-            soundChn1.LoadState(stream);
-            soundChn2.LoadState(stream);
-            soundChn3.LoadState(stream);
+            externalSound.LoadState(stream);
             stream.Read(sram);
             sramPage = stream.ReadInt32();
             sramWritable = stream.ReadBoolean();

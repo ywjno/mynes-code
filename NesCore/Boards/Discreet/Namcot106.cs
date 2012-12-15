@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*Written by Ala Ibrahim Hadid*/
+using MyNes.Core.APU.Namcot106;
 namespace MyNes.Core.Boards.Discreet
 {
     [BoardName("Namcot 106", 19)]
@@ -24,14 +25,13 @@ namespace MyNes.Core.Boards.Discreet
     {
         public Namcot106() : base() { }
         public Namcot106(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
-
+        private Namcot106ExternalSound externalSound = new Namcot106ExternalSound();
         private ushort irqCounter = 0;
         private bool irqEnabled = false;
         private bool chrH = false;
         private bool chrL = false;
         private byte[] CRAM = new byte[0x8000];//32 KB
-        private byte[] exram = new byte[128];//for ex sound
-        private byte sndReg = 0;
+
         protected bool EnableAdvancedMirroring = false;// mapper 19 only
         public override void Initialize()
         {
@@ -69,16 +69,13 @@ namespace MyNes.Core.Boards.Discreet
                         break;
                 }
             }
+            externalSound = new Namcot106ExternalSound();
         }
         protected override void PokePrg(int address, byte data)
         {
             switch (address & 0xF800)
             {
-                case 0x4800:
-                    exram[sndReg & 0x7F] = data;
-                    if ((sndReg & 0x80) == 0x80)
-                        sndReg = (byte)(((sndReg + 1) & 0x7F) | 0x80);
-                    break;
+                case 0x4800: externalSound.Poke4800(address, data); break;
                 /*IRQs*/
                 case 0x5000: irqCounter = (ushort)((irqCounter & 0x7F00) | (data << 0)); Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false); break;
                 case 0x5800: irqCounter = (ushort)((irqCounter & 0x00FF) | (data << 8)); irqEnabled = (data & 0x80) == 0x80; Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Brd, false); break;
@@ -145,18 +142,14 @@ namespace MyNes.Core.Boards.Discreet
                     break;
                 case 0xF000: Switch08KPRG(data & 0x3F, 0xC000); break;
                 /*Sound control reg*/
-                case 0xF800: sndReg = data; break;
+                case 0xF800: externalSound.PokeF800(address, data); break;
             }
         }
         protected override byte PeekPrg(int address)
         {
             switch (address & 0xF800)
             {
-                case 0x4800:
-                    byte val = exram[sndReg & 0x7F];
-                    if ((sndReg & 0x80) == 0x80)
-                        sndReg = (byte)(((sndReg + 1) & 0x7F) | 0x80);
-                    return val;
+                case 0x4800: return externalSound.Peek4800(address);
                 case 0x5000: return (byte)(irqCounter & 0x00FF);
                 case 0x5800: return (byte)((irqCounter & 0x7F00) >> 8);
             }
@@ -206,6 +199,7 @@ namespace MyNes.Core.Boards.Discreet
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
+            externalSound.SaveState(stream);
             stream.Write(irqCounter);
             stream.Write(irqEnabled, chrH, chrL);
             stream.Write(CRAM);
@@ -215,6 +209,7 @@ namespace MyNes.Core.Boards.Discreet
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
+            externalSound.LoadState(stream);
             irqCounter = stream.ReadUshort();
             bool[] flags = stream.ReadBooleans();
             irqEnabled = flags[0];

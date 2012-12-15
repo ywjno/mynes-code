@@ -25,7 +25,7 @@ namespace MyNes.Core.APU
         public ChannelTri tri;
         public ChannelNoi noi;
         public ChannelDmc dmc;
-        public Channel[] extraChannels;
+        public IApuExternalChannelsMixer externalMixer;
 
         private int Cycles = 0;
         private bool SequencingMode;
@@ -131,8 +131,7 @@ namespace MyNes.Core.APU
 
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.HardReset();
+                externalMixer.HardReset();
             }
         }
         public override void SoftReset()
@@ -144,8 +143,7 @@ namespace MyNes.Core.APU
             dmc.SoftReset();
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.SoftReset();
+                externalMixer.SoftReset();
             }
             FrameIrqFlag = false;
             FrameIrqEnabled = true;
@@ -166,10 +164,10 @@ namespace MyNes.Core.APU
 
             soundBuffer = new short[description.Frequency];
         }
-        public void AddExtraChannels(APU.Channel[] channels)
+        public void AddExternalMixer(IApuExternalChannelsMixer mixer)
         {
             EXenabled = true;
-            extraChannels = channels;
+            externalMixer = mixer;
         }
 
         private void ClockDuration()
@@ -182,8 +180,7 @@ namespace MyNes.Core.APU
             tri.ClockDuration();
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.ClockDuration();
+                externalMixer.ClockDuration();
             }
         }
         private void ClockEnvelope()
@@ -194,8 +191,7 @@ namespace MyNes.Core.APU
             tri.ClockEnvelope();
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.ClockEnvelope();
+                externalMixer.ClockEnvelope();
             }
         }
         private void ClockSingle()
@@ -206,8 +202,7 @@ namespace MyNes.Core.APU
             noi.ClockSingle(isClockingDuration);
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.ClockSingle(isClockingDuration);
+                externalMixer.ClockSingle(isClockingDuration);
             }
         }
         private void UpdatePlayback()
@@ -281,8 +276,7 @@ namespace MyNes.Core.APU
             dmc.Update(timing.single);
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.Update(timing.single);
+                externalMixer.Update(timing.single);
             }
         }
 
@@ -341,8 +335,11 @@ namespace MyNes.Core.APU
 
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    output += chn.GetSample();
+                output = externalMixer.Mix(MixSamples());
+            }
+            else
+            {
+                output = MixSamples();
             }
 
             this.soundBuffer[wPos++ % this.soundBuffer.Length] = output;
@@ -357,24 +354,12 @@ namespace MyNes.Core.APU
         }
         private short MixSamples()
         {
-            short output = 0;
-            output = Mixer.MixSamples(
+            return Mixer.MixSamples(
                 sq1.GetSample(),
                 sq2.GetSample(),
                 tri.GetSample(),
                 noi.GetSample(),
                 dmc.GetSample());
-            if (EXenabled)
-            {
-                foreach (Channel chn in extraChannels)
-                    output += chn.GetSample();
-                // TODO: add mixer for extra channels (should be a mixer for each channel ?)
-                if (output > 75)
-                    output = 75;
-                if (output < -75)
-                    output = -75;
-            }
-            return output;
         }
 
         public override void SaveState(Types.StateStream stream)
@@ -388,8 +373,7 @@ namespace MyNes.Core.APU
 
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.SaveState(stream);
+                externalMixer.SaveState(stream);
             }
 
             stream.Write(Cycles);
@@ -407,8 +391,7 @@ namespace MyNes.Core.APU
 
             if (EXenabled)
             {
-                foreach (Channel chn in extraChannels)
-                    chn.LoadState(stream);
+                externalMixer.LoadState(stream);
             }
 
             Cycles = stream.ReadInt32();

@@ -95,8 +95,15 @@
     <Compile Include="APU\ChannelSq1.cs" />
     <Compile Include="APU\ChannelSq2.cs" />
     <Compile Include="APU\ChannelTri.cs" />
+    <Compile Include="APU\IApuExternalChannelsMixer.cs" />
+    <Compile Include="APU\MMC5\MMC5ExternalSound.cs" />
     <Compile Include="APU\MMC5\MMC5PcmSoundChannel.cs" />
     <Compile Include="APU\MMC5\MMC5SqrSoundChannel.cs" />
+    <Compile Include="APU\Namcot106\Namcot106ExternalSound.cs" />
+    <Compile Include="APU\Namcot106\Namcot106SoundChannel.cs" />
+    <Compile Include="APU\Sunsoft5B\Sunsoft5BExternalSound.cs" />
+    <Compile Include="APU\Sunsoft5B\Sunsoft5BSoundChannel.cs" />
+    <Compile Include="APU\VRC6\VRC6ExternalSound.cs" />
     <Compile Include="APU\VRC6\VRC6pulseSoundChannel.cs" />
     <Compile Include="APU\VRC6\VRC6sawtoothSoundChannel.cs" />
     <Compile Include="Boards\BoardsManager.cs" />

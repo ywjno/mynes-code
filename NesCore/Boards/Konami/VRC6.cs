@@ -71,21 +71,17 @@ namespace MyNes.Core.Boards.Konami
         protected bool irqEnable;
         protected bool irqMode;
         protected bool irqEnableOnAcknowledge;
-
-        protected VRC6pulseSoundChannel sndPulse1;
-        protected VRC6pulseSoundChannel sndPulse2;
-        protected VRC6sawtoothSoundChannel sndSawtooth;
+        private VRC6ExternalSound externalSound;
+      
 
         public override void Initialize()
         {
             base.Initialize();
-            sndPulse1 = new VRC6pulseSoundChannel(Nes.emuSystem);
-            sndPulse1.Hook(AD_9_0, AD_9_1, AD_9_2, AD_9_3);
-            sndPulse2 = new VRC6pulseSoundChannel(Nes.emuSystem);
-            sndPulse2.Hook(AD_A_0, AD_A_1, AD_A_2, AD_9_3);
-            sndSawtooth = new VRC6sawtoothSoundChannel(Nes.emuSystem);
-            sndSawtooth.Hook(AD_B_0, AD_B_1, AD_B_2, AD_9_3);
-            Nes.Apu.AddExtraChannels(new APU.Channel[] { sndPulse1, sndPulse2, sndSawtooth });
+            externalSound = new VRC6ExternalSound();
+            externalSound.sndPulse1.Hook(AD_9_0, AD_9_1, AD_9_2, AD_9_3);
+            externalSound.sndPulse2.Hook(AD_A_0, AD_A_1, AD_A_2, AD_9_3);
+            externalSound.sndSawtooth.Hook(AD_B_0, AD_B_1, AD_B_2, AD_9_3);
+            Nes.Apu.AddExternalMixer( externalSound);
         }
         public override void HardReset()
         {
@@ -210,9 +206,7 @@ namespace MyNes.Core.Boards.Konami
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            sndPulse1.SaveState(stream);
-            sndPulse2.SaveState(stream);
-            sndSawtooth.SaveState(stream);
+            externalSound.SaveState(stream);
             stream.Write(irqReload);
             stream.Write(irqCounter);
             stream.Write(irqPrescaler);
@@ -223,9 +217,7 @@ namespace MyNes.Core.Boards.Konami
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
-            sndPulse1.LoadState(stream);
-            sndPulse2.LoadState(stream);
-            sndSawtooth.LoadState(stream);
+            externalSound.LoadState(stream);
             irqReload = stream.ReadByte();
             irqCounter = stream.ReadByte();
             irqPrescaler = stream.ReadInt32();
