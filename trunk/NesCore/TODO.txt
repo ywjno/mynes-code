@@ -1,3 +1,5 @@
 ﻿Namcot109 (mapper 19) sound channels
+VRC7 (mapper 85) sound channels
 Add mixer for extra channels (should be a mixer for each channel ?)
+
 Ganbare Goemon 2 game: No sprite for the main charecter !!?? 
