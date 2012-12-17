@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*Written by Ala Ibrahim Hadid*/
-using MyNes.Core.APU.Namcot106;
+using MyNes.Core.APU.Namco163;
 namespace MyNes.Core.Boards.Discreet
 {
     [BoardName("Namcot 106", 19)]
@@ -25,7 +25,7 @@ namespace MyNes.Core.Boards.Discreet
     {
         public Namcot106() : base() { }
         public Namcot106(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
-        private Namcot106ExternalSound externalSound = new Namcot106ExternalSound();
+        private Namco163ExternalSound externalSound = new Namco163ExternalSound();
         private ushort irqCounter = 0;
         private bool irqEnabled = false;
         private bool chrH = false;
@@ -41,7 +41,9 @@ namespace MyNes.Core.Boards.Discreet
             Nes.PpuMemory.Hook(0x2000, 0x3EFF, PeekNmt, PokeNmt);
             Nes.Cpu.ClockCycle = TickIRQTimer;
             base.Initialize();
-            EnableAdvancedMirroring = true;
+            EnableAdvancedMirroring = true; 
+            externalSound = new Namco163ExternalSound();
+            Nes.Apu.AddExternalMixer(externalSound);
         }
         public override void HardReset()
         {
@@ -68,8 +70,7 @@ namespace MyNes.Core.Boards.Discreet
                         Nes.PpuMemory.nmtBank[3] = 0xE1;
                         break;
                 }
-            }
-            externalSound = new Namcot106ExternalSound();
+            } 
         }
         protected override void PokePrg(int address, byte data)
         {
@@ -203,8 +204,6 @@ namespace MyNes.Core.Boards.Discreet
             stream.Write(irqCounter);
             stream.Write(irqEnabled, chrH, chrL);
             stream.Write(CRAM);
-            stream.Write(exram);
-            stream.Write(sndReg);
         }
         public override void LoadState(Types.StateStream stream)
         {
@@ -216,8 +215,6 @@ namespace MyNes.Core.Boards.Discreet
             chrH = flags[0];
             chrL = flags[0];
             stream.Read(CRAM);
-            stream.Read(exram);
-            sndReg = stream.ReadByte();
         }
     }
 }
