@@ -354,6 +354,7 @@ namespace MyNes.Core.APU
         }
         private short MixSamples()
         {
+            //return 0;//use this to disable internal channels
             return Mixer.MixSamples(
                 sq1.GetSample(),
                 sq2.GetSample(),
