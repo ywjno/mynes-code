@@ -25,7 +25,7 @@ namespace MyNes.Core.Boards.Konami
     {
         public VRC7() : base() { }
         public VRC7(byte[] chr, byte[] prg, byte[] trainer, bool isVram) : base(chr, prg, trainer, isVram) { }
-        
+
         private byte irqReload = 0;
         private byte irqCounter = 0;
         private int irqPrescaler = 0;
@@ -36,7 +36,7 @@ namespace MyNes.Core.Boards.Konami
         public override void Initialize()
         {
             base.Initialize();
-       
+
             Nes.Cpu.ClockCycle = TickIRQTimer;
         }
         public override void HardReset()

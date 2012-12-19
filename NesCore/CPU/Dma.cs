@@ -27,7 +27,16 @@ namespace MyNes.Core.CPU
         private int addr;
         private int size;
         private int timer = 0;
-
+        private bool isOam=false;
+        public void DmcFetch(int address)
+        {
+            if (size != 0)
+                return; // transfer already occuring
+            size = 4; 
+            addr = address;
+            isOam = false;
+            Nes.Cpu.Lock();
+        }
         public void OamTransfer(int address, byte data)
         {
             if (size != 0)
@@ -35,7 +44,7 @@ namespace MyNes.Core.CPU
             step = false;
             addr = (data << 8);
             size = 256;
-   
+            isOam = true;
             /*http://nesdev.com/6502_cpu.txt
              -RDY is ignored during writes
              (This is why you must wait 3 cycles before doing any DMA --
@@ -50,27 +59,45 @@ namespace MyNes.Core.CPU
         {
             if (size == 0)
                 return;
-            if (timer > 0)
+            if (isOam)
             {
-                Nes.Cpu.Dispatch();
-                timer--;
-                return;
-            }
-            if (step = !step)
-            {
-                Nes.Cpu.Dispatch();
-                data = Nes.CpuMemory[addr];
-            }
-            else
-            {
-                Nes.Cpu.Dispatch();
-                Nes.CpuMemory[0x2004] = data;
+                if (timer > 0)
+                {
+                    Nes.Cpu.Dispatch();
+                    timer--;
+                    return;
+                }
+                if (step = !step)
+                {
+                    Nes.Cpu.Dispatch();
+                    data = Nes.CpuMemory[addr];
+                }
+                else
+                {
+                    Nes.Cpu.Dispatch();
+                    Nes.CpuMemory[0x2004] = data;
 
-                addr = (++addr) & 0xFFFF;
-                size = (--size) & 0xFFFF;
+                    addr = (++addr) & 0xFFFF;
+                    size = (--size) & 0xFFFF;
 
-                if (size == 0)
+                    if (size == 0)
+                        Nes.Cpu.Unlock();
+                }
+            }
+            else//dmc
+            {
+                size--;
+                if (size > 0)
+                {
+                    //do dummy peek
+                    Nes.Cpu.Dispatch();
+                    data = Nes.CpuMemory[addr];
+                }
+                else
+                {
+                    Nes.Apu.dmc.DoFetch();
                     Nes.Cpu.Unlock();
+                }
             }
         }
         public virtual void SaveState(StateStream stream)

@@ -169,7 +169,8 @@ namespace MyNes.Core.APU
             HardReset();
             base.Initialize();
         }
-        public virtual void SoftReset()
+
+        public override void SoftReset()
         {
             DurationReloadEnabled = false;
             DurationCounter = 0;

@@ -43,7 +43,7 @@ namespace MyNes.Core.APU.Namco163
             if (sndReg >= 0x40)
             {
                 //Console.WriteLine("Reg write: address:" + string.Format("{0:X}", sndReg) + ", data:" +
-               //     string.Format("{0:X}", data) + ", channel:" + string.Format("{0:X}", ((sndReg >> 4) & 0x7)));
+                //     string.Format("{0:X}", data) + ", channel:" + string.Format("{0:X}", ((sndReg >> 4) & 0x7)));
                 switch (sndReg & 0x7F)
                 {
                     case 0x40: channels[0].PokeA(data); break;
@@ -105,39 +105,35 @@ namespace MyNes.Core.APU.Namco163
         }
         private void Poke7F(byte data)
         {
-            enabledChannels = ((data & 0x70) >> 4); 
+            enabledChannels = ((data & 0x70) >> 4);
             channelIndex = 0;
             int enabledChannels1 = enabledChannels + 1;
             for (int i = 7; i >= 0; i--)
             {
                 if (enabledChannels1 > 0)
                 {
-                    channels[i].Enabled = true; 
+                    channels[i].Enabled = true;
                     enabledChannels1--;
                 }
                 else
                     break;
             }
         }
-        public short Mix(short internalChannelsOutput)
+        public short Mix()
         {
-            short output = internalChannelsOutput;
+            short output = 0;
 
             int enabledChannels1 = enabledChannels + 1;
             for (int i = 7; i >= 0; i--)
             {
                 if (enabledChannels1 > 0)
                 {
-                    enabledChannels1--; 
+                    enabledChannels1--;
                     output += channels[i].GetSample();
                 }
                 else
                     break;
             }
-            if (output > 80)
-                output = 80;
-            if (output < -80)
-                output = -80;
 
             return output;
         }
@@ -146,12 +142,19 @@ namespace MyNes.Core.APU.Namco163
         {
             for (int i = 0; i < 8; i++)
                 channels[i].HardReset();
+            EXRAM = new byte[128];
+            sndReg = 0;
+            enabledChannels = 0;
+            channelIndex = 0;
         }
 
         public void SoftReset()
         {
             for (int i = 0; i < 8; i++)
                 channels[i].SoftReset();
+            sndReg = 0;
+            enabledChannels = 0;
+            channelIndex = 0;
         }
 
         public void ClockDuration()
@@ -175,12 +178,20 @@ namespace MyNes.Core.APU.Namco163
         {
             for (int i = 0; i < 8; i++)
                 channels[i].SaveState(stream);
+            stream.Write(EXRAM);
+            stream.Write(sndReg);
+            stream.Write(enabledChannels);
+            stream.Write(channelIndex);
         }
 
         public void LoadState(Types.StateStream stream)
         {
             for (int i = 0; i < 8; i++)
                 channels[i].LoadState(stream);
+            stream.Read(EXRAM);
+            sndReg = stream.ReadByte();
+            enabledChannels = stream.ReadInt32();
+            channelIndex = stream.ReadInt32();
         }
     }
 }

@@ -42,7 +42,7 @@ namespace MyNes.Core.APU
               0x5F, 0x50, 0x47, 0x40, 0x35, 0x2A, 0x24, 0x1B
             },
         };
-        private const int dmaCycles = 5;
+        private const int dmaCycles = 4;
         public bool DeltaIrqOccur;
         private bool IrqEnabled;
         private bool dmaLooping;
@@ -126,7 +126,10 @@ namespace MyNes.Core.APU
                         dmaAddr = dmaAddrRefresh;
 
                         if (!bufferFull)
-                            Nes.Cpu.DMCdmaCycles = dmaCycles;
+                        {
+                            Nes.Cpu.DMCdmaCycles = dmaCycles; 
+                            //Nes.Cpu.dma.DmcFetch(dmaAddr);
+                        }
                     }
                 }
                 else
@@ -164,7 +167,10 @@ namespace MyNes.Core.APU
                     dmaEnabled = true;
                     dmaByte = dmaBuffer;
                     if (dmaSize > 0)
+                    {
                         Nes.Cpu.DMCdmaCycles = dmaCycles;
+                        //Nes.Cpu.dma.DmcFetch(dmaAddr);
+                    }
                 }
                 else
                 {

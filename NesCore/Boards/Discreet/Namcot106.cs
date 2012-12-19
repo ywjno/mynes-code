@@ -41,7 +41,7 @@ namespace MyNes.Core.Boards.Discreet
             Nes.PpuMemory.Hook(0x2000, 0x3EFF, PeekNmt, PokeNmt);
             Nes.Cpu.ClockCycle = TickIRQTimer;
             base.Initialize();
-            EnableAdvancedMirroring = true; 
+            EnableAdvancedMirroring = true;
             externalSound = new Namco163ExternalSound();
             Nes.Apu.AddExternalMixer(externalSound);
         }
@@ -70,7 +70,7 @@ namespace MyNes.Core.Boards.Discreet
                         Nes.PpuMemory.nmtBank[3] = 0xE1;
                         break;
                 }
-            } 
+            }
         }
         protected override void PokePrg(int address, byte data)
         {
@@ -200,7 +200,6 @@ namespace MyNes.Core.Boards.Discreet
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            externalSound.SaveState(stream);
             stream.Write(irqCounter);
             stream.Write(irqEnabled, chrH, chrL);
             stream.Write(CRAM);
@@ -208,7 +207,6 @@ namespace MyNes.Core.Boards.Discreet
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
-            externalSound.LoadState(stream);
             irqCounter = stream.ReadUshort();
             bool[] flags = stream.ReadBooleans();
             irqEnabled = flags[0];

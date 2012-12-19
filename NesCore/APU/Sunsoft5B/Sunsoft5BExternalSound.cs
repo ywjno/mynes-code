@@ -30,16 +30,11 @@ namespace MyNes.Core.APU.Sunsoft5B
         public Sunsoft5BSoundChannel sndChannel0;
         public Sunsoft5BSoundChannel sndChannel1;
         public Sunsoft5BSoundChannel sndChannel2;
-        public short Mix(short internalChannelsOutput)
+        public short Mix()
         {
-            short output = internalChannelsOutput;
-            output += sndChannel0.GetSample();
+            short output = sndChannel0.GetSample();
             output += sndChannel1.GetSample();
             output += sndChannel2.GetSample();
-            if (output > 80)
-                output = 80;
-            if (output < -80)
-                output = -80;
             return output;
         }
 
@@ -52,6 +47,9 @@ namespace MyNes.Core.APU.Sunsoft5B
 
         public void SoftReset()
         {
+            sndChannel0.SoftReset();
+            sndChannel1.SoftReset();
+            sndChannel2.SoftReset();
         }
 
         public void ClockDuration()

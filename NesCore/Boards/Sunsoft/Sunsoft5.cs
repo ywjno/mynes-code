@@ -156,7 +156,6 @@ namespace MyNes.Core.Boards.Sunsoft
         public override void SaveState(StateStream stream)
         {
             base.SaveState(stream);
-            externalSound.SaveState(stream);
             stream.Write(addressOf8000);
             stream.Write(RamEnabled);
             stream.Write(sramAddress);
@@ -168,7 +167,7 @@ namespace MyNes.Core.Boards.Sunsoft
         }
         public override void LoadState(StateStream stream)
         {
-            externalSound.LoadState(stream);
+            base.LoadState(stream);
             addressOf8000 = stream.ReadInt32();
             RamEnabled = stream.ReadBoolean();
             sramAddress = stream.ReadInt32();

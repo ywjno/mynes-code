@@ -20,7 +20,7 @@ namespace MyNes.Core.APU
 {
     public interface IApuExternalChannelsMixer
     {
-        short Mix(short internalChannelsOutput);
+        short Mix();
         void HardReset();
         void SoftReset();
         void ClockDuration();

@@ -35,10 +35,9 @@ namespace MyNes.Core.APU.MMC5
         public MMC5SqrSoundChannel soundChn1;
         public MMC5SqrSoundChannel soundChn2;
         public MMC5PcmSoundChannel soundChn3;
-        public short Mix(short internalChannelsOutput)
+        public short Mix()
         {
-            short output = internalChannelsOutput;
-            output += soundChn1.GetSample();
+            short output = soundChn1.GetSample();
             output += soundChn2.GetSample();
             output += soundChn3.GetSample();
             return output;

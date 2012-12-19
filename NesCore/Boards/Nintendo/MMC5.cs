@@ -568,7 +568,6 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            externalSound.SaveState(stream);
             stream.Write(sram);
             stream.Write(sramPage);
             stream.Write(sramWritable);
@@ -595,7 +594,6 @@ C=%11:    | $5128 | $5129 | $512A | $512B |
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
-            externalSound.LoadState(stream);
             stream.Read(sram);
             sramPage = stream.ReadInt32();
             sramWritable = stream.ReadBoolean();
