@@ -72,7 +72,7 @@ namespace MyNes.Core.Boards.Konami
         protected bool irqMode;
         protected bool irqEnableOnAcknowledge;
         private VRC6ExternalSound externalSound;
-      
+
 
         public override void Initialize()
         {
@@ -81,7 +81,7 @@ namespace MyNes.Core.Boards.Konami
             externalSound.sndPulse1.Hook(AD_9_0, AD_9_1, AD_9_2, AD_9_3);
             externalSound.sndPulse2.Hook(AD_A_0, AD_A_1, AD_A_2, AD_9_3);
             externalSound.sndSawtooth.Hook(AD_B_0, AD_B_1, AD_B_2, AD_9_3);
-            Nes.Apu.AddExternalMixer( externalSound);
+            Nes.Apu.AddExternalMixer(externalSound);
         }
         public override void HardReset()
         {
@@ -206,7 +206,6 @@ namespace MyNes.Core.Boards.Konami
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            externalSound.SaveState(stream);
             stream.Write(irqReload);
             stream.Write(irqCounter);
             stream.Write(irqPrescaler);
@@ -217,7 +216,6 @@ namespace MyNes.Core.Boards.Konami
         public override void LoadState(Types.StateStream stream)
         {
             base.LoadState(stream);
-            externalSound.LoadState(stream);
             irqReload = stream.ReadByte();
             irqCounter = stream.ReadByte();
             irqPrescaler = stream.ReadInt32();

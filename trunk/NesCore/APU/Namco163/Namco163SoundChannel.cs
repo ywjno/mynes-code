@@ -33,6 +33,18 @@ namespace MyNes.Core.APU.Namco163
         private byte output = 0;
         private bool Freez = true;
 
+        public override void HardReset()
+        {
+            base.HardReset();
+            Enabled = false;
+            LengthOfWaveform = 64 * 4;// assuming default L value is 0 (4 * (64-L))
+            AddressOfWaveform = 0;
+            LinearVolume = 0;
+            Step = 0;
+            wavBuffer = new byte[64 * 4];
+            output = 0;
+            Freez = true;
+        }
         private void UpdateFrequency()
         {
             Freez = (frequency == 0);
@@ -102,6 +114,31 @@ namespace MyNes.Core.APU.Namco163
                 return output;
             }
             return 0;
+        }
+
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(Enabled); 
+            stream.Write(LengthOfWaveform);
+            stream.Write(AddressOfWaveform);
+            stream.Write(LinearVolume);
+            stream.Write(Step);
+            stream.Write(wavBuffer);
+            stream.Write(output);
+            stream.Write(Freez);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            Enabled = stream.ReadBoolean();
+            LengthOfWaveform = stream.ReadInt32();
+            AddressOfWaveform = stream.ReadInt32();
+            LinearVolume = stream.ReadInt32();
+            Step = stream.ReadInt32();
+            stream.Read(wavBuffer);
+            output = stream.ReadByte();
+            Freez = stream.ReadBoolean();
         }
     }
 }

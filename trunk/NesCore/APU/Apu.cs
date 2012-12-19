@@ -200,6 +200,7 @@ namespace MyNes.Core.APU
             sq2.ClockSingle(isClockingDuration);
             tri.ClockSingle(isClockingDuration);
             noi.ClockSingle(isClockingDuration);
+            dmc.ClockSingle(isClockingDuration);
             if (EXenabled)
             {
                 externalMixer.ClockSingle(isClockingDuration);
@@ -335,7 +336,17 @@ namespace MyNes.Core.APU
 
             if (EXenabled)
             {
-                output = externalMixer.Mix(MixSamples());
+                //output = externalMixer.Mix(MixSamples());
+                output = Mixer.MixSamples(
+                sq1.GetSample(),
+                sq2.GetSample(),
+                tri.GetSample(),
+                noi.GetSample(),
+                dmc.GetSample(), externalMixer.Mix());
+                if (output > 80)
+                    output = 80;
+                if (output < -80)
+                    output = -80;
             }
             else
             {

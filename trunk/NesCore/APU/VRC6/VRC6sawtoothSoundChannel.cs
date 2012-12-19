@@ -29,7 +29,15 @@ namespace MyNes.Core.APU.VRC6
         private int accumRate = 0;
         private int accumStep = 0;
         private byte output = 0;
-
+        public override void HardReset()
+        {
+            base.HardReset(); 
+            enabled = true;
+            accum = 0;
+            accumRate = 0;
+            accumStep = 0;
+            output = 0;
+        }
         private void UpdateFrequency()
         {
             timing.single = system.Cpu * (frequency + 1);
@@ -76,6 +84,24 @@ namespace MyNes.Core.APU.VRC6
             }
 
             output = (byte)((accum >> 3) & 0x1F);
+        }
+        public override void SaveState(Types.StateStream stream)
+        {
+            base.SaveState(stream);
+            stream.Write(enabled);
+            stream.Write(accum);
+            stream.Write(accumRate);
+            stream.Write(accumStep);
+            stream.Write(output);
+        }
+        public override void LoadState(Types.StateStream stream)
+        {
+            base.LoadState(stream);
+            enabled = stream.ReadBoolean() ;
+            accum = stream.ReadInt32();
+            accumRate = stream.ReadInt32();
+            accumStep = stream.ReadInt32();
+            output = stream.ReadByte();
         }
     }
 }

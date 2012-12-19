@@ -30,16 +30,11 @@ namespace MyNes.Core.APU.VRC6
         public VRC6pulseSoundChannel sndPulse1;
         public VRC6pulseSoundChannel sndPulse2;
         public VRC6sawtoothSoundChannel sndSawtooth;
-        public short Mix(short internalChannelsOutput)
+        public short Mix()
         {
             short output = sndPulse1.GetSample();
             output += sndPulse2.GetSample();
             output += sndSawtooth.GetSample();
-            output += internalChannelsOutput;
-            if (output > 80)
-                output = 80;
-            if (output < -80)
-                output = -80;
             return output;
         }
 
@@ -52,6 +47,9 @@ namespace MyNes.Core.APU.VRC6
 
         public void SoftReset()
         {
+            sndPulse1.SoftReset();
+            sndPulse2.SoftReset();
+            sndSawtooth.SoftReset();
         }
 
         public void ClockDuration()
