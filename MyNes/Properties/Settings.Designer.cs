@@ -73,97 +73,13 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SlimDX")]
-        public global::MyNes.SupportedRenderers CurrentRenderer {
-            get {
-                return ((global::MyNes.SupportedRenderers)(this["CurrentRenderer"]));
-            }
-            set {
-                this["CurrentRenderer"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".\\StateSaves")]
-        public string StateFolder {
-            get {
-                return ((string)(this["StateFolder"]));
-            }
-            set {
-                this["StateFolder"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int ControlProfileIndex {
+        public int CurrentRendererIndex {
             get {
-                return ((int)(this["ControlProfileIndex"]));
+                return ((int)(this["CurrentRendererIndex"]));
             }
             set {
-                this["ControlProfileIndex"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".\\Snapshots")]
-        public string SnapshotsFolder {
-            get {
-                return ((string)(this["SnapshotsFolder"]));
-            }
-            set {
-                this["SnapshotsFolder"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int Volume {
-            get {
-                return ((int)(this["Volume"]));
-            }
-            set {
-                this["Volume"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("44100")]
-        public int SoundPlaybackFreq {
-            get {
-                return ((int)(this["SoundPlaybackFreq"]));
-            }
-            set {
-                this["SoundPlaybackFreq"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SoundEnabled {
-            get {
-                return ((bool)(this["SoundEnabled"]));
-            }
-            set {
-                this["SoundEnabled"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AUTO")]
-        public global::MyNes.Core.Types.EmulationSystem EmuSystem {
-            get {
-                return ((global::MyNes.Core.Types.EmulationSystem)(this["EmuSystem"]));
-            }
-            set {
-                this["EmuSystem"] = value;
+                this["CurrentRendererIndex"] = value;
             }
         }
         
@@ -205,101 +121,6 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int VideoResIndex {
-            get {
-                return ((int)(this["VideoResIndex"]));
-            }
-            set {
-                this["VideoResIndex"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool VideoImmediateMode {
-            get {
-                return ((bool)(this["VideoImmediateMode"]));
-            }
-            set {
-                this["VideoImmediateMode"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool VideoHideLines {
-            get {
-                return ((bool)(this["VideoHideLines"]));
-            }
-            set {
-                this["VideoHideLines"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::MyNes.PaletteSettings PaletteSettings {
-            get {
-                return ((global::MyNes.PaletteSettings)(this["PaletteSettings"]));
-            }
-            set {
-                this["PaletteSettings"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool VideoFullscreen {
-            get {
-                return ((bool)(this["VideoFullscreen"]));
-            }
-            set {
-                this["VideoFullscreen"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".png")]
-        public string SnapshotFormat {
-            get {
-                return ((string)(this["SnapshotFormat"]));
-            }
-            set {
-                this["SnapshotFormat"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int VideoAdapterIndex {
-            get {
-                return ((int)(this["VideoAdapterIndex"]));
-            }
-            set {
-                this["VideoAdapterIndex"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
-        public int VideoStretchMultiply {
-            get {
-                return ((int)(this["VideoStretchMultiply"]));
-            }
-            set {
-                this["VideoStretchMultiply"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::MyNes.ColumnWidthsCollection ColumnWidths {
             get {
                 return ((global::MyNes.ColumnWidthsCollection)(this["ColumnWidths"]));
@@ -311,35 +132,12 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::MyNes.ControlProfilesCollection ControlProfiles {
-            get {
-                return ((global::MyNes.ControlProfilesCollection)(this["ControlProfiles"]));
-            }
-            set {
-                this["ControlProfiles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::System.Collections.Specialized.StringCollection RecentFiles {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["RecentFiles"]));
             }
             set {
                 this["RecentFiles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
-        public int SoundLatency {
-            get {
-                return ((int)(this["SoundLatency"]));
-            }
-            set {
-                this["SoundLatency"] = value;
             }
         }
         

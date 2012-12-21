@@ -24,7 +24,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class FormPathSettings : Form
@@ -33,8 +33,8 @@ namespace MyNes
         {
             InitializeComponent();
 
-            textBox_snapshots.Text = Program.Settings.SnapshotsFolder;
-            textBox_statesFolder.Text = Program.Settings.StateFolder;
+            textBox_snapshots.Text = RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder;
+            textBox_statesFolder.Text = RenderersCore.SettingsManager.Settings.Folders_StateFolder;
             textBox_browserDatabase.Text = Program.Settings.FoldersDatabasePath;
         }
         private bool refreshBrowser = false;
@@ -44,9 +44,10 @@ namespace MyNes
         //save and close
         private void button3_Click(object sender, EventArgs e)
         {
-            Program.Settings.SnapshotsFolder = textBox_snapshots.Text;
-            Program.Settings.StateFolder = textBox_statesFolder.Text;
+            RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder = textBox_snapshots.Text;
+            RenderersCore.SettingsManager.Settings.Folders_StateFolder = textBox_statesFolder.Text;
             Program.Settings.FoldersDatabasePath = textBox_browserDatabase.Text;
+            RenderersCore.SettingsManager.SaveSettings();
             Program.Settings.Save();
             Close();
         }

@@ -24,7 +24,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class ISC_VSUnisystem : InputSettingsControl
@@ -35,7 +35,7 @@ namespace MyNes
         }
         private void ChangeControlMapping(TextBox button)
         {
-            if (Program.Settings.ControlProfileIndex == 0)
+            if (RenderersCore.SettingsManager.Settings.Controls_ProfileIndex == 0)
             {
                 MessageBox.Show("You can't change mapping of default profile. To do so, select profiles page, add new profile then select this page again to change mapping.");
                 return;
@@ -52,17 +52,17 @@ namespace MyNes
         }
         public override void SaveSettings()
         {
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.CreditLeftCoinSlot = textBox_CreditLeftCoinSlot.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.CreditRightCoinSlot = textBox_CreditRightCoinSlot.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.CreditServiceButton = textBox_CreditServiceButton.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch1 = textBox_DIPSwitch1.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch2 = textBox_DIPSwitch2.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch3 = textBox_DIPSwitch3.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch4 = textBox_DIPSwitch4.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch5 = textBox_DIPSwitch5.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch6 = textBox_DIPSwitch6.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch7 = textBox_DIPSwitch7.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch8 = textBox_DIPSwitch8.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.CreditLeftCoinSlot = textBox_CreditLeftCoinSlot.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.CreditRightCoinSlot = textBox_CreditRightCoinSlot.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.CreditServiceButton = textBox_CreditServiceButton.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch1 = textBox_DIPSwitch1.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch2 = textBox_DIPSwitch2.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch3 = textBox_DIPSwitch3.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch4 = textBox_DIPSwitch4.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch5 = textBox_DIPSwitch5.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch6 = textBox_DIPSwitch6.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch7 = textBox_DIPSwitch7.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch8 = textBox_DIPSwitch8.Text;
         }
         public override void DefaultSettings()
         {
@@ -84,17 +84,17 @@ namespace MyNes
         }
         private void LoadSetting()
         {
-            textBox_CreditLeftCoinSlot.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.CreditLeftCoinSlot;
-            textBox_CreditRightCoinSlot.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.CreditRightCoinSlot;
-            textBox_CreditServiceButton.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.CreditServiceButton;
-            textBox_DIPSwitch1.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch1;
-            textBox_DIPSwitch2.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch2;
-            textBox_DIPSwitch3.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch3;
-            textBox_DIPSwitch4.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch4;
-            textBox_DIPSwitch5.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch5;
-            textBox_DIPSwitch6.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch6;
-            textBox_DIPSwitch7.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch7;
-            textBox_DIPSwitch8.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].VSunisystemDIP.DIPSwitch8;
+            textBox_CreditLeftCoinSlot.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.CreditLeftCoinSlot;
+            textBox_CreditRightCoinSlot.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.CreditRightCoinSlot;
+            textBox_CreditServiceButton.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.CreditServiceButton;
+            textBox_DIPSwitch1.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch1;
+            textBox_DIPSwitch2.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch2;
+            textBox_DIPSwitch3.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch3;
+            textBox_DIPSwitch4.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch4;
+            textBox_DIPSwitch5.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch5;
+            textBox_DIPSwitch6.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch6;
+            textBox_DIPSwitch7.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch7;
+            textBox_DIPSwitch8.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].VSunisystemDIP.DIPSwitch8;
         }
 
         private void textBox_CreditServiceButton_MouseDoubleClick(object sender, MouseEventArgs e)

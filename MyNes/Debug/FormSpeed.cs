@@ -65,6 +65,7 @@ namespace MyNes
                 if (fps > max)
                     max = fps;
                 textBox_fpsCanMake.Text = fps.ToString();
+                textBox_fps.Text = Nes.SpeedLimiter.FramePeriod.ToString();
                 label_min_max.Text = "Min= " + min.ToString() + "\nMax= " + max.ToString();
             }
         }

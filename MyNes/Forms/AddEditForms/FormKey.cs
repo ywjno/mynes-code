@@ -27,7 +27,7 @@ using System.Windows.Forms;
 using SlimDX;
 using SlimDX.DirectInput;
 using MyNes.Core.IO.Input;
-
+using MyNes.WinRenderers;
 namespace MyNes
 {
     public partial class FormKey : Form

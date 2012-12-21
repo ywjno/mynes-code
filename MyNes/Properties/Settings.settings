@@ -14,29 +14,8 @@
     <Setting Name="console_size" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">800, 600</Value>
     </Setting>
-    <Setting Name="CurrentRenderer" Type="MyNes.SupportedRenderers" Scope="User">
-      <Value Profile="(Default)">SlimDX</Value>
-    </Setting>
-    <Setting Name="StateFolder" Type="System.String" Scope="User">
-      <Value Profile="(Default)">.\StateSaves</Value>
-    </Setting>
-    <Setting Name="ControlProfileIndex" Type="System.Int32" Scope="User">
+    <Setting Name="CurrentRendererIndex" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="SnapshotsFolder" Type="System.String" Scope="User">
-      <Value Profile="(Default)">.\Snapshots</Value>
-    </Setting>
-    <Setting Name="Volume" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="SoundPlaybackFreq" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">44100</Value>
-    </Setting>
-    <Setting Name="SoundEnabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="EmuSystem" Type="MyNes.Core.Types.EmulationSystem" Scope="User">
-      <Value Profile="(Default)">AUTO</Value>
     </Setting>
     <Setting Name="MainFormLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">283, 64</Value>
@@ -47,41 +26,11 @@
     <Setting Name="SplitContainer2" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">248</Value>
     </Setting>
-    <Setting Name="VideoResIndex" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="VideoImmediateMode" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="VideoHideLines" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="PaletteSettings" Type="MyNes.PaletteSettings" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="VideoFullscreen" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="SnapshotFormat" Type="System.String" Scope="User">
-      <Value Profile="(Default)">.png</Value>
-    </Setting>
-    <Setting Name="VideoAdapterIndex" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="VideoStretchMultiply" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">2</Value>
-    </Setting>
     <Setting Name="ColumnWidths" Type="MyNes.ColumnWidthsCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ControlProfiles" Type="MyNes.ControlProfilesCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="RecentFiles" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="SoundLatency" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">50</Value>
     </Setting>
     <Setting Name="FilterIndex" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>

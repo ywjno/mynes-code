@@ -26,7 +26,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes.Forms
 {
     public partial class FormMain : Form
@@ -177,7 +177,7 @@ namespace MyNes.Forms
             #endregion
             try
             {
-                Nes.CreateNew(FileName, Program.Settings.EmuSystem);
+                Nes.CreateNew(FileName, RenderersCore.SettingsManager.Settings.Emu_EmulationSystem);
             }
             catch (NotSupportedMapperException ex)
             {
@@ -194,11 +194,13 @@ namespace MyNes.Forms
                 MessageBox.Show(ex.Message + "\n\n" + ex.ToString());
                 return;
             }
-            //the renderer (or the host) will setup input and output
-            LaunchTheRenderer();
-            //turn on
+            // turn on
             Nes.TurnOn();
-            //launch thread
+            // pause the emulation so the renderer should continue once it's ready
+            Nes.Pause = true;
+            // the renderer (or the host) will setup input and output
+            LaunchTheRenderer();
+            // launch thread
             gameThread = new Thread(new ThreadStart(Nes.Run));
             gameThread.Start();
 
@@ -325,13 +327,11 @@ namespace MyNes.Forms
         }
         private void LaunchTheRenderer()
         {
-            switch (Program.Settings.CurrentRenderer)
+            try
             {
-                case SupportedRenderers.SlimDX:
-                    RendererFormSlimDX frm = new RendererFormSlimDX();
-                    frm.Show();
-                    break;
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Start();
             }
+            catch { }
         }
         private void AddRecent(string fileName)
         {
@@ -789,13 +789,13 @@ namespace MyNes.Forms
         }
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Nes.ON && Directory.Exists(Program.Settings.StateFolder))
-                Nes.SaveState(Program.Settings.StateFolder);
+            if (Nes.ON && Directory.Exists(RenderersCore.SettingsManager.Settings.Folders_StateFolder))
+                Nes.SaveState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
         }
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Nes.ON && Directory.Exists(Program.Settings.StateFolder))
-                Nes.LoadState(Program.Settings.StateFolder);
+            if (Nes.ON && Directory.Exists(RenderersCore.SettingsManager.Settings.Folders_StateFolder))
+                Nes.LoadState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
         }
         private void inputToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -815,23 +815,23 @@ namespace MyNes.Forms
         private void inputToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             profileToolStripMenuItem.DropDownItems.Clear();
-            for (int i = 0; i < Program.Settings.ControlProfiles.Count; i++)
+            for (int i = 0; i < RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection.Count; i++)
             {
                 ToolStripMenuItem item = new ToolStripMenuItem();
-                item.Text = Program.Settings.ControlProfiles[i].Name;
-                item.Checked = i == Program.Settings.ControlProfileIndex;
+                item.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[i].Name;
+                item.Checked = i == RenderersCore.SettingsManager.Settings.Controls_ProfileIndex;
                 profileToolStripMenuItem.DropDownItems.Add(item);
             }
-            connect4PlayersToolStripMenuItem.Checked = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Connect4Players;
-            connectZapperToolStripMenuItem.Checked = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].ConnectZapper;
+            connect4PlayersToolStripMenuItem.Checked = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players;
+            connectZapperToolStripMenuItem.Checked = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper;
         }
         private void profileToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            for (int i = 0; i < Program.Settings.ControlProfiles.Count; i++)
+            for (int i = 0; i < RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection.Count; i++)
             {
-                if (e.ClickedItem.Text == Program.Settings.ControlProfiles[i].Name)
+                if (e.ClickedItem.Text == RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[i].Name)
                 {
-                    Program.Settings.ControlProfileIndex = i;
+                    RenderersCore.SettingsManager.Settings.Controls_ProfileIndex = i;
                     //to apply setting, shutdown the renderer then re-launch it !!
                     if (Nes.ON)
                     {
@@ -889,7 +889,7 @@ namespace MyNes.Forms
         }
         private void emulationSystemToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            switch (Program.Settings.EmuSystem)
+            switch (RenderersCore.SettingsManager.Settings.Emu_EmulationSystem)
             {
                 case EmulationSystem.AUTO:
                     autoToolStripMenuItem.Checked = true;
@@ -919,15 +919,15 @@ namespace MyNes.Forms
         }
         private void autoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.EmuSystem = EmulationSystem.AUTO;
+            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.AUTO;
         }
         private void nTSCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.EmuSystem = EmulationSystem.NTSC;
+            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.NTSC;
         }
         private void pALToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.EmuSystem = EmulationSystem.PALB;
+            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.PALB;
         }
         private void videoToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -990,8 +990,8 @@ namespace MyNes.Forms
             if (Nes.ON)
                 Nes.TogglePause(true);
 
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].ConnectZapper = !
-                Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].ConnectZapper;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper = !
+                RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper;
             //reset renderer to apply
             if (Nes.ON)
             {
@@ -1006,8 +1006,8 @@ namespace MyNes.Forms
             if (Nes.ON)
                 Nes.TogglePause(true);
 
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Connect4Players = !
-                Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Connect4Players;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players = !
+                RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players;
             //reset renderer to apply
             if (Nes.ON)
             {
@@ -1130,7 +1130,7 @@ namespace MyNes.Forms
         }
         private void dENDYToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.EmuSystem = EmulationSystem.DENDY;
+            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.DENDY;
         }
         private void buttonDeleteFolder_EnabledChanged(object sender, EventArgs e)
         {
@@ -1186,6 +1186,21 @@ namespace MyNes.Forms
         {
             if (e.KeyCode == Keys.Return)
                 DoFilter(this, new EventArgs());
+        }
+        private void rendererToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+                Nes.TogglePause(true);
+            FormRendererSelect frm = new FormRendererSelect();
+            frm.ShowDialog(this);
+            //to apply setting, shutdown the renderer then re-launch it !!
+            if (Nes.ON)
+            {
+                Nes.OnRendererShutdown();
+                LaunchTheRenderer();
+
+                Nes.TogglePause(false);
+            }
         }
     }
 }
