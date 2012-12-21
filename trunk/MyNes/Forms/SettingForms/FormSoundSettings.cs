@@ -24,7 +24,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class FormSoundSettings : Form
@@ -37,14 +37,13 @@ namespace MyNes
             comboBox1.Items.Add(44100);
             comboBox1.Items.Add(48000);
 
-
-            checkBox_enableSound.Checked = Program.Settings.SoundEnabled;
-            comboBox1.SelectedItem = Program.Settings.SoundPlaybackFreq;
-            trackBar1.Value = Program.Settings.Volume;
+            checkBox_enableSound.Checked = RenderersCore.SettingsManager.Settings.Sound_Enabled;
+            comboBox1.SelectedItem = RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq;
+            trackBar1.Value = RenderersCore.SettingsManager.Settings.Sound_Volume;
             label_volLevel.Text = ((((100 * (3000 - trackBar1.Value)) / 3000) - 200) * -1).ToString() + " %";
 
-            trackBar_latency.Value = Program.Settings.SoundLatency / 10;
-            label_latency.Text = Program.Settings.SoundLatency.ToString();
+            trackBar_latency.Value = RenderersCore.SettingsManager.Settings.Sound_Latency / 10;
+            label_latency.Text = RenderersCore.SettingsManager.Settings.Sound_Latency.ToString();
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -54,12 +53,12 @@ namespace MyNes
         //ok
         private void button1_Click(object sender, EventArgs e)
         {
-            Program.Settings.SoundEnabled = checkBox_enableSound.Checked;
-            Program.Settings.SoundPlaybackFreq = (int)comboBox1.SelectedItem;
+            RenderersCore.SettingsManager.Settings.Sound_Enabled = checkBox_enableSound.Checked;
+            RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq = (int)comboBox1.SelectedItem;
 
-            Program.Settings.Volume = trackBar1.Value;
-            Program.Settings.SoundLatency = (trackBar_latency.Value * 10);
-            Program.Settings.Save();
+            RenderersCore.SettingsManager.Settings.Sound_Volume = trackBar1.Value;
+            RenderersCore.SettingsManager.Settings.Sound_Latency = (trackBar_latency.Value * 10);
+            RenderersCore.SettingsManager.SaveSettings();
             Close();
         }
         //defaults

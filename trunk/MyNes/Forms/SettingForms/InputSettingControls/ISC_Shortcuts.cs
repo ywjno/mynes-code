@@ -24,7 +24,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class ISC_Shortcuts : InputSettingsControl
@@ -36,49 +36,49 @@ namespace MyNes
         }
         private void LoadSettings()
         {
-            textBox_hardReset.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.HardReset;
-            textBox_loadState.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.LoadState;
-            textBox_saveState.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SaveState;
-            textBox_shutdownEmu.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ShutdownEmulation;
-            textBox_slot0.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot0;
-            textBox_slot1.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot1;
-            textBox_slot2.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot2;
-            textBox_slot3.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot3;
-            textBox_slot4.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot4;
-            textBox_slot5.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot5;
-            textBox_slot6.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot6;
-            textBox_slot7.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot7;
-            textBox_slot8.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot8;
-            textBox_slot9.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot9;
-            textBox_softReset.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SoftReset;
-            textBox_takeSnapshot.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.TakeSnapshot;
-            textBox_toggleLimiter.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ToggleLimiter;
-            textBox_togglePause.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.PauseEmulation;
-            textBox_resumeEmu.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ResumeEmulation;
-            textBox_fullscreen.Text = Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.Fullscreen;
+            textBox_hardReset.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.HardReset;
+            textBox_loadState.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.LoadState;
+            textBox_saveState.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SaveState;
+            textBox_shutdownEmu.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.ShutdownEmulation;
+            textBox_slot0.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot0;
+            textBox_slot1.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot1;
+            textBox_slot2.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot2;
+            textBox_slot3.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot3;
+            textBox_slot4.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot4;
+            textBox_slot5.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot5;
+            textBox_slot6.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot6;
+            textBox_slot7.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot7;
+            textBox_slot8.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot8;
+            textBox_slot9.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot9;
+            textBox_softReset.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SoftReset;
+            textBox_takeSnapshot.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.TakeSnapshot;
+            textBox_toggleLimiter.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.ToggleLimiter;
+            textBox_togglePause.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.PauseEmulation;
+            textBox_resumeEmu.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.ResumeEmulation;
+            textBox_fullscreen.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.Fullscreen;
         }
         public override void SaveSettings()
         {
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.HardReset = textBox_hardReset.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.LoadState = textBox_loadState.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SaveState = textBox_saveState.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ShutdownEmulation = textBox_shutdownEmu.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot0 = textBox_slot0.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot1 = textBox_slot1.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot2 = textBox_slot2.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot3 = textBox_slot3.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot4 = textBox_slot4.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot5 = textBox_slot5.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot6 = textBox_slot6.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot7 = textBox_slot7.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot8 = textBox_slot8.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SelecteSlot9 = textBox_slot9.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.SoftReset = textBox_softReset.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.TakeSnapshot = textBox_takeSnapshot.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ToggleLimiter = textBox_toggleLimiter.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.PauseEmulation = textBox_togglePause.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.ResumeEmulation = textBox_resumeEmu.Text;
-            Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Shortcuts.Fullscreen = textBox_fullscreen.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.HardReset = textBox_hardReset.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.LoadState = textBox_loadState.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SaveState = textBox_saveState.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.ShutdownEmulation = textBox_shutdownEmu.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot0 = textBox_slot0.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot1 = textBox_slot1.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot2 = textBox_slot2.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot3 = textBox_slot3.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot4 = textBox_slot4.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot5 = textBox_slot5.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot6 = textBox_slot6.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot7 = textBox_slot7.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot8 = textBox_slot8.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SelecteSlot9 = textBox_slot9.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.SoftReset = textBox_softReset.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.TakeSnapshot = textBox_takeSnapshot.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.ToggleLimiter = textBox_toggleLimiter.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.PauseEmulation = textBox_togglePause.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.ResumeEmulation = textBox_resumeEmu.Text;
+            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Shortcuts.Fullscreen = textBox_fullscreen.Text;
         }
         public override void OnSettingsSelect()
         {
@@ -109,7 +109,7 @@ namespace MyNes
         }
         private void ChangeControlMapping(TextBox button)
         {
-            if (Program.Settings.ControlProfileIndex == 0)
+            if (RenderersCore.SettingsManager.Settings.Controls_ProfileIndex == 0)
             {
                 MessageBox.Show("You can't change mapping of default profile. To do so, select profiles page, add new profile then select this page again to change mapping.");
                 return;

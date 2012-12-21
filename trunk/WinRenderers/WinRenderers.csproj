@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5902A3B7-5BD8-42D6-B194-0491C797252B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyNes.WinRenderers</RootNamespace>
+    <AssemblyName>WinRenderers</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Releases\x86\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|AnyCPU'">
+    <OutputPath>bin\x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\x86\</OutputPath>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SlimDX\SlimDXRenderer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlimDX\Audio\AudioDSD.cs" />
+    <Compile Include="SlimDX\Audio\WaveRecorder.cs" />
+    <Compile Include="SlimDX\Input\InputDevice.cs" />
+    <Compile Include="SlimDX\Input\InputManager.cs" />
+    <Compile Include="SlimDX\Input\JoyButton.cs" />
+    <Compile Include="SlimDX\Input\Joypad.cs" />
+    <Compile Include="SlimDX\Input\MyNesShortcuts.cs" />
+    <Compile Include="SlimDX\Input\VSUnisystemDIP.cs" />
+    <Compile Include="SlimDX\Input\Zapper.cs" />
+    <Compile Include="SlimDX\RendererFormSlimDX.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SlimDX\RendererFormSlimDX.Designer.cs">
+      <DependentUpon>RendererFormSlimDX.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shared\Timer.cs" />
+    <Compile Include="SlimDX\Video\VideoD3D.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NesCore\NesCore.csproj">
+      <Project>{e91ac0c3-2a35-4197-ab9b-4a24db83f613}</Project>
+      <Name>NesCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Renderers\Renderers.csproj">
+      <Project>{ebe7db97-4b80-4ece-bd2a-fb24f441c9da}</Project>
+      <Name>Renderers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SlimDX\RendererFormSlimDX.resx">
+      <DependentUpon>RendererFormSlimDX.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

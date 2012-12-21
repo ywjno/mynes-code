@@ -26,6 +26,7 @@ using System.Text;
 using System.Windows.Forms;
 using SlimDX;
 using SlimDX.Direct3D9;
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class FormVideoSettings : Form
@@ -34,16 +35,11 @@ namespace MyNes
         {
             Direct3D d3d = new Direct3D();
             InitializeComponent();
-            //renderers
-            string[] rndrs = Enum.GetNames(typeof(SupportedRenderers));
-            foreach (string name in rndrs)
-                comboBox_currentRenderer.Items.Add(name);
-            comboBox_currentRenderer.SelectedItem = Program.Settings.CurrentRenderer.ToString();
             //adpaters
             foreach (AdapterInformation adp in d3d.Adapters)
                 comboBox_adapter.Items.Add(adp.Details.Description);
 
-            comboBox_adapter.SelectedIndex = Program.Settings.VideoAdapterIndex;
+            comboBox_adapter.SelectedIndex = RenderersCore.SettingsManager.Settings.Video_AdapterIndex;
             //res
             for (int i = 0; i < d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8).Count; i++)
             {
@@ -51,14 +47,14 @@ namespace MyNes
                     d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8)[i].Height + " " +
                     d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8)[i].RefreshRate + " Hz");
             }
-            comboBox_fullscreenRes.SelectedIndex = Program.Settings.VideoResIndex;
-            checkBox_hideLines.Checked = Program.Settings.VideoHideLines;
-            checkBox_imMode.Checked = Program.Settings.VideoImmediateMode;
-            checkBox_fullscreen.Checked = Program.Settings.VideoFullscreen;
+            comboBox_fullscreenRes.SelectedIndex = RenderersCore.SettingsManager.Settings.Video_ResIndex;
+            checkBox_hideLines.Checked = RenderersCore.SettingsManager.Settings.Video_HideLines;
+            checkBox_imMode.Checked = RenderersCore.SettingsManager.Settings.Video_ImmediateMode;
+            checkBox_fullscreen.Checked = RenderersCore.SettingsManager.Settings.Video_Fullscreen;
             //stretch
-            numericUpDown1.Value = Program.Settings.VideoStretchMultiply;
+            numericUpDown1.Value = RenderersCore.SettingsManager.Settings.Video_StretchMultiply;
             //snapshot image format
-            switch (Program.Settings.SnapshotFormat.ToLower())
+            switch (RenderersCore.SettingsManager.Settings.Video_SnapshotFormat.ToLower())
             {
                 case ".jpg": radioButton_jpg.Checked = true; break;
                 case ".bmp": radioButton_bmp.Checked = true; break;
@@ -73,32 +69,30 @@ namespace MyNes
         //ok
         private void button1_Click(object sender, EventArgs e)
         {
-            Program.Settings.CurrentRenderer = (SupportedRenderers)Enum.Parse(typeof(SupportedRenderers),
-                comboBox_currentRenderer.SelectedItem.ToString());
-            Program.Settings.VideoAdapterIndex = comboBox_adapter.SelectedIndex;
-            Program.Settings.VideoResIndex = comboBox_fullscreenRes.SelectedIndex;
-            Program.Settings.VideoHideLines = checkBox_hideLines.Checked;
-            Program.Settings.VideoImmediateMode = checkBox_imMode.Checked;
-            Program.Settings.VideoFullscreen = checkBox_fullscreen.Checked;
-            Program.Settings.VideoStretchMultiply = (int)numericUpDown1.Value;
+            RenderersCore.SettingsManager.Settings.Video_AdapterIndex = comboBox_adapter.SelectedIndex;
+            RenderersCore.SettingsManager.Settings.Video_ResIndex = comboBox_fullscreenRes.SelectedIndex;
+            RenderersCore.SettingsManager.Settings.Video_HideLines = checkBox_hideLines.Checked;
+            RenderersCore.SettingsManager.Settings.Video_ImmediateMode = checkBox_imMode.Checked;
+            RenderersCore.SettingsManager.Settings.Video_Fullscreen = checkBox_fullscreen.Checked;
+            RenderersCore.SettingsManager.Settings.Video_StretchMultiply = (int)numericUpDown1.Value;
             //snapshot image format
             if (radioButton_jpg.Checked)
-                Program.Settings.SnapshotFormat = ".jpg";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".jpg";
             else if (radioButton_bmp.Checked)
-                Program.Settings.SnapshotFormat = ".bmp";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".bmp";
             else if (radioButton_png.Checked)
-                Program.Settings.SnapshotFormat = ".png";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".png";
             else if (radioButton_gif.Checked)
-                Program.Settings.SnapshotFormat = ".gif";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".gif";
             else if (radioButton_tiff.Checked)
-                Program.Settings.SnapshotFormat = ".tiff";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".tiff";
             else if (radioButton_emf.Checked)
-                Program.Settings.SnapshotFormat = ".emf";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".emf";
             else if (radioButton_wmf.Checked)
-                Program.Settings.SnapshotFormat = ".wmf";
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".wmf";
             else if (radioButton_exif.Checked)
-                Program.Settings.SnapshotFormat = ".exif";
-            Program.Settings.Save();
+                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".exif";
+            RenderersCore.SettingsManager.SaveSettings();
             Close();
         }
         //cancel
@@ -109,7 +103,7 @@ namespace MyNes
         //defaults
         private void button3_Click(object sender, EventArgs e)
         {
-            comboBox_adapter.SelectedIndex = comboBox_currentRenderer.SelectedIndex = comboBox_fullscreenRes.SelectedIndex = 0;
+            comboBox_adapter.SelectedIndex = comboBox_fullscreenRes.SelectedIndex = 0;
             numericUpDown1.Value = 2;
             checkBox_hideLines.Checked = true;
             checkBox_imMode.Checked = true;

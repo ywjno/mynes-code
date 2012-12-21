@@ -305,12 +305,15 @@ namespace MyNes.Core
                 VideoDevice.Shutdown();
                 AudioDevice.Shutdown();
 
-                if (EmuShutdown != null)
-                    EmuShutdown(null, null);
+                OnEmuShutdown();
                 Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
             }
         }
-
+        public static void OnEmuShutdown()
+        {
+            if (EmuShutdown != null)
+                EmuShutdown(null, null);
+        }
         public static void SoftReset()
         {
             if (ON)

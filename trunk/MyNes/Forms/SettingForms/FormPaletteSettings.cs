@@ -27,6 +27,7 @@ using System.Text;
 using System.Windows.Forms;
 using MyNes.Core;
 using MyNes.Core.PPU;
+using MyNes.Renderers;
 using System.IO;
 namespace MyNes
 {
@@ -36,29 +37,29 @@ namespace MyNes
         {
             InitializeComponent();
             //load
-            NTSCPaletteGenerator.brightness = Program.Settings.PaletteSettings.NTSC_brightness;
-            NTSCPaletteGenerator.contrast = Program.Settings.PaletteSettings.NTSC_contrast;
-            NTSCPaletteGenerator.gamma = Program.Settings.PaletteSettings.NTSC_gamma;
-            NTSCPaletteGenerator.hue_tweak = Program.Settings.PaletteSettings.NTSC_hue_tweak;
-            NTSCPaletteGenerator.saturation = Program.Settings.PaletteSettings.NTSC_saturation;
+            NTSCPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness;
+            NTSCPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast;
+            NTSCPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma;
+            NTSCPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak;
+            NTSCPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation;
 
-            PALBPaletteGenerator.brightness = Program.Settings.PaletteSettings.PALB_brightness;
-            PALBPaletteGenerator.contrast = Program.Settings.PaletteSettings.PALB_contrast;
-            PALBPaletteGenerator.gamma = Program.Settings.PaletteSettings.PALB_gamma;
-            PALBPaletteGenerator.hue_tweak = Program.Settings.PaletteSettings.PALB_hue_tweak;
-            PALBPaletteGenerator.saturation = Program.Settings.PaletteSettings.PALB_saturation;
+            PALBPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_brightness;
+            PALBPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_contrast;
+            PALBPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_gamma;
+            PALBPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_hue_tweak;
+            PALBPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_saturation;
 
-            hScrollBar_brightness.Value = (int)(Program.Settings.PaletteSettings.NTSC_brightness * 1000);
-            hScrollBar_contrast.Value = (int)(Program.Settings.PaletteSettings.NTSC_contrast * 1000);
-            hScrollBar_gamma.Value = (int)(Program.Settings.PaletteSettings.NTSC_gamma * 1000);
-            hScrollBar_hue_tweak.Value = (int)(Program.Settings.PaletteSettings.NTSC_hue_tweak * 1000);
-            hScrollBar_saturation.Value = (int)(Program.Settings.PaletteSettings.NTSC_saturation * 1000);
+            hScrollBar_brightness.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness * 1000);
+            hScrollBar_contrast.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast * 1000);
+            hScrollBar_gamma.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma * 1000);
+            hScrollBar_hue_tweak.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak * 1000);
+            hScrollBar_saturation.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation * 1000);
 
-            label_bright.Text = Program.Settings.PaletteSettings.NTSC_brightness.ToString("F3");
-            label_const.Text = Program.Settings.PaletteSettings.NTSC_contrast.ToString("F3");
-            label_gamma.Text = Program.Settings.PaletteSettings.NTSC_gamma.ToString("F3");
-            label_hue.Text = Program.Settings.PaletteSettings.NTSC_hue_tweak.ToString("F3");
-            label_satur.Text = Program.Settings.PaletteSettings.NTSC_saturation.ToString("F3");
+            label_bright.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness.ToString("F3");
+            label_const.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast.ToString("F3");
+            label_gamma.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma.ToString("F3");
+            label_hue.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak.ToString("F3");
+            label_satur.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation.ToString("F3");
         }
         unsafe void ShowPalette(int[] PaletteFormat)
         {
@@ -390,17 +391,17 @@ namespace MyNes
         private void button2_Click(object sender, EventArgs e)
         {
             //reset and close
-            NTSCPaletteGenerator.brightness = Program.Settings.PaletteSettings.NTSC_brightness;
-            NTSCPaletteGenerator.contrast = Program.Settings.PaletteSettings.NTSC_contrast;
-            NTSCPaletteGenerator.gamma = Program.Settings.PaletteSettings.NTSC_gamma;
-            NTSCPaletteGenerator.hue_tweak = Program.Settings.PaletteSettings.NTSC_hue_tweak;
-            NTSCPaletteGenerator.saturation = Program.Settings.PaletteSettings.NTSC_saturation;
+            NTSCPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness;
+            NTSCPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast;
+            NTSCPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma;
+            NTSCPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak;
+            NTSCPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation;
 
-            PALBPaletteGenerator.brightness = Program.Settings.PaletteSettings.PALB_brightness;
-            PALBPaletteGenerator.contrast = Program.Settings.PaletteSettings.PALB_contrast;
-            PALBPaletteGenerator.gamma = Program.Settings.PaletteSettings.PALB_gamma;
-            PALBPaletteGenerator.hue_tweak = Program.Settings.PaletteSettings.PALB_hue_tweak;
-            PALBPaletteGenerator.saturation = Program.Settings.PaletteSettings.PALB_saturation;
+            PALBPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_brightness;
+            PALBPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_contrast;
+            PALBPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_gamma;
+            PALBPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_hue_tweak;
+            PALBPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_saturation;
 
             int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() : PALBPaletteGenerator.GeneratePalette();
             ShowPalette(palette);
@@ -412,25 +413,25 @@ namespace MyNes
         //ok
         private void button1_Click(object sender, EventArgs e)
         {
-            Program.Settings.PaletteSettings.NTSC_brightness = NTSCPaletteGenerator.brightness;
-            Program.Settings.PaletteSettings.NTSC_contrast = NTSCPaletteGenerator.contrast;
-            Program.Settings.PaletteSettings.NTSC_gamma = NTSCPaletteGenerator.gamma;
-            Program.Settings.PaletteSettings.NTSC_hue_tweak = NTSCPaletteGenerator.hue_tweak;
-            Program.Settings.PaletteSettings.NTSC_saturation = NTSCPaletteGenerator.saturation;
+            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness = NTSCPaletteGenerator.brightness;
+            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast = NTSCPaletteGenerator.contrast;
+            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma = NTSCPaletteGenerator.gamma;
+            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak = NTSCPaletteGenerator.hue_tweak;
+            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation = NTSCPaletteGenerator.saturation;
 
-            Program.Settings.PaletteSettings.PALB_brightness = PALBPaletteGenerator.brightness;
-            Program.Settings.PaletteSettings.PALB_contrast = PALBPaletteGenerator.contrast;
-            Program.Settings.PaletteSettings.PALB_gamma = PALBPaletteGenerator.gamma;
-            Program.Settings.PaletteSettings.PALB_hue_tweak = PALBPaletteGenerator.hue_tweak;
-            Program.Settings.PaletteSettings.PALB_saturation = PALBPaletteGenerator.saturation;
+            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_brightness = PALBPaletteGenerator.brightness;
+            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_contrast = PALBPaletteGenerator.contrast;
+            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_gamma = PALBPaletteGenerator.gamma;
+            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_hue_tweak = PALBPaletteGenerator.hue_tweak;
+            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_saturation = PALBPaletteGenerator.saturation;
 
-            int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() : 
+            int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() :
                 PALBPaletteGenerator.GeneratePalette();
             ShowPalette(palette);
             if (Nes.ON)
                 Nes.Ppu.SetupPalette(palette);
 
-            Program.Settings.Save();
+            RenderersCore.SettingsManager.SaveSettings();
             Close();
         }
     }

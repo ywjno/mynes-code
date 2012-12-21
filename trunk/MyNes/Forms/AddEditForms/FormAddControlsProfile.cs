@@ -24,7 +24,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class FormAddControlsProfile : Form
@@ -32,7 +32,7 @@ namespace MyNes
         public FormAddControlsProfile()
         {
             InitializeComponent();
-            foreach (ControlProfile profile in Program.Settings.ControlProfiles)
+            foreach (ControlProfile profile in RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection)
                 comboBox1.Items.Add(profile.Name);
             comboBox1.SelectedIndex = 0;
         }

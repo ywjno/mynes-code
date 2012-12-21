@@ -24,7 +24,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     public partial class FormInput : Form
@@ -32,7 +32,8 @@ namespace MyNes
         public FormInput()
         {
             InitializeComponent();
-            this.Text = "Input settings (Current profile: " + Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Name + ")";
+            this.Text = "Input settings (Current profile: " +
+                RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Name + ")";
             //Add controls
             ISC_Profiles pr = new ISC_Profiles();
             controls.Add(pr);
@@ -69,7 +70,7 @@ namespace MyNes
 
         void pr_ProfileChanged(object sender, EventArgs e)
         {
-            this.Text = "Input settings (Current profile: " + Program.Settings.ControlProfiles[Program.Settings.ControlProfileIndex].Name + ")";
+            this.Text = "Input settings (Current profile: " + RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Name + ")";
         }
         List<InputSettingsControl> controls = new List<InputSettingsControl>();
         //close
@@ -102,7 +103,7 @@ namespace MyNes
         {
             foreach (InputSettingsControl control in controls)
                 control.SaveSettings();
-            Program.Settings.Save();
+            RenderersCore.SettingsManager.SaveSettings();
         }
     }
 }

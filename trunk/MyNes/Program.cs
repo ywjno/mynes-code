@@ -23,7 +23,7 @@ using MyNes.Properties;
 using MyNes.Forms;
 using MyNes.Core;
 using MyNes.Core.Database;
-
+using MyNes.Renderers;
 namespace MyNes
 {
     static class Program
@@ -33,12 +33,15 @@ namespace MyNes
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+            //load settings
             settings.Reload();
+            RenderersCore.SettingsManager.LoadSettings();
             FixDefaultSettings();
-
+            //find renderers
+            RenderersCore.FindRenderers(Application.StartupPath);
+            //launch the core
             Nes.StartUp();
-
+            //start gui
             Application.Run(new FormMain(args));
         }
 
@@ -53,19 +56,19 @@ namespace MyNes
         public static void FixDefaultSettings()
         {
             //fix paths
-            if (Program.Settings.StateFolder.Substring(0, 2) == @".\")
-                Program.Settings.StateFolder = Path.GetFullPath(Program.Settings.StateFolder);
-            if (Program.Settings.SnapshotsFolder.Substring(0, 2) == @".\")
-                Program.Settings.SnapshotsFolder = Path.GetFullPath(Program.Settings.SnapshotsFolder);
+            if (RenderersCore.SettingsManager.Settings.Folders_StateFolder.Substring(0, 2) == @".\")
+                RenderersCore.SettingsManager.Settings.Folders_StateFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
+            if (RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder.Substring(0, 2) == @".\")
+                RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
             if (Program.Settings.FoldersDatabasePath.Substring(0, 2) == @".\")
                 Program.Settings.FoldersDatabasePath = Path.GetFullPath(Program.Settings.FoldersDatabasePath);
-            Directory.CreateDirectory(Program.Settings.StateFolder);
-            Directory.CreateDirectory(Program.Settings.SnapshotsFolder);
+            Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
+            Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
             //build default controls profile if nesseccary
             ControlProfile.BuildDefaultProfile();
             //fix palette settings
-            if (settings.PaletteSettings == null)
-                settings.PaletteSettings = new PaletteSettings();
+            if (RenderersCore.SettingsManager.Settings.Video_Palette == null)
+                RenderersCore.SettingsManager.Settings.Video_Palette = new PaletteSettings();
         }
     }
 }

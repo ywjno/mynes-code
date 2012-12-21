@@ -18,7 +18,7 @@
  */
 using System.Windows.Forms;
 using MyNes.Core;
-
+using MyNes.Renderers;
 namespace MyNes.Debug.ConsoleCommands
 {
     public class OpenRom : ConsoleCommand
@@ -48,11 +48,10 @@ namespace MyNes.Debug.ConsoleCommands
                 {
                     try
                     {
-                        Nes.CreateNew(form.FileName, Program.Settings.EmuSystem);
+                        Nes.CreateNew(form.FileName, RenderersCore.SettingsManager.Settings.Emu_EmulationSystem);
                         //launch the renderer form (slimdx for now)
                         //the renderer (or host) form should setup input and output
-                        RendererFormSlimDX frm = new RendererFormSlimDX();
-                        frm.Show();
+                        RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Start();
                         //for tests, make result outputs on the console
                         if (parameters.Contains("output_on"))
                         {
