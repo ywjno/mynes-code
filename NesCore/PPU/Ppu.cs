@@ -67,7 +67,7 @@ namespace MyNes.Core.PPU
         private int clipping;
         private int emphasis;
         private int[] colors;
-        private int[][] screen;
+        public int[][] screen;
         private bool oddSwap;
         private bool spr0Hit;
         private bool sprOverflow;

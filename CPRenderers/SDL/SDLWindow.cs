@@ -39,7 +39,7 @@ namespace CPRenderers
 
         SDLvideo video;
         SDLsound sound;
-        SDLZapper zapper;
+        CPZapper zapper;
         string romName = "";
         private bool isRendererShutdown = false;
         Dictionary<RenderersKeys, Key> keys = new Dictionary<RenderersKeys, Key>();//to convert given key to sdl key
@@ -110,7 +110,7 @@ namespace CPRenderers
         }
         void SetupInput()
         {
-            SDLInputManager inputManager = new SDLInputManager(new SDLJoypad(), new SDLJoypad(), new SDLJoypad(), new SDLJoypad());
+            SDLInputManager inputManager = new SDLInputManager(new CPJoypad(), new CPJoypad(), new CPJoypad(), new CPJoypad());
             ControlProfile profile =
                 RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex];
             // shortcuts
@@ -203,7 +203,7 @@ namespace CPRenderers
             if (profile.ConnectZapper)
             {
                 Nes.ControlsUnit.IsZapperConnected = true;
-                Nes.ControlsUnit.Zapper = zapper = new SDLZapper(this);
+                Nes.ControlsUnit.Zapper = zapper = new CPZapper(new CPZapper.DetectZapperLight(DetectZapperLight));
             }
         }
         Key GetKey(string value)
@@ -215,9 +215,9 @@ namespace CPRenderers
                 RenderersKeys k = (RenderersKeys)Enum.Parse(typeof(RenderersKeys), keyName);
                 return keys[k];
             }
-            return Key.Euro;
+            return Key.Unknown;
         }
-        public bool DetectZapperLight()
+        bool DetectZapperLight()
         { return false; }
         void RedererShutdown()
         {
@@ -238,7 +238,6 @@ namespace CPRenderers
             video.Shutdown();
             //resize
             video.Resize(RenderersCore.SettingsManager.Settings.Video_Fullscreen);
-            Nes.VideoDevice = video;
 
             Nes.TogglePause(false);
         }

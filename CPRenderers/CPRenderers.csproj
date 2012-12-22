@@ -40,7 +40,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>..\MyNes\bin\Debug\</OutputPath>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -61,7 +63,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Tao.Sdl, Version=1.2.13.0, Culture=neutral, PublicKeyToken=9c7a200e36c0094e">
@@ -70,9 +71,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SDL\Input\SDLZapper.cs" />
-    <Compile Include="SDL\Input\SDLVSUnisystemDIP.cs" />
-    <Compile Include="SDL\Input\SDLJoypad.cs" />
+    <Compile Include="Shared\Input\CPZapper.cs" />
+    <Compile Include="Shared\Input\CPVSUnisystemDIP.cs" />
+    <Compile Include="Shared\Input\CPJoypad.cs" />
     <Compile Include="SDL\Input\SDLInputManager.cs" />
     <Compile Include="SDL\Sound\SDLsound.cs" />
     <Compile Include="SDL\Video\SDLvideo.cs" />

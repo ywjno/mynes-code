@@ -26,11 +26,11 @@ namespace CPRenderers
 {
     class SDLInputManager : IInputDevice
     {
-        public SDLJoypad joypad1;
-        public SDLJoypad joypad2;
-        public SDLJoypad joypad3;
-        public SDLJoypad joypad4;
-        public SDLVSUnisystemDIP vsunisystem;
+        public CPJoypad joypad1;
+        public CPJoypad joypad2;
+        public CPJoypad joypad3;
+        public CPJoypad joypad4;
+        public CPVSUnisystemDIP vsunisystem;
         public bool IsFourPlayers = false;
         public bool IsVSUnisystem = false;
         #region joypads
@@ -113,13 +113,13 @@ namespace CPRenderers
         public Key sct_ResumeEmulation = Key.F1;
         public Key sct_Fullscreen = Key.F12;
         #endregion
-        public SDLInputManager(SDLJoypad joypad1, SDLJoypad joypad2)
+        public SDLInputManager(CPJoypad joypad1, CPJoypad joypad2)
         {
             this.joypad1 = joypad1;
             this.joypad2 = joypad2;
             IsFourPlayers = true;
         }
-        public SDLInputManager(SDLJoypad joypad1, SDLJoypad joypad2, SDLJoypad joypad3, SDLJoypad joypad4)
+        public SDLInputManager(CPJoypad joypad1, CPJoypad joypad2, CPJoypad joypad3, CPJoypad joypad4)
         {
             this.joypad1 = joypad1;
             this.joypad2 = joypad2;
@@ -196,7 +196,6 @@ namespace CPRenderers
 
         public void UpdateEvents()
         {
-            if (Nes.Pause) return;
             KeyboardState state = new KeyboardState(true);
             if (state.IsKeyPressed(sct_SaveState))
                 Nes.SaveState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);

@@ -41,6 +41,7 @@ namespace MyNes.Core.Controls
         public double DeadTime;
         public double LastFrameTime;
         public double FramePeriod = (1.0 / 60.0988);
+        public double FPS = 0;
 
         /// <summary>
         /// Call this when a frame completed
@@ -73,9 +74,9 @@ namespace MyNes.Core.Controls
         public void HardReset()
         {
             if (emuSystem.Master == TimingInfo.NTSC.Master)
-                FramePeriod = (1.0 / 60.0988);
+                FramePeriod = (1.0 / (FPS = 60.0988));
             else//PALB, DENDY
-                FramePeriod = (1.0 / 50.0070);
+                FramePeriod = (1.0 / (FPS = 50.0070));
         }
     }
     public interface ITimer
