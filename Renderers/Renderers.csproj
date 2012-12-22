@@ -69,6 +69,7 @@
     <Compile Include="Types\ControlsProfileMyNesShortcut.cs" />
     <Compile Include="Types\ControlsProfilePlayer.cs" />
     <Compile Include="Types\PaletteSettings.cs" />
+    <Compile Include="Shared\WaveRecorder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />

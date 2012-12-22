@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using MyNes.Core;
 using MyNes.Core.IO.Output;
+using MyNes.Renderers;
 using SdlDotNet.Core;
 using SdlDotNet.Audio;
 using Console = MyNes.Core.Console;
@@ -9,8 +10,11 @@ namespace CPRenderers
 {
     class SDLsound : IAudioDevice
     {
-        AudioStream stream;
-        AudioCallback callback;
+        private AudioStream stream;
+        private AudioCallback callback;
+        private WaveRecorder Recorder = new WaveRecorder();
+        private double volume = 100;// 0 - 100
+        private double multi = 0;
         public SDLsound(bool On, int playbackFreq)
         {
             if (On)
@@ -18,6 +22,10 @@ namespace CPRenderers
                 try
                 {
                     Mixer.Initialize();
+                    //TODO: find another way to adjust volume.
+                    volume = ((((100 * (3000 - RenderersCore.SettingsManager.Settings.Sound_Volume)) / 3000) - 200) * -1);
+                    multi = volume / 100.00;
+
                     callback = new AudioCallback(Unsigned16BigCallback);
                     stream = new AudioStream(playbackFreq, AudioFormat.Unsigned16Big,
                         SoundChannel.Mono, 0, callback, "My Nes Sound");
@@ -38,7 +46,11 @@ namespace CPRenderers
             {
                 if (!Nes.Pause)
                 {
-                    buff[bufPos] = Nes.Apu.PullSample();
+                    double sample = Nes.Apu.PullSample();
+                    buff[bufPos] = (short)(multi * sample);
+                    //RECORD
+                    if (Recorder.IsRecording)
+                        Recorder.AddSample(buff[bufPos]);
                     bufPos++;
                 }
             }
@@ -64,6 +76,8 @@ namespace CPRenderers
                 stream.Paused = true;
             }
             Events.CloseAudio();
+            if (Recorder.IsRecording)
+                Recorder.Stop();
         }
 
         public void Play()
@@ -87,22 +101,19 @@ namespace CPRenderers
 
         public bool IsRecording
         {
-            get { return false; }
+            get { return Recorder.IsRecording; }
         }
-
         public void Record(string filePath)
         {
-
+            Recorder.Record(filePath, RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq);
         }
-
         public void RecordStop()
         {
-
+            Recorder.Stop();
         }
-
         public int RecordTime
         {
-            get { return 0; }
+            get { return Recorder.Time; }
         }
     }
 }
