@@ -248,7 +248,8 @@ namespace MyNes.Core
                 }
                 else
                 {
-                    SpeedLimiter.SleepOnPause();
+                    if (SpeedLimiter != null)
+                        SpeedLimiter.SleepOnPause();
                     if (softResetRequest)
                     {
                         softResetRequest = false;
@@ -258,7 +259,7 @@ namespace MyNes.Core
                     else if (hardResetRequest)
                     {
                         hardResetRequest = false;
-                        _hardReset(); 
+                        _hardReset();
                         Pause = false;
                     }
                     else if (saveStateRequest)
@@ -270,7 +271,9 @@ namespace MyNes.Core
                         _loadState();
                     }
                     //for shortcuts
-                    ControlsUnit.InputDevice.UpdateEvents();
+                    if (ControlsUnit != null)
+                        if (ControlsUnit.InputDevice != null)
+                            ControlsUnit.InputDevice.UpdateEvents();
                 }
             }
         }
