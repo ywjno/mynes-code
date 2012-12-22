@@ -20,6 +20,7 @@ using System;
 using System.Windows.Forms;
 using MyNes.Core.IO.Output;
 using MyNes.Core;
+using MyNes.Renderers;
 using SlimDX.DirectSound;
 using SlimDX.Multimedia;
 using Console = MyNes.Core.Console;

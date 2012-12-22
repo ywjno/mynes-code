@@ -20,16 +20,19 @@ using System;
 using System.Text;
 using System.IO;
 
-namespace MyNes.WinRenderers
+namespace MyNes.Renderers
 {
-    class WaveRecorder
+    /// <summary>
+    /// The sound recorder to wav format. Can be used in any platform.
+    /// </summary>
+    public class WaveRecorder
     {
-        Stream STR;
-        bool _IsRecording = false;
-        int SIZE = 0;
-        int NoOfSamples = 0;
-        int _Time = 0;
-        int TimeSamples = 0;
+        private Stream STR;
+        private bool _IsRecording = false;
+        private int SIZE = 0;
+        private int NoOfSamples = 0;
+        private int _Time = 0;
+        private int TimeSamples = 0;
 
         public void Record(string FilePath, int Frequency)
         {
