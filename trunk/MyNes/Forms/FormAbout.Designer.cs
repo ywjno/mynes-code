@@ -92,7 +92,7 @@ namespace MyNes
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(374, 305);
+            this.button1.Location = new System.Drawing.Point(374, 337);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -108,7 +108,7 @@ namespace MyNes
             this.richTextBox1.Location = new System.Drawing.Point(3, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(423, 143);
+            this.richTextBox1.Size = new System.Drawing.Size(423, 175);
             this.richTextBox1.TabIndex = 7;
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
@@ -120,7 +120,7 @@ namespace MyNes
             this.tabControl1.Location = new System.Drawing.Point(12, 124);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(437, 175);
+            this.tabControl1.Size = new System.Drawing.Size(437, 207);
             this.tabControl1.TabIndex = 8;
             // 
             // tabPage1
@@ -129,7 +129,7 @@ namespace MyNes
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(429, 149);
+            this.tabPage1.Size = new System.Drawing.Size(429, 181);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Copyright";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -140,7 +140,7 @@ namespace MyNes
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(429, 149);
+            this.tabPage2.Size = new System.Drawing.Size(429, 181);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Credits";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -153,7 +153,7 @@ namespace MyNes
             this.richTextBox2.Location = new System.Drawing.Point(3, 3);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(423, 143);
+            this.richTextBox2.Size = new System.Drawing.Size(423, 175);
             this.richTextBox2.TabIndex = 4;
             this.richTextBox2.Text = resources.GetString("richTextBox2.Text");
             // 
@@ -163,7 +163,7 @@ namespace MyNes
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(429, 149);
+            this.tabPage3.Size = new System.Drawing.Size(429, 181);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Links";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -176,7 +176,7 @@ namespace MyNes
             this.richTextBox3.Location = new System.Drawing.Point(3, 3);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.ReadOnly = true;
-            this.richTextBox3.Size = new System.Drawing.Size(423, 143);
+            this.richTextBox3.Size = new System.Drawing.Size(423, 175);
             this.richTextBox3.TabIndex = 5;
             this.richTextBox3.Text = resources.GetString("richTextBox3.Text");
             // 
@@ -187,9 +187,9 @@ namespace MyNes
             this.label2.ForeColor = System.Drawing.Color.ForestGreen;
             this.label2.Location = new System.Drawing.Point(6, 46);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(280, 15);
+            this.label2.Size = new System.Drawing.Size(196, 15);
             this.label2.TabIndex = 9;
-            this.label2.Text = "ALPHA RELEASE (development in progress)";
+            this.label2.Text = "BETA RELEASE (test release)";
             // 
             // label_coreVersion
             // 
@@ -217,7 +217,7 @@ namespace MyNes
             this.AcceptButton = this.button1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(461, 340);
+            this.ClientSize = new System.Drawing.Size(461, 372);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.button1);

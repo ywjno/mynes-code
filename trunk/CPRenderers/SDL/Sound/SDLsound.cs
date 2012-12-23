@@ -85,7 +85,7 @@ namespace CPRenderers
             if (stream != null)
             {
                 if (stream.Paused)
-                    stream.Paused = false;
+                { stream.Paused = false; }
             }
         }
 

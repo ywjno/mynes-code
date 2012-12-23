@@ -37,7 +37,7 @@ namespace MyNes.WinRenderers
 
         public override string Description
         {
-            get { return "Render using SlimDX (managed directx) library.\n\nThis renderer requires the SlimDX Runtime for .NET 4.0 (January 2012), for more info please visit: http://slimdx.org/ \nNote that only January 2012 version work with My Nes."; }
+            get { return "Render using SlimDX (managed directx) library.\n\nThis renderer requires the SlimDX Runtime for .NET 4.0 (January 2012), for more info please visit: http://slimdx.org/ \nNote that only January 2012 version work with My Nes.\n\nWritten by Ala Ibrahim Hadid."; }
         }
     }
 }
