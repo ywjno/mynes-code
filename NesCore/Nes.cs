@@ -97,7 +97,7 @@ namespace MyNes.Core
                 Console.UpdateLine("Reading header... Success!", DebugCode.Good);
 
                 RomInfo = new ROM.RomInfo(romPath);
-
+                RomInfo.Format = "INES";
                 RomInfo.CHRcount = header.ChrPages;
                 RomInfo.PRGcount = header.PrgPages;
                 RomInfo.Mirroring = header.Mirroring;

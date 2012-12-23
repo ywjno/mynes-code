@@ -581,7 +581,7 @@ namespace MyNes.Forms
         }
         private void treeView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            PlaySelectedRom();
+            openToolStripMenuItem1_Click(sender, e);
         }
         private void consoleToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1178,7 +1178,7 @@ namespace MyNes.Forms
                     sav.Filter = "PCM Wav (*.wav)|*.wav";
                     if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
                         Nes.AudioDevice.Record(sav.FileName);
-                } 
+                }
                 Nes.TogglePause(false);
             }
         }
@@ -1201,6 +1201,26 @@ namespace MyNes.Forms
 
                 Nes.TogglePause(false);
             }
+        }
+
+        private void locateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedItems.Count != 1)
+                return;
+
+            string path = ((ListViewItemBRom)listView.SelectedItems[0]).BRom.Path;
+
+            if (File.Exists(path))
+                System.Diagnostics.Process.Start("explorer.exe", @"/select, " + path);
+        }
+
+        private void openToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode == null)
+                return;
+            string path = ((TreeNodeBFolder)treeView.SelectedNode).BFolder.Path;
+            if (Directory.Exists(path))
+                System.Diagnostics.Process.Start(path);
         }
     }
 }

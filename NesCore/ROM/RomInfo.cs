@@ -52,6 +52,7 @@ namespace MyNes.Core.ROM
                     { dataBaseCartInfo = cartinf; break; }
             }
         }
+        private string format = "INES";
         private string romPath;
         private string sha1;
         private byte prgs;
@@ -119,5 +120,10 @@ namespace MyNes.Core.ROM
         /// </summary>
         public bool PC10
         { get { return pc10; } set { pc10 = value; } }
+        /// <summary>
+        /// Get or set the current rom file format
+        /// </summary>
+        public string Format
+        { get { return format; } set { format = value; } }
     }
 }

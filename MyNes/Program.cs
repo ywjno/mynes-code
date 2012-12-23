@@ -39,6 +39,20 @@ namespace MyNes
             FixDefaultSettings();
             //find renderers
             RenderersCore.FindRenderers(Application.StartupPath);
+            //if first time run, choose the slimdx renderer for default
+            if (!settings.FirstRun)
+            {
+                settings.FirstRun = true;
+                for (int i = 0; i < RenderersCore.AvailableRenderers.Length; i++)
+                {
+                    if (RenderersCore.AvailableRenderers[i].Name == "SlimDX Direct3D9")
+                    {
+                        settings.CurrentRendererIndex = i;
+                        break;
+                    }
+                }
+                settings.Save();
+            }
             //launch the core
             Nes.StartUp();
             //start gui

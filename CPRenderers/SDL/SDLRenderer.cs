@@ -45,7 +45,7 @@ namespace CPRenderers
                 return "Render using SDL .NET library.\n\n"
                 +
                 "Uses sdl dotnet library for renderering. For more info please visit: http://cs-sdl.sourceforge.net/" + "\n\n"
-                + "This renderer requires the sdl .net runtime to run.\nhttp://cs-sdl.sourceforge.net/downloads";
+                + "This renderer requires the sdl .net runtime to run.\nhttp://cs-sdl.sourceforge.net/downloads\n\nWritten by Ala Ibrahim Hadid.";
             }
         }
     }
