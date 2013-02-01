@@ -1,0 +1,2 @@
+* Fixed: sdl dotnet renderer never launched if the user launhced that renderer for the first time. It need to
+  configure the controls first.

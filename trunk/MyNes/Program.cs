@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,12 @@ namespace MyNes
                         break;
                     }
                 }
+                // make the default browser database at user documents folder.
+                Program.Settings.FoldersDatabasePath =
+                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
+                // load default columns
+                settings.ColumnsManager = new ColumnsManager();
+                settings.ColumnsManager.BuildDefaultCollection();
                 settings.Save();
             }
             //launch the core
@@ -80,6 +86,7 @@ namespace MyNes
             Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
             //build default controls profile if nesseccary
             ControlProfile.BuildDefaultProfile();
+            RenderersCore.SettingsManager.SaveSettings();
             //fix palette settings
             if (RenderersCore.SettingsManager.Settings.Video_Palette == null)
                 RenderersCore.SettingsManager.Settings.Video_Palette = new PaletteSettings();

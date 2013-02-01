@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala I Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ namespace MyNes
         private string path = "";
         private string size = "0 Byte";
         private string mapper = "N/A";
+        private string board = "N/A";
         private string isPc10 = "No";
         private string isVsUnisystem = "No";
         private string isBattery = "No";
@@ -33,6 +34,9 @@ namespace MyNes
         private BRomType type = BRomType.INES;
         private string snapshotPath = "";
         private string coverPath = "";
+        private int playedTimes = 0;
+        private int rating = 0;
+        private string description = "";
 
         public string Name
         {
@@ -53,6 +57,11 @@ namespace MyNes
         {
             get { return mapper; }
             set { mapper = value; }
+        }
+        public string Board
+        {
+            get { return board; }
+            set { board = value; }
         }
         public string IsPc10
         {
@@ -94,6 +103,18 @@ namespace MyNes
             get { return coverPath; }
             set { coverPath = value; }
         }
+        public int PlayedTimes
+        {
+            get { return playedTimes; }
+            set { playedTimes = value; }
+        }
+        public int Rating
+        {
+            get { return rating; }
+            set { rating = value; }
+        }
+        public string InfoText
+        { get { return description; } set { description = value; } }
     }
 
     public enum BRomType

@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace CPRenderers
                 return "Render using SDL .NET library.\n\n"
                 +
                 "Uses sdl dotnet library for renderering. For more info please visit: http://cs-sdl.sourceforge.net/" + "\n\n"
-                + "This renderer requires the sdl .net runtime to run.\nhttp://cs-sdl.sourceforge.net/downloads\n\nWritten by Ala Ibrahim Hadid.";
+                + "This renderer requires the sdl .net runtime to run.\nhttp://cs-sdl.sourceforge.net/downloads";
             }
         }
     }

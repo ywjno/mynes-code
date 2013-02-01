@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,18 +44,6 @@ namespace MyNes
                 tr.RefreshFolders(imageIndex, selectedImageIndex);
                 Nodes.Add(tr);
             }
-        }
-    }
-    public class ListViewItemBRom : ListViewItem
-    {
-        BRom rom;
-
-        public BRom BRom
-        { get { return rom; } set { rom = value; RefreshName(); } }
-
-        public void RefreshName()
-        {
-            this.Text = Path.GetFileName(rom.Path);
         }
     }
 }
