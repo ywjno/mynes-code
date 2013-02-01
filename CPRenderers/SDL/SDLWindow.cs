@@ -208,12 +208,15 @@ namespace CPRenderers
         }
         Key GetKey(string value)
         {
-            if (value.StartsWith("Keyboard"))
+            if (value != null )
             {
-                string keyName = value.Substring(9, value.Length - 9);
-                //get key
-                RenderersKeys k = (RenderersKeys)Enum.Parse(typeof(RenderersKeys), keyName);
-                return keys[k];
+                if (value.StartsWith("Keyboard"))
+                {
+                    string keyName = value.Substring(9, value.Length - 9);
+                    //get key
+                    RenderersKeys k = (RenderersKeys)Enum.Parse(typeof(RenderersKeys), keyName);
+                    return keys[k];
+                }
             }
             return Key.Unknown;
         }

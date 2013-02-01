@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using MyNes.Renderers;
+using MyNes.Core.Boards;
+using MLV;
 namespace MyNes.Forms
 {
     public partial class FormMain : Form
@@ -35,7 +37,6 @@ namespace MyNes.Forms
         private FormSpeed speedForm;
         private Thread gameThread;
         private bool savedb;
-        private bool sortAZ = true;
         private bool SaveDB
         {
             get { return savedb; }
@@ -68,12 +69,7 @@ namespace MyNes.Forms
                 }
             }
             //columns
-            if (Program.Settings.ColumnWidths == null)
-                Program.Settings.ColumnWidths = new ColumnWidthsCollection();
-            for (int w = 0; w < Program.Settings.ColumnWidths.Count; w++)
-            {
-                listView.Columns[w].Width = Program.Settings.ColumnWidths[w];
-            }
+            RefreshColumns();
             //spliters
             splitContainer1.SplitterDistance = Program.Settings.SplitContainer1;
             splitContainer2.SplitterDistance = Program.Settings.SplitContainer2;
@@ -88,6 +84,12 @@ namespace MyNes.Forms
             }
             if (ComboBox_filter.Items.Count > 0)
                 ComboBox_filter.SelectedIndex = ComboBox_filter.Items.Count - 1;
+            //view
+            ThumbnailsViewSwitch.Checked = Program.Settings.IsThumbnailsView;
+            ManagedListView1.ThunmbnailsHeight = ManagedListView1.ThunmbnailsWidth = trackBar_thumbnailsZoom.Value =
+                Program.Settings.ThumbnailsSize;
+            label_thumbnailsSize.Text = Program.Settings.ThumbnailsSize + " x " + Program.Settings.ThumbnailsSize;
+            comboBox_thumbnailsMode.SelectedIndex = Program.Settings.ThumbnailsModeSelection;
         }
         private void SaveSettings()
         {
@@ -98,7 +100,8 @@ namespace MyNes.Forms
             Program.Settings.SplitContainer2 = splitContainer2.SplitterDistance;
             //database
             if (Program.BDatabaseManager.FilePath == "")
-                Program.BDatabaseManager.FilePath = @".\fdb.fl";
+                Program.BDatabaseManager.FilePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
+
             Program.BDatabaseManager.FilePath = Path.GetFullPath(Program.BDatabaseManager.FilePath);
             Program.Settings.FoldersDatabasePath = Program.BDatabaseManager.FilePath;
             if (savedb)
@@ -107,11 +110,7 @@ namespace MyNes.Forms
                     savedb = false;
             }
             //columns
-            Program.Settings.ColumnWidths = new ColumnWidthsCollection();
-            for (int w = 0; w < listView.Columns.Count; w++)
-            {
-                Program.Settings.ColumnWidths.Add(listView.Columns[w].Width);
-            }
+            SaveColumns();
             //filter
             Program.Settings.FilterIndex = ComboBox_filterBy.SelectedIndex;
             Program.Settings.FilterLatestItems = new System.Collections.Specialized.StringCollection();
@@ -119,18 +118,23 @@ namespace MyNes.Forms
             {
                 Program.Settings.FilterLatestItems.Add(item);
             }
+            Program.Settings.ThumbnailsModeSelection = comboBox_thumbnailsMode.SelectedIndex;
             //save
             Program.Settings.Save();
         }
         private void PlaySelectedRom()
         {
-            if (listView.SelectedItems.Count != 1)
-                return;
+            if (ManagedListView1.SelectedItems.Count != 1)
+            { MessageBox.Show("Select one rom please."); return; }
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
 
-            string path = ((ListViewItemBRom)listView.SelectedItems[0]).BRom.Path;
+            if (File.Exists(rom.Path))
+                OpenRom(rom.Path);
 
-            if (File.Exists(path))
-                OpenRom(path);
+            rom.PlayedTimes++;
+            ManagedListView1.SelectedItems[0].GetSubItemByID("played times").Text = rom.PlayedTimes.ToString() + " time(s)";
+
+            SaveDB = true;
         }
         public void OpenRom(string FileName)
         {
@@ -209,7 +213,7 @@ namespace MyNes.Forms
         private void RefreshFolders()
         {
             treeView.Nodes.Clear();
-            listView.Items.Clear();
+            ManagedListView1.Items.Clear();
 
             foreach (BFolder folder in Program.BDatabaseManager.BrowserDatabase.Folders)
             {
@@ -228,12 +232,23 @@ namespace MyNes.Forms
             statusStrip.Refresh();
 
             List<string> files = new List<string>(Directory.GetFiles(folder.Path));
+            List<BRom> oldBromCollection = folder.BRoms;
             folder.BRoms = new List<BRom>();
 
             ProgressBar1.Maximum = files.Count;
             int x = 0;
             foreach (string file in files)
             {
+                // First let's see if this rom already exists
+                // This way, we keep old rom information like ratings, covers...etc
+                foreach (BRom oldRom in oldBromCollection)
+                {
+                    if (oldRom.Path == file)
+                    {
+                        folder.BRoms.Add(oldRom);
+                        goto Advance;
+                    }
+                }
                 #region INES
                 if (Path.GetExtension(file).ToLower() == ".nes")
                 {
@@ -251,6 +266,14 @@ namespace MyNes.Forms
                         rom.IsPc10 = header.IsPlaychoice10 ? "Yes" : "No";
                         rom.IsVsUnisystem = header.IsVSUnisystem ? "Yes" : "No";
                         rom.Mapper = header.Mapper.ToString();
+                        foreach (Board brd in BoardsManager.AvailableBoards)
+                        {
+                            if (brd.INESMapperNumber == header.Mapper)
+                            {
+                                rom.Board = brd.Name;
+                                break;
+                            }
+                        }
                         switch (header.Mirroring)
                         {
                             case Mirroring.Mode1ScA: rom.Mirroring = "One-Screen A"; break;
@@ -267,6 +290,7 @@ namespace MyNes.Forms
                         rom.IsPc10 = "N/A";
                         rom.IsVsUnisystem = "N/A";
                         rom.Mapper = "N/A";
+                        rom.Board = "N/A";
                         rom.Mirroring = "N/A";
                     }
                     folder.BRoms.Add(rom);
@@ -293,6 +317,7 @@ namespace MyNes.Forms
                 }
                 #endregion
 
+            Advance:
                 ProgressBar1.Value = x;
                 x++;
             }
@@ -303,8 +328,8 @@ namespace MyNes.Forms
         }
         private void RefreshFilesFromFolder(BFolder folder)
         {
-            listView.Items.Clear();
-            listView.Visible = false;
+            ManagedListView1.Items.Clear();
+            ManagedListView1.Visible = false;
             ProgressBar1.Visible = true;
             StatusLabel.Text = "Loading roms list ..";
             statusStrip.Refresh();
@@ -317,13 +342,13 @@ namespace MyNes.Forms
                 ProgressBar1.Value = x;
                 x++;
             }
-            listView.Visible = true;
             ProgressBar1.Visible = false;
+            ManagedListView1.Visible = true;
             StatusLabel.Text = "Ready.";
             string st = " roms";
-            if (listView.Items.Count == 1)
+            if (ManagedListView1.Items.Count == 1)
                 st = " rom";
-            StatusLabel_romsCount.Text = listView.Items.Count + st;
+            StatusLabel_romsCount.Text = ManagedListView1.Items.Count + st;
         }
         private void LaunchTheRenderer()
         {
@@ -356,7 +381,7 @@ namespace MyNes.Forms
             }
             if (Nes.ON)
                 Nes.TogglePause(true);
-            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, true);
+            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, DetectorDetectMode.Snapshots);
             if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 SaveDB = true;
@@ -373,7 +398,24 @@ namespace MyNes.Forms
             }
             if (Nes.ON)
                 Nes.TogglePause(true);
-            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, false);
+            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, DetectorDetectMode.Covers);
+            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                SaveDB = true;
+            }
+            if (Nes.ON)
+                Nes.TogglePause(false);
+        }
+        private void DetectInfoTexts(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode == null)
+            {
+                MessageBox.Show("Please select folder first");
+                return;
+            }
+            if (Nes.ON)
+                Nes.TogglePause(true);
+            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, DetectorDetectMode.InfoTexts);
             if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 SaveDB = true;
@@ -383,18 +425,169 @@ namespace MyNes.Forms
         }
         private void AddRomToList(BRom rom)
         {
-            ListViewItemBRom item = new ListViewItemBRom();
+            ManagedListViewItem_BRom item = new ManagedListViewItem_BRom();
             item.BRom = rom;
-            item.ImageIndex = (Path.GetExtension(rom.Path).ToLower() == ".nes") ? 1 : 2;
-            item.SubItems.Add(rom.Size);
-            item.SubItems.Add(rom.Mapper);
-            item.SubItems.Add(rom.Mirroring);
-            item.SubItems.Add(rom.HasTrainer);
-            item.SubItems.Add(rom.IsBattery);
-            item.SubItems.Add(rom.IsPc10);
-            item.SubItems.Add(rom.IsVsUnisystem);
-            item.SubItems.Add(rom.Path);
-            listView.Items.Add(item);
+            item.DrawMode = ManagedListViewItemDrawMode.UserDraw;
+            //add subitems
+            //name
+            ManagedListViewSubItem subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "name";
+            subitem.DrawMode = ManagedListViewItemDrawMode.TextAndImage;
+            subitem.Text = rom.Name;
+            switch (rom.BRomType)
+            {
+                /*
+                     * 1: cartidge
+                     * 2: zip file
+                     */
+                case BRomType.Archive: subitem.ImageIndex = 2; break;
+                case BRomType.INES: subitem.ImageIndex = 1; break;
+            }
+            item.SubItems.Add(subitem);
+            //file size
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "size";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.Size;
+            item.SubItems.Add(subitem);
+            //file type
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "file type";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = Path.GetExtension(rom.Path);
+            item.SubItems.Add(subitem);
+            //played times
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "played times";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.PlayedTimes.ToString() + " time(s)";
+            item.SubItems.Add(subitem);
+            //rating
+            ManagedListViewRatingSubItem ratingItem = new ManagedListViewRatingSubItem();
+            ratingItem.Rating = rom.Rating;
+            ratingItem.RatingChanged += ratingItem_RatingChanged;
+            ratingItem.UpdateRatingRequest += ratingItem_UpdateRatingRequest;
+            ratingItem.ColumnID = "rating";
+            item.SubItems.Add(ratingItem);
+            //path
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "path";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.Path;
+            if (!File.Exists(rom.Path))
+            {
+                subitem.Text = @"[/!\ Not Exist] " + rom.Path;
+                subitem.Color = Color.Red;
+            }
+            item.SubItems.Add(subitem);
+            //mapper
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "mapper";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.Mapper;
+            item.SubItems.Add(subitem);
+            //board
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "board";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.Board;
+            item.SubItems.Add(subitem);
+            //has trainer
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "trainer";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.HasTrainer;
+            switch (rom.HasTrainer.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //is battery packed
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "battery";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.IsBattery;
+            switch (rom.IsBattery.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //is pc10
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "pc10";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.IsPc10;
+            switch (rom.IsPc10.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //is vsunisystem
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "vs";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.IsVsUnisystem;
+            switch (rom.IsVsUnisystem.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //mirroing
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "mirroring";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.Mirroring;
+            item.SubItems.Add(subitem);
+            //has snapshot
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "snapshot";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = File.Exists(rom.SnapshotPath) ? "Yes" : "No";
+            switch (subitem.Text.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //has cover
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "cover";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = File.Exists(rom.CoverPath) ? "Yes" : "No";
+            switch (subitem.Text.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //has info text
+            subitem = new ManagedListViewSubItem();
+            subitem.ColumnID = "info";
+            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
+            subitem.Text = rom.InfoText.Length > 0 ? "Yes" : "No";
+            switch (subitem.Text.ToLower())
+            {
+                case "yes": subitem.Color = Color.Green; break;
+                case "no": subitem.Color = Color.Red; break;
+            }
+            item.SubItems.Add(subitem);
+            //add the item !
+            ManagedListView1.Items.Add(item);
+        }
+
+        void ratingItem_UpdateRatingRequest(object sender, ManagedListViewRatingChangedArgs e)
+        {
+            ((ManagedListViewRatingSubItem)ManagedListView1.Items[e.ItemIndex].GetSubItemByID("rating")).Rating =
+            ((ManagedListViewItem_BRom)ManagedListView1.Items[e.ItemIndex]).BRom.Rating;
+        }
+        void ratingItem_RatingChanged(object sender, ManagedListViewRatingChangedArgs e)
+        {
+            ((ManagedListViewItem_BRom)ManagedListView1.Items[e.ItemIndex]).BRom.Rating = e.Rating; ;
+            SaveDB = true;
         }
         private void DoFilter(object sender, EventArgs e)
         {
@@ -410,11 +603,12 @@ namespace MyNes.Forms
             }
             if (!ComboBox_filter.Items.Contains(ComboBox_filter.Text))
                 ComboBox_filter.Items.Add(ComboBox_filter.Text);
+            if (ComboBox_filter.Items.Count > 100)
+                ComboBox_filter.Items.RemoveAt(0);//limit to 100 items.
             // do the filter !
             BFolder folder = ((TreeNodeBFolder)treeView.SelectedNode).BFolder;
 
-            listView.Items.Clear();
-            listView.Visible = false;
+            ManagedListView1.Items.Clear();
             ProgressBar1.Visible = true;
             StatusLabel.Text = "Filtering ..";
             statusStrip.Refresh();
@@ -504,13 +698,79 @@ namespace MyNes.Forms
                 ProgressBar1.Value = x;
                 x++;
             }
-            listView.Visible = true;
             ProgressBar1.Visible = false;
             StatusLabel.Text = "Done.";
             string st = " roms";
-            if (listView.Items.Count == 1)
+            if (ManagedListView1.Items.Count == 1)
                 st = " rom";
-            StatusLabel_romsCount.Text = listView.Items.Count + st;
+            StatusLabel_romsCount.Text = ManagedListView1.Items.Count + st;
+        }
+        private void RefreshColumns()
+        {
+            ManagedListView1.Columns = new ManagedListViewColumnsCollection();
+            columnsToolStripMenuItem.DropDownItems.Clear();
+            ComboBox_filter.Items.Clear();
+            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
+            {
+                if (item.Visible)
+                {
+                    ManagedListViewColumn column = new ManagedListViewColumn();
+                    column.HeaderText = item.ColumnName;
+                    column.ID = item.ColumnID;
+                    column.Width = item.Width;
+                    column.SortMode = ManagedListViewSortMode.None;
+                    ManagedListView1.Columns.Add(column);
+                }
+
+                ToolStripMenuItem mitem = new ToolStripMenuItem();
+                mitem.Text = item.ColumnName;
+                mitem.Checked = item.Visible;
+                columnsToolStripMenuItem.DropDownItems.Add(mitem);
+            }
+            if (ComboBox_filter.Items.Count > 0)
+                ComboBox_filter.SelectedIndex = 0;
+        }
+        private void SaveColumns()
+        {
+            List<ColumnItem> oldCollection = Program.Settings.ColumnsManager.Columns;
+            //create new, save the visible columns first
+            Program.Settings.ColumnsManager.Columns = new List<ColumnItem>();
+            foreach (ManagedListViewColumn column in ManagedListView1.Columns)
+            {
+                ColumnItem item = new ColumnItem();
+                item.ColumnID = column.ID;
+                item.ColumnName = column.HeaderText;
+                item.Visible = true;
+                item.Width = column.Width;
+
+                Program.Settings.ColumnsManager.Columns.Add(item);
+                //look for the same item in the old collection then remove it
+                foreach (ColumnItem olditem in oldCollection)
+                {
+                    if (olditem.ColumnID == column.ID)
+                    {
+                        oldCollection.Remove(olditem);
+                        break;
+                    }
+                }
+            }
+            //now add the rest of the items (not visible)
+            foreach (ColumnItem olditem in oldCollection)
+            {
+                ColumnItem item = new ColumnItem();
+                item.ColumnID = olditem.ColumnID;
+                item.ColumnName = olditem.ColumnName;
+                item.Visible = false;
+                item.Width = olditem.Width;
+                Program.Settings.ColumnsManager.Columns.Add(item);
+            }
+        }
+        private void SwitchViewMode()
+        {
+            ManagedListView1.ViewMode = Program.Settings.IsThumbnailsView ?
+                ManagedListViewViewMode.Thumbnails : ManagedListViewViewMode.Details;
+            panel_thumbnailsPanel.Visible = Program.Settings.IsThumbnailsView;
+
         }
 
         private void buttonCreateFolder_Click(object sender, EventArgs e)
@@ -662,7 +922,8 @@ namespace MyNes.Forms
         private void saveDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Program.BDatabaseManager.FilePath == "")
-                Program.BDatabaseManager.FilePath = @".\fdb.fl";
+                Program.BDatabaseManager.FilePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
+
             Program.BDatabaseManager.FilePath = Path.GetFullPath(Program.BDatabaseManager.FilePath);
             if (Program.BDatabaseManager.Save(Program.BDatabaseManager.FilePath))
             {
@@ -713,40 +974,6 @@ namespace MyNes.Forms
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             SaveSettings();
-        }
-        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            PlaySelectedRom();
-        }
-        private void listView1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Return)
-                PlaySelectedRom();
-            if (e.KeyData == Keys.D0)
-                Nes.StateSlot = 0;
-            if (e.KeyData == Keys.D1)
-                Nes.StateSlot = 1;
-            if (e.KeyData == Keys.D2)
-                Nes.StateSlot = 2;
-            if (e.KeyData == Keys.D3)
-                Nes.StateSlot = 3;
-            if (e.KeyData == Keys.D4)
-                Nes.StateSlot = 4;
-            if (e.KeyData == Keys.D5)
-                Nes.StateSlot = 5;
-            if (e.KeyData == Keys.D6)
-                Nes.StateSlot = 6;
-            if (e.KeyData == Keys.D7)
-                Nes.StateSlot = 7;
-            if (e.KeyData == Keys.D8)
-                Nes.StateSlot = 8;
-            if (e.KeyData == Keys.D9)
-                Nes.StateSlot = 9;
-        }
-        private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            this.listView.ListViewItemSorter = new ListViewItemComparer(e.Column, sortAZ);
-            sortAZ = !sortAZ;
         }
         private void rebuildCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1059,23 +1286,6 @@ namespace MyNes.Forms
                 AddRecent(e.ClickedItem.ToolTipText);
             }
         }
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listView.SelectedItems.Count != 1)
-            {
-                imageViewer_covers.ImageToView = imageViewer_snaps.ImageToView = null;
-                return;
-            }
-            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
-            if (File.Exists(rom.CoverPath))
-                imageViewer_covers.ImageToView = (Bitmap)Image.FromFile(rom.CoverPath);
-            else
-                imageViewer_covers.ImageToView = null;
-            if (File.Exists(rom.SnapshotPath))
-                imageViewer_snaps.ImageToView = (Bitmap)Image.FromFile(rom.SnapshotPath);
-            else
-                imageViewer_snaps.ImageToView = null;
-        }
         private void imageViewer_snaps_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             openContainerFolderToolStripMenuItem_Click(sender, null);
@@ -1086,44 +1296,44 @@ namespace MyNes.Forms
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView.SelectedItems.Count != 1)
+            if (ManagedListView1.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start(rom.SnapshotPath); }
             catch { }
         }
         private void openContainerFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView.SelectedItems.Count != 1)
+            if (ManagedListView1.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.SnapshotPath); }
             catch { }
         }
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView.SelectedItems.Count != 1)
+            if (ManagedListView1.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start(rom.CoverPath); }
             catch { }
         }
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (listView.SelectedItems.Count != 1)
+            if (ManagedListView1.SelectedItems.Count != 1)
             {
                 return;
             }
-            BRom rom = ((ListViewItemBRom)listView.SelectedItems[0]).BRom;
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
 
             try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.CoverPath); }
             catch { }
@@ -1202,18 +1412,16 @@ namespace MyNes.Forms
                 Nes.TogglePause(false);
             }
         }
-
         private void locateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView.SelectedItems.Count != 1)
+            if (ManagedListView1.SelectedItems.Count != 1)
                 return;
 
-            string path = ((ListViewItemBRom)listView.SelectedItems[0]).BRom.Path;
+            string path = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom.Path;
 
             if (File.Exists(path))
                 System.Diagnostics.Process.Start("explorer.exe", @"/select, " + path);
         }
-
         private void openToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (treeView.SelectedNode == null)
@@ -1221,6 +1429,382 @@ namespace MyNes.Forms
             string path = ((TreeNodeBFolder)treeView.SelectedNode).BFolder.Path;
             if (Directory.Exists(path))
                 System.Diagnostics.Process.Start(path);
+        }
+        private void ManagedListView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count != 1)
+            {
+                richTextBox_romInfo.Text = "";
+                imageViewer_covers.ImageToView = imageViewer_snaps.ImageToView = null;
+                return;
+            }
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
+            if (File.Exists(rom.CoverPath))
+                imageViewer_covers.ImageToView = (Bitmap)Image.FromFile(rom.CoverPath);
+            else
+                imageViewer_covers.ImageToView = null;
+            if (File.Exists(rom.SnapshotPath))
+                imageViewer_snaps.ImageToView = (Bitmap)Image.FromFile(rom.SnapshotPath);
+            else
+                imageViewer_snaps.ImageToView = null;
+            richTextBox_romInfo.Text = rom.InfoText;
+        }
+        private void ManagedListView1_ItemDoubleClick(object sender, ManagedListViewItemDoubleClickArgs e)
+        {
+            PlaySelectedRom();
+        }
+        private void ManagedListView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+                PlaySelectedRom();
+            if (e.KeyData == Keys.D0)
+                Nes.StateSlot = 0;
+            if (e.KeyData == Keys.D1)
+                Nes.StateSlot = 1;
+            if (e.KeyData == Keys.D2)
+                Nes.StateSlot = 2;
+            if (e.KeyData == Keys.D3)
+                Nes.StateSlot = 3;
+            if (e.KeyData == Keys.D4)
+                Nes.StateSlot = 4;
+            if (e.KeyData == Keys.D5)
+                Nes.StateSlot = 5;
+            if (e.KeyData == Keys.D6)
+                Nes.StateSlot = 6;
+            if (e.KeyData == Keys.D7)
+                Nes.StateSlot = 7;
+            if (e.KeyData == Keys.D8)
+                Nes.StateSlot = 8;
+            if (e.KeyData == Keys.D9)
+                Nes.StateSlot = 9;
+        }
+        private void ManagedListView1_EnterPressed(object sender, EventArgs e)
+        {
+            PlaySelectedRom();
+        }
+        // Draw thumbnails
+        private void ManagedListView1_DrawItem(object sender, ManagedListViewItemDrawArgs e)
+        {
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.Items[e.ItemIndex]).BRom;
+            e.TextToDraw = rom.Name;
+            switch (comboBox_thumbnailsMode.SelectedIndex)
+            {
+                case 0:// auto
+                    if (File.Exists(rom.SnapshotPath))
+                    {
+                        e.ImageToDraw = Image.FromFile(rom.SnapshotPath);
+                    }
+                    else if (File.Exists(rom.CoverPath))
+                    {
+                        e.ImageToDraw = Image.FromFile(rom.CoverPath);
+                    }
+                    else// draw cart image or compressed file image
+                    {
+                        switch (rom.BRomType)
+                        {
+                            case BRomType.INES: e.ImageToDraw = imageList.Images[1]; break;
+                            case BRomType.Archive: e.ImageToDraw = imageList.Images[2]; break;
+                        }
+                    }
+                    break;
+                case 1:// snapshot
+                    if (File.Exists(rom.SnapshotPath))
+                    {
+                        e.ImageToDraw = Image.FromFile(rom.SnapshotPath);
+                    }
+                    else// draw cart image or compressed file image
+                    {
+                        switch (rom.BRomType)
+                        {
+                            case BRomType.INES: e.ImageToDraw = imageList.Images[1]; break;
+                            case BRomType.Archive: e.ImageToDraw = imageList.Images[2]; break;
+                        }
+                    }
+                    break;
+                case 2: //cover
+                    if (File.Exists(rom.CoverPath))
+                    {
+                        e.ImageToDraw = Image.FromFile(rom.CoverPath);
+                    }
+                    else// draw cart image or compressed file image
+                    {
+                        switch (rom.BRomType)
+                        {
+                            case BRomType.INES: e.ImageToDraw = imageList.Images[1]; break;
+                            case BRomType.Archive: e.ImageToDraw = imageList.Images[2]; break;
+                        }
+                    }
+                    break;
+            }
+        }
+        private void ThumbnailsViewSwitch_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.Settings.IsThumbnailsView = ThumbnailsViewSwitch.Checked;
+            SwitchViewMode();
+        }
+        private void trackBar_thumbnailsZoom_Scroll(object sender, EventArgs e)
+        {
+            Program.Settings.ThumbnailsSize = trackBar_thumbnailsZoom.Value;
+            ManagedListView1.ThunmbnailsHeight = ManagedListView1.ThunmbnailsWidth = Program.Settings.ThumbnailsSize;
+            label_thumbnailsSize.Text = Program.Settings.ThumbnailsSize + " x " + Program.Settings.ThumbnailsSize;
+
+            ManagedListView1.Invalidate();
+        }
+        private void comboBox_thumbnailsMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ManagedListView1.Invalidate();
+        }
+        // columns show/hide
+        private void columnsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            int i = 0;
+            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
+            {
+                if (item.ColumnName == e.ClickedItem.Text)
+                {
+                    item.Visible = !item.Visible;
+                    ((ToolStripMenuItem)e.ClickedItem).Checked = item.Visible;
+                    RefreshColumns();
+                    break;
+                }
+                i++;
+            }
+            ManagedListView1.Invalidate();
+            SaveColumns();
+        }
+        private void contextMenuStrip_columns_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            contextMenuStrip_columns.Items.Clear();
+
+            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
+            {
+                ToolStripMenuItem mitem = new ToolStripMenuItem();
+                mitem.Text = item.ColumnName;
+                mitem.Checked = item.Visible;
+                contextMenuStrip_columns.Items.Add(mitem);
+            }
+        }
+        private void contextMenuStrip_columns_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            int i = 0;
+            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
+            {
+                if (item.ColumnName == e.ClickedItem.Text)
+                {
+                    item.Visible = !item.Visible;
+                    ((ToolStripMenuItem)e.ClickedItem).Checked = item.Visible;
+                    RefreshColumns();
+                    break;
+                }
+                i++;
+            }
+            ManagedListView1.Invalidate();
+            SaveColumns();
+        }
+        private void ManagedListView1_SwitchToColumnsContextMenu(object sender, EventArgs e)
+        {
+            ManagedListView1.ContextMenuStrip = contextMenuStrip_columns;
+        }
+        private void ManagedListView1_SwitchToNormalContextMenu(object sender, EventArgs e)
+        {
+            ManagedListView1.ContextMenuStrip = contextMenuStrip_roms;
+        }
+        private void playToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            PlaySelectedRom();
+        }
+        private void locateOnDiskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count != 1)
+            {
+                MessageBox.Show("Select one rom please.");
+                return;
+            }
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
+
+            try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.Path); }
+            catch { }
+        }
+        private void resetPlaydTimesCounterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Select rom(s) please.");
+                return;
+            }
+            foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
+            {
+                item.BRom.PlayedTimes = 0;
+                item.GetSubItemByID("played times").Text = "0 time(s)";
+            }
+            ManagedListView1.Invalidate();
+            SaveDB = true;
+        }
+        private void resetRatingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Select rom(s) please.");
+                return;
+            }
+            foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
+            {
+                item.BRom.Rating = 0;
+                ((ManagedListViewRatingSubItem)item.GetSubItemByID("rating")).Rating = 0;
+
+            }
+            ManagedListView1.Invalidate();
+            SaveDB = true;
+        }
+        private void setSnapshotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Select rom(s) please.");
+                return;
+            }
+            OpenFileDialog Op = new OpenFileDialog();
+            Op.Title = "Set snapshot for rom";
+            Op.Filter = "Image file (*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;)|*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;";
+            Op.Multiselect = false;
+            if (Op.ShowDialog(this) == DialogResult.OK)
+            {
+                foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
+                {
+                    item.BRom.SnapshotPath = Op.FileName;
+                }
+                ManagedListView1.Invalidate();
+                SaveDB = true;
+            }
+        }
+        private void setCoverToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Select rom(s) please.");
+                return;
+            }
+            OpenFileDialog Op = new OpenFileDialog();
+            Op.Title = "Set cover for rom";
+            Op.Filter = "Image file (*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;)|*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;";
+            Op.Multiselect = false;
+            if (Op.ShowDialog(this) == DialogResult.OK)
+            {
+                foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
+                {
+                    item.BRom.CoverPath = Op.FileName;
+                }
+                ManagedListView1.Invalidate();
+                SaveDB = true;
+            }
+        }
+        // Sort when click column
+        private void ManagedListView1_ColumnClicked(object sender, ManagedListViewColumnClickArgs e)
+        {
+            if (treeView.SelectedNode == null)
+                return;
+            //get column and detect sort information
+            ManagedListViewColumn column = ManagedListView1.Columns.GetColumnByID(e.ColumnID);
+            if (column == null) return;
+            bool az = false;
+            switch (column.SortMode)
+            {
+                case ManagedListViewSortMode.AtoZ: az = false; break;
+                case ManagedListViewSortMode.None:
+                case ManagedListViewSortMode.ZtoA: az = true; break;
+            }
+            foreach (ManagedListViewColumn cl in ManagedListView1.Columns)
+                cl.SortMode = ManagedListViewSortMode.None;
+            // do sort
+            BFolder folder = ((TreeNodeBFolder)treeView.SelectedNode).BFolder;
+            folder.BRoms.Sort(new RomsComparer(az, column.ID));
+
+            if (az)
+                column.SortMode = ManagedListViewSortMode.AtoZ;
+            else
+                column.SortMode = ManagedListViewSortMode.ZtoA;
+
+            RefreshFilesFromFolder(folder);
+            SaveDB = true;
+        }
+        private void toolStripButton13_Click(object sender, EventArgs e)
+        {
+            foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
+            {
+                item.BRom.InfoText = richTextBox_romInfo.Text;
+            }
+            SaveDB = true;
+        }
+        private void toolStripButton12_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog Op = new OpenFileDialog();
+            Op.Title = "Get information from text file";
+            Op.Filter = "Text file (*.txt)|*.txt;";
+            Op.Multiselect = false;
+            if (Op.ShowDialog(this) == DialogResult.OK)
+            {
+                richTextBox_romInfo.Lines = File.ReadAllLines(Op.FileName);
+            }
+        }
+        private void toolStripButton14_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog save = new OpenFileDialog();
+            save.Title = "Save information to text file";
+            save.Filter = "Text file (*.txt)|*.txt;";
+            if (ManagedListView1.SelectedItems.Count == 1)
+            {
+                save.FileName =
+                      Path.GetFileNameWithoutExtension(ManagedListView1.SelectedItems[0].GetSubItemByID("name").Text) + ".txt";
+            }
+            if (save.ShowDialog(this) == DialogResult.OK)
+            {
+                File.WriteAllLines(save.FileName, richTextBox_romInfo.Lines);
+            }
+        }
+        private void iNESHeaderEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                MessageBox.Show("Please close current game first. Can't edit while emulation is on.");
+                return;
+            }
+            FormInesHeaderEditor frm = new FormInesHeaderEditor();
+            frm.ShowDialog(this);
+        }
+        private void romInfoToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (ManagedListView1.SelectedItems.Count != 1)
+            {
+                MessageBox.Show("Select one rom please.");
+                return;
+            }
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
+
+            if (Nes.ON)
+            { Nes.TogglePause(true); }
+
+            FormRomInfo frm = new FormRomInfo(rom.Path);
+            frm.ShowDialog(this);
+
+            if (Nes.ON)
+            { Nes.TogglePause(false); }
+        }
+        private void editINESHeaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                MessageBox.Show("Please close current game first. Can't edit while emulation is on.");
+                return;
+            }
+            if (ManagedListView1.SelectedItems.Count != 1)
+            {
+                MessageBox.Show("Select one rom please.");
+                return;
+            }
+            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
+
+            FormInesHeaderEditor frm = new FormInesHeaderEditor(rom.Path);
+            frm.ShowDialog(this);
         }
     }
 }

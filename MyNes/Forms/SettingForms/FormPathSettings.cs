@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ namespace MyNes
         {
             textBox_snapshots.Text = System.IO.Path.GetFullPath(@".\Snapshots");
             textBox_statesFolder.Text = System.IO.Path.GetFullPath(@".\StateSaves");
-            textBox_browserDatabase.Text = System.IO.Path.GetFullPath(@".\fdb.fl");
+            textBox_browserDatabase.Text = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
         }
 
         private void button1_Click(object sender, EventArgs e)

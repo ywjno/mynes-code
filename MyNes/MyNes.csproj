@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyNes</RootNamespace>
     <AssemblyName>MyNes</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -24,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -35,38 +37,45 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x86'">
     <OutputPath>..\Releases\x86\</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x86'">
     <OutputPath>bin\x86\x64\</OutputPath>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <Optimize>false</Optimize>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Release\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\x86\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\Releases\x64\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\MyNes.ico</ApplicationIcon>
@@ -98,6 +107,12 @@
     <Compile Include="Browser Types\BRom.cs" />
     <Compile Include="Browser Types\BrowserDatabase.cs" />
     <Compile Include="Browser Types\WinTypes.cs" />
+    <Compile Include="Forms\FormInesHeaderEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormInesHeaderEditor.Designer.cs">
+      <DependentUpon>FormInesHeaderEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SettingForms\FormRendererSelect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -232,6 +247,8 @@
     <Compile Include="Forms\FormMain.designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Types\ColumnItem.cs" />
+    <Compile Include="Types\ColumnsManager.cs" />
     <Compile Include="Types\Helper.cs" />
     <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Player.cs">
       <SubType>UserControl</SubType>
@@ -250,13 +267,16 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\ColumnWidthsCollection.cs" />
-    <Compile Include="Types\ListViewItemComparer.cs" />
+    <Compile Include="Types\ManagedListViewItem_BRom.cs" />
+    <Compile Include="Types\RomsComparer.cs" />
     <EmbeddedResource Include="Debug\FormConsole.resx">
       <DependentUpon>FormConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Debug\FormSpeed.resx">
       <DependentUpon>FormSpeed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInesHeaderEditor.resx">
+      <DependentUpon>FormInesHeaderEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDetectImages.resx">
       <DependentUpon>FormDetectImages.cs</DependentUpon>
@@ -340,6 +360,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MLV\MLV.csproj">
+      <Project>{cb876583-d5f9-4398-b399-fbe6d4aa8a51}</Project>
+      <Name>MLV</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NesCore\NesCore.csproj">
       <Project>{E91AC0C3-2A35-4197-AB9B-4A24DB83F613}</Project>
       <Name>NesCore</Name>
@@ -361,6 +385,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FileGame-genie-nes-front.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\noneRating.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star_4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star_5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SortAlpha.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SortZ.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\control_play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Warning.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

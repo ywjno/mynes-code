@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,11 +33,12 @@ namespace MyNes.Core.ROM
         public byte Mapper;
         public bool HasTrainer;
         public bool HasSaveRam;
-        public bool IsPalb;
         public bool IsVram;
         public bool IsVSUnisystem;
         public bool IsPlaychoice10;
+        public bool IsVersion2;
         public Mirroring Mirroring;
+        public INESRVSystem TVSystem;
 
         /// <summary>
         /// Create a new instance of INES format header
@@ -86,8 +87,12 @@ namespace MyNes.Core.ROM
 
             //Pal system detect, Though in the official specification, very few emulators honor this 
             //bit as virtually no ROM images in circulation make use of it. 
-            IsPalb = (header[9] & 1) == 1;
+            TVSystem = (header[9] & 1) == 1 ? INESRVSystem.PAL : INESRVSystem.NTSC;
             IsValid = true;
         }
+    }
+    public enum INESRVSystem
+    {
+        NTSC, PAL, DualCompatible
     }
 }

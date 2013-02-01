@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("My Nes")]
-[assembly: AssemblyCopyright("Copyright © Ala I Hadid 2009 - 2012")]
+[assembly: AssemblyCopyright("Copyright © Ala Ibrahim Hadid 2009 - 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

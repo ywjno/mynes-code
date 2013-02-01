@@ -1,7 +1,7 @@
 ﻿/* This file is part of My Nes
  * A Nintendo Entertainment System Emulator.
  *
- * Copyright © Ala I Hadid 2009 - 2012
+ * Copyright © Ala Ibrahim Hadid 2009 - 2013
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,17 +30,19 @@ namespace MyNes
 {
     public partial class FormDetectImages : Form
     {
-        public FormDetectImages(BFolder bfolder, bool forSnaps)
+        public FormDetectImages(BFolder bfolder, DetectorDetectMode mode)
         {
             InitializeComponent();
             this.bfolder = bfolder;
-            this.forSnaps = forSnaps;
-            if (forSnaps)
-                this.Text = "Detect Snapshots";
-            else
-                this.Text = "Detect Covers";
+            this.mode = mode;
+            switch (mode)
+            {
+                case DetectorDetectMode.Covers: this.Text = "Detect Covers"; break;
+                case DetectorDetectMode.Snapshots: this.Text = "Detect Snapshots"; break;
+                case DetectorDetectMode.InfoTexts: this.Text = "Detect Info Texts"; break;
+            }
         }
-        private bool forSnaps = true;
+        private DetectorDetectMode mode;
         private BFolder bfolder;
         private Thread mainThread;
         private bool progresDone = false;
@@ -49,6 +51,13 @@ namespace MyNes
         private bool matchFileName = false;
         private int currentPrec = 0;
         private string currentStatus = "";
+        private string GetString(string[] lines)
+        {
+            string value = "";
+            foreach (string line in lines)
+                value += line + "\n";
+            return value;
+        }
         private void DONE()
         {
             if (!this.InvokeRequired)
@@ -83,6 +92,8 @@ namespace MyNes
             //do the detect, loop through roms and detect the files depending on the extensions
             int i = 0;
             string[] extensions = new string[] { ".jpg", ".bmp", ".png", ".gif", ".tiff", ".emf", ".wmf", ".exif" };
+            if (mode == DetectorDetectMode.InfoTexts)
+                extensions = new string[] { ".txt" };
             foreach (BRom rom in bfolder.BRoms)
             {
                 // loop through files
@@ -110,11 +121,13 @@ namespace MyNes
                             thisIsIt = true;
                     if (thisIsIt)
                     {
-                        //now add the image to the item
-                        if (forSnaps)
-                            rom.SnapshotPath = file;
-                        else
-                            rom.CoverPath = file;
+                        //now add the image/text info to the item
+                        switch (mode)
+                        {
+                            case DetectorDetectMode.Covers: rom.CoverPath = file; break;
+                            case DetectorDetectMode.Snapshots: rom.SnapshotPath = file; break;
+                            case DetectorDetectMode.InfoTexts: rom.InfoText = GetString(File.ReadAllLines(file)); break;
+                        }
                         //remove the file for turbo !?
                         files.Remove(file);
                         break;
@@ -122,7 +135,7 @@ namespace MyNes
                 }
                 //set progress bar info
                 currentPrec = (i * 100) / bfolder.BRoms.Count;
-                currentStatus = "Detecting " + (i + 1).ToString() + "/" +  bfolder.BRoms.Count + " (" + currentPrec + "%)";
+                currentStatus = "Detecting " + (i + 1).ToString() + "/" + bfolder.BRoms.Count + " (" + currentPrec + "%)";
                 i++;
             }
             DONE();
@@ -172,4 +185,6 @@ namespace MyNes
             progressBar1.Value = currentPrec;
         }
     }
+    public enum DetectorDetectMode
+    { Snapshots, Covers, InfoTexts }
 }

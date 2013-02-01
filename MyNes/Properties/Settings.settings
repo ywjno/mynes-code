@@ -26,9 +26,6 @@
     <Setting Name="SplitContainer2" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">248</Value>
     </Setting>
-    <Setting Name="ColumnWidths" Type="MyNes.ColumnWidthsCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="RecentFiles" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -40,6 +37,18 @@
     </Setting>
     <Setting Name="FirstRun" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ColumnsManager" Type="MyNes.ColumnsManager" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="IsThumbnailsView" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ThumbnailsSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="ThumbnailsModeSelection" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>
