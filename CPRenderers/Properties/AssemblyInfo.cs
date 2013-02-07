@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CPRenderers")]
-[assembly: AssemblyCopyright("Copyright © Ala Ibrahim Hadid 2012")]
+[assembly: AssemblyCopyright("Copyright © Ala Ibrahim Hadid 2012 - 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

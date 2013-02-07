@@ -19,6 +19,7 @@
 using System;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using MyNes.Core;
 using MyNes.Debug.ConsoleCommands;
 using Console = MyNes.Core.Console;
@@ -109,6 +110,22 @@ namespace MyNes
             if (!comboBoxHistory.Items.Contains(comboBoxHistory.Text))
                 comboBoxHistory.Items.Add(comboBoxHistory.Text);
             comboBoxHistory.SelectAll();
+            // this command is for this window
+            if (comboBoxHistory.Text.ToLower() == "save")
+            {
+                Console.WriteLine("] " + comboBoxHistory.Text);
+                SaveFileDialog sav = new SaveFileDialog();
+                sav.Filter = "Text (*.txt)|*.txt";
+                sav.FileName = "log.txt";
+                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    List<string> lines = new List<string>();
+                    foreach (DebugLine line in consolePanel.debugLines)
+                        lines.Add(line.Text);
+                    System.IO.File.WriteAllLines(sav.FileName, lines.ToArray());
+                }
+                return;
+            }
             //detect command
             bool found = false;
             bool showCommandHelp = false;

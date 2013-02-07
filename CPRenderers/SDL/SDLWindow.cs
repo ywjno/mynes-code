@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Drawing;
 
 using SdlDotNet;
 using SdlDotNet.Graphics;
@@ -15,7 +16,7 @@ using MyNes.Core.APU;
 using MyNes.Core.PPU;
 using MyNes.Core.IO.Output;
 using MyNes.Renderers;
-using Console = System.Console;
+using Console = MyNes.Core.Console;
 
 namespace CPRenderers
 {
@@ -43,6 +44,7 @@ namespace CPRenderers
         string romName = "";
         private bool isRendererShutdown = false;
         Dictionary<RenderersKeys, Key> keys = new Dictionary<RenderersKeys, Key>();//to convert given key to sdl key
+        private Point mouseUpPoint;
 
         public void Run()
         {
@@ -54,7 +56,7 @@ namespace CPRenderers
             if (Nes.emuSystem.Master == TimingInfo.NTSC.Master)
             {
                 Events.TargetFps = 60;
-            } 
+            }
             else if (Nes.emuSystem.Master == TimingInfo.PALB.Master)
             {
                 Events.TargetFps = 50;
@@ -65,8 +67,11 @@ namespace CPRenderers
             }
             Events.Quit += new EventHandler<QuitEventArgs>(Quit);
             Events.VideoResize += new EventHandler<VideoResizeEventArgs>(VideoResize);
+            Events.MouseButtonDown += Events_MouseButtonDown;
+            Events.MouseButtonUp += Events_MouseButtonUp;
             Events.Run();
         }
+
         void InitializeRendrers()
         {
             Console.WriteLine("SDL .NET: initializing renderers..");
@@ -208,7 +213,7 @@ namespace CPRenderers
         }
         Key GetKey(string value)
         {
-            if (value != null )
+            if (value != null)
             {
                 if (value.StartsWith("Keyboard"))
                 {
@@ -221,7 +226,17 @@ namespace CPRenderers
             return Key.Unknown;
         }
         bool DetectZapperLight()
-        { return false; }
+        {
+            int x = (255 * mouseUpPoint.X) / Video.Screen.Width;
+            int y = (239 * mouseUpPoint.Y) / Video.Screen.Height;
+
+            int c = Nes.Ppu.GetPixel(x, y);
+            byte r = (byte)(c >> 0x10); // R
+            byte g = (byte)(c >> 0x08); // G
+            byte b = (byte)(c >> 0x00);  // B
+
+            return (r > 128 && g > 128 && b > 128);//bright color ?
+        }
         void RedererShutdown()
         {
             video.Shutdown();
@@ -371,11 +386,31 @@ namespace CPRenderers
         {
             video.Resize(video.FullScreen, true, e.Width, e.Height);
         }
+        void Events_MouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Nes.ON)
+            {
+                if (Nes.ControlsUnit.IsZapperConnected)
+                    zapper.trigger = e.Button != MouseButton.PrimaryButton;
+            }
+        }
+        void Events_MouseButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Nes.ON)
+            {
+                if (Nes.ControlsUnit.IsZapperConnected)
+                {
+                    zapper.trigger = (e.Button == MouseButton.PrimaryButton);
+                    mouseUpPoint = e.Position;
+                }
+            }
+        }
         void Quit(object sender, QuitEventArgs e)
         {
             if (!isRendererShutdown)
             {
                 Nes.Shutdown();
+                System.Threading.Thread.CurrentThread.Abort();
             }
         }
         #endregion EventHandler Methods

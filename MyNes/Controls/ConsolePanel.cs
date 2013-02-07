@@ -35,7 +35,7 @@ namespace MyNes
             { DebugCode.Warning, Brushes.Yellow    },
         };
 
-        private List<DebugLine> debugLines = new List<DebugLine>();
+        public List<DebugLine> debugLines = new List<DebugLine>();
 
         public int ScrollOffset = 0;
         private int charHeight = 0;
@@ -99,8 +99,8 @@ namespace MyNes
         public void WriteLine(string line, DebugCode status = DebugCode.None)
         {
             debugLines.Add(new DebugLine(line, status));
-            //limit lines to 1000 lines
-            if (debugLines.Count == 1000)
+            //limit lines to 1000000 lines
+            if (debugLines.Count == 1000000)
                 debugLines.RemoveAt(0);
 
             if (DebugLinesUpdated != null)

@@ -35,7 +35,7 @@ namespace MyNes
         {
             InitializeComponent();
             Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-            label_version.Text = "Version: " + ver.Major + "." + ver.Minor + " Build " + ver.Build;
+            label_version.Text = "Version: " + ver.Major + "." + ver.Minor + "." + ver.Build + " Revision " + ver.Revision;
 
             Assembly asm = Assembly.LoadFile
                 (System.IO.Path.Combine(Application.StartupPath,
@@ -43,11 +43,16 @@ namespace MyNes
 
             ver = asm.GetName().Version;
 
-            label_coreVersion.Text = "Core version: " + ver.Major + "." + ver.Minor + " Build " + ver.Build;
+            label_coreVersion.Text = "Core version: " + ver.Major + "." + ver.Minor + "." + ver.Build + " Revision " + ver.Revision;
         }
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
         }
     }
 }

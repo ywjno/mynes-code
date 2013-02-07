@@ -18,6 +18,7 @@
  */
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using MyNes.Properties;
 using MyNes.Forms;
@@ -62,16 +63,19 @@ namespace MyNes
             //launch the core
             Nes.StartUp();
             //start gui
-            Application.Run(new FormMain(args));
+            Application.Run(mainForm = new FormMain(args));
         }
 
         private static BDatabaseManager bdatabase = new BDatabaseManager();
         private static Properties.Settings settings = new Settings();
+        private static FormMain mainForm;
         //properties
         public static Settings Settings
         { get { return settings; } }
         public static BDatabaseManager BDatabaseManager
         { get { return bdatabase; } set { bdatabase = value; } }
+        public static FormMain FormMain
+        { get { return mainForm; } set { mainForm = value; } }
         //methods
         public static void FixDefaultSettings()
         {

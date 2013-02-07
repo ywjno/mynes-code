@@ -39,5 +39,9 @@ namespace MyNes.Core.IO.Output
         /// <param name="path">The desired snap path</param>
         /// <param name="format">The image format</param>
         void TakeSnapshot(string path, string format);
+        /// <summary>
+        /// Get a value indecate if this video device is initialized and ready to use
+        /// </summary>
+        bool Initialized { get; }
     }
 }

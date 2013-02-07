@@ -117,12 +117,18 @@ namespace MyNes.Forms
             this.dENDYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iNESHeaderEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixINESHeaderForFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.emulationSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
+            this.welcomeWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.visitWebsiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.facebookPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator38 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutMyNesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripSnapshot = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -160,6 +166,9 @@ namespace MyNes.Forms
             this.setCoverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator35 = new System.Windows.Forms.ToolStripSeparator();
             this.romInfoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.editINESHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator36 = new System.Windows.Forms.ToolStripSeparator();
+            this.fixINESHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_thumbnailsPanel = new System.Windows.Forms.Panel();
             this.label_thumbnailsSize = new System.Windows.Forms.Label();
             this.trackBar_thumbnailsZoom = new System.Windows.Forms.TrackBar();
@@ -230,7 +239,7 @@ namespace MyNes.Forms
             this.toolStripSeparator30 = new System.Windows.Forms.ToolStripSeparator();
             this.ThumbnailsViewSwitch = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip_columns = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.editINESHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.theCodeProjectArticleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStripSnapshot.SuspendLayout();
             this.contextMenuStripCover.SuspendLayout();
@@ -819,7 +828,8 @@ namespace MyNes.Forms
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.iNESHeaderEditorToolStripMenuItem});
+            this.iNESHeaderEditorToolStripMenuItem,
+            this.fixINESHeaderForFilesToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -827,9 +837,18 @@ namespace MyNes.Forms
             // iNESHeaderEditorToolStripMenuItem
             // 
             this.iNESHeaderEditorToolStripMenuItem.Name = "iNESHeaderEditorToolStripMenuItem";
-            this.iNESHeaderEditorToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.iNESHeaderEditorToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.iNESHeaderEditorToolStripMenuItem.Text = "INES Header Editor";
+            this.iNESHeaderEditorToolStripMenuItem.ToolTipText = "Edit the INES header of rom file";
             this.iNESHeaderEditorToolStripMenuItem.Click += new System.EventHandler(this.iNESHeaderEditorToolStripMenuItem_Click);
+            // 
+            // fixINESHeaderForFilesToolStripMenuItem
+            // 
+            this.fixINESHeaderForFilesToolStripMenuItem.Name = "fixINESHeaderForFilesToolStripMenuItem";
+            this.fixINESHeaderForFilesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.fixINESHeaderForFilesToolStripMenuItem.Text = "Fix INES header for files";
+            this.fixINESHeaderForFilesToolStripMenuItem.ToolTipText = "Fix INES rom files using a database";
+            this.fixINESHeaderForFilesToolStripMenuItem.Click += new System.EventHandler(this.fixINESHeaderForFilesToolStripMenuItem_Click);
             // 
             // debugToolStripMenuItem
             // 
@@ -859,7 +878,13 @@ namespace MyNes.Forms
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contentToolStripMenuItem,
+            this.toolStripSeparator37,
+            this.welcomeWindowToolStripMenuItem,
             this.toolStripSeparator4,
+            this.visitWebsiteToolStripMenuItem,
+            this.facebookPageToolStripMenuItem,
+            this.theCodeProjectArticleToolStripMenuItem,
+            this.toolStripSeparator38,
             this.aboutMyNesToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -870,20 +895,52 @@ namespace MyNes.Forms
             this.contentToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("contentToolStripMenuItem.Image")));
             this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
             this.contentToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.contentToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.contentToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.contentToolStripMenuItem.Text = "&Content";
             this.contentToolStripMenuItem.Click += new System.EventHandler(this.ShowHelp);
+            // 
+            // toolStripSeparator37
+            // 
+            this.toolStripSeparator37.Name = "toolStripSeparator37";
+            this.toolStripSeparator37.Size = new System.Drawing.Size(197, 6);
+            // 
+            // welcomeWindowToolStripMenuItem
+            // 
+            this.welcomeWindowToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("welcomeWindowToolStripMenuItem.Image")));
+            this.welcomeWindowToolStripMenuItem.Name = "welcomeWindowToolStripMenuItem";
+            this.welcomeWindowToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.welcomeWindowToolStripMenuItem.Text = "&Welcome window";
+            this.welcomeWindowToolStripMenuItem.Click += new System.EventHandler(this.welcomeWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(144, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(197, 6);
+            // 
+            // visitWebsiteToolStripMenuItem
+            // 
+            this.visitWebsiteToolStripMenuItem.Name = "visitWebsiteToolStripMenuItem";
+            this.visitWebsiteToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.visitWebsiteToolStripMenuItem.Text = "Visit website";
+            this.visitWebsiteToolStripMenuItem.Click += new System.EventHandler(this.visitWebsiteToolStripMenuItem_Click);
+            // 
+            // facebookPageToolStripMenuItem
+            // 
+            this.facebookPageToolStripMenuItem.Name = "facebookPageToolStripMenuItem";
+            this.facebookPageToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.facebookPageToolStripMenuItem.Text = "Facebook page";
+            this.facebookPageToolStripMenuItem.Click += new System.EventHandler(this.facebookPageToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator38
+            // 
+            this.toolStripSeparator38.Name = "toolStripSeparator38";
+            this.toolStripSeparator38.Size = new System.Drawing.Size(197, 6);
             // 
             // aboutMyNesToolStripMenuItem
             // 
             this.aboutMyNesToolStripMenuItem.Image = global::MyNes.Properties.Resources.MyNes;
             this.aboutMyNesToolStripMenuItem.Name = "aboutMyNesToolStripMenuItem";
-            this.aboutMyNesToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.aboutMyNesToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.aboutMyNesToolStripMenuItem.Text = "&About MyNes";
             this.aboutMyNesToolStripMenuItem.Click += new System.EventHandler(this.aboutMyNesToolStripMenuItem_Click);
             // 
@@ -1098,9 +1155,11 @@ namespace MyNes.Forms
             this.setCoverToolStripMenuItem,
             this.toolStripSeparator35,
             this.romInfoToolStripMenuItem1,
-            this.editINESHeaderToolStripMenuItem});
+            this.editINESHeaderToolStripMenuItem,
+            this.toolStripSeparator36,
+            this.fixINESHeaderToolStripMenuItem});
             this.contextMenuStrip_roms.Name = "contextMenuStrip_roms";
-            this.contextMenuStrip_roms.Size = new System.Drawing.Size(220, 226);
+            this.contextMenuStrip_roms.Size = new System.Drawing.Size(220, 232);
             // 
             // playToolStripMenuItem1
             // 
@@ -1175,6 +1234,25 @@ namespace MyNes.Forms
             this.romInfoToolStripMenuItem1.Size = new System.Drawing.Size(219, 22);
             this.romInfoToolStripMenuItem1.Text = "Rom info";
             this.romInfoToolStripMenuItem1.Click += new System.EventHandler(this.romInfoToolStripMenuItem1_Click);
+            // 
+            // editINESHeaderToolStripMenuItem
+            // 
+            this.editINESHeaderToolStripMenuItem.Name = "editINESHeaderToolStripMenuItem";
+            this.editINESHeaderToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.editINESHeaderToolStripMenuItem.Text = "Edit INES header";
+            this.editINESHeaderToolStripMenuItem.Click += new System.EventHandler(this.editINESHeaderToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator36
+            // 
+            this.toolStripSeparator36.Name = "toolStripSeparator36";
+            this.toolStripSeparator36.Size = new System.Drawing.Size(216, 6);
+            // 
+            // fixINESHeaderToolStripMenuItem
+            // 
+            this.fixINESHeaderToolStripMenuItem.Name = "fixINESHeaderToolStripMenuItem";
+            this.fixINESHeaderToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.fixINESHeaderToolStripMenuItem.Text = "Fix INES header";
+            this.fixINESHeaderToolStripMenuItem.Click += new System.EventHandler(this.fixINESHeaderForFilesToolStripMenuItem_Click);
             // 
             // panel_thumbnailsPanel
             // 
@@ -1886,12 +1964,12 @@ namespace MyNes.Forms
             this.contextMenuStrip_columns.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_columns_Opening);
             this.contextMenuStrip_columns.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStrip_columns_ItemClicked);
             // 
-            // editINESHeaderToolStripMenuItem
+            // theCodeProjectArticleToolStripMenuItem
             // 
-            this.editINESHeaderToolStripMenuItem.Name = "editINESHeaderToolStripMenuItem";
-            this.editINESHeaderToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-            this.editINESHeaderToolStripMenuItem.Text = "Edit INES header";
-            this.editINESHeaderToolStripMenuItem.Click += new System.EventHandler(this.editINESHeaderToolStripMenuItem_Click);
+            this.theCodeProjectArticleToolStripMenuItem.Name = "theCodeProjectArticleToolStripMenuItem";
+            this.theCodeProjectArticleToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.theCodeProjectArticleToolStripMenuItem.Text = "The Code Project article";
+            this.theCodeProjectArticleToolStripMenuItem.Click += new System.EventHandler(this.theCodeProjectArticleToolStripMenuItem_Click);
             // 
             // FormMain
             // 
@@ -1907,9 +1985,10 @@ namespace MyNes.Forms
             this.MainMenuStrip = this.menuStrip;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "My Nes [BETA]";
+            this.Text = "My Nes";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
+            this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.contextMenuStripSnapshot.ResumeLayout(false);
@@ -2131,6 +2210,15 @@ namespace MyNes.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator35;
         private System.Windows.Forms.ToolStripMenuItem romInfoToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem editINESHeaderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fixINESHeaderForFilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator36;
+        private System.Windows.Forms.ToolStripMenuItem fixINESHeaderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator37;
+        private System.Windows.Forms.ToolStripMenuItem welcomeWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem visitWebsiteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem facebookPageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator38;
+        private System.Windows.Forms.ToolStripMenuItem theCodeProjectArticleToolStripMenuItem;
     }
 }
 

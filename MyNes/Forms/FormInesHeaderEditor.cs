@@ -138,6 +138,16 @@ namespace MyNes
         // Fix using database
         private void button2_Click(object sender, EventArgs e)
         {
+            if (!File.Exists(textBox_romPath.Text))
+            {
+                MessageBox.Show("No INES file !");
+                return;
+            }
+            if (!File.Exists(".\\database.xml"))
+            {
+                MessageBox.Show("The database file is missing. Please make sure the database.xml file is presented in My Nes folder. This file should be presented by default.");
+                return;
+            }
             if (info.DatabaseGameInfo.Game_Name != null)
             {
                 // mapper
@@ -153,9 +163,10 @@ namespace MyNes
                 {
                     numericUpDown_prgCount.Value = 0;
                 }
-                if (info.DatabaseGameInfo.CHR_size != "")
+                // chr
+                if (info.DatabaseGameInfo.CHR_size != null && info.DatabaseGameInfo.CHR_size != "")
                 {
-                    string size = info.DatabaseGameInfo.PRG_size.Replace("k", "");
+                    string size = info.DatabaseGameInfo.CHR_size.Replace("k", "");
                     int siz = int.Parse(size);
                     numericUpDown_chrCount.Value = siz;
                 }
@@ -163,18 +174,68 @@ namespace MyNes
                 {
                     numericUpDown_chrCount.Value = 0;
                 }
-                // mirroring
-                
+                // system  
+                if (info.DatabaseCartInfo.System != null)
+                {
+                    if (info.DatabaseCartInfo.System.ToUpper().Contains("PAL"))
+                        comboBox_tvSystem.SelectedIndex = 1;
+                    else
+                        comboBox_tvSystem.SelectedIndex = 0;
+                }
             }
             else
             {
-                MessageBox.Show("This rom can't be found in the database. Please make sure the database.xml file is presented in My Nes folder. This file should be presented by default.");
+                MessageBox.Show("This rom can't be found in the database.");
             }
         }
         // Save changes
         private void button_save_Click(object sender, EventArgs e)
         {
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show("Please open file first.");
+                return;
+            }
+            if (Path.GetExtension(filePath).ToLower() != ".nes")
+            {
+                MessageBox.Show("Can't save this file. It's not an INES format file.");
+                button_save.Enabled = false;
+                return;
+            }
+            if (comboBox_version.SelectedIndex == 1)
+            {
+                MessageBox.Show("INES version 2.0 is not supported. Sorry :/");
+                return;
+            }
+            INESHeader sheader = new INESHeader();
+            // save valus
+            sheader.ChrPages = (byte)numericUpDown_chrCount.Value;
+            sheader.HasSaveRam = checkBox_isBattery.Checked;
+            sheader.HasTrainer = checkBox_trainer.Checked;
+            sheader.IsPlaychoice10 = checkBox_pc10.Checked;
+            sheader.IsVersion2 = comboBox_version.SelectedIndex == 1;
+            sheader.IsVSUnisystem = checkBox_VSUnisystem.Checked;
+            sheader.Mapper = (byte)numericUpDown_mapper.Value;
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0: sheader.Mirroring = Core.Types.Mirroring.ModeHorz; break;
+                case 1: sheader.Mirroring = Core.Types.Mirroring.ModeVert; break;
+                case 2: sheader.Mirroring = Core.Types.Mirroring.ModeFull; break;
+            }
+            sheader.PrgPages = (byte)numericUpDown_prgCount.Value;
+            switch (comboBox_tvSystem.SelectedIndex)
+            {
+                case 0: sheader.TVSystem = INESRVSystem.NTSC; break;
+                case 1: sheader.TVSystem = INESRVSystem.PAL; break;
+                case 2: sheader.TVSystem = INESRVSystem.DualCompatible; break;
+            }
+            sheader.SaveFile(filePath);
+            // the sha1 and the size maybe changed, reload them.
+            RomInfo info1 = new RomInfo(filePath);
+            textBox_sha1.Text = info1.SHA1.ToUpper();
+            textBox_size.Text = Helper.GetFileSize(filePath);
 
+            MessageBox.Show("Done");
         }
     }
 }
