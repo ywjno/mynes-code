@@ -290,5 +290,8 @@ namespace MyNes.WinRenderers
             get { return fullScreen; }
             set { fullScreen = value; }
         }
+
+        public bool Initialized
+        { get { return initialized; } }
     }
 }

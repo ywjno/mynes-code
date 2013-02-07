@@ -57,7 +57,6 @@ namespace MyNes
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.richTextBox3 = new System.Windows.Forms.RichTextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label_coreVersion = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabControl1.SuspendLayout();
@@ -108,19 +107,20 @@ namespace MyNes
             this.richTextBox1.Location = new System.Drawing.Point(3, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(423, 175);
+            this.richTextBox1.Size = new System.Drawing.Size(423, 194);
             this.richTextBox1.TabIndex = 7;
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBox1_LinkClicked);
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(12, 124);
+            this.tabControl1.Location = new System.Drawing.Point(12, 105);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(437, 207);
+            this.tabControl1.Size = new System.Drawing.Size(437, 226);
             this.tabControl1.TabIndex = 8;
             // 
             // tabPage1
@@ -129,7 +129,7 @@ namespace MyNes
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(429, 181);
+            this.tabPage1.Size = new System.Drawing.Size(429, 200);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Copyright";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -140,7 +140,7 @@ namespace MyNes
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(429, 181);
+            this.tabPage2.Size = new System.Drawing.Size(429, 200);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Credits";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -153,7 +153,7 @@ namespace MyNes
             this.richTextBox2.Location = new System.Drawing.Point(3, 3);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(423, 175);
+            this.richTextBox2.Size = new System.Drawing.Size(423, 194);
             this.richTextBox2.TabIndex = 4;
             this.richTextBox2.Text = resources.GetString("richTextBox2.Text");
             // 
@@ -163,7 +163,7 @@ namespace MyNes
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(429, 181);
+            this.tabPage3.Size = new System.Drawing.Size(429, 200);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Links";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -176,20 +176,9 @@ namespace MyNes
             this.richTextBox3.Location = new System.Drawing.Point(3, 3);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.ReadOnly = true;
-            this.richTextBox3.Size = new System.Drawing.Size(423, 175);
+            this.richTextBox3.Size = new System.Drawing.Size(423, 194);
             this.richTextBox3.TabIndex = 5;
             this.richTextBox3.Text = resources.GetString("richTextBox3.Text");
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.ForestGreen;
-            this.label2.Location = new System.Drawing.Point(6, 46);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(196, 15);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "BETA RELEASE (test release)";
             // 
             // label_coreVersion
             // 
@@ -205,10 +194,9 @@ namespace MyNes
             // 
             this.groupBox1.Controls.Add(this.label_coreVersion);
             this.groupBox1.Controls.Add(this.label_version);
-            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(12, 49);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(437, 69);
+            this.groupBox1.Size = new System.Drawing.Size(437, 50);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             // 
@@ -253,7 +241,6 @@ namespace MyNes
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.RichTextBox richTextBox3;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label_coreVersion;
         private System.Windows.Forms.GroupBox groupBox1;
     }

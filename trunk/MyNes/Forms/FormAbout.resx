@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="richTextBox1.Text" xml:space="preserve">
-    <value>Copyright © Ala Ibrahim Hadid 2009 - 2012
+    <value>Copyright © Ala Ibrahim Hadid 2009 - 2013
 Syria - Hamah - Alsalamiah
 Email: mailto:ahdsoftwares@hotmail.com
 
@@ -126,6 +126,13 @@ Icons:
 ======
 Mark James
 http://www.famfamfam.com/lab/icons/silk/
+
+MLV:
+=====
+Managed ListView control.
+Copyright © 2013 Ala Hadid.
+This is an article about this project includes all the information.
+http://www.codeproject.com/Articles/538518/Managed-ListView
 
 License:
 ======

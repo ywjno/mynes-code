@@ -50,6 +50,7 @@ namespace MyNes.Core
         public static SpeedLimiter SpeedLimiter;
         private static bool softResetRequest = false;
         private static bool hardResetRequest = false;
+        public static bool Initialized = false;
         //events
         /// <summary>
         /// Rised when the emulation shutdown
@@ -80,6 +81,7 @@ namespace MyNes.Core
         /// <param name="romPath">The complete rom path</param>
         public static void CreateNew(string romPath, EmulationSystem systemType)
         {
+            Initialized = false;
             string extension = System.IO.Path.GetExtension(romPath).ToLower();
             switch (extension)
             {
@@ -216,6 +218,7 @@ namespace MyNes.Core
             //load sram
             if (RomInfo.HasSaveRam)
                 LoadSram();
+            Initialized = true;
         }
 
         /// <summary>
@@ -309,6 +312,7 @@ namespace MyNes.Core
                 AudioDevice.Shutdown();
 
                 OnEmuShutdown();
+                Initialized = false;
                 Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
             }
         }
@@ -518,6 +522,12 @@ namespace MyNes.Core
 
             st.Close();
             saveStateRequest = false;
+            //save snap
+            VideoDevice.TakeSnapshot(Path.GetDirectoryName(requestStatePath) + "\\" + 
+                Path.GetFileNameWithoutExtension(requestStatePath) + ".png", ".png");
+            //save text info
+            File.WriteAllText(Path.GetDirectoryName(requestStatePath) + "\\" +
+                Path.GetFileNameWithoutExtension(requestStatePath) + ".txt", RomInfo.Path);
             Pause = false;
         }
         private static void _loadState()

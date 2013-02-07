@@ -37,6 +37,10 @@ namespace MyNes.Renderers
         /// </summary>
         public abstract string Description { get; }
         /// <summary>
+        /// Get the copyright message provided by the author of this renderer.
+        /// </summary>
+        public virtual string CopyrightMessage { get { return ""; } }
+        /// <summary>
         /// Get or set the parent asssembly path of this renderer. This should set by the manager and used for reset or reload
         ///  assembly that required by some renderers.
         /// </summary>

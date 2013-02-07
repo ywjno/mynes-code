@@ -16,15 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using System;
-using MLV;
+using MyNes.Core;
 
-namespace MyNes
+namespace MyNes.Debug.ConsoleCommands
 {
-    class ManagedListViewItem_BRom : ManagedListViewItem
+    class Save : ConsoleCommand
     {
-        private BRom rom;
-        public BRom BRom
-        { get { return rom; } set { rom = value; } }
+        public override string Method
+        {
+            get { return "save"; }
+        }
+
+        public override string Description
+        {
+            get { return "Save console lines to a file"; }
+        }
+
+        public override void Execute(string parameters)
+        {
+            // No need to do anything. The console window should take care of this.
+            // I added this class so when user type 'help' the description of this class should listed in help lines.
+        }
     }
 }

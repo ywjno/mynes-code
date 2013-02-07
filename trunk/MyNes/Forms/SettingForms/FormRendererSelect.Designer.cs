@@ -35,6 +35,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -52,7 +54,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(12, 68);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(342, 21);
+            this.comboBox1.Size = new System.Drawing.Size(366, 21);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -71,14 +73,14 @@
             this.richTextBox1.Location = new System.Drawing.Point(12, 108);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(342, 166);
+            this.richTextBox1.Size = new System.Drawing.Size(366, 114);
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
             this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBox1_LinkClicked);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(279, 288);
+            this.button1.Location = new System.Drawing.Point(303, 318);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -88,7 +90,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(198, 288);
+            this.button2.Location = new System.Drawing.Point(222, 318);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 5;
@@ -101,15 +103,37 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(12, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(320, 26);
+            this.label3.Size = new System.Drawing.Size(353, 26);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Please select the renderer that will be  used for video, audio and \r\ncontrols.";
+            this.label3.Text = "Please select the renderer that will be used for video, audio and control \r\nmappi" +
+    "ng.";
+            // 
+            // richTextBox2
+            // 
+            this.richTextBox2.BackColor = System.Drawing.Color.White;
+            this.richTextBox2.Location = new System.Drawing.Point(12, 241);
+            this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.ReadOnly = true;
+            this.richTextBox2.Size = new System.Drawing.Size(366, 71);
+            this.richTextBox2.TabIndex = 8;
+            this.richTextBox2.Text = "";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 225);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(44, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Author:";
             // 
             // FormRendererSelect
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(366, 323);
+            this.ClientSize = new System.Drawing.Size(390, 353);
+            this.Controls.Add(this.richTextBox2);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -117,6 +141,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormRendererSelect";
@@ -138,5 +163,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.Label label4;
     }
 }

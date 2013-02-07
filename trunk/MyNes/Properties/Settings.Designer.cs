@@ -211,5 +211,29 @@ namespace MyNes.Properties {
                 this["ThumbnailsModeSelection"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowWelcomeAtStartup {
+            get {
+                return ((bool)(this["ShowWelcomeAtStartup"]));
+            }
+            set {
+                this["ShowWelcomeAtStartup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int WelcomePageIndex {
+            get {
+                return ((int)(this["WelcomePageIndex"]));
+            }
+            set {
+                this["WelcomePageIndex"] = value;
+            }
+        }
     }
 }

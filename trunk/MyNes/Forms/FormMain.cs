@@ -26,6 +26,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using System.Diagnostics;
 using MyNes.Renderers;
 using MyNes.Core.Boards;
 using MLV;
@@ -704,6 +705,8 @@ namespace MyNes.Forms
             if (ManagedListView1.Items.Count == 1)
                 st = " rom";
             StatusLabel_romsCount.Text = ManagedListView1.Items.Count + st;
+
+            ManagedListView1.Invalidate();
         }
         private void RefreshColumns()
         {
@@ -1805,6 +1808,57 @@ namespace MyNes.Forms
 
             FormInesHeaderEditor frm = new FormInesHeaderEditor(rom.Path);
             frm.ShowDialog(this);
+        }
+        private void fixINESHeaderForFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                MessageBox.Show("Please close current game first. Can't edit while emulation is on.");
+                return;
+            }
+
+            if (ManagedListView1.SelectedItems.Count > 0)
+            {
+                List<string> files = new List<string>();
+                foreach (ManagedListViewItem_BRom rom in ManagedListView1.SelectedItems)
+                    files.Add(rom.BRom.Path);
+                FormINESFilesFixer frm = new FormINESFilesFixer(files.ToArray());
+                frm.ShowDialog(this);
+            }
+            else
+            {
+                FormINESFilesFixer frm = new FormINESFilesFixer();
+                frm.ShowDialog(this);
+            }
+        }
+        private void welcomeWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormWelcome frm = new FormWelcome();
+            frm.ShowDialog(this);
+        }
+        private void FormMain_Shown(object sender, EventArgs e)
+        {
+            if (Program.Settings.ShowWelcomeAtStartup)
+            {
+                FormWelcome frm = new FormWelcome();
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void visitWebsiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try { Process.Start("http://sourceforge.net/projects/mynes/"); }
+            catch { }
+        }
+        private void facebookPageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try { Process.Start("http://www.facebook.com/pages/My-Nes/427707727244076"); }
+            catch { }
+        }
+        private void theCodeProjectArticleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try { Process.Start("http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx"); }
+            catch { }
         }
     }
 }

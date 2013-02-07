@@ -53,7 +53,10 @@ namespace MyNes
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBox1.SelectedIndex < RenderersCore.AvailableRenderers.Length)
+            {
                 richTextBox1.Text = RenderersCore.AvailableRenderers[comboBox1.SelectedIndex].Description;
+                richTextBox2.Text = RenderersCore.AvailableRenderers[comboBox1.SelectedIndex].CopyrightMessage;
+            }
         }
 
         private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)

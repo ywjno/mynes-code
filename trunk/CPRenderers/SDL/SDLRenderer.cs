@@ -48,5 +48,13 @@ namespace CPRenderers
                 + "This renderer requires the sdl .net runtime to run.\nhttp://cs-sdl.sourceforge.net/downloads";
             }
         }
+
+        public override string CopyrightMessage
+        {
+            get
+            {
+                return "Written by Ala Ibrahim Hadid.";
+            }
+        }
     }
 }

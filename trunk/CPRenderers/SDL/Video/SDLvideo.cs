@@ -30,9 +30,12 @@ namespace CPRenderers
         private int stretchMultiply = 2;
         private bool canRender = false;
         private bool openGL = false;
+        private bool initialized = false;
+
         public SDLvideo(TimingInfo.System system, int stretchMultiply, string romName, bool ImmediateMode, bool cutLines,
-            int AdapterIndex, int FullScreenModeIndex,bool openGL, bool FullScreen)
+            int AdapterIndex, int FullScreenModeIndex, bool openGL, bool FullScreen)
         {
+            initialized = false;
             canRender = false;
             this.system = system;
             this.romName = romName;
@@ -75,7 +78,7 @@ namespace CPRenderers
             //screen.AlphaBlending = false;
             // screen_back.AlphaBlending = false;
             pointer = (int*)screen_back.Pixels;
-            canRender = true; 
+            canRender = true;
             Nes.Pause = false;
         }
         public void Resize(bool fullScreen)
@@ -95,6 +98,7 @@ namespace CPRenderers
             {
                 screen = Video.SetVideoMode(w, h, 32, resizable, openGL, false);
             }
+            initialized = true;
         }
         public void RenderFrame(int[][] ScreenBuffer)
         {
@@ -127,5 +131,7 @@ namespace CPRenderers
             screen_back.SaveBmp(path);
             Console.WriteLine("Snapshot taken");
         }
+        public bool Initialized
+        { get { return initialized; } }
     }
 }

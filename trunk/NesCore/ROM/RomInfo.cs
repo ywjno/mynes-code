@@ -52,6 +52,10 @@ namespace MyNes.Core.ROM
                     { dataBaseCartInfo = cartinf; break; }
             }
         }
+        public RomInfo(string romPath, NesDatabaseObject database)
+        {
+            LoadFile(romPath, database);
+        }
         private string format = "INES";
         private string romPath;
         private string sha1;
@@ -65,6 +69,33 @@ namespace MyNes.Core.ROM
         private NesDatabaseGameInfo dataBaseInfo;
         private NesDatabaseCartridgeInfo dataBaseCartInfo;
 
+        public void LoadFile(string romPath, NesDatabaseObject database) 
+        {
+            this.romPath = romPath;
+            FileStream stream = new FileStream(romPath, FileMode.Open, FileAccess.Read);
+            stream.Position = 16;
+            byte[] buffer = new byte[stream.Length - 16];
+
+            stream.Read(buffer, 0, (int)(stream.Length - 16));
+            stream.Close();
+
+            //SHA1
+            sha1 = "";
+            SHA1Managed managedSHA1 = new SHA1Managed();
+            byte[] shaBuffer = managedSHA1.ComputeHash(buffer);
+
+            foreach (byte b in shaBuffer)
+                sha1 += b.ToString("x2").ToLower();
+            //DATABASE
+            dataBaseInfo = database.Find(sha1);
+            //set cart info
+            if (dataBaseInfo.Cartridges != null)
+            {
+                foreach (NesDatabaseCartridgeInfo cartinf in dataBaseInfo.Cartridges)
+                    if (cartinf.SHA1.ToLower() == sha1.ToLower())
+                    { dataBaseCartInfo = cartinf; break; }
+            }
+        }
         /// <summary>
         /// Get the rom path
         /// </summary>

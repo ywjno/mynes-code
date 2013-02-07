@@ -107,6 +107,13 @@
     <Compile Include="Browser Types\BRom.cs" />
     <Compile Include="Browser Types\BrowserDatabase.cs" />
     <Compile Include="Browser Types\WinTypes.cs" />
+    <Compile Include="Debug\ConsoleCommands\Save.cs" />
+    <Compile Include="Forms\FormINESFilesFixer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormINESFilesFixer.Designer.cs">
+      <DependentUpon>FormINESFilesFixer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormInesHeaderEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -247,6 +254,12 @@
     <Compile Include="Forms\FormMain.designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormWelcome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormWelcome.Designer.cs">
+      <DependentUpon>FormWelcome.cs</DependentUpon>
+    </Compile>
     <Compile Include="Types\ColumnItem.cs" />
     <Compile Include="Types\ColumnsManager.cs" />
     <Compile Include="Types\Helper.cs" />
@@ -275,6 +288,9 @@
     <EmbeddedResource Include="Debug\FormSpeed.resx">
       <DependentUpon>FormSpeed.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormINESFilesFixer.resx">
+      <DependentUpon>FormINESFilesFixer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormInesHeaderEditor.resx">
       <DependentUpon>FormInesHeaderEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -283,6 +299,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormGameGenie.resx">
       <DependentUpon>FormGameGenie.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormWelcome.resx">
+      <DependentUpon>FormWelcome.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingForms\FormPaletteSettings.resx">
       <DependentUpon>FormPaletteSettings.cs</DependentUpon>

@@ -46,6 +46,7 @@ namespace MyNes
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormInesHeaderEditor));
             this.textBox_romPath = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -76,6 +77,7 @@ namespace MyNes
             this.label8 = new System.Windows.Forms.Label();
             this.button_save = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_chrCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_prgCount)).BeginInit();
@@ -106,6 +108,7 @@ namespace MyNes
             this.button1.Size = new System.Drawing.Size(67, 23);
             this.button1.TabIndex = 2;
             this.button1.Text = "&Change";
+            this.toolTip1.SetToolTip(this.button1, "Change the file");
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -230,6 +233,7 @@ namespace MyNes
             this.button3.Size = new System.Drawing.Size(117, 23);
             this.button3.TabIndex = 22;
             this.button3.Text = "&Reload file";
+            this.toolTip1.SetToolTip(this.button3, "Relaod the file. This will discard any changes.");
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -270,6 +274,8 @@ namespace MyNes
             this.button2.Size = new System.Drawing.Size(117, 23);
             this.button2.TabIndex = 21;
             this.button2.Text = "&Fix using database";
+            this.toolTip1.SetToolTip(this.button2, "This will search the database for this rom to get the information.\r\nThis will set" +
+        " prg, chr, mapper and tv system.");
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -284,6 +290,7 @@ namespace MyNes
             this.numericUpDown_chrCount.Name = "numericUpDown_chrCount";
             this.numericUpDown_chrCount.Size = new System.Drawing.Size(207, 20);
             this.numericUpDown_chrCount.TabIndex = 25;
+            this.toolTip1.SetToolTip(this.numericUpDown_chrCount, "The chr banks count = chr size in KBytes");
             // 
             // numericUpDown_prgCount
             // 
@@ -296,6 +303,7 @@ namespace MyNes
             this.numericUpDown_prgCount.Name = "numericUpDown_prgCount";
             this.numericUpDown_prgCount.Size = new System.Drawing.Size(207, 20);
             this.numericUpDown_prgCount.TabIndex = 24;
+            this.toolTip1.SetToolTip(this.numericUpDown_prgCount, "The prg banks  count = (PRG size in KBytes) / 8");
             // 
             // numericUpDown_mapper
             // 
@@ -308,6 +316,7 @@ namespace MyNes
             this.numericUpDown_mapper.Name = "numericUpDown_mapper";
             this.numericUpDown_mapper.Size = new System.Drawing.Size(207, 20);
             this.numericUpDown_mapper.TabIndex = 20;
+            this.toolTip1.SetToolTip(this.numericUpDown_mapper, "The INES mapper #");
             // 
             // comboBox1
             // 
@@ -376,7 +385,8 @@ namespace MyNes
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(123, 23);
             this.button_save.TabIndex = 23;
-            this.button_save.Text = "&Save changes to file";
+            this.button_save.Text = "&Save changes";
+            this.toolTip1.SetToolTip(this.button_save, "Save changes to the file. Be carefull ! this can\'t be undone.");
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
@@ -455,5 +465,6 @@ namespace MyNes
         private System.Windows.Forms.ComboBox comboBox_version;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
