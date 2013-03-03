@@ -93,7 +93,7 @@ namespace MyNes
                             {
                                 string size = info.DatabaseGameInfo.CHR_size.Replace("k", "");
                                 int siz = int.Parse(size);
-                                header.ChrPages = (byte)siz;
+                                header.ChrPages = (byte)(siz / 8);
                             }
                             else
                             {
