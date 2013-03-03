@@ -168,7 +168,7 @@ namespace MyNes
                 {
                     string size = info.DatabaseGameInfo.CHR_size.Replace("k", "");
                     int siz = int.Parse(size);
-                    numericUpDown_chrCount.Value = siz;
+                    numericUpDown_chrCount.Value = siz / 8;
                 }
                 else
                 {
