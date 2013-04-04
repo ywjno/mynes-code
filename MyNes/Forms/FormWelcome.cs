@@ -51,7 +51,7 @@ namespace MyNes
             column.ID = "path";
             column.Width = 220;
             managedListView1.Columns.Add(column);
-            if (Program.Settings.RecentFiles == null) 
+            if (Program.Settings.RecentFiles == null)
                 Program.Settings.RecentFiles = new System.Collections.Specialized.StringCollection();
             foreach (string file in Program.Settings.RecentFiles)
             {
@@ -89,12 +89,12 @@ namespace MyNes
                 }
             }
         }
-        string stateFile = "";
+        private string stateFile = "";
         private void managedListView_states_DrawItem(object sender, MLV.ManagedListViewItemDrawArgs e)
         {
             string path = managedListView_states.Items[e.ItemIndex].Tag.ToString();
             e.TextToDraw = managedListView_states.Items[e.ItemIndex].Text;
-           // e.ImageToDraw = Image.FromFile(managedListView_states.Items[e.ItemIndex].Tag.ToString());
+            // e.ImageToDraw = Image.FromFile(managedListView_states.Items[e.ItemIndex].Tag.ToString());
             string imagePath = Path.GetDirectoryName(path) +
                 "\\" + Path.GetFileNameWithoutExtension(path) + ".png";
             e.ImageToDraw = Image.FromFile(imagePath);
@@ -109,16 +109,17 @@ namespace MyNes
 
         private void managedListView_states_ItemDoubleClick(object sender, ManagedListViewItemDoubleClickArgs e)
         {
+            //this.Close();
             // get rom path
             stateFile = managedListView_states.Items[e.ClickedItemIndex].Tag.ToString();
             string path = File.ReadAllText(Path.GetDirectoryName(stateFile) +
                 "\\" + Path.GetFileNameWithoutExtension(stateFile) + ".txt");
             Program.FormMain.OpenRom(path);
+            while (Nes.VideoDevice == null) { }// make sure the video device is ready
+            while (!Nes.VideoDevice.IsRendering) { }// make sure it renders something
             // load state
-            while (!Nes.VideoDevice.Initialized) { }
             if (Nes.ON && File.Exists(stateFile))
-            { Nes.LoadStateAs(stateFile); } 
-            this.Close();
+            { Nes.LoadStateAs(stateFile); }
         }
 
         private void managedListView1_ItemDoubleClick(object sender, ManagedListViewItemDoubleClickArgs e)
@@ -130,6 +131,33 @@ namespace MyNes
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 0)
+            {
+                if (managedListView_states.SelectedItems.Count == 1)
+                {
+                    stateFile = managedListView_states.SelectedItems[0].Tag.ToString();
+                    string path = File.ReadAllText(Path.GetDirectoryName(stateFile) +
+                        "\\" + Path.GetFileNameWithoutExtension(stateFile) + ".txt");
+                    Program.FormMain.OpenRom(path);
+                    while (Nes.VideoDevice == null) { }// make sure the video device is ready
+                    while (!Nes.VideoDevice.IsRendering) { }// make sure it renders something
+                    // load state
+                    if (Nes.ON && File.Exists(stateFile))
+                    { Nes.LoadStateAs(stateFile); }
+                }
+            }
+            else
+            {
+                if (managedListView1.SelectedItems.Count == 1)
+                {
+                    Program.FormMain.OpenRom(managedListView1.SelectedItems[0].Tag.ToString());
+                    this.Close();
+                }
+            }
         }
     }
 }

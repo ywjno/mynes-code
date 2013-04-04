@@ -59,13 +59,15 @@ namespace MyNes
             {
                 textBox_dead.Text = Nes.SpeedLimiter.DeadTime.ToString();
                 textBox_FrameTime.Text = Nes.SpeedLimiter.CurrentFrameTime.ToString();
-                double fps = (1.0 / Nes.SpeedLimiter.CurrentFrameTime);
-                if (fps < min)
-                    min = fps;
-                if (fps > max)
-                    max = fps;
-                textBox_fpsCanMake.Text = fps.ToString();
-                textBox_fps.Text = Nes.SpeedLimiter.FramePeriod.ToString();
+                double Pfps = (1.0 / Nes.SpeedLimiter.CurrentFrameTime);
+                double fps = (1.0 / Nes.SpeedLimiter.ImmediateFrameTime);
+                if (Pfps < min)
+                    min = Pfps;
+                if (Pfps > max)
+                    max = Pfps;
+                textBox_fpsCanMake.Text = Pfps.ToString();
+                textBox_FPS.Text = fps.ToString();
+                textBox_Targetfps.Text = Nes.SpeedLimiter.FramePeriod.ToString();
                 label_min_max.Text = "Min= " + min.ToString() + "\nMax= " + max.ToString();
             }
         }

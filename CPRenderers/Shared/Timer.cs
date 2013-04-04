@@ -18,6 +18,7 @@
  */
 using System;
 using MyNes.Core.Controls;
+using SdlDotNet;
 namespace CPRenderers
 {
     class Timer : ITimer
@@ -27,7 +28,8 @@ namespace CPRenderers
         }
         public double GetCurrentTime()
         {
-            return (double)DateTime.Now.Ticks / 10000000;
+            double ticks = DateTime.Now.Ticks;
+            return (ticks / 10000000);
         }
     }
 }

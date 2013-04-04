@@ -35,11 +35,6 @@ namespace MyNes
         {
             Direct3D d3d = new Direct3D();
             InitializeComponent();
-            //adpaters
-            foreach (AdapterInformation adp in d3d.Adapters)
-                comboBox_adapter.Items.Add(adp.Details.Description);
-
-            comboBox_adapter.SelectedIndex = RenderersCore.SettingsManager.Settings.Video_AdapterIndex;
             //res
             for (int i = 0; i < d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8).Count; i++)
             {
@@ -48,9 +43,12 @@ namespace MyNes
                     d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8)[i].RefreshRate + " Hz");
             }
             comboBox_fullscreenRes.SelectedIndex = RenderersCore.SettingsManager.Settings.Video_ResIndex;
+            checkBox_showFps.Checked = RenderersCore.SettingsManager.Settings.Video_ShowFPS;
             checkBox_hideLines.Checked = RenderersCore.SettingsManager.Settings.Video_HideLines;
             checkBox_imMode.Checked = RenderersCore.SettingsManager.Settings.Video_ImmediateMode;
             checkBox_fullscreen.Checked = RenderersCore.SettingsManager.Settings.Video_Fullscreen;
+            checkBox_showNotifications.Checked = RenderersCore.SettingsManager.Settings.Video_ShowNotifications;
+            checkBox_keepAspectRatio.Checked = RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch;
             //stretch
             numericUpDown1.Value = RenderersCore.SettingsManager.Settings.Video_StretchMultiply;
             //snapshot image format
@@ -69,12 +67,14 @@ namespace MyNes
         //ok
         private void button1_Click(object sender, EventArgs e)
         {
-            RenderersCore.SettingsManager.Settings.Video_AdapterIndex = comboBox_adapter.SelectedIndex;
             RenderersCore.SettingsManager.Settings.Video_ResIndex = comboBox_fullscreenRes.SelectedIndex;
             RenderersCore.SettingsManager.Settings.Video_HideLines = checkBox_hideLines.Checked;
             RenderersCore.SettingsManager.Settings.Video_ImmediateMode = checkBox_imMode.Checked;
             RenderersCore.SettingsManager.Settings.Video_Fullscreen = checkBox_fullscreen.Checked;
             RenderersCore.SettingsManager.Settings.Video_StretchMultiply = (int)numericUpDown1.Value;
+            RenderersCore.SettingsManager.Settings.Video_ShowFPS = checkBox_showFps.Checked;
+            RenderersCore.SettingsManager.Settings.Video_ShowNotifications = checkBox_showNotifications.Checked;
+            RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch = checkBox_keepAspectRatio.Checked;
             //snapshot image format
             if (radioButton_jpg.Checked)
                 RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".jpg";
@@ -103,11 +103,19 @@ namespace MyNes
         //defaults
         private void button3_Click(object sender, EventArgs e)
         {
-            comboBox_adapter.SelectedIndex = comboBox_fullscreenRes.SelectedIndex = 0;
+            comboBox_fullscreenRes.SelectedIndex = 0;
             numericUpDown1.Value = 2;
             checkBox_hideLines.Checked = true;
             checkBox_imMode.Checked = true;
             checkBox_fullscreen.Checked = false;
+            checkBox_showFps.Checked = false;
+            checkBox_showNotifications.Checked = true;
+            checkBox_keepAspectRatio.Checked = true;
+        }
+        // renderer settings
+        private void button4_Click(object sender, EventArgs e)
+        {
+            RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ChangeSettings();
         }
     }
 }

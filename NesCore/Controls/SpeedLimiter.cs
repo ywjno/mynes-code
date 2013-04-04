@@ -38,6 +38,7 @@ namespace MyNes.Core.Controls
         public bool ON;
 
         public double CurrentFrameTime;
+        public double ImmediateFrameTime;
         public double DeadTime;
         public double LastFrameTime;
         public double FramePeriod = (1.0 / 60.0988);
@@ -48,21 +49,22 @@ namespace MyNes.Core.Controls
         /// </summary>
         public void Update()
         {
-            CurrentFrameTime = timer.GetCurrentTime() - LastFrameTime;
+            ImmediateFrameTime =CurrentFrameTime = timer.GetCurrentTime() - LastFrameTime;
             DeadTime = FramePeriod - CurrentFrameTime;
             if (ON)
             {
                 //This should relieve the pc's cpu for the dead time
                 //but after monitoring performance this has no effect.
-                //if (DeadTime > 0)
+               // if (DeadTime > 0)
                 //    Thread.Sleep((int)(DeadTime * 1000));
 
-                while (CurrentFrameTime < FramePeriod)
+                while (ImmediateFrameTime < FramePeriod)
                 {
-                    if ((timer.GetCurrentTime() - LastFrameTime) > FramePeriod)
-                    {
-                        break;
-                    }
+                    ImmediateFrameTime = timer.GetCurrentTime() - LastFrameTime;
+                    //if ((timer.GetCurrentTime() - LastFrameTime) > FramePeriod)
+                    //{
+                    //    break;
+                    //}
                 }
             }
             LastFrameTime = timer.GetCurrentTime();

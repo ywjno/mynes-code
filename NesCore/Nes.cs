@@ -28,6 +28,7 @@ using MyNes.Core.ROM;
 using MyNes.Core.Types;
 using MyNes.Core.Database;
 using System.IO;
+using System.Drawing;
 
 namespace MyNes.Core
 {
@@ -50,16 +51,15 @@ namespace MyNes.Core
         public static SpeedLimiter SpeedLimiter;
         private static bool softResetRequest = false;
         private static bool hardResetRequest = false;
+        /// <summary>
+        /// Set to true atomatically after emulation initialize. Set to false atomatically after shutdown of ALL components.
+        /// </summary>
         public static bool Initialized = false;
         //events
         /// <summary>
         /// Rised when the emulation shutdown
         /// </summary>
         public static event System.EventHandler EmuShutdown;
-        /// <summary>
-        /// Rised when the renderer need to shutdown
-        /// </summary>
-        public static event System.EventHandler RendererShutdown;
         /// <summary>
         /// Rised when the user request a fullscreen state change
         /// </summary>
@@ -69,9 +69,14 @@ namespace MyNes.Core
         public static bool SaveSramOnShutdown = true;
         //state
         private static bool saveStateRequest;
+        public static bool saveMemoryStateRequest;
         private static bool loadStateRequest;
+        public static bool loadMemoryStateRequest;
         private static string requestStatePath;
+        public static byte[] memoryState;
         public static int StateSlot = 0;
+        public static bool TogglePauseAtFrameFinish = false;
+        private static bool fullscreenRequest = false;
 
         public static TimingInfo.System emuSystem = TimingInfo.NTSC;
 
@@ -81,6 +86,10 @@ namespace MyNes.Core
         /// <param name="romPath">The complete rom path</param>
         public static void CreateNew(string romPath, EmulationSystem systemType)
         {
+            if (ON)
+            {
+                throw new System.Exception("Nes is on !");
+            }
             Initialized = false;
             string extension = System.IO.Path.GetExtension(romPath).ToLower();
             switch (extension)
@@ -176,7 +185,7 @@ namespace MyNes.Core
 
                 //Board = INESBoardManager.GetBoard(header, chr, prg, trainer);
                 Board = BoardsManager.GetBoard(header, chr, prg, trainer);
-         
+
                 if (Board == null)
                 {
                     Console.WriteLine("Mapper isn't supported!", DebugCode.Error);
@@ -213,7 +222,7 @@ namespace MyNes.Core
 
             Ppu.Initialize();
             Apu.Initialize();
-            Board.Initialize(); 
+            Board.Initialize();
             Cpu.Initialize();
             //load sram
             if (RomInfo.HasSaveRam)
@@ -233,10 +242,6 @@ namespace MyNes.Core
         public static void TogglePause(bool pause)
         {
             Pause = pause;
-            if (pause)
-                AudioDevice.Stop();
-            else
-                AudioDevice.Play();
         }
         /// <summary>
         /// Run the emu, keep executing the cpu while is ON
@@ -253,6 +258,7 @@ namespace MyNes.Core
                 {
                     if (SpeedLimiter != null)
                         SpeedLimiter.SleepOnPause();
+                    
                     if (softResetRequest)
                     {
                         softResetRequest = false;
@@ -273,10 +279,30 @@ namespace MyNes.Core
                     {
                         _loadState();
                     }
-                    //for shortcuts
+
+                    // for shortcuts
                     if (ControlsUnit != null)
                         if (ControlsUnit.InputDevice != null)
                             ControlsUnit.InputDevice.UpdateEvents();
+                    // pause sound if playing
+                    if (AudioDevice != null)
+                        if (AudioDevice.IsPlaying)
+                            AudioDevice.Stop();
+                    // fullscreen switch request
+                    if (fullscreenRequest)
+                    {
+                        fullscreenRequest = false;
+                        if (FullscreenSwitch != null)
+                            FullscreenSwitch(null, null);
+                    }
+                }
+                if (saveMemoryStateRequest)
+                {
+                    _saveMemoryState();
+                }
+                else if (loadMemoryStateRequest)
+                {
+                    _loadMemoryState();
                 }
             }
         }
@@ -284,11 +310,21 @@ namespace MyNes.Core
         {
             VideoDevice.RenderFrame(screen);
             if (SoundEnabled)
+            {
+                if (!AudioDevice.IsPlaying)
+                    AudioDevice.Play();
                 AudioDevice.UpdateFrame();
+            }
             SpeedLimiter.Update();
             //for shortcuts
             ControlsUnit.InputDevice.UpdateEvents();
             ControlsUnit.FinishFrame();
+
+            if (TogglePauseAtFrameFinish)
+            {
+                TogglePauseAtFrameFinish = false;
+                Pause = true;
+            }
         }
 
         /// <summary>
@@ -296,10 +332,14 @@ namespace MyNes.Core
         /// </summary>
         public static void Shutdown()
         {
+            Pause = true;
             if (ON)
             {
-                Console.WriteLine("SHUTTING DOWN", DebugCode.Warning);
                 ON = false;
+                if (VideoDevice != null)
+                    VideoDevice.DrawText("SHUTTING DOWN", 160, Color.Gold);
+                Console.WriteLine("SHUTTING DOWN", DebugCode.Warning);
+
                 if (SaveSramOnShutdown && RomInfo.HasSaveRam)
                     SaveSram();
                 Apu.Shutdown();
@@ -310,10 +350,9 @@ namespace MyNes.Core
                 ControlsUnit.Shutdown();
                 VideoDevice.Shutdown();
                 AudioDevice.Shutdown();
-
-                OnEmuShutdown();
                 Initialized = false;
                 Console.UpdateLine("EMU SHUTDOWN", DebugCode.Good);
+                OnEmuShutdown();
             }
         }
         public static void OnEmuShutdown()
@@ -339,6 +378,9 @@ namespace MyNes.Core
             Cpu.SoftReset();
             Apu.SoftReset();
             Ppu.SoftReset();
+
+            if (VideoDevice != null)
+                VideoDevice.DrawText("SOFT RESET", 160, Color.Gold);
         }
         public static void HardReset()
         {
@@ -347,7 +389,7 @@ namespace MyNes.Core
                 Pause = true;
                 hardResetRequest = true;
                 Console.WriteLine("HARD RESET", DebugCode.Warning);
-            } 
+            }
         }
         private static void _hardReset()
         {
@@ -362,6 +404,8 @@ namespace MyNes.Core
             SetupPalette();
             if (RomInfo.HasSaveRam)
                 LoadSram();
+            if (VideoDevice != null)
+                VideoDevice.DrawText("HARD RESET", 160, Color.Gold);
         }
         public static void LoadSram()
         {
@@ -413,7 +457,7 @@ namespace MyNes.Core
             //load boards
             BoardsManager.LoadAvailableBoards();
         }
-
+        /*SETUP*/
         /// <summary>
         /// Setup output devices
         /// </summary>
@@ -470,20 +514,12 @@ namespace MyNes.Core
                 Ppu.SetupPalette(PALBPaletteGenerator.GeneratePalette());
         }
         /// <summary>
-        /// Rise the renderer shutdown event
-        /// </summary>
-        public static void OnRendererShutdown()
-        {
-            if (RendererShutdown != null)
-                RendererShutdown(null, null);
-        }
-        /// <summary>
-        /// Rise the FullscreenSwitch event
+        /// Rise the FullscreenSwitch event (this will request a switch at next cpu clock)
         /// </summary>
         public static void OnFullscreen()
         {
-            if (FullscreenSwitch != null)
-                FullscreenSwitch(null, null);
+            Pause = true;
+            fullscreenRequest = true;
         }
         /*STATE*/
         public static void LoadState(string stateFolder)
@@ -492,7 +528,7 @@ namespace MyNes.Core
         }
         public static void LoadStateAs(string fileName)
         {
-            Pause = true;
+            TogglePauseAtFrameFinish = true;
             requestStatePath = fileName;
             loadStateRequest = true;
         }
@@ -502,12 +538,14 @@ namespace MyNes.Core
         }
         public static void SaveStateAs(string fileName)
         {
-            Pause = true;
+            TogglePauseAtFrameFinish = true;
             requestStatePath = fileName;
             saveStateRequest = true;
         }
         private static void _saveState()
         {
+            saveStateRequest = false;
+            Console.WriteLine("Saving state at slot " + StateSlot);
             StateStream st = new StateStream(requestStatePath, false);
             st.WriteHeader(RomInfo.SHA1);
 
@@ -520,21 +558,33 @@ namespace MyNes.Core
             Board.SaveState(st);
             ControlsUnit.SaveState(st);
 
-            st.Close();
-            saveStateRequest = false;
+            st.Finish();
+           
             //save snap
-            VideoDevice.TakeSnapshot(Path.GetDirectoryName(requestStatePath) + "\\" + 
-                Path.GetFileNameWithoutExtension(requestStatePath) + ".png", ".png");
+            VideoDevice.TakeSnapshot(Path.GetDirectoryName(requestStatePath), Path.GetFileNameWithoutExtension(requestStatePath),
+                ".png", true);
             //save text info
             File.WriteAllText(Path.GetDirectoryName(requestStatePath) + "\\" +
                 Path.GetFileNameWithoutExtension(requestStatePath) + ".txt", RomInfo.Path);
+            if (VideoDevice != null)
+                VideoDevice.DrawText("State saved at slot " + StateSlot, 120, Color.Green);
+            Console.WriteLine("State saved at slot " + StateSlot, DebugCode.Good);
             Pause = false;
         }
         private static void _loadState()
         {
+            Console.WriteLine("Loading state at slot " + StateSlot);
             StateStream st = new StateStream(requestStatePath, true);
+            if (!st.IsVailed)
+            {
+                if (VideoDevice != null)
+                    VideoDevice.DrawText("No state found at slot " + StateSlot, 120, Color.Red);
+                goto Finish;
+            }
             if (!st.ReadHeader(RomInfo.SHA1))
             {
+                if (VideoDevice != null)
+                    VideoDevice.DrawText("Unable to load state from slot " + StateSlot + ", corrupted header !!", 120, Color.Green);
                 Console.WriteLine("Unable to load state, corrupted header !!", DebugCode.Error);
                 goto Finish;
             }
@@ -546,11 +596,66 @@ namespace MyNes.Core
             PpuMemory.LoadState(st);
             Board.LoadState(st);
             ControlsUnit.LoadState(st);
-
+            if (VideoDevice != null)
+                VideoDevice.DrawText("State loaded from slot " + StateSlot, 120, Color.Green);
+            Console.WriteLine("State loaded from slot " + StateSlot, DebugCode.Good);
         Finish:
-            st.Close();
+            st.Finish();
             loadStateRequest = false;
             Pause = false;
+        }
+        /*Memory State*/
+        public static void SaveMemoryState()
+        {
+            saveMemoryStateRequest = true;
+        }
+        private static void _saveMemoryState()
+        {
+            StateStream st = new StateStream();
+            // memoryState.WriteHeader(RomInfo.SHA1);
+
+            //save
+            Cpu.SaveState(st);
+            Ppu.SaveState(st);
+            Apu.SaveState(st);
+            CpuMemory.SaveState(st);
+            PpuMemory.SaveState(st);
+            Board.SaveState(st);
+            ControlsUnit.SaveState(st);
+
+            memoryState = st.GetBuffer();
+            st.Finish();
+            saveMemoryStateRequest = false;
+        }
+        public static void LoadMemoryState()
+        {
+            loadMemoryStateRequest = true;
+        }
+        private static void _loadMemoryState()
+        {
+            if (memoryState != null)
+            {
+                StateStream st = new StateStream(memoryState);
+
+                Cpu.LoadState(st);
+                Ppu.LoadState(st);
+                Apu.LoadState(st);
+                CpuMemory.LoadState(st);
+                PpuMemory.LoadState(st);
+                Board.LoadState(st);
+                ControlsUnit.LoadState(st);
+
+                st.Finish();
+            } 
+            loadMemoryStateRequest = false;
+        }
+        public static byte[] GetMemoryState()
+        {
+            return memoryState;
+        }
+        public static void SetMemoryState(byte[] state)
+        {
+            memoryState = state;
         }
     }
 }

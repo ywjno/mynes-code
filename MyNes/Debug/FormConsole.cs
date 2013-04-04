@@ -32,8 +32,6 @@ namespace MyNes
         {
             InitializeComponent();
             LoadSettings();
-            //add default commands
-            ConsoleCommands.AddDefaultCommands();
             //add other commands
             ConsoleCommands.AddCommand(new CloseConsole(this));
             AddCommands();

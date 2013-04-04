@@ -49,6 +49,9 @@ namespace MyNes
             Program.Settings.FoldersDatabasePath = textBox_browserDatabase.Text;
             RenderersCore.SettingsManager.SaveSettings();
             Program.Settings.Save();
+            // create directories
+            System.IO.Directory.CreateDirectory(textBox_snapshots.Text);
+            System.IO.Directory.CreateDirectory(textBox_statesFolder.Text);
             Close();
         }
         //cancel

@@ -132,7 +132,7 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int FilterIndex {
             get {
                 return ((int)(this["FilterIndex"]));
@@ -233,6 +233,17 @@ namespace MyNes.Properties {
             }
             set {
                 this["WelcomePageIndex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection NetJoinIPS {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["NetJoinIPS"]));
+            }
+            set {
+                this["NetJoinIPS"] = value;
             }
         }
     }

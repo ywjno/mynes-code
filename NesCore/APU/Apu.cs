@@ -154,6 +154,11 @@ namespace MyNes.Core.APU
             oddCycle = false;
         }
         public override void Shutdown() { }
+        public void ResetBuffer()
+        {
+            rPos = 0;
+            wPos = 0;
+        }
 
         public void SetupPlayback(ApuPlaybackDescription description)
         {
@@ -205,6 +210,7 @@ namespace MyNes.Core.APU
             {
                 externalMixer.ClockSingle(isClockingDuration);
             }
+            isClockingDuration = false;
         }
         private void UpdatePlayback()
         {
@@ -347,10 +353,6 @@ namespace MyNes.Core.APU
                     output = 80;
                 if (output < -80)
                     output = -80;
-            }
-            else
-            {
-                output = MixSamples();
             }
 
             this.soundBuffer[wPos++ % this.soundBuffer.Length] = output;

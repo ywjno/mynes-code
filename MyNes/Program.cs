@@ -40,6 +40,8 @@ namespace MyNes
             FixDefaultSettings();
             //find renderers
             RenderersCore.FindRenderers(Application.StartupPath);
+            //add default commands
+            ConsoleCommands.AddDefaultCommands();
             //if first time run, choose the slimdx renderer for default
             if (!settings.FirstRun)
             {

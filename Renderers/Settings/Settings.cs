@@ -42,7 +42,9 @@ namespace MyNes.Renderers
         public bool Video_Fullscreen = false;
         public bool Video_OpenGL = false;
         public string Video_SnapshotFormat = ".png";
-        public int Video_AdapterIndex = 0;
         public int Video_StretchMultiply = 2;
+        public bool Video_ShowFPS = false;
+        public bool Video_ShowNotifications = true;
+        public bool Video_KeepAspectRationOnStretch = true;
     }
 }

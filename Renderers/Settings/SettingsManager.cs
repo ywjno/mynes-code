@@ -65,5 +65,41 @@ namespace MyNes.Renderers
         {
             settings = new SettingsData();
         }
+        /// <summary>
+        /// Save settings object
+        /// </summary>
+        /// <param name="fileName">The settings file name without extension</param>
+        /// <param name="settingsObject">The settings object to save</param>
+        public static void SaveSettingsObject(string fileName, object settingsObject)
+        {
+            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
+            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\" + fileName + ".xml";
+            XmlSerializer SER = new XmlSerializer(settingsObject.GetType());
+            Stream STR = new FileStream(path, FileMode.Create);
+            SER.Serialize(STR, settingsObject);
+            STR.Close();
+        }
+        /// <summary>
+        /// Load settings object
+        /// </summary>
+        /// <param name="fileName">The settings file name without extension</param>
+        /// <param name="objectType">The type of the settings object</param>
+        /// <returns>The settings object if load done successfully otherwise null</returns>
+        public static object LoadSettingsObject(string fileName, System.Type objectType)
+        {
+            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
+            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\" + fileName + ".xml";
+            object settingsobject;
+            try
+            {
+                XmlSerializer SER = new XmlSerializer(objectType);
+                Stream STR = new FileStream(path, FileMode.Open, FileAccess.Read);
+                settingsobject = SER.Deserialize(STR);
+                STR.Close();
+                return settingsobject;
+            }
+            catch
+            { return null; }
+        }
     }
 }

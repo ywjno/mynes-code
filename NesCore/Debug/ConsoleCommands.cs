@@ -43,6 +43,15 @@ namespace MyNes.Core
         /// <param name="theCommand">The command to add</param>
         public static void AddCommand(ConsoleCommand theCommand)
         {
+            foreach (ConsoleCommand cmnd in availableCommands)
+            {
+                if (cmnd.Method.ToLower() == theCommand.Method.ToLower())
+                {
+                    // command already exist. Replace it
+                    availableCommands.Remove(cmnd);
+                    break;
+                }
+            }
             availableCommands.Add(theCommand);
         }
 

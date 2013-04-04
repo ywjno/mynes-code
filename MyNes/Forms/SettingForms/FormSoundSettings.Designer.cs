@@ -44,6 +44,7 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label_latency = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_latency)).BeginInit();
@@ -102,7 +103,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(242, 225);
+            this.button1.Location = new System.Drawing.Point(242, 254);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 8;
@@ -112,7 +113,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(161, 225);
+            this.button2.Location = new System.Drawing.Point(161, 254);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 9;
@@ -122,7 +123,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(12, 225);
+            this.button3.Location = new System.Drawing.Point(12, 254);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 10;
@@ -200,11 +201,21 @@
             this.label_latency.TabIndex = 7;
             this.label_latency.Text = "10";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 222);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(293, 13);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "You\'ll need to restart current game to apply sound settings.";
+            // 
             // FormSoundSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(329, 264);
+            this.ClientSize = new System.Drawing.Size(329, 289);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.checkBox_enableSound);
@@ -250,5 +261,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TrackBar trackBar_latency;
         private System.Windows.Forms.Label label_latency;
+        private System.Windows.Forms.Label label1;
     }
 }

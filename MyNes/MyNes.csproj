@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyNes</RootNamespace>
     <AssemblyName>MyNes</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -107,7 +107,31 @@
     <Compile Include="Browser Types\BRom.cs" />
     <Compile Include="Browser Types\BrowserDatabase.cs" />
     <Compile Include="Browser Types\WinTypes.cs" />
+    <Compile Include="Controls\ChatPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ChatPanel.Designer.cs">
+      <DependentUpon>ChatPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Debug\ConsoleCommands\Save.cs" />
+    <Compile Include="Forms\NetPlay\FormJoinServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\FormJoinServer.Designer.cs">
+      <DependentUpon>FormJoinServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetPlay\FormNetPlayRoom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\FormNetPlayRoom.Designer.cs">
+      <DependentUpon>FormNetPlayRoom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetPlay\FormCreateServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\FormCreateServer.Designer.cs">
+      <DependentUpon>FormCreateServer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormINESFilesFixer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -260,6 +284,13 @@
     <Compile Include="Forms\FormWelcome.Designer.cs">
       <DependentUpon>FormWelcome.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NetPlay\Frm_SetPlayerNumber.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetPlay\Frm_SetPlayerNumber.Designer.cs">
+      <DependentUpon>Frm_SetPlayerNumber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Types\ServerJoinArgs.cs" />
     <Compile Include="Types\ColumnItem.cs" />
     <Compile Include="Types\ColumnsManager.cs" />
     <Compile Include="Types\Helper.cs" />
@@ -288,6 +319,9 @@
     <EmbeddedResource Include="Debug\FormSpeed.resx">
       <DependentUpon>FormSpeed.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\FormJoinServer.resx">
+      <DependentUpon>FormJoinServer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormINESFilesFixer.resx">
       <DependentUpon>FormINESFilesFixer.cs</DependentUpon>
     </EmbeddedResource>
@@ -302,6 +336,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormWelcome.resx">
       <DependentUpon>FormWelcome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\FormCreateServer.resx">
+      <DependentUpon>FormCreateServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\FormNetPlayRoom.resx">
+      <DependentUpon>FormNetPlayRoom.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingForms\FormPaletteSettings.resx">
       <DependentUpon>FormPaletteSettings.cs</DependentUpon>
@@ -356,6 +396,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingForms\InputSettingControls\ISC_VSUnisystem.resx">
       <DependentUpon>ISC_VSUnisystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetPlay\Frm_SetPlayerNumber.resx">
+      <DependentUpon>Frm_SetPlayerNumber.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

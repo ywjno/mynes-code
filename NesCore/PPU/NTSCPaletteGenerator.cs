@@ -104,12 +104,16 @@ namespace MyNes.Core.PPU
                 0x00100 * clamp(255 * gammafix(y - 0.274788F * i - 0.635691F * q, gamma)) +
                 0x00001 * clamp(255 * gammafix(y - 1.108545F * i + 1.709007F * q, gamma));
         }
+        /// <summary>
+        /// Generate the palatte with format ARGB (include alpha)
+        /// </summary>
+        /// <returns></returns>
         public static int[] GeneratePalette()
         {
             int[] pal = new int[512];
 
             for (int i = 0; i < 512; i++)
-                pal[i] = MakeRGBcolor(i);
+                pal[i] = MakeRGBcolor(i) | (0xFF << 24);
 
             return pal;
         }

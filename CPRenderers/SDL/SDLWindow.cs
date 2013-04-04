@@ -38,19 +38,18 @@ namespace CPRenderers
             }
         }
 
-        SDLvideo video;
-        SDLsound sound;
-        CPZapper zapper;
-        string romName = "";
-        private bool isRendererShutdown = false;
-        Dictionary<RenderersKeys, Key> keys = new Dictionary<RenderersKeys, Key>();//to convert given key to sdl key
+        private SDLvideo video;
+        private SDLsound sound;
+        private CPZapper zapper;
+        private string romName = "";
+        private Dictionary<RenderersKeys, Key> keys = new Dictionary<RenderersKeys, Key>();//to convert given key to sdl key
         private Point mouseUpPoint;
+        private bool shutdownRequest = false;
 
         public void Run()
         {
             InitializeRendrers();
             Nes.EmuShutdown += new EventHandler(Nes_EmuShutdown);
-            Nes.RendererShutdown += new EventHandler(Nes_RendererShutdown);
             Nes.FullscreenSwitch += new EventHandler(Nes_FullscreenSwitch);
 
             if (Nes.emuSystem.Master == TimingInfo.NTSC.Master)
@@ -69,9 +68,13 @@ namespace CPRenderers
             Events.VideoResize += new EventHandler<VideoResizeEventArgs>(VideoResize);
             Events.MouseButtonDown += Events_MouseButtonDown;
             Events.MouseButtonUp += Events_MouseButtonUp;
+            Events.Tick += Events_Tick;
             Events.Run();
         }
-
+        public void KillWindow()
+        {
+            shutdownRequest = true;
+        }
         void InitializeRendrers()
         {
             Console.WriteLine("SDL .NET: initializing renderers..");
@@ -84,9 +87,12 @@ namespace CPRenderers
             // video and sound
             video = new SDLvideo(Nes.emuSystem, RenderersCore.SettingsManager.Settings.Video_StretchMultiply, romName,
                  RenderersCore.SettingsManager.Settings.Video_ImmediateMode, RenderersCore.SettingsManager.Settings.Video_HideLines,
-                 RenderersCore.SettingsManager.Settings.Video_AdapterIndex, RenderersCore.SettingsManager.Settings.Video_ResIndex,
+                 0, RenderersCore.SettingsManager.Settings.Video_ResIndex,
                  RenderersCore.SettingsManager.Settings.Video_OpenGL,
-                 RenderersCore.SettingsManager.Settings.Video_Fullscreen);
+                 RenderersCore.SettingsManager.Settings.Video_Fullscreen,
+                 RenderersCore.SettingsManager.Settings.Video_ShowFPS,
+                 RenderersCore.SettingsManager.Settings.Video_ShowNotifications,
+                 RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch);
             Console.WriteLine("SDL .NET: initializing video device...  OK");
             Console.WriteLine("SDL .NET: initializing sound device ...");
             sound = new SDLsound(true, RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq);
@@ -237,25 +243,16 @@ namespace CPRenderers
 
             return (r > 128 && g > 128 && b > 128);//bright color ?
         }
-        void RedererShutdown()
-        {
-            video.Shutdown();
-            sound.Shutdown();
-            isRendererShutdown = true;
-        }
-        void EmuShutdown()
-        {
-            isRendererShutdown = false;
-        }
 
         void FullScreenSwitch()
         {
             Nes.TogglePause(true);
             RenderersCore.SettingsManager.Settings.Video_Fullscreen = !RenderersCore.SettingsManager.Settings.Video_Fullscreen;
             //shutdown renderers
-            video.Shutdown();
+            
             //resize
-            video.Resize(RenderersCore.SettingsManager.Settings.Video_Fullscreen);
+            video.Resize( RenderersCore.SettingsManager.Settings.Video_Fullscreen);
+            //video.Launch();
 
             Nes.TogglePause(false);
         }
@@ -263,13 +260,23 @@ namespace CPRenderers
         {
             FullScreenSwitch();
         }
-        void Nes_RendererShutdown(object sender, EventArgs e)
-        {
-            RedererShutdown();
-        }
         void Nes_EmuShutdown(object sender, EventArgs e)
         {
-            EmuShutdown();
+            if (shutdownRequest)
+            {
+                shutdownRequest = false;
+                Events.Close();
+            }
+            else
+                shutdownRequest = true;
+        }
+        public void ApplySettings(SettingType stype)
+        {
+            switch (stype)
+            { 
+                case SettingType.All:
+                case SettingType.Input: SetupInput(); break;
+            }
         }
         void SetupKeys()
         {
@@ -405,13 +412,16 @@ namespace CPRenderers
                 }
             }
         }
-        void Quit(object sender, QuitEventArgs e)
+        void Events_Tick(object sender, TickEventArgs e)
         {
-            if (!isRendererShutdown)
+            if (shutdownRequest)
             {
                 Nes.Shutdown();
-                System.Threading.Thread.CurrentThread.Abort();
             }
+        }
+        void Quit(object sender, QuitEventArgs e)
+        {
+            shutdownRequest = true;
         }
         #endregion EventHandler Methods
     }

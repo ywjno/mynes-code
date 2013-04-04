@@ -23,7 +23,7 @@ namespace MyNes.Renderers
     /// </summary>
     public abstract class IRenderer
     {
-        private string rendererAssemblyPath = ""; 
+        private string rendererAssemblyPath = "";
         /// <summary>
         /// Start this renderer
         /// </summary>
@@ -37,6 +37,14 @@ namespace MyNes.Renderers
         /// </summary>
         public abstract string Description { get; }
         /// <summary>
+        /// Stop the renderer immediatly
+        /// </summary>
+        public abstract void Kill();
+        /// <summary>
+        /// Get if the renderer is still running.
+        /// </summary>
+        public abstract bool IsAlive { get; }
+        /// <summary>
         /// Get the copyright message provided by the author of this renderer.
         /// </summary>
         public virtual string CopyrightMessage { get { return ""; } }
@@ -46,5 +54,27 @@ namespace MyNes.Renderers
         /// </summary>
         public virtual string AssemblyPath
         { get { return rendererAssemblyPath; } set { rendererAssemblyPath = value; } }
+        /// <summary>
+        /// Change the settings for this renderer.
+        /// </summary>
+        public virtual void ChangeSettings()
+        { }
+        /// <summary>
+        /// After changing a render settings, call this to apply during emulation time.
+        /// </summary>
+        /// <param name="stype">The settings type to apply</param>
+        public virtual void ApplySettings(SettingType stype)
+        { 
+        }
+        /// <summary>
+        /// Release all resources used by this renderer.
+        /// </summary>
+        public virtual void Dispose()
+        { }
     }
+    /// <summary>
+    /// Setting type
+    /// </summary>
+    public enum SettingType
+    { All, Input, Video, Audio }
 }

@@ -53,7 +53,7 @@ namespace MyNes.WinRenderers
         {
             this.playbackFreq = playbackFreq;
             //Create the device
-            Console.WriteLine("Initializing SlimDX DirectSound for APU....");
+            Console.WriteLine("SlimDX: initializing directSound ...");
             _SoundDevice = new DirectSound();
             _SoundDevice.SetCooperativeLevel(handle, CooperativeLevel.Normal);
             //Create the wav format
@@ -78,7 +78,7 @@ namespace MyNes.WinRenderers
 
             buffer = new SecondarySoundBuffer(_SoundDevice, des);
             buffer.Play(0, PlayFlags.Looping);
-            Console.WriteLine("SlimDX DirectSound initialized OK.");
+            Console.WriteLine("SlimDX: directSound initialized OK.", DebugCode.Good);
         }
 
         public void UpdateFrame()
@@ -144,7 +144,7 @@ namespace MyNes.WinRenderers
             if (buffer != null && !buffer.Disposed & !IsRendering)
             {
                 IsPaused = false;
-                try//Sometimes this line thorws an exception for unkown reason !!
+                try//Sometimes this line throw an exception for unkown reason !!
                 {
                     buffer.Play(0, PlayFlags.Looping);
                 }
@@ -163,6 +163,7 @@ namespace MyNes.WinRenderers
         }
         public void Shutdown()
         {
+            Console.WriteLine("SlimDX: shutdown audio ..");
             IsPaused = true;
             if (buffer != null)
             {
@@ -173,6 +174,8 @@ namespace MyNes.WinRenderers
                 _SoundDevice.Dispose();
             if (Recorder.IsRecording)
                 Recorder.Stop();
+
+            Console.WriteLine("SlimDX: audio shutdown done.", DebugCode.Good);
         }
         public void SetVolume(int Vol)
         {
@@ -203,6 +206,17 @@ namespace MyNes.WinRenderers
         public int RecordTime
         {
             get { return Recorder.Time; }
+        }
+        public bool IsPlaying
+        {
+            get { return !IsPaused; }
+        }
+        public void ResetBuffer()
+        {
+            _FirstRender = true;
+            D_Pos = 0;
+            L_Pos = 0;
+            Nes.Apu.ResetBuffer();
         }
     }
 }

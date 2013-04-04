@@ -109,7 +109,7 @@ namespace MyNes.Core.PPU
             int[] pal = new int[512];
 
             for (int i = 0; i < 512; i++)
-                pal[i] = MakeRGBcolor(i);
+                pal[i] = MakeRGBcolor(i) | (0xFF << 24);
 
             return pal;
         }
