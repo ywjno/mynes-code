@@ -33,6 +33,8 @@ namespace CPRenderers
         public CPVSUnisystemDIP vsunisystem;
         public bool IsFourPlayers = false;
         public bool IsVSUnisystem = false;
+        private int pressCounter = 0;
+        private const int pressVal = 22;
         #region joypads
         public Key p1_A = Key.X;
         public Key p1_B = Key.Z;
@@ -131,6 +133,7 @@ namespace CPRenderers
         public void Update()
         {
             if (Nes.Pause) return;
+
             KeyboardState state = new KeyboardState(true);
 
             joypad1.A = state.IsKeyPressed(p1_A);
@@ -157,7 +160,7 @@ namespace CPRenderers
             if (IsFourPlayers)
             {
                 joypad3.A = state.IsKeyPressed(p3_A);
-                joypad3.B = state.IsKeyPressed(p3_B); 
+                joypad3.B = state.IsKeyPressed(p3_B);
                 joypad3.TurboA = state.IsKeyPressed(p3_TurboA);
                 joypad3.TurboB = state.IsKeyPressed(p3_TurboB);
                 joypad3.Start = state.IsKeyPressed(p3_ST);
@@ -196,57 +199,104 @@ namespace CPRenderers
 
         public void UpdateEvents()
         {
+            if (pressCounter > 0)
+            {
+                pressCounter--;
+                return;
+            }
             KeyboardState state = new KeyboardState(true);
             if (state.IsKeyPressed(sct_SaveState))
-                Nes.SaveState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
+            { Nes.SaveState(RenderersCore.SettingsManager.Settings.Folders_StateFolder); pressCounter = pressVal; }
             else if (state.IsKeyPressed(sct_LoadState))
-                Nes.LoadState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
+            { Nes.LoadState(RenderersCore.SettingsManager.Settings.Folders_StateFolder); pressCounter = pressVal; }
 
             else if (state.IsKeyPressed(sct_HardReset))
-                Nes.HardReset();
+            { Nes.HardReset(); pressCounter = pressVal; }
             else if (state.IsKeyPressed(sct_SoftReset))
-                Nes.SoftReset();
+            { Nes.SoftReset(); pressCounter = pressVal; }
             else if (state.IsKeyPressed(sct_ShutdownEmulation))
             {
+                pressCounter = pressVal;
                 Nes.Pause = true;
                 Nes.Shutdown();
                 Events.QuitApplication();
             }
 
             else if (state.IsKeyPressed(sct_TakeSnapshot))
-                Nes.VideoDevice.TakeSnapshot(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder + "\\" +
+            {
+                Nes.VideoDevice.TakeSnapshot(
+                    RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder + "\\" +
                     System.IO.Path.GetFileNameWithoutExtension(Nes.RomInfo.Path) +
-              RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
-              RenderersCore.SettingsManager.Settings.Video_SnapshotFormat);
-
+                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
+                    System.IO.Path.GetFileNameWithoutExtension(Nes.RomInfo.Path),
+                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
+                    false);
+                pressCounter = pressVal;
+            }
             else if (state.IsKeyPressed(sct_ToggleLimiter))
-                Nes.SpeedLimiter.ON = !Nes.SpeedLimiter.ON;
+            {
+                Nes.SpeedLimiter.ON = !Nes.SpeedLimiter.ON; pressCounter = pressVal;
+                if (Nes.SpeedLimiter.ON)
+                    Nes.VideoDevice.DrawText("Speed limiter is on", 120, System.Drawing.Color.White);
+                else
+                    Nes.VideoDevice.DrawText("Speed limiter is off", 120, System.Drawing.Color.Navy);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot0))
-                Nes.StateSlot = 0;
+            {
+                Nes.StateSlot = 0; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot1))
-                Nes.StateSlot = 1;
+            {
+                Nes.StateSlot = 1; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot2))
-                Nes.StateSlot = 2;
+            {
+                Nes.StateSlot = 2; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot3))
-                Nes.StateSlot = 3;
+            {
+                Nes.StateSlot = 3; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot4))
-                Nes.StateSlot = 4;
+            {
+                Nes.StateSlot = 4; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot5))
-                Nes.StateSlot = 5;
+            {
+                Nes.StateSlot = 5; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot6))
-                Nes.StateSlot = 6;
+            {
+                Nes.StateSlot = 6; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot7))
-                Nes.StateSlot = 7;
+            {
+                Nes.StateSlot = 7; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot8))
-                Nes.StateSlot = 8;
+            {
+                Nes.StateSlot = 8; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_SelectedSlot9))
-                Nes.StateSlot = 9;
+            {
+                Nes.StateSlot = 9; pressCounter = pressVal;
+                Nes.VideoDevice.DrawText("State slot changed to " + Nes.StateSlot, 120, System.Drawing.Color.White);
+            }
             else if (state.IsKeyPressed(sct_PauseEmulation))
-                Nes.TogglePause(true);
+            { Nes.TogglePause(true); pressCounter = pressVal; }
             else if (state.IsKeyPressed(sct_ResumeEmulation))
-                Nes.TogglePause(false);
+            { Nes.TogglePause(false); pressCounter = pressVal; }
             else if (state.IsKeyPressed(sct_Fullscreen))
-                Nes.OnFullscreen();
+            { Nes.OnFullscreen(); pressCounter = pressVal; }
         }
     }
 }

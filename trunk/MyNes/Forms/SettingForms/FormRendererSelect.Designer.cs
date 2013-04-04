@@ -37,6 +37,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -54,7 +55,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(12, 68);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(366, 21);
+            this.comboBox1.Size = new System.Drawing.Size(285, 21);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -127,11 +128,22 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "Author:";
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(303, 67);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 9;
+            this.button3.Text = "&Settings";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // FormRendererSelect
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(390, 353);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.richTextBox2);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -165,5 +177,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button3;
     }
 }

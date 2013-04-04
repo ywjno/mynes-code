@@ -96,6 +96,9 @@ namespace MyNes.Forms
             this.gameGenieToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.activeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.netPlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.joinServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rendererToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -128,6 +131,7 @@ namespace MyNes.Forms
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.visitWebsiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.facebookPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.theCodeProjectArticleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator38 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutMyNesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripSnapshot = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -239,7 +243,8 @@ namespace MyNes.Forms
             this.toolStripSeparator30 = new System.Windows.Forms.ToolStripSeparator();
             this.ThumbnailsViewSwitch = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip_columns = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.theCodeProjectArticleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.takeSnapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStripSnapshot.SuspendLayout();
             this.contextMenuStripCover.SuspendLayout();
@@ -288,13 +293,14 @@ namespace MyNes.Forms
             this.emulationToolStripMenuItem,
             this.stateToolStripMenuItem,
             this.gameGenieToolStripMenuItem,
+            this.netPlayToolStripMenuItem,
             this.settingsToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.debugToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(624, 24);
+            this.menuStrip.Size = new System.Drawing.Size(736, 24);
             this.menuStrip.TabIndex = 2;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -309,6 +315,7 @@ namespace MyNes.Forms
             this.saveDatabaseasToolStripMenuItem1,
             this.toolStripSeparator9,
             this.recordSoundToolStripMenuItem,
+            this.takeSnapshotToolStripMenuItem,
             this.toolStripSeparator15,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -659,7 +666,7 @@ namespace MyNes.Forms
             // 
             this.activeToolStripMenuItem.Name = "activeToolStripMenuItem";
             this.activeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.activeToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.activeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.activeToolStripMenuItem.Text = "&Active";
             this.activeToolStripMenuItem.Click += new System.EventHandler(this.activeToolStripMenuItem_Click);
             // 
@@ -667,9 +674,32 @@ namespace MyNes.Forms
             // 
             this.configureToolStripMenuItem1.Image = global::MyNes.Properties.Resources.GG;
             this.configureToolStripMenuItem1.Name = "configureToolStripMenuItem1";
-            this.configureToolStripMenuItem1.Size = new System.Drawing.Size(149, 22);
+            this.configureToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.configureToolStripMenuItem1.Text = "&Configure";
             this.configureToolStripMenuItem1.Click += new System.EventHandler(this.configureToolStripMenuItem1_Click);
+            // 
+            // netPlayToolStripMenuItem
+            // 
+            this.netPlayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createServerToolStripMenuItem,
+            this.joinServerToolStripMenuItem});
+            this.netPlayToolStripMenuItem.Name = "netPlayToolStripMenuItem";
+            this.netPlayToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
+            this.netPlayToolStripMenuItem.Text = "&NetPlay";
+            // 
+            // createServerToolStripMenuItem
+            // 
+            this.createServerToolStripMenuItem.Name = "createServerToolStripMenuItem";
+            this.createServerToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.createServerToolStripMenuItem.Text = "&Create server ...";
+            this.createServerToolStripMenuItem.Click += new System.EventHandler(this.createServerToolStripMenuItem_Click);
+            // 
+            // joinServerToolStripMenuItem
+            // 
+            this.joinServerToolStripMenuItem.Name = "joinServerToolStripMenuItem";
+            this.joinServerToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.joinServerToolStripMenuItem.Text = "&Join server";
+            this.joinServerToolStripMenuItem.Click += new System.EventHandler(this.joinServerToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -931,6 +961,13 @@ namespace MyNes.Forms
             this.facebookPageToolStripMenuItem.Text = "Facebook page";
             this.facebookPageToolStripMenuItem.Click += new System.EventHandler(this.facebookPageToolStripMenuItem_Click);
             // 
+            // theCodeProjectArticleToolStripMenuItem
+            // 
+            this.theCodeProjectArticleToolStripMenuItem.Name = "theCodeProjectArticleToolStripMenuItem";
+            this.theCodeProjectArticleToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.theCodeProjectArticleToolStripMenuItem.Text = "The Code Project article";
+            this.theCodeProjectArticleToolStripMenuItem.Click += new System.EventHandler(this.theCodeProjectArticleToolStripMenuItem_Click);
+            // 
             // toolStripSeparator38
             // 
             this.toolStripSeparator38.Name = "toolStripSeparator38";
@@ -1037,7 +1074,7 @@ namespace MyNes.Forms
             this.StatusLabel_romsCount});
             this.statusStrip.Location = new System.Drawing.Point(0, 420);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(624, 22);
+            this.statusStrip.Size = new System.Drawing.Size(736, 22);
             this.statusStrip.TabIndex = 4;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -1108,7 +1145,7 @@ namespace MyNes.Forms
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(412, 346);
+            this.groupBox2.Size = new System.Drawing.Size(524, 346);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Roms list";
@@ -1126,7 +1163,7 @@ namespace MyNes.Forms
             this.ManagedListView1.Items = managedListViewItemsCollection1;
             this.ManagedListView1.Location = new System.Drawing.Point(3, 16);
             this.ManagedListView1.Name = "ManagedListView1";
-            this.ManagedListView1.Size = new System.Drawing.Size(406, 296);
+            this.ManagedListView1.Size = new System.Drawing.Size(518, 296);
             this.ManagedListView1.TabIndex = 0;
             this.ManagedListView1.ThunmbnailsHeight = 36;
             this.ManagedListView1.ThunmbnailsWidth = 36;
@@ -1262,7 +1299,7 @@ namespace MyNes.Forms
             this.panel_thumbnailsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel_thumbnailsPanel.Location = new System.Drawing.Point(3, 312);
             this.panel_thumbnailsPanel.Name = "panel_thumbnailsPanel";
-            this.panel_thumbnailsPanel.Size = new System.Drawing.Size(406, 31);
+            this.panel_thumbnailsPanel.Size = new System.Drawing.Size(518, 31);
             this.panel_thumbnailsPanel.TabIndex = 1;
             this.panel_thumbnailsPanel.Visible = false;
             // 
@@ -1333,7 +1370,7 @@ namespace MyNes.Forms
             this.toolStripButton2});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(624, 25);
+            this.toolStrip.Size = new System.Drawing.Size(736, 25);
             this.toolStrip.TabIndex = 0;
             // 
             // toolStripButton1
@@ -1834,7 +1871,7 @@ namespace MyNes.Forms
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer1.Size = new System.Drawing.Size(624, 346);
+            this.splitContainer1.Size = new System.Drawing.Size(736, 346);
             this.splitContainer1.SplitterDistance = 208;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -1871,7 +1908,7 @@ namespace MyNes.Forms
             this.ThumbnailsViewSwitch});
             this.toolStrip1.Location = new System.Drawing.Point(0, 49);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(624, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(736, 25);
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -1964,18 +2001,23 @@ namespace MyNes.Forms
             this.contextMenuStrip_columns.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_columns_Opening);
             this.contextMenuStrip_columns.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStrip_columns_ItemClicked);
             // 
-            // theCodeProjectArticleToolStripMenuItem
+            // timer1
             // 
-            this.theCodeProjectArticleToolStripMenuItem.Name = "theCodeProjectArticleToolStripMenuItem";
-            this.theCodeProjectArticleToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.theCodeProjectArticleToolStripMenuItem.Text = "The Code Project article";
-            this.theCodeProjectArticleToolStripMenuItem.Click += new System.EventHandler(this.theCodeProjectArticleToolStripMenuItem_Click);
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // takeSnapshotToolStripMenuItem
+            // 
+            this.takeSnapshotToolStripMenuItem.Name = "takeSnapshotToolStripMenuItem";
+            this.takeSnapshotToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.takeSnapshotToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.takeSnapshotToolStripMenuItem.Text = "Take S&napshot";
+            this.takeSnapshotToolStripMenuItem.Click += new System.EventHandler(this.takeSnapshotToolStripMenuItem_Click);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 442);
+            this.ClientSize = new System.Drawing.Size(736, 442);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.toolStrip);
@@ -2219,6 +2261,11 @@ namespace MyNes.Forms
         private System.Windows.Forms.ToolStripMenuItem facebookPageToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator38;
         private System.Windows.Forms.ToolStripMenuItem theCodeProjectArticleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem netPlayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createServerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem joinServerToolStripMenuItem;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem takeSnapshotToolStripMenuItem;
     }
 }
 

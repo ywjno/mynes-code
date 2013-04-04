@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyNes.Core</RootNamespace>
     <AssemblyName>NesCore</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -92,6 +92,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -292,6 +294,7 @@
     <Compile Include="Debug\DebugEventArgs.cs" />
     <Compile Include="Debug\DebugLine.cs" />
     <Compile Include="Debug\DefaultCommands\boards.cs" />
+    <Compile Include="Debug\DefaultCommands\fullscreen.cs" />
     <Compile Include="Debug\DefaultCommands\GameGenieCommands.cs" />
     <Compile Include="Debug\DefaultCommands\HardResetCommand.cs" />
     <Compile Include="Debug\DefaultCommands\HelpCommand.cs" />
@@ -299,6 +302,8 @@
     <Compile Include="Debug\DefaultCommands\PPUConsoleCommands.cs" />
     <Compile Include="Debug\DefaultCommands\RomInfoCommands.cs" />
     <Compile Include="Debug\DefaultCommands\SoftResetCommand.cs" />
+    <Compile Include="Debug\DefaultCommands\State.cs" />
+    <Compile Include="Debug\DefaultCommands\Video.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Exceptions\NotSupportedMapperException.cs" />
     <Compile Include="Exceptions\ReadRomFailedException.cs" />
@@ -313,6 +318,10 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Memory.cs" />
     <Compile Include="Nes.cs" />
+    <Compile Include="NetPlay\NP.cs" />
+    <Compile Include="NetPlay\NPJoypad.cs" />
+    <Compile Include="NetPlay\RemotingObject.cs" />
+    <Compile Include="NetPlay\Player.cs" />
     <Compile Include="PPU\NTSCPaletteGenerator.cs" />
     <Compile Include="PPU\PALBPaletteGenerator.cs" />
     <Compile Include="PPU\Ppu.cs" />
@@ -327,12 +336,28 @@
     <Compile Include="Types\Mirroring.cs" />
     <Compile Include="Types\StateStream.cs" />
     <Compile Include="VSUnisystem.cs" />
+    <Compile Include="ZLIP\Adler32.cs" />
+    <Compile Include="ZLIP\Deflate.cs" />
+    <Compile Include="ZLIP\InfBlocks.cs" />
+    <Compile Include="ZLIP\InfCodes.cs" />
+    <Compile Include="ZLIP\Inflate.cs" />
+    <Compile Include="ZLIP\InfTree.cs" />
+    <Compile Include="ZLIP\StaticTree.cs" />
+    <Compile Include="ZLIP\SupportClass.cs" />
+    <Compile Include="ZLIP\Tree.cs" />
+    <Compile Include="ZLIP\ZInputStream.cs" />
+    <Compile Include="ZLIP\Zlib.cs" />
+    <Compile Include="ZLIP\ZOutputStream.cs" />
+    <Compile Include="ZLIP\ZStream.cs" />
+    <Compile Include="ZLIP\ZStreamException.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Content Include="Boards\readme.txt" />
     <Content Include="Boards\TODO.txt" />
     <Content Include="TODO.txt" />
+    <Content Include="ZLIP\license.txt" />
+    <Content Include="ZLIP\readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

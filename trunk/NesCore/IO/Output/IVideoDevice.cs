@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+using System.Drawing;
 namespace MyNes.Core.IO.Output
 {
     public interface IVideoDevice
@@ -36,12 +37,33 @@ namespace MyNes.Core.IO.Output
         /// <summary>
         /// Take a snapshot
         /// </summary>
-        /// <param name="path">The desired snap path</param>
+        /// <param name="snapshotsFolder">The snapshots folder. Snap name will be generated atomaticly</param>
+        /// <param name="filename">The snapshot file name without extension.</param>
         /// <param name="format">The image format</param>
-        void TakeSnapshot(string path, string format);
+        /// <param name="replace">Replace original snap if exist instead of creating new one</param>
+        void TakeSnapshot(string snapshotsFolder, string filename, string format, bool replace);
         /// <summary>
         /// Get a value indecate if this video device is initialized and ready to use
         /// </summary>
         bool Initialized { get; }
+        /// <summary>
+        /// Draw a notification text
+        /// </summary>
+        /// <param name="text">The text to draw</param>
+        /// <param name="frames">How many frames the text should appear</param>
+        /// <param name="color">The text color</param>
+        void DrawText(string text, int frames, Color color);
+        /// <summary>
+        /// Get or set if the device should draw fps.
+        /// </summary>
+        bool ShowFPS { get; set; }
+        /// <summary>
+        /// Get or set if the device should draw notifications (drown text using DrawText method).
+        /// </summary>
+        bool ShowNotifications { get; set; }
+        /// <summary>
+        /// Get if this device is rendering.
+        /// </summary>
+        bool IsRendering { get; }
     }
 }

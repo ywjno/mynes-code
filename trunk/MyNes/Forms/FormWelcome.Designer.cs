@@ -47,10 +47,10 @@ namespace MyNes
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            MLV.ManagedListViewColumnsCollection managedListViewColumnsCollection3 = new MLV.ManagedListViewColumnsCollection();
+            MLV.ManagedListViewItemsCollection managedListViewItemsCollection3 = new MLV.ManagedListViewItemsCollection();
             MLV.ManagedListViewColumnsCollection managedListViewColumnsCollection1 = new MLV.ManagedListViewColumnsCollection();
             MLV.ManagedListViewItemsCollection managedListViewItemsCollection1 = new MLV.ManagedListViewItemsCollection();
-            MLV.ManagedListViewColumnsCollection managedListViewColumnsCollection2 = new MLV.ManagedListViewColumnsCollection();
-            MLV.ManagedListViewItemsCollection managedListViewItemsCollection2 = new MLV.ManagedListViewItemsCollection();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.managedListView_states = new MLV.ManagedListView();
@@ -58,6 +58,7 @@ namespace MyNes
             this.managedListView1 = new MLV.ManagedListView();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -81,7 +82,7 @@ namespace MyNes
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(451, 276);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Open latest save states";
+            this.tabPage1.Text = "Recent states";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // managedListView_states
@@ -89,10 +90,10 @@ namespace MyNes
             this.managedListView_states.AllowColumnsReorder = true;
             this.managedListView_states.AllowItemsDragAndDrop = true;
             this.managedListView_states.ChangeColumnSortModeWhenClick = true;
-            this.managedListView_states.Columns = managedListViewColumnsCollection1;
+            this.managedListView_states.Columns = managedListViewColumnsCollection3;
             this.managedListView_states.Dock = System.Windows.Forms.DockStyle.Fill;
             this.managedListView_states.DrawHighlight = true;
-            this.managedListView_states.Items = managedListViewItemsCollection1;
+            this.managedListView_states.Items = managedListViewItemsCollection3;
             this.managedListView_states.Location = new System.Drawing.Point(3, 3);
             this.managedListView_states.Name = "managedListView_states";
             this.managedListView_states.Size = new System.Drawing.Size(445, 270);
@@ -112,7 +113,7 @@ namespace MyNes
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(451, 276);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Open recent opened rom";
+            this.tabPage2.Text = "Recent roms";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // managedListView1
@@ -120,10 +121,10 @@ namespace MyNes
             this.managedListView1.AllowColumnsReorder = false;
             this.managedListView1.AllowItemsDragAndDrop = false;
             this.managedListView1.ChangeColumnSortModeWhenClick = false;
-            this.managedListView1.Columns = managedListViewColumnsCollection2;
+            this.managedListView1.Columns = managedListViewColumnsCollection1;
             this.managedListView1.Dock = System.Windows.Forms.DockStyle.Top;
             this.managedListView1.DrawHighlight = true;
-            this.managedListView1.Items = managedListViewItemsCollection2;
+            this.managedListView1.Items = managedListViewItemsCollection1;
             this.managedListView1.Location = new System.Drawing.Point(3, 3);
             this.managedListView1.Name = "managedListView1";
             this.managedListView1.Size = new System.Drawing.Size(445, 333);
@@ -154,11 +155,23 @@ namespace MyNes
             this.checkBox1.Text = "&Show this window at startup";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(315, 329);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "&Open";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // FormWelcome
             // 
+            this.AcceptButton = this.button2;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(483, 364);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tabControl1);
@@ -188,5 +201,6 @@ namespace MyNes
         private System.Windows.Forms.CheckBox checkBox1;
         private MLV.ManagedListView managedListView_states;
         private MLV.ManagedListView managedListView1;
+        private System.Windows.Forms.Button button2;
     }
 }

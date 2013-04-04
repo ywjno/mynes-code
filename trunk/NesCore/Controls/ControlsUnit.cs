@@ -18,6 +18,7 @@
  */
 using MyNes.Core.IO.Input;
 using MyNes.Core.Types;
+using MyNes.Core.NetPlay;
 namespace MyNes.Core.Controls
 {
     /// <summary>
@@ -40,6 +41,9 @@ namespace MyNes.Core.Controls
         private bool isVsunisystem = false;
         public bool IsZapperConnected = false;
         public bool IsFourPlayers = true;
+
+        public bool IsNetPlay = false;
+        public RemotingObject RemotingObject;
 
         private byte PeekPad4016(int addr)
         {
@@ -79,15 +83,32 @@ namespace MyNes.Core.Controls
             if (inputStrobe > (data & 0x01))
             {
                 InputDevice.Update();
-                if (IsFourPlayers)
+                if (!IsNetPlay)
                 {
-                    inputData1 = (uint)(Joypad1.GetData() | (Joypad3.GetData() << 8) | 0x00080000);
-                    inputData2 = (uint)(Joypad2.GetData() | (Joypad4.GetData() << 8) | 0x00040000);
+                    if (IsFourPlayers)
+                    {
+                        inputData1 = (uint)(Joypad1.GetData() | (Joypad3.GetData() << 8) | 0x00080000);
+                        inputData2 = (uint)(Joypad2.GetData() | (Joypad4.GetData() << 8) | 0x00040000);
+                    }
+                    else
+                    {
+                        inputData1 = (uint)Joypad1.GetData();
+                        inputData2 = (uint)Joypad2.GetData();
+                    }
                 }
                 else
                 {
-                    inputData1 = (uint)Joypad1.GetData();
-                    inputData2 = (uint)Joypad2.GetData();
+                    // Net play !!
+                    if (IsFourPlayers)
+                    {
+                        inputData1 = (uint)(RemotingObject.joypad1.GetData() | (RemotingObject.joypad3.GetData() << 8) | 0x00080000);
+                        inputData2 = (uint)(RemotingObject.joypad2.GetData() | (RemotingObject.joypad4.GetData() << 8) | 0x00040000);
+                    }
+                    else
+                    {
+                        inputData1 = (uint)RemotingObject.joypad1.GetData();
+                        inputData2 = (uint)RemotingObject.joypad2.GetData();
+                    }
                 }
             }
 

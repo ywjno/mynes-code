@@ -41,10 +41,8 @@ namespace MyNes.WinRenderers
             InitializeComponent();
             // load settings
             InitializeRendrers();
-            base.ClientSize = new Size(256 * RenderersCore.SettingsManager.Settings.Video_StretchMultiply,
-                ((Nes.emuSystem.Master == MyNes.Core.TimingInfo.NTSC.Master) ? 224 : 240) * RenderersCore.SettingsManager.Settings.Video_StretchMultiply);
+
             Nes.EmuShutdown += new EventHandler(Nes_EmuShutdown);
-            Nes.RendererShutdown += new EventHandler(Nes_RendererShutdown);
             Nes.FullscreenSwitch += new EventHandler(Nes_FullscreenSwitch);
             if (Nes.RomInfo.DatabaseGameInfo.Game_Name != null)
             {
@@ -57,10 +55,9 @@ namespace MyNes.WinRenderers
             }
             Nes.TogglePause(false);
         }
-        private VideoD3D videoDevice;
+        public VideoD3D videoDevice;
         private IAudioDevice audioDevice;
         private Zapper zapper;
-        private bool isRendererShutdown = false;
         private Point mouseUpPoint;
 
         public bool DetectZapperLight()
@@ -75,24 +72,28 @@ namespace MyNes.WinRenderers
 
             return (r > 128 && g > 128 && b > 128);//bright color ?
         }
-        void InitializeVideo()
+        private void InitializeVideo()
         {
+            base.ClientSize = new Size(256 * RenderersCore.SettingsManager.Settings.Video_StretchMultiply,
+                ((Nes.emuSystem.Master == MyNes.Core.TimingInfo.NTSC.Master) ? 224 : 240) * RenderersCore.SettingsManager.Settings.Video_StretchMultiply);
             videoDevice = new VideoD3D(Nes.emuSystem, this);
             videoDevice.ImmediateMode = RenderersCore.SettingsManager.Settings.Video_ImmediateMode;
             videoDevice.cutLines = RenderersCore.SettingsManager.Settings.Video_HideLines;
-            videoDevice.AdapterIndex = RenderersCore.SettingsManager.Settings.Video_AdapterIndex;
             videoDevice.FullScreenModeIndex = RenderersCore.SettingsManager.Settings.Video_ResIndex;
             videoDevice.FullScreen = RenderersCore.SettingsManager.Settings.Video_Fullscreen;
+            videoDevice.ShowFPS = RenderersCore.SettingsManager.Settings.Video_ShowFPS;
+            videoDevice.ShowNotifications = RenderersCore.SettingsManager.Settings.Video_ShowNotifications;
+            videoDevice.KeepAspectRatio = RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch;
             videoDevice.Initialize();
         }
-        void InitializeAudio()
+        private void InitializeAudio()
         {
             audioDevice = new AudioDSD(this.Handle, RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq,
               RenderersCore.SettingsManager.Settings.Sound_Latency);
             ((AudioDSD)audioDevice).SetVolume(RenderersCore.SettingsManager.Settings.Sound_Volume);
             Nes.SoundEnabled = RenderersCore.SettingsManager.Settings.Sound_Enabled;
         }
-        void InitializeInput()
+        private void InitializeInput()
         {
             InputManager inputManager = new InputManager(this.Handle);
             //SHORTCUTS
@@ -213,7 +214,7 @@ namespace MyNes.WinRenderers
                 Nes.ControlsUnit.VSunisystemDIP = vs;
             }
         }
-        void InitializeRendrers()
+        private void InitializeRendrers()
         {
             InitializeVideo();
 
@@ -239,48 +240,48 @@ namespace MyNes.WinRenderers
 
             Nes.SetupPalette();
         }
-        void RedererShutdown()
+
+        public void ApplySettings(SettingType stype)
         {
-            videoDevice.Shutdown();
-            audioDevice.Shutdown();
-            isRendererShutdown = true;
-            this.Close();
+            switch (stype)
+            {
+                case SettingType.All:
+                case SettingType.Input: InitializeInput(); break;
+            }
         }
-        void EmuShutdown()
+        private void EmuShutdown()
         {
-            isRendererShutdown = false;
             this.Close();
         }
 
-        void FullScreenSwitch()
+        private void FullScreenSwitch()
         {
             Nes.TogglePause(true);
             RenderersCore.SettingsManager.Settings.Video_Fullscreen = !RenderersCore.SettingsManager.Settings.Video_Fullscreen;
             //shutdown renderers
+            videoDevice.FullScreen = RenderersCore.SettingsManager.Settings.Video_Fullscreen;
             videoDevice.Shutdown();
             //re-Initialize
             InitializeVideo();
-
+           
             Nes.VideoDevice = videoDevice;
-
+            if (!RenderersCore.SettingsManager.Settings.Video_Fullscreen)
+            {
+                base.ClientSize = new Size(256 * RenderersCore.SettingsManager.Settings.Video_StretchMultiply,
+    ((Nes.emuSystem.Master == MyNes.Core.TimingInfo.NTSC.Master) ? 224 : 240) * RenderersCore.SettingsManager.Settings.Video_StretchMultiply);
+            }
             Nes.TogglePause(false);
         }
 
-        void Nes_FullscreenSwitch(object sender, EventArgs e)
+        private void Nes_FullscreenSwitch(object sender, EventArgs e)
         {
             if (this.InvokeRequired)
                 this.Invoke(new Action(FullScreenSwitch));
             else
                 FullScreenSwitch();
         }
-        void Nes_RendererShutdown(object sender, EventArgs e)
-        {
-            if (!this.InvokeRequired)
-                RedererShutdown();
-            else
-                this.Invoke(new Action(RedererShutdown));
-        }
-        void Nes_EmuShutdown(object sender, EventArgs e)
+
+        private void Nes_EmuShutdown(object sender, EventArgs e)
         {
             if (!this.InvokeRequired)
                 EmuShutdown();
@@ -290,8 +291,7 @@ namespace MyNes.WinRenderers
 
         private void RendererFormSlimDX_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!isRendererShutdown)
-                Nes.Shutdown();
+            Nes.Shutdown();
         }
         private void RendererFormSlimDX_MouseUp(object sender, MouseEventArgs e)
         {

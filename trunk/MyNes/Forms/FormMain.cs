@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using MyNes.Renderers;
 using MyNes.Core.Boards;
+using MyNes.Core.NetPlay;
 using MLV;
 namespace MyNes.Forms
 {
@@ -38,6 +39,7 @@ namespace MyNes.Forms
         private FormSpeed speedForm;
         private Thread gameThread;
         private bool savedb;
+        private string currentRomPath = "";
         private bool SaveDB
         {
             get { return savedb; }
@@ -45,9 +47,9 @@ namespace MyNes.Forms
             {
                 savedb = value;
                 if (value)
-                    this.Text = "My Nes 5 ALPHA * ";
+                    this.Text = "My Nes 5 *";
                 else
-                    this.Text = "My Nes 5 ALPHA";
+                    this.Text = "My Nes 5";
             }
         }
 
@@ -139,14 +141,43 @@ namespace MyNes.Forms
         }
         public void OpenRom(string FileName)
         {
-            Nes.Shutdown();//this will end the thread
+            currentRomPath = FileName;
+            if (Nes.ON)
+            {
+                // Nes.Shutdown();//this will end the thread
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Kill();
+                timer1.Start();
+            }
+            else
+                CreateNewNes();
+        }
+        // wait timer
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].IsAlive)
+                return;
+            if (gameThread == null)
+            {
+                timer1.Stop();
+                CreateNewNes();
+                return;
+            }
+            if (!gameThread.IsAlive)
+            {
+                timer1.Stop();
+                CreateNewNes();
+                return;
+            }
+        }
+        private void CreateNewNes()
+        {
             #region Check if archive
             SevenZip.SevenZipExtractor EXTRACTOR;
-            if (Path.GetExtension(FileName).ToLower() != ".nes")
+            if (Path.GetExtension(currentRomPath).ToLower() != ".nes")
             {
                 try
                 {
-                    EXTRACTOR = new SevenZip.SevenZipExtractor(FileName);
+                    EXTRACTOR = new SevenZip.SevenZipExtractor(currentRomPath);
                 }
                 catch (Exception ex)
                 {
@@ -158,7 +189,7 @@ namespace MyNes.Forms
                     if (EXTRACTOR.ArchiveFileData[0].FileName.Substring(EXTRACTOR.ArchiveFileData[0].FileName.Length - 4, 4).ToLower() == ".nes")
                     {
                         EXTRACTOR.ExtractArchive(Path.GetTempPath());
-                        FileName = Path.GetTempPath() + EXTRACTOR.ArchiveFileData[0].FileName;
+                        currentRomPath = Path.GetTempPath() + EXTRACTOR.ArchiveFileData[0].FileName;
                     }
                 }
                 else
@@ -173,7 +204,7 @@ namespace MyNes.Forms
                     {
                         string[] fil = { ar.SelectedRom };
                         EXTRACTOR.ExtractFiles(Path.GetTempPath(), fil);
-                        FileName = Path.GetTempPath() + ar.SelectedRom;
+                        currentRomPath = Path.GetTempPath() + ar.SelectedRom;
                     }
                     else
                     { return; }
@@ -182,7 +213,7 @@ namespace MyNes.Forms
             #endregion
             try
             {
-                Nes.CreateNew(FileName, RenderersCore.SettingsManager.Settings.Emu_EmulationSystem);
+                Nes.CreateNew(currentRomPath, RenderersCore.SettingsManager.Settings.Emu_EmulationSystem);
             }
             catch (NotSupportedMapperException ex)
             {
@@ -209,7 +240,7 @@ namespace MyNes.Forms
             gameThread = new Thread(new ThreadStart(Nes.Run));
             gameThread.Start();
 
-            AddRecent(FileName);
+            AddRecent(currentRomPath);
         }
         private void RefreshFolders()
         {
@@ -895,7 +926,16 @@ namespace MyNes.Forms
         }
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Nes.Shutdown();
+            try
+            {
+                if (RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].IsAlive)
+                { 
+                    RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Kill();
+                    RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Dispose();
+                }
+            }
+            catch { }
+            //Nes.Shutdown();
         }
         private void emulationSpeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1033,12 +1073,10 @@ namespace MyNes.Forms
                 Nes.TogglePause(true);
             FormInput frm = new FormInput();
             frm.ShowDialog(this);
-            //to apply setting, shutdown the renderer then re-launch it !!
+            // apply
             if (Nes.ON)
             {
-                Nes.OnRendererShutdown();
-                LaunchTheRenderer();
-
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
                 Nes.TogglePause(false);
             }
         }
@@ -1062,14 +1100,13 @@ namespace MyNes.Forms
                 if (e.ClickedItem.Text == RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[i].Name)
                 {
                     RenderersCore.SettingsManager.Settings.Controls_ProfileIndex = i;
-                    //to apply setting, shutdown the renderer then re-launch it !!
+
                     if (Nes.ON)
                     {
-                        Nes.OnRendererShutdown();
-                        LaunchTheRenderer();
-
+                        RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
                         Nes.TogglePause(false);
                     }
+
                     break;
                 }
             }
@@ -1108,12 +1145,11 @@ namespace MyNes.Forms
                 Nes.TogglePause(true);
             FormSoundSettings frm = new FormSoundSettings();
             frm.ShowDialog(this);
-            //to apply setting, shutdown the renderer then re-launch it !!
+
+            // apply
             if (Nes.ON)
             {
-                Nes.OnRendererShutdown();
-                LaunchTheRenderer();
-
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Audio);
                 Nes.TogglePause(false);
             }
         }
@@ -1165,12 +1201,10 @@ namespace MyNes.Forms
                 Nes.TogglePause(true);
             FormVideoSettings frm = new FormVideoSettings();
             frm.ShowDialog(this);
-            //to apply setting, shutdown the renderer then re-launch it !!
+            // apply
             if (Nes.ON)
             {
-                Nes.OnRendererShutdown();
-                LaunchTheRenderer();
-
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Video);
                 Nes.TogglePause(false);
             }
         }
@@ -1222,13 +1256,11 @@ namespace MyNes.Forms
 
             RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper = !
                 RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper;
-            //reset renderer to apply
-            if (Nes.ON)
-            {
-                Nes.OnRendererShutdown();
-                LaunchTheRenderer();
 
-                Nes.TogglePause(false);
+            if (Nes.ON)
+            { 
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
+                Nes.TogglePause(false); 
             }
         }
         private void connect4PlayersToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1238,12 +1270,10 @@ namespace MyNes.Forms
 
             RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players = !
                 RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players;
-            //reset renderer to apply
+
             if (Nes.ON)
             {
-                Nes.OnRendererShutdown();
-                LaunchTheRenderer();
-
+                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
                 Nes.TogglePause(false);
             }
         }
@@ -1406,14 +1436,9 @@ namespace MyNes.Forms
                 Nes.TogglePause(true);
             FormRendererSelect frm = new FormRendererSelect();
             frm.ShowDialog(this);
-            //to apply setting, shutdown the renderer then re-launch it !!
-            if (Nes.ON)
-            {
-                Nes.OnRendererShutdown();
-                LaunchTheRenderer();
 
+            if (Nes.ON)
                 Nes.TogglePause(false);
-            }
         }
         private void locateToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1859,6 +1884,68 @@ namespace MyNes.Forms
         {
             try { Process.Start("http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx"); }
             catch { }
+        }
+        private void createServerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+                Nes.TogglePause(true);
+            else
+            {
+                MessageBox.Show("You must play a game first.");
+                return;
+            }
+            if (NP.Status == ServerStatus.Running)
+            {
+                MessageBox.Show("Server is already created.");
+                return;
+            }
+            FormCreateServer frm = new FormCreateServer();
+            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                // enter the net play rom as registered user ...
+                FormNetPlayRoom room = new FormNetPlayRoom(frm.UserName, frm.Password, NP.GetServerAddress(), true);
+                try
+                {
+                    room.Show();
+                }
+                catch { }
+            }
+        }
+        private void joinServerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+                Nes.TogglePause(true);
+            else
+            {
+                MessageBox.Show("You must play a game first.");
+                return;
+            }
+            FormJoinServer frm = new FormJoinServer();
+            frm.CheckLogin += frm_CheckLogin;
+            frm.ShowDialog(this);
+        }
+        private void frm_CheckLogin(object sender, ServerJoinArgs e)
+        {
+            FormNetPlayRoom room = new FormNetPlayRoom(e.UserName, e.Password,
+                e.ServerAddress, false);
+            try
+            {
+                room.Show();
+                e.CanJoin = true;
+            }
+            catch { e.CanJoin = false; }
+        }
+
+        private void takeSnapshotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Nes.ON)
+            {
+                Nes.VideoDevice.TakeSnapshot(
+                    RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder,
+                    System.IO.Path.GetFileNameWithoutExtension(Nes.RomInfo.Path),
+                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
+                    false);
+            }
         }
     }
 }

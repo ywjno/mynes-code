@@ -30,7 +30,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="FilterIndex" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="FilterLatestItems" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
@@ -55,6 +55,9 @@
     </Setting>
     <Setting Name="WelcomePageIndex" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="NetJoinIPS" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

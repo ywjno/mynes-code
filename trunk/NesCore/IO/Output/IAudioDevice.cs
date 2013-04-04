@@ -58,5 +58,13 @@ namespace MyNes.Core.IO.Output
         /// Get the record time in seconds
         /// </summary>
         int RecordTime { get; }
+        /// <summary>
+        /// Get if this device is still playing
+        /// </summary>
+        bool IsPlaying { get; }
+        /// <summary>
+        /// Nes calls this when it needs to reset playing buffer.
+        /// </summary>
+        void ResetBuffer();
     }
 }

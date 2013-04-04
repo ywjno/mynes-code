@@ -26,20 +26,26 @@ namespace MyNes.WinRenderers
     {
         public override void Start()
         {
-            RendererFormSlimDX frm = new RendererFormSlimDX();
+            settings = new SlimDXSettings();
+            // try to load the settings
+            object settingsObject = SettingsManager.LoadSettingsObject("slimdxconfig", typeof(SlimDXSettings));
+            if (settingsObject != null)
+                settings = (SlimDXSettings)settingsObject;
+            frm = new RendererFormSlimDX();
             frm.Show();
         }
+
+        private RendererFormSlimDX frm;
+        private static SlimDXSettings settings;
 
         public override string Name
         {
             get { return "SlimDX Direct3D9"; }
         }
-
         public override string Description
         {
             get { return "Render using SlimDX (managed directx) library.\n\nThis renderer requires the SlimDX Runtime for .NET 4.0 (January 2012), for more info please visit: http://slimdx.org/ \nNote that only January 2012 version work with My Nes."; }
         }
-
         public override string CopyrightMessage
         {
             get
@@ -47,5 +53,32 @@ namespace MyNes.WinRenderers
                 return "Written by Ala Ibrahim Hadid.";
             }
         }
+        public override void Kill()
+        {
+            if (frm != null) frm.Close();
+        }
+        public override bool IsAlive
+        {
+            get
+            {
+                if (frm != null)
+                    return frm.Visible;
+                 return false;
+            }
+        }
+        public override void ApplySettings(SettingType stype)
+        {
+            if (frm != null)
+            {
+                frm.ApplySettings(stype);
+            }
+        }
+        public override void ChangeSettings()
+        {
+            Frm_SlimDXSettings frm = new Frm_SlimDXSettings();
+            frm.ShowDialog();
+        }
+        public static SlimDXSettings Settings
+        { get { return settings; } set { settings = value; } }
     }
 }

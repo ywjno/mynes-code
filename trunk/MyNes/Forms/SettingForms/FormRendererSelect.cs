@@ -64,5 +64,10 @@ namespace MyNes
             try { System.Diagnostics.Process.Start(e.LinkText); }
             catch { }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            RenderersCore.AvailableRenderers[comboBox1.SelectedIndex].ChangeSettings();
+        }
     }
 }

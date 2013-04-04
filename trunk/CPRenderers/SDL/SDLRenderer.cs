@@ -20,40 +20,74 @@ using MyNes.Renderers;
 using System;
 using System.Threading;
 using Console = System.Console;
-
+using SdlDotNet.Core;
 namespace CPRenderers
 {
     public class SDLRenderer : IRenderer
     {
-        [STAThread]
         public override void Start()
         {
+            if (thread != null)
+            {
+                if (thread.IsAlive)
+                    thread.Abort();
+            }
             Console.WriteLine("Launching SDL .NET window ...");
-            SDLWindow window = new SDLWindow();
-            Thread thread = new Thread(new ThreadStart(window.Run));
+            window = new SDLWindow();
+            thread = new Thread(new ThreadStart(window.Run));
             thread.Start();
         }
-
+        private Thread thread;
+        private SDLWindow window;
         public override string Name
         {
             get { return "SDL .NET"; }
         }
-
         public override string Description
         {
-            get {
+            get
+            {
                 return "Render using SDL .NET library.\n\n"
                 +
                 "Uses sdl dotnet library for renderering. For more info please visit: http://cs-sdl.sourceforge.net/" + "\n\n"
                 + "This renderer requires the sdl .net runtime to run.\nhttp://cs-sdl.sourceforge.net/downloads";
             }
         }
-
         public override string CopyrightMessage
         {
             get
             {
                 return "Written by Ala Ibrahim Hadid.";
+            }
+        }
+        public override void Kill()
+        {
+            Console.WriteLine("SDL .NET: killing renderer ...");
+            window.KillWindow();
+        }
+        public override bool IsAlive
+        {
+            get
+            {
+                if (thread != null)
+                    return thread.IsAlive;
+                return false;
+            }
+        }
+        public override void ApplySettings(SettingType stype)
+        {
+            if (window != null)
+            {
+                window.ApplySettings(stype);
+            }
+        }
+        public override void Dispose()
+        {
+            Events.Close();
+            if (thread != null)
+            {
+                if (thread.IsAlive)
+                    thread.Abort();
             }
         }
     }

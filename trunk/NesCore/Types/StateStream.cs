@@ -18,9 +18,12 @@
  */
 /*Written by Ala Hadid at Saturday, October 8, 2011*/
 /*Updated by Ala Hadid at Monday, April 23, 2012: Updated to use BinaryWriter/BinaryReader*/
+/*Updated by Ala Hadid at Sunday, March 24, 2013: Added abiblity to act as memory stream.*/
+/*Updated by Ala Hadid at Tuesday, March 26, 2013: Added zlip support so the state files become smaller in disk.*/
 using System;
 using System.IO;
-
+using ComponentAce.Compression.Libs.zlib;
+using System.Drawing;
 namespace MyNes.Core.Types
 {
     /// <summary>
@@ -29,36 +32,90 @@ namespace MyNes.Core.Types
     public class StateStream
     {
         //Stream stream;
+        private string filePath;
         private BinaryWriter writer;
         private BinaryReader reader;
+        private MemoryStream mstream;
+        private bool isVailed = false;
         private bool isRead = false;
+        private bool isMemoryStream = false;
         private const byte version = 5;
 
         /// <summary>
-        /// Stream for saving/loading My Nes State
+        /// Create state stream for saving/loading My Nes State as file
         /// </summary>
         /// <param name="filePath">The state file path</param>
-        /// <param name="isRead">True=this stream will be used for reading state,False=this stream will be used for writing</param>
+        /// <param name="isRead">True=this stream will be used for reading state, False=this stream will be used for writing</param>
         public StateStream(string filePath, bool isRead)
         {
+            this.filePath = filePath;
             this.isRead = isRead;
+            this.isMemoryStream = false;
             if (!isRead)
             {
-                Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                MemoryStream stream = new MemoryStream();
                 writer = new BinaryWriter(stream);
             }
             else
             {
                 if (File.Exists(filePath))
                 {
-                    Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    reader = new BinaryReader(stream);
+                    try
+                    {
+                        Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                        // read buffer
+                        byte[] buffer = new byte[stream.Length];
+                        stream.Read(buffer, 0, buffer.Length);
+                        stream.Close();
+                        stream.Dispose();
+                        // decompress
+                        byte[] tb;
+                        DecompressData(buffer, out tb);
+                        MemoryStream memoryStream = new MemoryStream(tb);
+                        reader = new BinaryReader(memoryStream);
+                        isVailed = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        isVailed = false;
+                        Console.WriteLine("Unable to open state file: " + ex.Message, DebugCode.Error);
+                        if (Nes.VideoDevice != null)
+                            Nes.VideoDevice.DrawText("Unable to open state file: " + ex.Message, 120, Color.Red);
+                    }
                 }
                 else
                 {
+                    isVailed = false;
                     Console.WriteLine("State file not found.", DebugCode.Error);
+                    if (Nes.VideoDevice != null)
+                        Nes.VideoDevice.DrawText("State file not found.", 120, Color.Red);
                 }
             }
+        }
+        /// <summary>
+        /// Create state stream for saving/loading My Nes State as writable memory buffer
+        /// </summary>
+        public StateStream()
+        {
+            this.isRead = false;
+            this.isMemoryStream = true;
+
+            mstream = new MemoryStream();
+            writer = new BinaryWriter(mstream);
+        }
+        /// <summary>
+        /// Create state stream for saving/loading My Nes State as memory buffer from buffer
+        /// </summary>
+        /// <param name="buffer">The buffer to create stream from</param>
+        public StateStream(byte[] buffer)
+        {
+            this.isRead = true;
+            this.isMemoryStream = true;
+            //mstream = new MemoryStream(buffer);
+            byte[] inb;
+            DecompressData(buffer, out inb);
+            mstream = new MemoryStream(inb);
+            reader = new BinaryReader(mstream);
         }
 
         /// <summary>
@@ -94,6 +151,8 @@ namespace MyNes.Core.Types
             if (header[0] != 0x4D | header[1] != 0x4E | header[2] != 0x53)//MNS
             {
                 Console.WriteLine("Unable to open state file, not MNS format file.", DebugCode.Error);
+                if (Nes.VideoDevice != null)
+                    Nes.VideoDevice.DrawText("Unable to open state file, not MNS format file.", 120, Color.Red);
                 return false;
             }
             //read version
@@ -101,6 +160,8 @@ namespace MyNes.Core.Types
             if (ver != version)
             {
                 Console.WriteLine("Unable to open state file, incompatible version.", DebugCode.Error);
+                if (Nes.VideoDevice != null)
+                    Nes.VideoDevice.DrawText("Unable to open state file, incompatible version.", 120, Color.Red);
                 return false;
             }
             //Read sha1
@@ -112,7 +173,9 @@ namespace MyNes.Core.Types
             if (sha1.ToLower() != SHA1.ToLower())
             {
                 Console.WriteLine("Unable to open state file, this state file is not for this rom (sha1 not matched)", DebugCode.Error);
-                return false; 
+                if (Nes.VideoDevice != null)
+                    Nes.VideoDevice.DrawText("Unable to open state file, this state file is not for this rom (sha1 not matched)", 120, Color.Red);
+                return false;
             }
             return true;
         }
@@ -446,14 +509,82 @@ namespace MyNes.Core.Types
             }
         }
         /// <summary>
-        /// Close the stream
+        /// Finish and close the stream
         /// </summary>
-        public void Close()
+        public void Finish()
         {
             if (isRead)
-                reader.Close();
+            {
+                if (reader != null)
+                    reader.Close();
+            }
             else
+            {
+                // get the buffer
+                byte[] buffer = ((MemoryStream)writer.BaseStream).GetBuffer();
                 writer.Close();
+                // compress
+                byte[] compressedBuffer;
+                CompressData(buffer, out compressedBuffer);
+                // write the compressed buffer
+                Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                stream.Write(compressedBuffer, 0, compressedBuffer.Length);
+                stream.Close();
+                stream.Dispose();
+            }
         }
+        /// <summary>
+        /// Get the state stream as buffer. This stream MUST be memory stream.
+        /// </summary>
+        /// <returns>The bytes buffer</returns>
+        public byte[] GetBuffer()
+        {
+            //return mstream.GetBuffer();
+            byte[] outb;
+            CompressData(mstream.GetBuffer(), out outb);
+            return outb;
+        }
+        /// <summary>
+        /// Get if this stream is a memory stream
+        /// </summary>
+        public bool IsMemoryStream
+        { get { return isMemoryStream; } }
+        /// <summary>
+        /// Get if the state file is vailed for read.
+        /// </summary>
+        public bool IsVailed
+        { get { return isVailed; } }
+        public void CompressData(byte[] inData, out byte[] outData)
+        {
+            using (MemoryStream outMemoryStream = new MemoryStream())
+            using (ZOutputStream outZStream = new ZOutputStream(outMemoryStream, zlibConst.Z_DEFAULT_COMPRESSION))
+            using (Stream inMemoryStream = new MemoryStream(inData))
+            {
+                CopyStream(inMemoryStream, outZStream);
+                outZStream.finish();
+                outData = outMemoryStream.ToArray();
+            }
+        }
+        public void DecompressData(byte[] inData, out byte[] outData)
+        {
+            using (MemoryStream outMemoryStream = new MemoryStream())
+            using (ZOutputStream outZStream = new ZOutputStream(outMemoryStream))
+            using (Stream inMemoryStream = new MemoryStream(inData))
+            {
+                CopyStream(inMemoryStream, outZStream);
+                outZStream.finish();
+                outData = outMemoryStream.ToArray();
+            }
+        }
+        public void CopyStream(System.IO.Stream input, System.IO.Stream output)
+        {
+            byte[] buffer = new byte[2000];
+            int len;
+            while ((len = input.Read(buffer, 0, 2000)) > 0)
+            {
+                output.Write(buffer, 0, len);
+            }
+            output.Flush();
+        }  
     }
 }

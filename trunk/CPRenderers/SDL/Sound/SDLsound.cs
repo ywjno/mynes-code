@@ -74,6 +74,7 @@ namespace CPRenderers
             if (stream != null)
             {
                 stream.Paused = true;
+                stream.Dispose();
             }
             Events.CloseAudio();
             if (Recorder.IsRecording)
@@ -114,6 +115,15 @@ namespace CPRenderers
         public int RecordTime
         {
             get { return Recorder.Time; }
+        }
+
+        public bool IsPlaying
+        {
+            get { return !stream.Paused; }
+        }
+        public void ResetBuffer()
+        {
+            Nes.Apu.ResetBuffer();
         }
     }
 }
