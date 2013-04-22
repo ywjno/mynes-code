@@ -321,15 +321,15 @@ namespace MyNes
                 code.Descreption = item.SubItems[1].Text;
                 if (item.Text.Length == 6)
                 {
-                    code.Address = gameGenie.GetGGAddress(gameGenie.GetCodeAsHEX(textBox2.Text), 6) | 0x8000;
-                    code.Value = gameGenie.GetGGValue(gameGenie.GetCodeAsHEX(textBox2.Text), 6);
+                    code.Address = gameGenie.GetGGAddress(gameGenie.GetCodeAsHEX(item.Text), 6) | 0x8000;
+                    code.Value = gameGenie.GetGGValue(gameGenie.GetCodeAsHEX(item.Text), 6);
                     code.IsCompare = false;
                 }
                 else
                 {
-                    code.Address = gameGenie.GetGGAddress(gameGenie.GetCodeAsHEX(textBox2.Text), 8) | 0x8000;
-                    code.Value = gameGenie.GetGGValue(gameGenie.GetCodeAsHEX(textBox2.Text), 8);
-                    code.Compare = gameGenie.GetGGCompareValue(gameGenie.GetCodeAsHEX(textBox2.Text));
+                    code.Address = gameGenie.GetGGAddress(gameGenie.GetCodeAsHEX(item.Text), 8) | 0x8000;
+                    code.Value = gameGenie.GetGGValue(gameGenie.GetCodeAsHEX(item.Text), 8);
+                    code.Compare = gameGenie.GetGGCompareValue(gameGenie.GetCodeAsHEX(item.Text));
                     code.IsCompare = true;
                 }
                 //add to active list

@@ -227,4 +227,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = MyNesGTK\MyNesGTK.csproj
+	EndGlobalSection
 EndGlobal
