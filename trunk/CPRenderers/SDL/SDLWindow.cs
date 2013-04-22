@@ -77,6 +77,7 @@ namespace CPRenderers
         }
         void InitializeRendrers()
         {
+            shutdownRequest = false;
             Console.WriteLine("SDL .NET: initializing renderers..");
             // input
             Console.WriteLine("SDL .NET: setup input...");
