@@ -303,7 +303,6 @@
     <Compile Include="Controls\SpeedLimiter.cs" />
     <Compile Include="CPU\Cpu.cs" />
     <Compile Include="CPU\CpuMemory.cs" />
-    <Compile Include="CPU\Dma.cs" />
     <Compile Include="CPU\Types\Flags.cs" />
     <Compile Include="CPU\Types\Register.cs" />
     <Compile Include="Database\NesDatabase.cs" />

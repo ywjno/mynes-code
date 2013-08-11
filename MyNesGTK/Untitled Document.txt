@@ -1,0 +1,58 @@
+Listing video mode ...
+Writing video modes ...
+ala@ubuntu:~$ sudo mono "/home/ala/Documents/GTK Edition/MyNesGTK.exe"INES ROM
+Reading header...
+Switching to NTSC system.
+Reading PRG-ROM...
+Reading CHR-ROM...
+Initializing PPU...
+Initializing CPU...
+CPU initialized!
+Ready.
+Emu ON
+Launching SDL .NET window ...
+SDL .NET: setup keys for settings
+SDL .NET: getting rom name and info
+SDL .NET: initializing renderers..
+SDL .NET: setup input...
+
+(MyNesGTK:12068): Gtk-WARNING **: Attempting to store changes into `/root/.local/share/recently-used.xbel', but failed: Failed to create file '/root/.local/share/recently-used.xbel.0T9W1W': No such file or directory
+SDL .NET: setup input... OK
+SDL .NET: initializing video device...
+
+Unhandled Exception: System.IO.FileNotFoundException: Could not find file "/home/ala/modes.txt".
+File name: '/home/ala/modes.txt'
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, Boolean anonymous, FileOptions options) [0x00000] in <filename unknown>:0 
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share) [0x00000] in <filename unknown>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream:.ctor (string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)
+  at System.IO.File.OpenRead (System.String path) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path) [0x00000] in <filename unknown>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader:.ctor (string)
+  at System.IO.File.OpenText (System.String path) [0x00000] in <filename unknown>:0 
+  at System.IO.File.ReadAllLines (System.String path) [0x00000] in <filename unknown>:0 
+  at CPRenderers.SDLvideo..ctor (System system, Int32 stretchMultiply, System.String romName, Boolean ImmediateMode, Boolean cutLines, Int32 AdapterIndex, Int32 FullScreenModeIndex, Boolean openGL, Boolean FullScreen, Boolean showFps, Boolean showNotifications, Boolean keepAspectRatio) [0x00000] in <filename unknown>:0 
+  at CPRenderers.SDLWindow.InitializeRendrers () [0x00000] in <filename unknown>:0 
+  at CPRenderers.SDLWindow.Run () [0x00000] in <filename unknown>:0 
+  at System.Threading.Thread.StartInternal () [0x00000] in <filename unknown>:0 
+
+(MyNesGTK:12068): Gtk-WARNING **: Attempting to set the permissions of `/root/.local/share/recently-used.xbel', but failed: No such file or directory
+
+(MyNesGTK:12068): Gtk-WARNING **: Attempting to store changes into `/root/.local/share/recently-used.xbel', but failed: Failed to create file '/root/.local/share/recently-used.xbel.B53W1W': No such file or directory
+
+(MyNesGTK:12068): Gtk-WARNING **: Attempting to set the permissions of `/root/.local/share/recently-used.xbel', but failed: No such file or directory
+[ERROR] FATAL UNHANDLED EXCEPTION: System.IO.FileNotFoundException: Could not find file "/home/ala/modes.txt".
+File name: '/home/ala/modes.txt'
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, Boolean anonymous, FileOptions options) [0x00000] in <filename unknown>:0 
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share) [0x00000] in <filename unknown>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream:.ctor (string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)
+  at System.IO.File.OpenRead (System.String path) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path) [0x00000] in <filename unknown>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader:.ctor (string)
+  at System.IO.File.OpenText (System.String path) [0x00000] in <filename unknown>:0 
+  at System.IO.File.ReadAllLines (System.String path) [0x00000] in <filename unknown>:0 
+  at CPRenderers.SDLvideo..ctor (System system, Int32 stretchMultiply, System.String romName, Boolean ImmediateMode, Boolean cutLines, Int32 AdapterIndex, Int32 FullScreenModeIndex, Boolean openGL, Boolean FullScreen, Boolean showFps, Boolean showNotifications, Boolean keepAspectRatio) [0x00000] in <filename unknown>:0 
+  at CPRenderers.SDLWindow.InitializeRendrers () [0x00000] in <filename unknown>:0 
+  at CPRenderers.SDLWindow.Run () [0x00000] in <filename unknown>:0 
+  at System.Threading.Thread.StartInternal () [0x00000] in <filename unknown>:0 

@@ -186,7 +186,7 @@ namespace MyNes
         }
         private void InitializeListView()
         {
-            textBox1.Text = Path.GetFullPath(".\\database.xml");
+            textBox1.Text = Path.GetFullPath("database.xml");
             ManagedListViewColumn column = new ManagedListViewColumn();
             column.HeaderText = "Name";
             column.ID = "name";

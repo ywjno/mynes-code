@@ -223,7 +223,6 @@ namespace MyNes.WinRenderers
             InitializeInput();
 
             Nes.SetupOutput(videoDevice, audioDevice, new ApuPlaybackDescription(RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq));
-            Nes.SetupLimiter(new Timer());
 
             //palette
             NTSCPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness;

@@ -42,7 +42,6 @@ namespace MyNes.Core.APU
               0x5F, 0x50, 0x47, 0x40, 0x35, 0x2A, 0x24, 0x1B
             },
         };
-        private const int dmaCycles = 4;
         public bool DeltaIrqOccur;
         private bool IrqEnabled;
         private bool dmaLooping;
@@ -56,6 +55,7 @@ namespace MyNes.Core.APU
         private byte dmaByte = 0;
         private int dmaAddr = 0;
         private byte dmaBuffer = 0;
+        private bool canRiseRdy = false;
 
         protected override void PokeReg1(int address, byte data)
         {
@@ -86,11 +86,14 @@ namespace MyNes.Core.APU
         public void DoFetch()
         {
             bufferFull = true;
-            dmaBuffer = Nes.CpuMemory[dmaAddr];
+            canRiseRdy = true;
+
+            dmaBuffer = Nes.Cpu.Peek(dmaAddr);
 
             if (++dmaAddr == 0x10000)
                 dmaAddr = 0x8000;
-            dmaSize--;
+            if (dmaSize > 0)
+                dmaSize--;
 
             if (dmaSize == 0)
             {
@@ -124,23 +127,30 @@ namespace MyNes.Core.APU
                     {
                         dmaSize = dmaSizeRefresh;
                         dmaAddr = dmaAddrRefresh;
-
-                        if (!bufferFull)
-                        {
-                            Nes.Cpu.DMCdmaCycles = dmaCycles; 
-                            //Nes.Cpu.dma.DmcFetch(dmaAddr);
-                        }
-                    }
+                    } 
                 }
                 else
                 {
                     dmaSize = 0;
                 }
+               
                 DeltaIrqOccur = false;
                 Nes.Cpu.Interrupt(CPU.Cpu.IsrType.Dmc, false);
             }
         }
-
+        public override void ClockSingle(bool isClockingLength)
+        {
+            // Any time the sample buffer is in an empty state and bytes remaining is not zero
+            // The CPU is stalled for up to 4 CPU cycles to allow the longest possible write 
+            // (the return address and write after an IRQ) to finish.
+            // The 6502 cannot be pulled off of the bus normally. The 2A03 DMC gets around this by pulling RDY low internally
+            if (canRiseRdy)
+                if (!bufferFull && dmaSize > 0)
+                {
+                    canRiseRdy = false;
+                    Nes.Cpu.RDY(CPU.Cpu.DmaType.DMC);
+                }
+        }
         public override void Update()
         {
             if (dmaEnabled)
@@ -157,19 +167,20 @@ namespace MyNes.Core.APU
                 }
                 dmaByte >>= 1;
             }
-            dmaBits++;
-            if (dmaBits == 8)
+            dmaBits--;
+            if (dmaBits == 0)
             {
-                dmaBits = 0;
+                dmaBits = 8;
                 if (bufferFull)
                 {
                     bufferFull = false;
                     dmaEnabled = true;
+                    canRiseRdy = true;
                     dmaByte = dmaBuffer;
                     if (dmaSize > 0)
                     {
-                        Nes.Cpu.DMCdmaCycles = dmaCycles;
-                        //Nes.Cpu.dma.DmcFetch(dmaAddr);
+                        canRiseRdy = false;
+                        Nes.Cpu.RDY(CPU.Cpu.DmaType.DMC);
                     }
                 }
                 else
@@ -191,17 +202,18 @@ namespace MyNes.Core.APU
         }
         public override void HardReset()
         {
+            canRiseRdy = true;
             DeltaIrqOccur = false;
             IrqEnabled = false;
             dmaLooping = false;
             dmaEnabled = false;
             bufferFull = false;
             output = 0;
-            dmaAddrRefresh = 0;
-            dmaSizeRefresh = 0;
+            dmaAddrRefresh = 0xC000;
+            dmaSizeRefresh = 0xC000;
             dmaSize = 0;
-            dmaBits = 0;
-            dmaByte = 0;
+            dmaBits = 1;
+            dmaByte = 1;
             dmaAddr = 0;
             dmaBuffer = 0;
             base.HardReset();
@@ -209,7 +221,7 @@ namespace MyNes.Core.APU
         public override void SaveState(Types.StateStream stream)
         {
             base.SaveState(stream);
-            stream.Write(DeltaIrqOccur, IrqEnabled, dmaLooping, dmaEnabled, bufferFull);
+            stream.Write(DeltaIrqOccur, IrqEnabled, dmaLooping, dmaEnabled, bufferFull, canRiseRdy);
             stream.Write(output);
             stream.Write(dmaAddrRefresh);
             stream.Write(dmaSizeRefresh);
@@ -228,7 +240,7 @@ namespace MyNes.Core.APU
             dmaLooping = flags[2];
             dmaEnabled = flags[3];
             bufferFull = flags[4];
-
+            canRiseRdy = flags[5];
             output = stream.ReadByte();
             dmaAddrRefresh = stream.ReadInt32();
             dmaSizeRefresh = stream.ReadInt32();

@@ -27,7 +27,6 @@ namespace MyNes.Core.CPU
         {
             Hook(0x0000, 0x1FFF, PeekRam, PokeRam);
         }
-
         private byte PeekRam(int address)
         {
             return ram[address & 0x7FF];

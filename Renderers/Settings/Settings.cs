@@ -24,8 +24,8 @@ namespace MyNes.Renderers
     {
         public EmulationSystem Emu_EmulationSystem = EmulationSystem.AUTO;
 
-        public string Folders_StateFolder = @".\StateSaves";
-        public string Folders_SnapshotsFolder = @".\Snapshots";
+        public string Folders_StateFolder = "StateSaves";
+        public string Folders_SnapshotsFolder = "Snapshots";
 
         public int Controls_ProfileIndex = 0;
         public ControlProfilesCollection Controls_ProfilesCollection = new ControlProfilesCollection();

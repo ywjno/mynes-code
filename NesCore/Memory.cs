@@ -21,10 +21,10 @@ namespace MyNes.Core
 {
     public class Memory
     {
-        private PeekRegister[] peek;
-        private PokeRegister[] poke;
-        private int size;
-        private int mask;
+        protected PeekRegister[] peek;
+        protected PokeRegister[] poke;
+        protected int size;
+        protected int mask;
 
         public int Length { get { return size; } }
 

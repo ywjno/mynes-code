@@ -34,15 +34,17 @@ namespace MyNes
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //load settings
+            // initialize the core
+            RenderersCore.Initialize();
+            // load settings
             settings.Reload();
             RenderersCore.SettingsManager.LoadSettings();
             FixDefaultSettings();
-            //find renderers
+            // find renderers
             RenderersCore.FindRenderers(Application.StartupPath);
-            //add default commands
+            // add default commands
             ConsoleCommands.AddDefaultCommands();
-            //if first time run, choose the slimdx renderer for default
+            // if first time run, choose the slimdx renderer for default
             if (!settings.FirstRun)
             {
                 settings.FirstRun = true;
@@ -55,8 +57,7 @@ namespace MyNes
                     }
                 }
                 // make the default browser database at user documents folder.
-                Program.Settings.FoldersDatabasePath =
-                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
+                Program.Settings.FoldersDatabasePath = Path.Combine(RenderersCore.DocumentsFolder, "folders.fl");
                 // load default columns
                 settings.ColumnsManager = new ColumnsManager();
                 settings.ColumnsManager.BuildDefaultCollection();
@@ -82,15 +83,12 @@ namespace MyNes
         public static void FixDefaultSettings()
         {
             //fix paths
-            if (RenderersCore.SettingsManager.Settings.Folders_StateFolder.Substring(0, 2) == @".\")
-                RenderersCore.SettingsManager.Settings.Folders_StateFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
-            if (RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder.Substring(0, 2) == @".\")
-                RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
-            if (Program.Settings.FoldersDatabasePath.Substring(0, 2) == @".\")
-                Program.Settings.FoldersDatabasePath = Path.GetFullPath(Program.Settings.FoldersDatabasePath);
+            RenderersCore.SettingsManager.Settings.Folders_StateFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
+            RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
+            Program.Settings.FoldersDatabasePath = Path.GetFullPath(Program.Settings.FoldersDatabasePath);
             Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
             Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
-            //build default controls profile if nesseccary
+            //build default controls profile if necessary
             ControlProfile.BuildDefaultProfile();
             RenderersCore.SettingsManager.SaveSettings();
             //fix palette settings

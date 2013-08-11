@@ -146,7 +146,6 @@
     <Compile Include="SlimDX\Forms\RendererFormSlimDX.Designer.cs">
       <DependentUpon>RendererFormSlimDX.cs</DependentUpon>
     </Compile>
-    <Compile Include="Shared\Timer.cs" />
     <Compile Include="SlimDX\Video\VideoD3D.cs" />
   </ItemGroup>
   <ItemGroup>

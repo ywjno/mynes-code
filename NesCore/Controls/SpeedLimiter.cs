@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+using System.Diagnostics;
 using System.Threading;
 namespace MyNes.Core.Controls
 {
@@ -24,16 +25,15 @@ namespace MyNes.Core.Controls
     /// </summary>
     public class SpeedLimiter
     {
-        public SpeedLimiter(ITimer timer, TimingInfo.System emuSystem)
+        public SpeedLimiter(TimingInfo.System emuSystem)
         {
-            this.timer = timer;
             this.emuSystem = emuSystem;
-
+            this.st = Stopwatch.StartNew();
             this.ON = true;
 
             HardReset();
         }
-        private ITimer timer;
+        private Stopwatch st;
         private TimingInfo.System emuSystem;
         public bool ON;
 
@@ -49,25 +49,25 @@ namespace MyNes.Core.Controls
         /// </summary>
         public void Update()
         {
-            ImmediateFrameTime =CurrentFrameTime = timer.GetCurrentTime() - LastFrameTime;
+            ImmediateFrameTime = CurrentFrameTime = GetTime() - LastFrameTime;
             DeadTime = FramePeriod - CurrentFrameTime;
             if (ON)
             {
                 //This should relieve the pc's cpu for the dead time
                 //but after monitoring performance this has no effect.
-               // if (DeadTime > 0)
+                // if (DeadTime > 0)
                 //    Thread.Sleep((int)(DeadTime * 1000));
 
                 while (ImmediateFrameTime < FramePeriod)
                 {
-                    ImmediateFrameTime = timer.GetCurrentTime() - LastFrameTime;
+                    ImmediateFrameTime = GetTime() - LastFrameTime;
                     //if ((timer.GetCurrentTime() - LastFrameTime) > FramePeriod)
                     //{
                     //    break;
                     //}
                 }
             }
-            LastFrameTime = timer.GetCurrentTime();
+            LastFrameTime = GetTime();
         }
         public void SleepOnPause()
         {
@@ -80,13 +80,9 @@ namespace MyNes.Core.Controls
             else//PALB, DENDY
                 FramePeriod = (1.0 / (FPS = 50.0070));
         }
-    }
-    public interface ITimer
-    {
-        /// <summary>
-        /// Get current time
-        /// </summary>
-        /// <returns></returns>
-        double GetCurrentTime();
+        private double GetTime()
+        {
+            return (double)Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
+        }
     }
 }

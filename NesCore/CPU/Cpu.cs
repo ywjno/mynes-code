@@ -25,7 +25,6 @@ namespace MyNes.Core.CPU
     {
         private Action[] codes;
         private Action[] modes;
-        public Dma dma = new Dma();
         private Flags sr; // Processor Status
         private Register pc; // Program Counter
         private Register sp; // Stack Pointer
@@ -39,10 +38,9 @@ namespace MyNes.Core.CPU
         private bool dointerrupt;
         public Action ClockCycle;
 
-        public byte DMCdmaCycles = 0;
+        private int DMCdmaCycles = 0;
+        private int OAMdmaCycles = 0;
         private byte code;
-
-        private bool locked;
 
         public Cpu(TimingInfo.System system)
             : base(system)
@@ -101,41 +99,16 @@ namespace MyNes.Core.CPU
             Poke(sp.Value, (byte)data);
             sp.LoByte--;
         }
-        private byte Peek(int address)
+        public byte Peek(int address)
         {
-            if (DMCdmaCycles > 0)
-            {
-                byte _DMCdmaCycles = DMCdmaCycles;
-                DMCdmaCycles = 0;
-                if ((address == 0x4016) || (address == 0x4017))
-                {
-                    // The 2A03 DMC gets fetch by pulling RDY low internally. 
-                    // This causes the CPU to pause during the next read cycle, until RDY goes high again.
-                    // The DMC unit holds RDY low for 4 cycles.
-
-                    // Consecutive controller port reads from this are treated as one
-                    if (_DMCdmaCycles-- > 0)
-                        Peek(address);
-                    while (--_DMCdmaCycles > 0)
-                        Dispatch();
-                }
-                else
-                {
-                    // but other addresses see multiple reads as expected
-                    while (--_DMCdmaCycles > 0)
-                        Peek(address);
-                }
-                Nes.Apu.dmc.DoFetch();
-            }
+            CheckDmcOamDma(address);
             Dispatch();
-
             return Nes.CpuMemory[address];
         }
-        private void Poke(int address, byte data)
+        public void Poke(int address, byte data)
         {
+            CheckRdy();
             Dispatch();
-            if (DMCdmaCycles > 0)
-                DMCdmaCycles--;
             Nes.CpuMemory[address] = data;
         }
         #region Codes
@@ -785,7 +758,7 @@ namespace MyNes.Core.CPU
         // _a = access (read and write)
         // _r = read
         // _w = write
-        // _lc = read/write on the last cycle
+        // _lc = read on the last cycle
 
         private void AmAbs_a()
         {
@@ -945,13 +918,93 @@ namespace MyNes.Core.CPU
                         irqRequestFlags &= ~(int)type;
                     break;
             }
+
+        }
+        public void RDY(DmaType type)
+        {
+            switch (type)
+            {
+                case DmaType.DMC:
+                    {
+                        DMCdmaCycles += 4;
+                        break;
+                    }
+                case DmaType.OAM:
+                    {
+                        OAMdmaCycles += 3;
+                        break;
+                    }
+            }
         }
         private void CheckInterrupts()
         {
             dointerrupt = (!sr.i && (irqRequestFlags != 0)) | nmi;
         }
-        public void Lock() { locked = true; }
-        public void Unlock() { locked = false; }
+        private void CheckDmcOamDma(int address)
+        {
+            if (DMCdmaCycles > 0)
+            {
+                int _DMCdmaCycles = DMCdmaCycles;
+                DMCdmaCycles = 0;
+                if ((address == 0x4016) || (address == 0x4017))
+                {
+                    // The 2A03 DMC gets fetch by pulling RDY low internally. 
+                    // This causes the CPU to pause during the next read cycle, until RDY goes high again.
+                    // The DMC unit holds RDY low for 4 cycles.
+
+                    // Consecutive controller port reads from this are treated as one
+                    if (_DMCdmaCycles-- > 0)
+                    { Peek(address); }
+                    while (--_DMCdmaCycles > 0)
+                    { Dispatch(); }
+                }
+                else
+                {
+                    // but other addresses see multiple reads as expected
+                    while (--_DMCdmaCycles > 0)
+                    { Peek(address); }
+                }
+
+                Nes.Apu.dmc.DoFetch();
+            }
+            if (OAMdmaCycles > 0)
+            {
+                int _OAMdmaCycles = OAMdmaCycles;
+                OAMdmaCycles = 0;
+                if ((address == 0x4016) || (address == 0x4017))
+                {
+                    // The 2A03 DMC gets fetch by pulling RDY low internally. 
+                    // This causes the CPU to pause during the next read cycle, until RDY goes high again.
+                    // The DMC unit holds RDY low for 4 cycles.
+
+                    // Consecutive controller port reads from this are treated as one
+                    if (_OAMdmaCycles-- > 0)
+                    { Peek(address); }
+                    while (--_OAMdmaCycles > 0)
+                    { Dispatch(); }
+
+                }
+                else
+                {
+                    // but other addresses see multiple reads as expected
+                    while (--_OAMdmaCycles > 0)
+                    { Peek(address); }
+                }
+
+                Nes.Ppu.OAMTransfer();
+            }
+        }
+        private void CheckRdy()
+        {
+            if (DMCdmaCycles > 0)
+            {
+                DMCdmaCycles--;
+            }
+            if (OAMdmaCycles > 0)
+            {
+                OAMdmaCycles--;
+            }
+        }
 
         public override void Initialize()
         {
@@ -1000,8 +1053,6 @@ namespace MyNes.Core.CPU
 
             HardReset();
 
-            Nes.CpuMemory.Hook(0x4014, dma.OamTransfer);
-
             Console.WriteLine("CPU initialized!", DebugCode.Good);
         }
         public override void Shutdown() { }
@@ -1032,7 +1083,6 @@ namespace MyNes.Core.CPU
             irqRequestFlags = 0;
             dointerrupt = nmi = false;
             //others
-            locked = false;
             code = dummyVal = 0;
 
             if (ClockCycle == null)
@@ -1040,11 +1090,6 @@ namespace MyNes.Core.CPU
         }
         public override void Update()
         {
-            if (locked)
-            {
-                dma.Update();
-                return;
-            }
             code = Peek(pc.Value++);
 
             modes[code]();
@@ -1072,7 +1117,6 @@ namespace MyNes.Core.CPU
         public override void SaveState(Core.Types.StateStream stream)
         {
             base.SaveState(stream);
-            dma.SaveState(stream);
             stream.Write((byte)sr);
             stream.Write(pc.Value);
             stream.Write(sp.Value);
@@ -1081,15 +1125,15 @@ namespace MyNes.Core.CPU
             stream.Write(y);
             stream.Write(aa.Value);
             stream.Write(dummyVal);
-            stream.Write(nmi, locked, dointerrupt);
+            stream.Write(nmi, dointerrupt);
             stream.Write(DMCdmaCycles);
+            stream.Write(OAMdmaCycles);
             stream.Write(code);
             stream.Write(irqRequestFlags);
         }
         public override void LoadState(Core.Types.StateStream stream)
         {
             base.LoadState(stream);
-            dma.LoadState(stream);
             sr = stream.ReadByte();
             pc.Value = stream.ReadUshort();
             sp.Value = stream.ReadUshort();
@@ -1100,9 +1144,9 @@ namespace MyNes.Core.CPU
             dummyVal = stream.ReadByte();
             bool[] flags = stream.ReadBooleans();
             nmi = flags[0];
-            locked = flags[1];
-            dointerrupt = flags[2];
-            DMCdmaCycles = stream.ReadByte();
+            dointerrupt = flags[1];
+            DMCdmaCycles = stream.ReadInt32();
+            OAMdmaCycles = stream.ReadInt32(); 
             code = stream.ReadByte();
             irqRequestFlags = stream.ReadInt32();
         }
@@ -1124,6 +1168,11 @@ namespace MyNes.Core.CPU
             /// Board irq
             /// </summary>
             Brd = 4,
+        }
+        public enum DmaType
+        {
+            DMC,
+            OAM
         }
     }
 }

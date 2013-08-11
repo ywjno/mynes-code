@@ -24,6 +24,7 @@ namespace MyNes.Renderers
     public class SettingsManager
     {
         private SettingsData settings = new SettingsData();
+
         /// <summary>
         /// Get the settings data class
         /// </summary>
@@ -34,20 +35,18 @@ namespace MyNes.Renderers
         /// </summary>
         public void SaveSettings()
         {
-            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
-            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\settings.xml";
+            string path = Path.Combine(RenderersCore.DocumentsFolder, "settings.xml");
             XmlSerializer SER = new XmlSerializer(typeof(SettingsData));
             Stream STR = new FileStream(path, FileMode.Create);
             SER.Serialize(STR, settings);
             STR.Close();
         }
         /// <summary>
-        /// Load settings from user documents using xml deserialize
+        /// Load settings from user documents using xml desterilize
         /// </summary>
         public void LoadSettings()
         {
-            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
-            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\settings.xml";
+            string path = Path.Combine(RenderersCore.DocumentsFolder, "settings.xml"); 
             try
             {
                 XmlSerializer SER = new XmlSerializer(typeof(SettingsData));
@@ -72,8 +71,7 @@ namespace MyNes.Renderers
         /// <param name="settingsObject">The settings object to save</param>
         public static void SaveSettingsObject(string fileName, object settingsObject)
         {
-            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
-            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\" + fileName + ".xml";
+            string path = Path.Combine(RenderersCore.DocumentsFolder, fileName + ".xml"); 
             XmlSerializer SER = new XmlSerializer(settingsObject.GetType());
             Stream STR = new FileStream(path, FileMode.Create);
             SER.Serialize(STR, settingsObject);
@@ -87,8 +85,7 @@ namespace MyNes.Renderers
         /// <returns>The settings object if load done successfully otherwise null</returns>
         public static object LoadSettingsObject(string fileName, System.Type objectType)
         {
-            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
-            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\" + fileName + ".xml";
+            string path = Path.Combine(RenderersCore.DocumentsFolder, fileName + ".xml"); 
             object settingsobject;
             try
             {
