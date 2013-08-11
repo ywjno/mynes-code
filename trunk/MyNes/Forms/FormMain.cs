@@ -908,7 +908,7 @@ namespace MyNes.Forms
         }
         private void ShowHelp(object sender, EventArgs e)
         {
-            Help.ShowHelp(this, ".\\Help.chm", HelpNavigator.TableOfContents);
+            Help.ShowHelp(this, "Help.chm", HelpNavigator.TableOfContents);
         }
         private void openRomToolStripMenuItem_Click(object sender, EventArgs e)
         {

@@ -310,6 +310,12 @@ namespace MyNes.WinRenderers
                             font.DrawString(displaySprite, textToDraw, textX, notTextY, textColor);
                         }
                     }
+                    // draw recording
+                    if (Nes.AudioDevice.IsRecording)
+                    {
+                        font.DrawString(displaySprite, "Recording [" + TimeSpan.FromSeconds(Nes.AudioDevice.RecordTime) + "]",
+                            textX, 13, Color.White);
+                    }
                     displaySprite.End();
 
                     displayDevice.EndScene();

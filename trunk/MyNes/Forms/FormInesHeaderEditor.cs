@@ -143,7 +143,7 @@ namespace MyNes
                 MessageBox.Show("No INES file !");
                 return;
             }
-            if (!File.Exists(".\\database.xml"))
+            if (!File.Exists("database.xml"))
             {
                 MessageBox.Show("The database file is missing. Please make sure the database.xml file is presented in My Nes folder. This file should be presented by default.");
                 return;

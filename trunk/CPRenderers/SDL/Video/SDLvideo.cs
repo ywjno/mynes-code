@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
 using MyNes.Core;
 using MyNes.Core.IO.Output;
 using MyNes.Renderers;
@@ -12,20 +14,21 @@ using SdlDotNet.Graphics.Primitives;
 using Console = MyNes.Core.Console;
 namespace CPRenderers
 {
-    unsafe class SDLvideo : IVideoDevice
+    class SDLvideo : IVideoDevice
     {
         //make 2 surfaces for resizing and fullscreen
         private Surface screen;
         private Surface screen_back;
         private TextSprite fpsTextSprite;
         private TextSprite notTextSprite;
+        private TextSprite soundRecordTextSprite;
         private Rectangle originalRect;
         private Rectangle destinationRect;
         private Size[] modes;
         private int windowW = 0;
         private int windowH = 0;
         private string romName = "";
-        private int* pointer;
+        private IntPtr pointer;
         private int firstToCut = 0;
         private TimingInfo.System system;
         private bool ImmediateMode = false;
@@ -42,7 +45,7 @@ namespace CPRenderers
         private bool showNotifications = false;
         private bool isRendering = false;
         private int scanlines = 240;
-        private string fontPath = Environment.GetFolderPath(Environment.SpecialFolder.Windows) + "\\Fonts\\tahoma.ttf";
+        private string fontPath;
         private int textAppearanceFrames = 0;
 
         public SDLvideo(TimingInfo.System system, int stretchMultiply, string romName, bool ImmediateMode, bool cutLines,
@@ -50,6 +53,18 @@ namespace CPRenderers
         {
             initialized = false;
             canRender = false;
+            // Get video modes
+            string[] mds = System.IO.File.ReadAllLines(Path.Combine(RenderersCore.StartupFolder, "modes.txt"));
+            System.Collections.Generic.List<Size> modesT = new System.Collections.Generic.List<Size>();
+            foreach (string mo in mds)
+            {
+                string[] code = mo.Split(new string[] { " x " }, StringSplitOptions.None);
+                modesT.Add(new Size(int.Parse(code[0]), int.Parse(code[1])));
+            }
+            modes = modesT.ToArray();
+
+            fontPath = Path.Combine(RenderersCore.StartupFolder, "consola.ttf");
+
             this.system = system;
             this.romName = romName;
             this.ImmediateMode = ImmediateMode;
@@ -68,6 +83,7 @@ namespace CPRenderers
             Video.Initialize();
             Video.WindowIcon();
             Video.WindowCaption = romName + " - My Nes [SDL .NET]";
+            Video.GLDoubleBufferEnabled = !ImmediateMode;
             windowW = 256 * stretchMultiply;
             if (cutLines)
             {
@@ -96,15 +112,17 @@ namespace CPRenderers
                 firstToCut = 0;
                 windowH = scanlines * stretchMultiply;
             }
-            pointer = (int*)screen_back.Pixels;
+            pointer = screen_back.Pixels;
             // Create texts
             fpsTextSprite = new TextSprite(new SdlDotNet.Graphics.Font(fontPath, 25));
             notTextSprite = new TextSprite(new SdlDotNet.Graphics.Font(fontPath, 25));
+            soundRecordTextSprite = new TextSprite(new SdlDotNet.Graphics.Font(fontPath, 25));
             // set video mode.
             Resize(FullScreen, true, windowW, windowH);
 
             canRender = true;
             Nes.Pause = false;
+            initialized = true;
         }
         public void Resize(bool fullScreen)
         {
@@ -114,10 +132,9 @@ namespace CPRenderers
         }
         public void Resize(bool fullScreen, bool resizable, int w, int h)
         {
-            // setup rectanlges
+            // setup rectangles
             if (FullScreen)
             {
-                modes = Video.ListModes();
                 if (!keepAspectRatio)
                     destinationRect = new Rectangle(0, 0, modes[FullScreenModeIndex].Width, modes[FullScreenModeIndex].Height);
                 else
@@ -125,7 +142,11 @@ namespace CPRenderers
             }
             else
             {
-                destinationRect = new Rectangle(0, 0, windowW, windowH);
+                // destinationRect = new Rectangle(0, 0, w, h);
+                if (!keepAspectRatio)
+                    destinationRect = new Rectangle(0, 0, w, h);
+                else
+                    destinationRect = GetRatioStretchRectangle(w, h);
             }
             fpsTextSprite.X = destinationRect.X + 2;
             fpsTextSprite.Y = 2;
@@ -133,13 +154,17 @@ namespace CPRenderers
             fpsTextSprite.Text = "0/0";
 
             notTextSprite.X = destinationRect.X + 2;
-            notTextSprite.Y = destinationRect.Y - 40;
+            notTextSprite.Y = destinationRect.Height - 40;
             notTextSprite.Color = Color.White;
             notTextSprite.Text = " ";
+
+            soundRecordTextSprite.X = destinationRect.X + 2;
+            soundRecordTextSprite.Y = 22;
+            soundRecordTextSprite.Color = Color.White;
+            soundRecordTextSprite.Text = " ";
             // set video mode.
             if (fullScreen)
             {
-                modes = Video.ListModes();
                 screen = Video.SetVideoMode(modes[FullScreenModeIndex].Width,
                    modes[FullScreenModeIndex].Height, 32, resizable, openGL, true);
             }
@@ -147,7 +172,6 @@ namespace CPRenderers
             {
                 screen = Video.SetVideoMode(w, h, 32, resizable, openGL, false);
             }
-            initialized = true;
         }
         public void RenderFrame(int[][] ScreenBuffer)
         {
@@ -155,13 +179,15 @@ namespace CPRenderers
             if (!canRender) return;
 
             isRendering = true;
-            for (int y = firstToCut; y < 240 - firstToCut; y++)
+            int[] offScreen = new int[240 * 256];
+            for (int y = 0; y < 240; y++)
             {
                 for (int x = 0; x < 256; x++)
                 {
-                    pointer[x + ((y - firstToCut) * 256)] = ScreenBuffer[y][x];
+                    offScreen[x + (y * 256)] = ScreenBuffer[y][x];
                 }
             }
+            Marshal.Copy(offScreen, 256 * firstToCut, pointer, 256 * scanlines);
             screen.Blit(screen_back.CreateStretchedSurface(destinationRect.Size), destinationRect.Location);
             if (showFps)
             {
@@ -178,7 +204,13 @@ namespace CPRenderers
                     screen.Blit(notTextSprite);
                 }
             }
+            if (Nes.AudioDevice.IsRecording)
+            {
+                soundRecordTextSprite.Text = "Recording [" + TimeSpan.FromSeconds(Nes.AudioDevice.RecordTime) + "]";
+                screen.Blit(soundRecordTextSprite);
+            }
             screen.Update();
+            Video.Update();
             isRendering = false;
         }
 
@@ -199,27 +231,35 @@ namespace CPRenderers
 
         public void TakeSnapshot(string folder, string filename, string format, bool replace)
         {
-            int j = 0;
-            string path = "";
-            if (!replace)
+            try
             {
-                path = folder + "\\" + filename + "_" + j +
-                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat;
-                while (System.IO.File.Exists(path))
+                int j = 0;
+                string path = "";
+                if (!replace)
                 {
-                    j++;
-                    path = folder + "\\" + filename + "_" + j +
-                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat;
+                    path = Path.Combine(folder, filename + "_" + j +
+                        RenderersCore.SettingsManager.Settings.Video_SnapshotFormat);
+                    while (System.IO.File.Exists(path))
+                    {
+                        j++;
+                        path = Path.Combine(folder, filename + "_" + j +
+                        RenderersCore.SettingsManager.Settings.Video_SnapshotFormat);
+                    }
                 }
+                else
+                {
+                    path = Path.Combine(folder, filename +
+                           RenderersCore.SettingsManager.Settings.Video_SnapshotFormat);
+                }
+                DrawText("Snapshot taken. [" + Path.GetFileName(path) + "]", 120, Color.Green);
+                screen_back.SaveBmp(path);
+                Console.WriteLine("Snapshot taken");
             }
-            else
+            catch(Exception ex)
             {
-                path = folder + "\\" + filename +
-                       RenderersCore.SettingsManager.Settings.Video_SnapshotFormat;
+                DrawText(ex.Message, 120, Color.Red);
+                File.WriteAllText(Path.Combine(RenderersCore.StartupFolder, "ERROR.txt"), ex.ToString());
             }
-            DrawText("Snapshot taken. [" + System.IO.Path.GetFileName(path) + "]", 120, Color.Green);
-            screen_back.SaveBmp(path);
-            Console.WriteLine("Snapshot taken");
         }
         public bool Initialized
         { get { return initialized; } }

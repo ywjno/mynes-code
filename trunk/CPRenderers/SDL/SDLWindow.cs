@@ -81,7 +81,6 @@ namespace CPRenderers
             Console.WriteLine("SDL .NET: initializing renderers..");
             // input
             Console.WriteLine("SDL .NET: setup input...");
-            Nes.SetupLimiter(new Timer());
             SetupInput();
             Console.WriteLine("SDL .NET: setup input... OK");
             Console.WriteLine("SDL .NET: initializing video device...");
@@ -96,7 +95,8 @@ namespace CPRenderers
                  RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch);
             Console.WriteLine("SDL .NET: initializing video device...  OK");
             Console.WriteLine("SDL .NET: initializing sound device ...");
-            sound = new SDLsound(true, RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq);
+            sound = new SDLsound(RenderersCore.SettingsManager.Settings.Sound_Enabled,
+                RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq);
             Console.WriteLine("SDL .NET: initializing sound device...  OK");
             Console.WriteLine("SDL .NET: apply devices to emulation core");
             Nes.SetupOutput(video, sound, new ApuPlaybackDescription(RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq));

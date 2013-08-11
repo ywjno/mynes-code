@@ -225,9 +225,7 @@ namespace CPRenderers
             else if (state.IsKeyPressed(sct_TakeSnapshot))
             {
                 Nes.VideoDevice.TakeSnapshot(
-                    RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder + "\\" +
-                    System.IO.Path.GetFileNameWithoutExtension(Nes.RomInfo.Path) +
-                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
+                    RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder,
                     System.IO.Path.GetFileNameWithoutExtension(Nes.RomInfo.Path),
                     RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
                     false);

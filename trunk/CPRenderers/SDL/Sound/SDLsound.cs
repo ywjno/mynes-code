@@ -15,8 +15,10 @@ namespace CPRenderers
         private WaveRecorder Recorder = new WaveRecorder();
         private double volume = 100;// 0 - 100
         private double multi = 0;
+        private bool on;
         public SDLsound(bool On, int playbackFreq)
         {
+            this.on = On;
             if (On)
             {
                 try
@@ -30,6 +32,7 @@ namespace CPRenderers
                     stream = new AudioStream(playbackFreq, AudioFormat.Unsigned16Big,
                         SoundChannel.Mono, 0, callback, "My Nes Sound");
                     stream.Paused = false;
+                    Mixer.OpenAudio(stream);
                 }
                 catch (Exception ex)
                 {
@@ -39,25 +42,28 @@ namespace CPRenderers
         }
         void Unsigned16BigCallback(IntPtr userData, IntPtr stream, int len)
         {
-            len /= 2;
-            int bufPos = 0;
-            short[] buff = new short[len];
-            while (bufPos < len)
+            if (on)
             {
-                if (!Nes.Pause)
+                len /= 2;
+                int bufPos = 0;
+                short[] buff = new short[len];
+                while (bufPos < len)
                 {
-                    double sample = Nes.Apu.PullSample();
-                    buff[bufPos] = (short)(multi * sample);
-                    //RECORD
-                    if (Recorder.IsRecording)
-                        Recorder.AddSample(buff[bufPos]);
-                    bufPos++;
+                    if (!Nes.Pause)
+                    {
+                        double sample = Nes.Apu.PullSample();
+                        buff[bufPos] = (short)(multi * sample);
+                        //RECORD
+                        if (Recorder.IsRecording)
+                            Recorder.AddSample(buff[bufPos]);
+                        bufPos++;
+                    }
                 }
+
+                Marshal.Copy(buff, 0, stream, len);
+
+                len = 0;
             }
-
-            Marshal.Copy(buff, 0, stream, len);
-
-            len = 0;
         }
         public void UpdateFrame()
         {
@@ -71,55 +77,80 @@ namespace CPRenderers
 
         public void Shutdown()
         {
-            if (stream != null)
+            if (on)
             {
-                stream.Paused = true;
-                stream.Dispose();
+                if (stream != null)
+                {
+                    stream.Paused = true;
+                    stream.Flush();
+                    stream.Dispose();
+                }
+                Events.CloseAudio();
+                if (Recorder.IsRecording)
+                    Recorder.Stop();
             }
-            Events.CloseAudio();
-            if (Recorder.IsRecording)
-                Recorder.Stop();
         }
 
         public void Play()
         {
-            if (stream != null)
+            if (on)
             {
-                if (stream.Paused)
-                { stream.Paused = false; }
+                if (stream != null)
+                {
+                    if (stream.Paused)
+                    { stream.Paused = false; }
+                }
             }
         }
 
         public void Stop()
         {
-            if (stream != null)
+            if (on)
             {
-                if (!stream.Paused)
-                    stream.Paused = true;
+                if (stream != null)
+                {
+                    if (!stream.Paused)
+                        stream.Paused = true;
+                }
+                Events.Poll();
             }
-            Events.Poll();
         }
 
         public bool IsRecording
         {
-            get { return Recorder.IsRecording; }
+            get { if (on) return Recorder.IsRecording; return false; }
         }
         public void Record(string filePath)
         {
-            Recorder.Record(filePath, RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq);
+            if (on)
+                Recorder.Record(filePath, RenderersCore.SettingsManager.Settings.Sound_PlaybackFreq);
         }
         public void RecordStop()
         {
-            Recorder.Stop();
+            if (on)
+            {
+                Recorder.Stop();
+                Nes.VideoDevice.DrawText("Record stopped.", 120, System.Drawing.Color.Green);
+            }
         }
         public int RecordTime
         {
-            get { return Recorder.Time; }
+            get
+            {
+                if (on) return Recorder.Time;
+
+                return 0;
+            }
         }
 
         public bool IsPlaying
         {
-            get { return !stream.Paused; }
+            get
+            {
+                if (on)
+                { return !stream.Paused; }
+                return false;
+            }
         }
         public void ResetBuffer()
         {

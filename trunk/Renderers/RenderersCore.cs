@@ -30,9 +30,29 @@ namespace MyNes.Renderers
     {
         private static IRenderer[] availableRenderers;
         private static SettingsManager settingsManager = new SettingsManager();
+        private static string startupFolder;
+        private static string documentsFolder;
+
+        /// <summary>
+        /// Initialize the Renderers Core
+        /// </summary>
+        public static void Initialize()
+        {
+            startupFolder = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+            documentsFolder = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "MyNes");
+            Directory.CreateDirectory(documentsFolder);
+        }
         /// <summary>
         /// Search My Nes dir for renderers.
         /// </summary>
+        public static void FindRenderers()
+        {
+            FindRenderers(startupFolder);
+        }
+        /// <summary>
+        /// Search directory for renderers.
+        /// </summary>
+        /// <param name="directory"></param>
         public static void FindRenderers(string directory)
         {
             string[] files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories);
@@ -72,5 +92,13 @@ namespace MyNes.Renderers
         /// Get the settings manager which holds shared settings data and save/load method
         /// </summary>
         public static SettingsManager SettingsManager { get { return settingsManager; } }
+        /// <summary>
+        /// Get the documents folder
+        /// </summary>
+        public static string DocumentsFolder { get { return documentsFolder; } }
+        /// <summary>
+        /// Get the startup folder
+        /// </summary>
+        public static string StartupFolder { get { return startupFolder; } }
     }
 }

@@ -37,7 +37,7 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".\\fdb.fl")]
+        [global::System.Configuration.DefaultSettingValueAttribute("fdb.fl")]
         public string FoldersDatabasePath {
             get {
                 return ((string)(this["FoldersDatabasePath"]));

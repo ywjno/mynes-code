@@ -89,6 +89,9 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\MyNes.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SevenZipSharp">
       <HintPath>..\..\libraries\SevenZipSharp.dll</HintPath>

@@ -37,7 +37,7 @@ namespace MyNes.Renderers
         /// </summary>
         public abstract string Description { get; }
         /// <summary>
-        /// Stop the renderer immediatly
+        /// Stop the renderer immediately
         /// </summary>
         public abstract void Kill();
         /// <summary>
@@ -49,7 +49,7 @@ namespace MyNes.Renderers
         /// </summary>
         public virtual string CopyrightMessage { get { return ""; } }
         /// <summary>
-        /// Get or set the parent asssembly path of this renderer. This should set by the manager and used for reset or reload
+        /// Get or set the parent assembly path of this renderer. This should set by the manager and used for reset or reload
         ///  assembly that required by some renderers.
         /// </summary>
         public virtual string AssemblyPath

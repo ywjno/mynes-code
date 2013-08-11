@@ -19,8 +19,14 @@
 using MyNes.Renderers;
 using System;
 using System.Threading;
+using System.IO;
+using System.Collections.Generic;
+using System.Drawing;
+using SdlDotNet;
+using SdlDotNet.Graphics;
 using Console = System.Console;
 using SdlDotNet.Core;
+
 namespace CPRenderers
 {
     public class SDLRenderer : IRenderer
@@ -33,6 +39,18 @@ namespace CPRenderers
                     thread.Abort();
             }
             Console.WriteLine("Launching SDL .NET window ...");
+            //Listing video modes 
+            if (!File.Exists(Path.Combine(RenderersCore.StartupFolder, "modes.txt")))
+            {
+                Console.WriteLine("Listing video modes ...");
+                Size[] modes = Video.ListModes();
+                List<string> lines = new List<string>();
+                foreach (Size mode in modes)
+                {
+                    lines.Add(mode.Width + " x " + mode.Height);
+                }
+                File.WriteAllLines(Path.Combine(RenderersCore.StartupFolder, "modes.txt"), lines.ToArray());
+            }
             window = new SDLWindow();
             thread = new Thread(new ThreadStart(window.Run));
             thread.Start();

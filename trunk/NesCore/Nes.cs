@@ -258,7 +258,7 @@ namespace MyNes.Core
                 {
                     if (SpeedLimiter != null)
                         SpeedLimiter.SleepOnPause();
-                    
+
                     if (softResetRequest)
                     {
                         softResetRequest = false;
@@ -412,7 +412,7 @@ namespace MyNes.Core
             string dir = Path.GetDirectoryName(RomInfo.Path);
             if (dir.Length == 0)
                 dir = Path.GetPathRoot(RomInfo.Path);
-            LoadSramAs(dir + "\\" + Path.GetFileNameWithoutExtension(RomInfo.Path) + ".sav");
+            LoadSramAs(Path.Combine(dir, Path.GetFileNameWithoutExtension(RomInfo.Path) + ".sav"));
         }
         public static void LoadSramAs(string sramPath)
         {
@@ -432,7 +432,7 @@ namespace MyNes.Core
             string dir = Path.GetDirectoryName(RomInfo.Path);
             if (dir.Length == 0)
                 dir = Path.GetPathRoot(RomInfo.Path);
-            SaveSramAs(dir + "\\" + Path.GetFileNameWithoutExtension(RomInfo.Path) + ".sav");
+            SaveSramAs(Path.Combine(dir, Path.GetFileNameWithoutExtension(RomInfo.Path) + ".sav"));
         }
         public static void SaveSramAs(string sramPath)
         {
@@ -452,8 +452,8 @@ namespace MyNes.Core
         public static void StartUp()
         {
             //load database
-            if (File.Exists(Path.GetFullPath(".\\database.xml")))
-                NesDatabase.LoadDatabase(Path.GetFullPath(".\\database.xml"));
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(System.Environment.GetCommandLineArgs()[0]), "database.xml")))
+                NesDatabase.LoadDatabase(Path.Combine(Path.GetDirectoryName(System.Environment.GetCommandLineArgs()[0]), "database.xml"));
             //load boards
             BoardsManager.LoadAvailableBoards();
         }
@@ -497,14 +497,7 @@ namespace MyNes.Core
             ControlsUnit.Joypad2 = joypad2;
             ControlsUnit.Joypad3 = joypad3;
             ControlsUnit.Joypad4 = joypad4;
-        }
-        /// <summary>
-        /// Setup the speed limiter that should control emulation speed depending on emulation system
-        /// </summary>
-        /// <param name="timer">The timer</param>
-        public static void SetupLimiter(ITimer timer)
-        {
-            SpeedLimiter = new SpeedLimiter(timer, emuSystem);
+            SpeedLimiter = new SpeedLimiter(emuSystem);
         }
         public static void SetupPalette()
         {
@@ -524,7 +517,7 @@ namespace MyNes.Core
         /*STATE*/
         public static void LoadState(string stateFolder)
         {
-            LoadStateAs(stateFolder + "\\" + Path.GetFileNameWithoutExtension(RomInfo.Path) + "_" + StateSlot + ".msn");
+            LoadStateAs(Path.Combine(stateFolder, Path.GetFileNameWithoutExtension(RomInfo.Path) + "_" + StateSlot + ".msn"));
         }
         public static void LoadStateAs(string fileName)
         {
@@ -534,7 +527,7 @@ namespace MyNes.Core
         }
         public static void SaveState(string stateFolder)
         {
-            SaveStateAs(stateFolder + "\\" + Path.GetFileNameWithoutExtension(RomInfo.Path) + "_" + StateSlot + ".msn");
+            SaveStateAs(Path.Combine(stateFolder, Path.GetFileNameWithoutExtension(RomInfo.Path) + "_" + StateSlot + ".msn"));
         }
         public static void SaveStateAs(string fileName)
         {
@@ -559,13 +552,13 @@ namespace MyNes.Core
             ControlsUnit.SaveState(st);
 
             st.Finish();
-           
+
             //save snap
             VideoDevice.TakeSnapshot(Path.GetDirectoryName(requestStatePath), Path.GetFileNameWithoutExtension(requestStatePath),
                 ".png", true);
             //save text info
-            File.WriteAllText(Path.GetDirectoryName(requestStatePath) + "\\" +
-                Path.GetFileNameWithoutExtension(requestStatePath) + ".txt", RomInfo.Path);
+            File.WriteAllText(Path.Combine(Path.GetDirectoryName(requestStatePath),
+                Path.GetFileNameWithoutExtension(requestStatePath) + ".txt"), RomInfo.Path);
             if (VideoDevice != null)
                 VideoDevice.DrawText("State saved at slot " + StateSlot, 120, Color.Green);
             Console.WriteLine("State saved at slot " + StateSlot, DebugCode.Good);
@@ -646,7 +639,7 @@ namespace MyNes.Core
                 ControlsUnit.LoadState(st);
 
                 st.Finish();
-            } 
+            }
             loadMemoryStateRequest = false;
         }
         public static byte[] GetMemoryState()

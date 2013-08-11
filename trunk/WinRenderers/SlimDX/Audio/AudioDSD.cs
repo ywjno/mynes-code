@@ -202,6 +202,7 @@ namespace MyNes.WinRenderers
         public void RecordStop()
         {
             Recorder.Stop();
+            Nes.VideoDevice.DrawText("Record stopped.", 120, System.Drawing.Color.Green);
         }
         public int RecordTime
         {

@@ -93,6 +93,7 @@ namespace MyNes.Core.PPU
         //oam
         private byte oam_address;
         private byte[] oam = new byte[256];
+        private int oamDmaAddress = 0;
         private byte oamData = 0;
         private byte oamCount = 0;
         private byte oamSlot = 0;
@@ -461,7 +462,9 @@ namespace MyNes.Core.PPU
         }
         private void Poke4014(int address, byte data)
         {
-            Nes.Cpu.dma.OamTransfer(address, data);
+       //     Nes.Cpu.dma.OamTransfer(address, data);
+            oamDmaAddress = data << 8;
+            Nes.Cpu.RDY(Cpu.DmaType.OAM);
         }
 
         private void RenderPixel()
@@ -792,6 +795,17 @@ namespace MyNes.Core.PPU
                 }
             }
             #endregion
+        }
+        public void OAMTransfer()
+        {
+            for (int i = 0; i < 256; i++)
+            {
+                byte data = Nes.Cpu.Peek(oamDmaAddress);
+
+                Nes.Cpu.Poke(0x2004, data);
+
+                oamDmaAddress = (++oamDmaAddress) & 0xFFFF;
+            }
         }
         public int GetPixel(int x, int y)
         {
