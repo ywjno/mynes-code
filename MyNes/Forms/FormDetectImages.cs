@@ -1,7 +1,9 @@
 ﻿/* This file is part of My Nes
- * A Nintendo Entertainment System Emulator.
+ * 
+ * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
+ * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2013
+ * Copyright © Ala Ibrahim Hadid 2009 - 2014
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,24 +28,26 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using MMB;
+
 namespace MyNes
 {
     public partial class FormDetectImages : Form
     {
-        public FormDetectImages(BFolder bfolder, DetectorDetectMode mode)
+        public FormDetectImages(DBFolder bfolder, DetectorDetectMode mode)
         {
             InitializeComponent();
             this.bfolder = bfolder;
             this.mode = mode;
             switch (mode)
             {
-                case DetectorDetectMode.Covers: this.Text = "Detect Covers"; break;
-                case DetectorDetectMode.Snapshots: this.Text = "Detect Snapshots"; break;
-                case DetectorDetectMode.InfoTexts: this.Text = "Detect Info Texts"; break;
+                case DetectorDetectMode.Covers: this.Text = Program.ResourceManager.GetString("Title_DetectCovers"); break;
+                case DetectorDetectMode.Snapshots: this.Text = Program.ResourceManager.GetString("Title_DetectSnapshots"); break;
+                case DetectorDetectMode.InfoTexts: this.Text = Program.ResourceManager.GetString("Title_DetectInfoTexts"); break;
             }
         }
         private DetectorDetectMode mode;
-        private BFolder bfolder;
+        private DBFolder bfolder;
         private Thread mainThread;
         private bool progresDone = false;
         private bool includeSubFolders = false;
@@ -51,6 +55,7 @@ namespace MyNes
         private bool matchFileName = false;
         private int currentPrec = 0;
         private string currentStatus = "";
+
         private string GetString(string[] lines)
         {
             string value = "";
@@ -73,7 +78,7 @@ namespace MyNes
         }
         private void Progress()
         {
-            currentStatus = "Calculating ...";
+            currentStatus = Program.ResourceManager.GetString("Status_Calculating");
             currentPrec = 0;
             //add files
             List<string> folders = new List<string>();
@@ -94,14 +99,22 @@ namespace MyNes
             string[] extensions = new string[] { ".jpg", ".bmp", ".png", ".gif", ".tiff", ".emf", ".wmf", ".exif" };
             if (mode == DetectorDetectMode.InfoTexts)
                 extensions = new string[] { ".txt" };
-            foreach (BRom rom in bfolder.BRoms)
+
+            foreach (DBFile rom in bfolder.Files)
             {
-                // loop through files
-                foreach (string file in files)
+                // Clear
+                switch (mode)
                 {
-                    if (!extensions.Contains(Path.GetExtension(file).ToLower()))
+                    case DetectorDetectMode.Covers: rom.Covers = new List<string>(); break;
+                    case DetectorDetectMode.Snapshots: rom.Snapshots = new List<string>(); break;
+                    case DetectorDetectMode.InfoTexts: rom.InfoTexts = new List<string>(); break;
+                }
+                // loop through files
+                for (int j = 0; j < files.Count; j++)
+                {
+                    if (!extensions.Contains(Path.GetExtension(files[j]).ToLower()))
                         continue;
-                    string imageFileName = Path.GetFileNameWithoutExtension(file);
+                    string imageFileName = Path.GetFileNameWithoutExtension(files[j]);
                     string romFileName = Path.GetFileNameWithoutExtension(rom.Path);
                     bool thisIsIt = false;
                     //case sensitive ?
@@ -121,21 +134,22 @@ namespace MyNes
                             thisIsIt = true;
                     if (thisIsIt)
                     {
-                        //now add the image/text info to the item
+                        // now add the image/text info to the item
                         switch (mode)
                         {
-                            case DetectorDetectMode.Covers: rom.CoverPath = file; break;
-                            case DetectorDetectMode.Snapshots: rom.SnapshotPath = file; break;
-                            case DetectorDetectMode.InfoTexts: rom.InfoText = GetString(File.ReadAllLines(file)); break;
+                            case DetectorDetectMode.Covers: rom.Covers.Add(files[j]); break;
+                            case DetectorDetectMode.Snapshots: rom.Snapshots.Add(files[j]); ; break;
+                            case DetectorDetectMode.InfoTexts: rom.InfoTexts.Add(files[j]); break;
                         }
-                        //remove the file for turbo !?
-                        files.Remove(file);
-                        break;
+                        // remove the file from the list for turbo speed !?
+                        files.Remove(files[j]);
+                        j--;
                     }
                 }
                 //set progress bar info
-                currentPrec = (i * 100) / bfolder.BRoms.Count;
-                currentStatus = "Detecting " + (i + 1).ToString() + "/" + bfolder.BRoms.Count + " (" + currentPrec + "%)";
+                currentPrec = (i * 100) / bfolder.Files.Count;
+                currentStatus = Program.ResourceManager.GetString("Status_Detecting") + " " +
+                    (i + 1).ToString() + "/" + bfolder.Files.Count + " (" + currentPrec + "%)";
                 i++;
             }
             DONE();
@@ -163,7 +177,7 @@ namespace MyNes
         {
             if (listBox1.Items.Count == 0)
             {
-                MessageBox.Show("Please select folder first");
+                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_PleaseSelectFolderFirst"), this.Text);
                 return;
             }
             //get options
@@ -176,6 +190,7 @@ namespace MyNes
             //start
             timer1.Start();
             mainThread = new Thread(new ThreadStart(Progress));
+            mainThread.CurrentUICulture = Program.CultureInfo;
             mainThread.Start();
         }
 

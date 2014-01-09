@@ -1,106 +1,111 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4321AB73-D9E4-48C8-BB41-A5DE6FB25096}</ProjectGuid>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0E72B17C-1BB8-476B-AF0B-DBEC57E4803C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyNes</RootNamespace>
     <AssemblyName>MyNes</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Releases\Debug x86\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x86'">
-    <OutputPath>..\Releases\x86\</OutputPath>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Optimize>True</Optimize>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x86'">
-    <OutputPath>bin\x86\x64\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Optimize>True</Optimize>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <Optimize>False</Optimize>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>False</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\x86\</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>False</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>..\Releases\x64\</OutputPath>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Optimize>True</Optimize>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Resources\MyNes.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>..\Releases\Debug x86\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>..\Releases\Release x86\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\MyNes.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|AnyCPU'">
+    <OutputPath>bin\x64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x86'">
+    <OutputPath>bin\x86\x64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>..\Releases\Debug x64\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>..\Releases\Release x64\</OutputPath>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release X64|AnyCPU'">
+    <OutputPath>bin\Release X64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release X64|x86'">
+    <OutputPath>bin\x86\Release X64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release X64|x64'">
+    <OutputPath>..\Releases\Release x64\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release X86|AnyCPU'">
+    <OutputPath>bin\Release X86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release X86|x86'">
+    <OutputPath>..\Releases\Release x86\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release X86|x64'">
+    <OutputPath>bin\x64\Release X86\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SevenZipSharp">
-      <HintPath>..\..\libraries\SevenZipSharp.dll</HintPath>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="SevenZipSharp, Version=0.64.3890.29348, Culture=neutral, PublicKeyToken=20de82c62b055c88, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\SevenZipSharp.dll</HintPath>
     </Reference>
-    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9">
-      <HintPath>C:\Program Files %28x86%29\SlimDX SDK %28January 2012%29\Bin\net40\x64\SlimDX.dll</HintPath>
-    </Reference>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -111,65 +116,131 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Browser Types\BDatabaseManager.cs" />
-    <Compile Include="Browser Types\BFolder.cs" />
-    <Compile Include="Browser Types\BRom.cs" />
-    <Compile Include="Browser Types\BrowserDatabase.cs" />
-    <Compile Include="Browser Types\WinTypes.cs" />
-    <Compile Include="Controls\ChatPanel.cs">
+    <Compile Include="Args\EnterNameFormOkPressedArgs.cs" />
+    <Compile Include="Args\ProgressArg.cs" />
+    <Compile Include="ConsoleCommands\OpenRom.cs" />
+    <Compile Include="Controls\ConsolePanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ChatPanel.Designer.cs">
-      <DependentUpon>ChatPanel.cs</DependentUpon>
+    <Compile Include="Controls\ConsolePanel.designer.cs">
+      <DependentUpon>ConsolePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debug\ConsoleCommands\Save.cs" />
-    <Compile Include="Forms\NetPlay\FormJoinServer.cs">
+    <Compile Include="ConsoleCommands\CloseConsole.cs" />
+    <Compile Include="ConsoleCommands\Save.cs" />
+    <Compile Include="Controls\ImageViewer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ImageViewer.designer.cs">
+      <DependentUpon>ImageViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MemoryWathcerPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MemoryWathcerPanel.designer.cs">
+      <DependentUpon>MemoryWathcerPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FoldersDatabase\DBFile.cs" />
+    <Compile Include="FoldersDatabase\DBFilesComparer.cs" />
+    <Compile Include="FoldersDatabase\DBFileFormat.cs" />
+    <Compile Include="FoldersDatabase\DBColumn.cs" />
+    <Compile Include="FoldersDatabase\DBFolder.cs" />
+    <Compile Include="FoldersDatabase\DBManager.cs" />
+    <Compile Include="FoldersDatabase\FoldersDatabase.cs" />
+    <Compile Include="Forms\FormGameGenie.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\NetPlay\FormJoinServer.Designer.cs">
-      <DependentUpon>FormJoinServer.cs</DependentUpon>
+    <Compile Include="Forms\FormGameGenie.designer.cs">
+      <DependentUpon>FormGameGenie.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\NetPlay\FormNetPlayRoom.cs">
+    <Compile Include="Forms\SettingForms\FormPreferences.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\NetPlay\FormNetPlayRoom.Designer.cs">
-      <DependentUpon>FormNetPlayRoom.cs</DependentUpon>
+    <Compile Include="Forms\SettingForms\FormPreferences.Designer.cs">
+      <DependentUpon>FormPreferences.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\NetPlay\FormCreateServer.cs">
+    <Compile Include="Forms\FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\NetPlay\FormCreateServer.Designer.cs">
-      <DependentUpon>FormCreateServer.cs</DependentUpon>
+    <Compile Include="Forms\FormAbout.Designer.cs">
+      <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormINESFilesFixer.cs">
+    <Compile Include="Forms\FormEditFilesList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormINESFilesFixer.Designer.cs">
-      <DependentUpon>FormINESFilesFixer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FormInesHeaderEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormInesHeaderEditor.Designer.cs">
-      <DependentUpon>FormInesHeaderEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormRendererSelect.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormRendererSelect.Designer.cs">
-      <DependentUpon>FormRendererSelect.cs</DependentUpon>
+    <Compile Include="Forms\FormEditFilesList.Designer.cs">
+      <DependentUpon>FormEditFilesList.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormDetectImages.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormDetectImages.Designer.cs">
+    <Compile Include="Forms\FormDetectImages.designer.cs">
       <DependentUpon>FormDetectImages.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormGameGenie.cs">
+    <Compile Include="Forms\FormFindRoms.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormGameGenie.Designer.cs">
-      <DependentUpon>FormGameGenie.cs</DependentUpon>
+    <Compile Include="Forms\FormFindRoms.Designer.cs">
+      <DependentUpon>FormFindRoms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormBrowser.Designer.cs">
+      <DependentUpon>FormBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormPaths.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormPaths.Designer.cs">
+      <DependentUpon>FormPaths.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormAddControlsProfile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormAddControlsProfile.designer.cs">
+      <DependentUpon>FormAddControlsProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormEnterName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormEnterName.designer.cs">
+      <DependentUpon>FormEnterName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormKey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormKey.designer.cs">
+      <DependentUpon>FormKey.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormInputSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormInputSettings.designer.cs">
+      <DependentUpon>FormInputSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_General.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_General.designer.cs">
+      <DependentUpon>ISC_General.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_Player.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_Player.Designer.cs">
+      <DependentUpon>ISC_Player.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_Profiles.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_Profiles.Designer.cs">
+      <DependentUpon>ISC_Profiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_VSUnisystem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InputSettingControls\ISC_VSUnisystem.Designer.cs">
+      <DependentUpon>ISC_VSUnisystem.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SettingForms\FormPaletteSettings.cs">
       <SubType>Form</SubType>
@@ -177,103 +248,23 @@
     <Compile Include="Forms\SettingForms\FormPaletteSettings.Designer.cs">
       <DependentUpon>FormPaletteSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SettingForms\FormSoundSettings.cs">
+    <Compile Include="Forms\DebugForms\FormConsole.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SettingForms\FormSoundSettings.Designer.cs">
-      <DependentUpon>FormSoundSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormPathSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormPathSettings.Designer.cs">
-      <DependentUpon>FormPathSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\AddEditForms\EnterNameForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AddEditForms\EnterNameForm.designer.cs">
-      <DependentUpon>EnterNameForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\AddEditForms\FormAddControlsProfile.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AddEditForms\FormAddControlsProfile.Designer.cs">
-      <DependentUpon>FormAddControlsProfile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\AddEditForms\FormKey.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AddEditForms\FormKey.Designer.cs">
-      <DependentUpon>FormKey.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Profiles.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Profiles.Designer.cs">
-      <DependentUpon>ISC_Profiles.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Shortcuts.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Shortcuts.Designer.cs">
-      <DependentUpon>ISC_Shortcuts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormVideoSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormVideoSettings.Designer.cs">
-      <DependentUpon>FormVideoSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_VSUnisystem.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_VSUnisystem.Designer.cs">
-      <DependentUpon>ISC_VSUnisystem.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ImageViewer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ImageViewer.Designer.cs">
-      <DependentUpon>ImageViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Debug\ConsoleCommands\CloseConsole.cs" />
-    <Compile Include="Debug\ConsoleCommands\OpenRom.cs" />
-    <Compile Include="Controls\ConsolePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ConsolePanel.designer.cs">
-      <DependentUpon>ConsolePanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Debug\FormConsole.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Debug\FormConsole.designer.cs">
+    <Compile Include="Forms\DebugForms\FormConsole.designer.cs">
       <DependentUpon>FormConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debug\FormSpeed.cs">
+    <Compile Include="Forms\DebugForms\FormMemoryWatcher.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debug\FormSpeed.designer.cs">
+    <Compile Include="Forms\DebugForms\FormMemoryWatcher.designer.cs">
+      <DependentUpon>FormMemoryWatcher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DebugForms\FormSpeed.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DebugForms\FormSpeed.designer.cs">
       <DependentUpon>FormSpeed.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormInput.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\FormInput.Designer.cs">
-      <DependentUpon>FormInput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FormRomInfo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormRomInfo.Designer.cs">
-      <DependentUpon>FormRomInfo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FormAbout.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormAbout.designer.cs">
-      <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormFilesList.cs">
       <SubType>Form</SubType>
@@ -284,131 +275,143 @@
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormMain.designer.cs">
+    <Compile Include="Forms\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormWelcome.cs">
+    <Compile Include="Forms\SettingForms\FormVideoSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormWelcome.Designer.cs">
-      <DependentUpon>FormWelcome.cs</DependentUpon>
+    <Compile Include="Forms\SettingForms\FormVideoSettings.Designer.cs">
+      <DependentUpon>FormVideoSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\NetPlay\Frm_SetPlayerNumber.cs">
+    <Compile Include="Forms\FormSlimDXSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\NetPlay\Frm_SetPlayerNumber.Designer.cs">
-      <DependentUpon>Frm_SetPlayerNumber.cs</DependentUpon>
+    <Compile Include="Forms\FormSlimDXSettings.designer.cs">
+      <DependentUpon>FormSlimDXSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Types\ServerJoinArgs.cs" />
-    <Compile Include="Types\ColumnItem.cs" />
-    <Compile Include="Types\ColumnsManager.cs" />
-    <Compile Include="Types\Helper.cs" />
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Player.cs">
+    <Compile Include="Forms\SettingForms\FormAudioSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingForms\FormAudioSettings.Designer.cs">
+      <DependentUpon>FormAudioSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HelperTools.cs" />
+    <Compile Include="FoldersDatabase\Search\NumberSearchCondition.cs" />
+    <Compile Include="Controls\InfoTextViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_Player.Designer.cs">
-      <DependentUpon>ISC_Player.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_General.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingForms\InputSettingControls\ISC_General.Designer.cs">
-      <DependentUpon>ISC_General.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Types\InputSettingsControl.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Controls\InfoTextViewer.Designer.cs">
+      <DependentUpon>InfoTextViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\ManagedListViewItem_BRom.cs" />
-    <Compile Include="Types\RomsComparer.cs" />
-    <EmbeddedResource Include="Debug\FormConsole.resx">
-      <DependentUpon>FormConsole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Debug\FormSpeed.resx">
-      <DependentUpon>FormSpeed.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NetPlay\FormJoinServer.resx">
-      <DependentUpon>FormJoinServer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormINESFilesFixer.resx">
-      <DependentUpon>FormINESFilesFixer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInesHeaderEditor.resx">
-      <DependentUpon>FormInesHeaderEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDetectImages.resx">
-      <DependentUpon>FormDetectImages.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Renderers\Shared\WaveRecorder.cs" />
+    <Compile Include="Renderers\SlimDXInput\SlimDXInputDevice.cs" />
+    <Compile Include="Renderers\SlimDXInput\SlimDXInputManager.cs" />
+    <Compile Include="Renderers\SlimDXInput\SlimDXJoyButton.cs" />
+    <Compile Include="Renderers\SlimDXInput\SlimDXJoypad.cs" />
+    <Compile Include="Renderers\DirectSound.cs" />
+    <Compile Include="Renderers\Dircet3D.cs" />
+    <Compile Include="Renderers\SlimDXInput\SlimDXVSUnisystemDIP.cs" />
+    <Compile Include="Renderers\SlimDXInput\SlimDXZapper.cs" />
+    <Compile Include="FoldersDatabase\Search\SearchMode.cs" />
+    <Compile Include="FoldersDatabase\Search\SearchParameters.cs" />
+    <Compile Include="SettingTypes\ControlProfile.cs" />
+    <Compile Include="SettingTypes\ControlProfileVSUnisystemDIP.cs" />
+    <Compile Include="SettingTypes\ControlsProfilePlayer.cs" />
+    <Compile Include="SettingTypes\InputSettingsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SettingTypes\SoundOutputMode.cs" />
+    <Compile Include="SettingTypes\VideoOutputMode.cs" />
+    <Compile Include="FoldersDatabase\TreeNodeFolder.cs" />
+    <Compile Include="FoldersDatabase\Search\TextSearchCondition.cs" />
+    <Compile Include="Controls\SnapshotsViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SnapshotsViewer.Designer.cs">
+      <DependentUpon>SnapshotsViewer.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Forms\FormGameGenie.resx">
       <DependentUpon>FormGameGenie.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormWelcome.resx">
-      <DependentUpon>FormWelcome.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NetPlay\FormCreateServer.resx">
-      <DependentUpon>FormCreateServer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NetPlay\FormNetPlayRoom.resx">
-      <DependentUpon>FormNetPlayRoom.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\FormPaletteSettings.resx">
-      <DependentUpon>FormPaletteSettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AddEditForms\EnterNameForm.resx">
-      <DependentUpon>EnterNameForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AddEditForms\FormAddControlsProfile.resx">
-      <DependentUpon>FormAddControlsProfile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AddEditForms\FormKey.resx">
-      <DependentUpon>FormKey.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\FormPathSettings.resx">
-      <DependentUpon>FormPathSettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\FormInput.resx">
-      <DependentUpon>FormInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRomInfo.resx">
-      <DependentUpon>FormRomInfo.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\SettingForms\FormPreferences.resx">
+      <DependentUpon>FormPreferences.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormAbout.resx">
       <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEditFilesList.resx">
+      <DependentUpon>FormEditFilesList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDetectImages.resx">
+      <DependentUpon>FormDetectImages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormFindRoms.resx">
+      <DependentUpon>FormFindRoms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBrowser.resx">
+      <DependentUpon>FormBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingForms\FormPaths.resx">
+      <DependentUpon>FormPaths.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DebugForms\FormConsole.resx">
+      <DependentUpon>FormConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DebugForms\FormMemoryWatcher.resx">
+      <DependentUpon>FormMemoryWatcher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DebugForms\FormSpeed.resx">
+      <DependentUpon>FormSpeed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingForms\FormAddControlsProfile.resx">
+      <DependentUpon>FormAddControlsProfile.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormFilesList.resx">
       <DependentUpon>FormFilesList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEnterName.resx">
+      <DependentUpon>FormEnterName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingForms\FormKey.resx">
+      <DependentUpon>FormKey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingForms\FormInputSettings.resx">
+      <DependentUpon>FormInputSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\FormRendererSelect.resx">
-      <DependentUpon>FormRendererSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\FormSoundSettings.resx">
-      <DependentUpon>FormSoundSettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\InputSettingControls\ISC_General.resx">
+    <EmbeddedResource Include="Controls\InputSettingControls\ISC_General.resx">
       <DependentUpon>ISC_General.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\InputSettingControls\ISC_Player.resx">
+    <EmbeddedResource Include="Controls\InputSettingControls\ISC_Player.resx">
       <DependentUpon>ISC_Player.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\InputSettingControls\ISC_Profiles.resx">
+    <EmbeddedResource Include="Controls\InputSettingControls\ISC_Profiles.resx">
       <DependentUpon>ISC_Profiles.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\InputSettingControls\ISC_Shortcuts.resx">
-      <DependentUpon>ISC_Shortcuts.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\InputSettingControls\ISC_VSUnisystem.resx">
+      <DependentUpon>ISC_VSUnisystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingForms\FormPaletteSettings.resx">
+      <DependentUpon>FormPaletteSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingForms\FormVideoSettings.resx">
       <DependentUpon>FormVideoSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingForms\InputSettingControls\ISC_VSUnisystem.resx">
-      <DependentUpon>ISC_VSUnisystem.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormSlimDXSettings.resx">
+      <DependentUpon>FormSlimDXSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NetPlay\Frm_SetPlayerNumber.resx">
-      <DependentUpon>Frm_SetPlayerNumber.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\SettingForms\FormAudioSettings.resx">
+      <DependentUpon>FormAudioSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InfoTextViewer.resx">
+      <DependentUpon>InfoTextViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguageResources\Resource.en-US.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -419,6 +422,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Controls\SnapshotsViewer.resx">
+      <DependentUpon>SnapshotsViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -431,61 +437,141 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MLV\MLV.csproj">
-      <Project>{CB876583-D5F9-4398-B399-FBE6D4AA8A51}</Project>
+    <ProjectReference Include="..\..\..\Managed ListView\source\MLV\MLV.csproj">
+      <Project>{cb876583-d5f9-4398-b399-fbe6d4aa8a51}</Project>
       <Name>MLV</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NesCore\NesCore.csproj">
-      <Project>{E91AC0C3-2A35-4197-AB9B-4A24DB83F613}</Project>
-      <Name>NesCore</Name>
+    <ProjectReference Include="..\..\..\ManagedMessageBoxDemo\source\MMB\MMB.csproj">
+      <Project>{a43061a2-f337-413a-a008-9df2973351c4}</Project>
+      <Name>MMB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Renderers\Renderers.csproj">
-      <Project>{EBE7DB97-4B80-4ECE-BD2A-FB24F441C9DA}</Project>
-      <Name>Renderers</Name>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{61800cf2-0d0a-4136-8823-a59b4e1106c8}</Project>
+      <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WinRenderers\WinRenderers.csproj">
-      <Project>{5902A3B7-5BD8-42D6-B194-0491C797252B}</Project>
-      <Name>WinRenderers</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\help.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\door_in.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wrench.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\monitor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sound.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\color_wheel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\control_pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\control_repeat.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\control_repeat_blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Record.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\controller.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\camera.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_wrench.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MyNes.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\MyNesImage.png" />
+    <None Include="Resources\disk.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\FileGame-genie-nes-front.ico" />
+    <None Include="Resources\folder_page_white.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\noneRating.png" />
+    <None Include="Resources\folder_add.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\star_1.png" />
+    <None Include="Resources\folder_delete.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\star_2.png" />
+    <None Include="Resources\find.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\star_3.png" />
+    <None Include="Resources\application_view_gallery.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\star_4.png" />
+    <None Include="Resources\world.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\star_5.png" />
+    <None Include="Resources\INES.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SortAlpha.ico" />
+    <None Include="Resources\compress.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SortZ.ico" />
+    <None Include="Resources\folder_explore.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\control_play.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Warning.ico" />
+    <None Include="Resources\folder_image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_page.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_go.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_picture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MyNesImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow_left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\page_white_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\application_view_tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wrench1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FileGame-genie-nes-front.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

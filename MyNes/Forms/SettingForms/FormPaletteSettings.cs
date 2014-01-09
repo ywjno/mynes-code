@@ -1,7 +1,9 @@
 ﻿/* This file is part of My Nes
- * A Nintendo Entertainment System Emulator.
+ * 
+ * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
+ * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2013
+ * Copyright © Ala Ibrahim Hadid 2009 - 2014
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +27,9 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 using MyNes.Core;
 using MyNes.Core.PPU;
-using MyNes.Renderers;
-using System.IO;
 namespace MyNes
 {
     public partial class FormPaletteSettings : Form
@@ -36,403 +37,589 @@ namespace MyNes
         public FormPaletteSettings()
         {
             InitializeComponent();
-            //load
-            NTSCPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness;
-            NTSCPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast;
-            NTSCPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma;
-            NTSCPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak;
-            NTSCPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation;
-
-            PALBPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_brightness;
-            PALBPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_contrast;
-            PALBPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_gamma;
-            PALBPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_hue_tweak;
-            PALBPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_saturation;
-
-            hScrollBar_brightness.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness * 1000);
-            hScrollBar_contrast.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast * 1000);
-            hScrollBar_gamma.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma * 1000);
-            hScrollBar_hue_tweak.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak * 1000);
-            hScrollBar_saturation.Value = (int)(RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation * 1000);
-
-            label_bright.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness.ToString("F3");
-            label_const.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast.ToString("F3");
-            label_gamma.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma.ToString("F3");
-            label_hue.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak.ToString("F3");
-            label_satur.Text = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation.ToString("F3");
+            LoadSettings();
+            ApplyToPalette();
         }
-        unsafe void ShowPalette(int[] PaletteFormat)
+        private void LoadSettings() 
         {
-            Graphics GR = panel1.CreateGraphics();
-            GR.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            trackBar_ntsc_hue.Value = ToHue(Program.Settings.PaletteNTSCHue);
+            trackBar_ntsc_contrast.Value = ToContrast(Program.Settings.PaletteNTSCContrast);
+            trackBar_ntsc_gamma.Value = ToGamma(Program.Settings.PaletteNTSCGamma);
+            trackBar_ntsc_brightness.Value = ToBrightness(Program.Settings.PaletteNTSCBrightness);
+            trackBar_ntsc_saturation.Value = ToSaturation(Program.Settings.PaletteNTSCSaturation);
+
+            trackBar_pal_hue.Value = ToHue(Program.Settings.PalettePALBHue);
+            trackBar_pal_contrast.Value = ToContrast(Program.Settings.PalettePALBContrast);
+            trackBar_pal_gamma.Value = ToGamma(Program.Settings.PalettePALBGamma);
+            trackBar_pal_brightness.Value = ToBrightness(Program.Settings.PalettePALBBrightness);
+            trackBar_pal_saturation.Value = ToSaturation(Program.Settings.PalettePALBSaturation);
+
+            trackBar_dendy_hue.Value = ToHue(Program.Settings.PaletteDENDYHue);
+            trackBar_dendy_contrast.Value = ToContrast(Program.Settings.PaletteDENDYContrast);
+            trackBar_dendy_gamma.Value = ToGamma(Program.Settings.PaletteDENDYGamma);
+            trackBar_dendy_brightness.Value = ToBrightness(Program.Settings.PaletteDENDYBrightness);
+            trackBar_dendy_saturation.Value = ToSaturation(Program.Settings.PaletteDENDYSaturation);
+        }
+        private void SaveSettings()
+        {
+            Program.Settings.PaletteNTSCHue = GetHue(trackBar_ntsc_hue.Value);
+            Program.Settings.PaletteNTSCContrast = GetContrast(trackBar_ntsc_contrast.Value);
+            Program.Settings.PaletteNTSCGamma = GetGamma(trackBar_ntsc_gamma.Value);
+            Program.Settings.PaletteNTSCBrightness = GetBrightness(trackBar_ntsc_brightness.Value);
+            Program.Settings.PaletteNTSCSaturation = GetSaturation(trackBar_ntsc_saturation.Value);
+
+            Program.Settings.PalettePALBHue = GetHue(trackBar_pal_hue.Value);
+            Program.Settings.PalettePALBContrast = GetContrast(trackBar_pal_contrast.Value);
+            Program.Settings.PalettePALBGamma = GetGamma(trackBar_pal_gamma.Value);
+            Program.Settings.PalettePALBBrightness = GetBrightness(trackBar_pal_brightness.Value);
+            Program.Settings.PalettePALBSaturation = GetSaturation(trackBar_pal_saturation.Value);
+
+            Program.Settings.PaletteDENDYHue = GetHue(trackBar_dendy_hue.Value);
+            Program.Settings.PaletteDENDYContrast = GetContrast(trackBar_dendy_contrast.Value);
+            Program.Settings.PaletteDENDYGamma = GetGamma(trackBar_dendy_gamma.Value);
+            Program.Settings.PaletteDENDYBrightness = GetBrightness(trackBar_dendy_brightness.Value);
+            Program.Settings.PaletteDENDYSaturation = GetSaturation(trackBar_dendy_saturation.Value);
+
+            Program.Settings.Save();
+        }
+        private void ShowPalette(int[] PaletteFormat, Graphics GR)
+        {
             int y = 0;
             int x = 0;
-            int w = 16;
-            int H = 10;
+            int w = 20;
+            int h = 12;
             for (int j = 0; j < PaletteFormat.Length; j++)
             {
-                y = (j / 16) * H;
-                x = (j % w) * w;
-                Bitmap bmp = new Bitmap(w, H);
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, w, H),
-                    ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
-                int* numPtr = (int*)bmpData.Scan0;
-                for (int i = 0; i < w * H; i++)
-                {
-                    numPtr[i] = PaletteFormat[j];
-                }
-                bmp.UnlockBits(bmpData);
-                GR.DrawImage(bmp, x, y, w, H);
+                y = (j / 16) * h;
+                x = (j % 16) * w;
+
+                GR.FillRectangle(new SolidBrush(Color.FromArgb(PaletteFormat[j])), new Rectangle(x, y, w, h));
             }
         }
+        private void ApplyToPalette()
+        {
+            switch (tabControl1.SelectedIndex)
+            {
+                case 0:// NTSC
+                    {
+                        NTSCPaletteGenerator.hue_tweak = GetHue(trackBar_ntsc_hue.Value);
+                        NTSCPaletteGenerator.brightness = GetBrightness(trackBar_ntsc_brightness.Value);
+                        NTSCPaletteGenerator.contrast = GetContrast(trackBar_ntsc_contrast.Value);
+                        NTSCPaletteGenerator.gamma = GetGamma(trackBar_ntsc_gamma.Value);
+                        NTSCPaletteGenerator.saturation = GetSaturation(trackBar_ntsc_saturation.Value); 
+                        panel1.Invalidate();
+                        break;
+                    }
+                case 1:// PAL
+                    {
+                        PALBPaletteGenerator.hue_tweak = GetHue(trackBar_pal_hue.Value);
+                        PALBPaletteGenerator.brightness = GetBrightness(trackBar_pal_brightness.Value);
+                        PALBPaletteGenerator.contrast = GetContrast(trackBar_pal_contrast.Value);
+                        PALBPaletteGenerator.gamma = GetGamma(trackBar_pal_gamma.Value);
+                        PALBPaletteGenerator.saturation = GetSaturation(trackBar_pal_saturation.Value);
+                        panel1.Invalidate();
+                        break;
+                    }
+                case 2:// DENDY
+                    {
+                        DENDYPaletteGenerator.hue_tweak = GetHue(trackBar_dendy_hue.Value);
+                        DENDYPaletteGenerator.brightness = GetBrightness(trackBar_dendy_brightness.Value);
+                        DENDYPaletteGenerator.contrast = GetContrast(trackBar_dendy_contrast.Value);
+                        DENDYPaletteGenerator.gamma = GetGamma(trackBar_dendy_gamma.Value);
+                        DENDYPaletteGenerator.saturation = GetSaturation(trackBar_dendy_saturation.Value);
+                        panel1.Invalidate(); 
+                        break;
+                    }
+            }
+        }
+        private void ApplyToEmulationCore()
+        {
+            NTSCPaletteGenerator.hue_tweak = Program.Settings.PaletteNTSCHue;
+            NTSCPaletteGenerator.contrast = Program.Settings.PaletteNTSCContrast;
+            NTSCPaletteGenerator.gamma = Program.Settings.PaletteNTSCGamma;
+            NTSCPaletteGenerator.brightness = Program.Settings.PaletteNTSCBrightness;
+            NTSCPaletteGenerator.saturation = Program.Settings.PaletteNTSCSaturation;
+
+            PALBPaletteGenerator.hue_tweak = Program.Settings.PalettePALBHue;
+            PALBPaletteGenerator.contrast = Program.Settings.PalettePALBContrast;
+            PALBPaletteGenerator.gamma = Program.Settings.PalettePALBGamma;
+            PALBPaletteGenerator.brightness = Program.Settings.PalettePALBBrightness;
+            PALBPaletteGenerator.saturation = Program.Settings.PalettePALBSaturation;
+
+            DENDYPaletteGenerator.hue_tweak = Program.Settings.PaletteDENDYHue;
+            DENDYPaletteGenerator.contrast = Program.Settings.PaletteDENDYContrast;
+            DENDYPaletteGenerator.gamma = Program.Settings.PaletteDENDYGamma;
+            DENDYPaletteGenerator.brightness = Program.Settings.PaletteDENDYBrightness;
+            DENDYPaletteGenerator.saturation = Program.Settings.PaletteDENDYSaturation;
+
+            NesCore.SetupPalette();
+        }
+        private float GetHue(int v)
+        {
+            switch (v)
+            {
+                case 0: return -1F;
+                case 1: return -0.081F;
+                case 2: return 0F;
+                case 3: return +1F;
+                default: return 0F;
+            }
+        }
+        private float GetSaturation(int v)
+        {
+            switch (v)
+            {
+                case 0: return 0F;
+                case 1: return 0.5F;
+                case 2: return 1.0F;
+                case 3: return 1.2F;
+                case 4: return 1.5F;
+                case 5: return 1.53F;
+                case 6: return 1.54F;
+                case 7: return 2.0F;
+                case 8: return 3.0F;
+                case 9: return 4.0F;
+                case 10: return 5.0F;
+                default: return 0F;
+            }
+        }
+        private float GetContrast(int v)
+        {
+            switch (v)
+            {
+                case 0: return 0.5F;
+                case 1: return 0.92F;
+                case 2: return 0.94F;
+                case 3: return 1.0F;
+                case 4: return 1.5F;
+                case 5: return 2.0F;
+                default: return 0F;
+            }
+        }
+        private float GetBrightness(int v)
+        {
+            switch (v)
+            {
+                case 0: return 0.5F;
+                case 1: return 1.0F;
+                case 2: return 1.07F;
+                case 3: return 1.08F;
+                case 4: return 1.5F;
+                case 5: return 2.0F;
+                default: return 0F;
+            }
+        }
+        private float GetGamma(int v)
+        {
+            switch (v)
+            {
+                case 0: return 1.0F;
+                case 1: return 1.5F;
+                case 2: return 1.7F;
+                case 3: return 1.8F;
+                case 4: return 1.9F;
+                case 5: return 1.95F;
+                case 6: return 1.99F;
+                case 7: return 2.0F;
+                case 8: return 2.1F;
+                case 9: return 2.2F;
+                case 10: return 2.5F;
+                default: return 0F;
+            }
+        }
+
+        private int ToHue(float v)
+        {
+            if (v == -1F)
+                return 0;
+            else if (v == -0.081F)
+                return 1;
+            else if (v == 0F)
+                return 2;
+            else if (v == +1F)
+                return 3;
+            return 2;
+        }
+        private int ToSaturation(float v)
+        {
+            if (v == 0F)
+                return 0;
+            else if (v == 0.5F)
+                return 1;
+            else if (v == 1.0F)
+                return 2;
+            else if (v == 1.2F)
+                return 3;
+            else if (v == 1.5F)
+                return 4;
+            else if (v == 1.53F)
+                return 5;
+            else if (v == 1.54F)
+                return 6;
+            else if (v == 2.0F)
+                return 7;
+            else if (v == 3.0F)
+                return 8;
+            else if (v == 4.0F)
+                return 9;
+            else if (v == 5.0F)
+                return 10;
+            return 2;
+        }
+        private int ToContrast(float v)
+        {
+            if (v == 0.5F)
+                return 0;
+            else if (v == 0.92F)
+                return 1;
+            else if (v == 0.94F)
+                return 2;
+            else if (v == 1.0F)
+                return 3;
+            else if (v == 1.5F)
+                return 4;
+            else if (v == 2.0F)
+                return 5;
+            return 3;
+        }
+        private int ToBrightness(float v)
+        {
+            if (v == 0.5F)
+                return 0;
+            else if (v == 1.0F)
+                return 1;
+            else if (v == 1.07F)
+                return 2;
+            else if (v == 1.08F)
+                return 3;
+            else if (v == 1.5F)
+                return 4;
+            else if (v == 2.0F)
+                return 5;
+            return 3;
+        }
+        private int ToGamma(float v)
+        {
+            if (v == 1.0F)
+                return 0;
+            else if (v == 1.5F)
+                return 1;
+            else if (v == 1.7F)
+                return 2;
+            else if (v == 1.8F)
+                return 3;
+            else if (v == 1.9F)
+                return 4;
+            else if (v == 1.95F)
+                return 5;
+            else if (v == 1.99F)
+                return 6;
+            else if (v == 2.0F)
+                return 7;
+            else if (v == 2.1F)
+                return 8;
+            else if (v == 2.2F)
+                return 9;
+            else if (v == 2.5F)
+                return 10;
+            return 3;
+        }
+        // Save
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SaveSettings();
+
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            Close();
+        }
+        // Cancel
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            if (radioButton_ntsc.Checked)
-                ShowPalette(NTSCPaletteGenerator.GeneratePalette());
-            else
-                ShowPalette(PALBPaletteGenerator.GeneratePalette());
+            switch (tabControl1.SelectedIndex)
+            {
+                case 0:// NTSC
+                    {
+                        ShowPalette(NTSCPaletteGenerator.GeneratePalette(), e.Graphics);
+                        break;
+                    }
+                case 1:// PAL
+                    {
+                        ShowPalette(PALBPaletteGenerator.GeneratePalette(), e.Graphics);
+                        break;
+                    }
+                case 2:// DENDY
+                    {
+                        ShowPalette(DENDYPaletteGenerator.GeneratePalette(), e.Graphics);
+                        break;
+                    }
+            }
+        }
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            panel1.Invalidate();
         }
 
-        private void hScrollBar_saturation_Scroll(object sender, ScrollEventArgs e)
+        private void label9_Click(object sender, EventArgs e)
         {
-            float v = hScrollBar_saturation.Value;
-            if (radioButton_ntsc.Checked)
-            {
-                NTSCPaletteGenerator.saturation = (v / 1000);
-                label_satur.Text = NTSCPaletteGenerator.saturation.ToString("F3");
-                int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
-            else
-            {
-                PALBPaletteGenerator.saturation = (v / 1000);
-                label_satur.Text = PALBPaletteGenerator.saturation.ToString("F3");
-                int[] palette = PALBPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
 
-            }
         }
-        private void hScrollBar_hue_tweak_Scroll(object sender, ScrollEventArgs e)
+        private void NTSCDefaults(object sender, EventArgs e)
         {
-            float v = hScrollBar_hue_tweak.Value;
-            if (radioButton_ntsc.Checked)
+            switch (tabControl1.SelectedIndex)
             {
-                NTSCPaletteGenerator.hue_tweak = (v / 1000);
-                label_hue.Text = NTSCPaletteGenerator.hue_tweak.ToString("F3");
-                int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
-            else
-            {
-                PALBPaletteGenerator.hue_tweak = (v / 1000);
-                label_hue.Text = PALBPaletteGenerator.hue_tweak.ToString("F3");
-                int[] palette = PALBPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-
+                case 0:// NTSC
+                    {
+                        trackBar_ntsc_hue.Value = ToHue(NTSCPaletteGenerator.default_hue_tweak);
+                        trackBar_ntsc_contrast.Value = ToContrast(NTSCPaletteGenerator.default_contrast);
+                        trackBar_ntsc_gamma.Value = ToGamma(NTSCPaletteGenerator.default_gamma);
+                        trackBar_ntsc_brightness.Value = ToBrightness(NTSCPaletteGenerator.default_brightness);
+                        trackBar_ntsc_saturation.Value = ToSaturation(NTSCPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
+                case 1:// PAL
+                    {
+                        trackBar_pal_hue.Value = ToHue(NTSCPaletteGenerator.default_hue_tweak);
+                        trackBar_pal_contrast.Value = ToContrast(NTSCPaletteGenerator.default_contrast);
+                        trackBar_pal_gamma.Value = ToGamma(NTSCPaletteGenerator.default_gamma);
+                        trackBar_pal_brightness.Value = ToBrightness(NTSCPaletteGenerator.default_brightness);
+                        trackBar_pal_saturation.Value = ToSaturation(NTSCPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
+                case 2:// DENDY
+                    {
+                        trackBar_dendy_hue.Value = ToHue(NTSCPaletteGenerator.default_hue_tweak);
+                        trackBar_dendy_contrast.Value = ToContrast(NTSCPaletteGenerator.default_contrast);
+                        trackBar_dendy_gamma.Value = ToGamma(NTSCPaletteGenerator.default_gamma);
+                        trackBar_dendy_brightness.Value = ToBrightness(NTSCPaletteGenerator.default_brightness);
+                        trackBar_dendy_saturation.Value = ToSaturation(NTSCPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
             }
         }
-        private void hScrollBar_contrast_Scroll(object sender, ScrollEventArgs e)
+        private void PALDefaults(object sender, EventArgs e)
         {
-            float v = hScrollBar_contrast.Value;
-            if (radioButton_ntsc.Checked)
+            switch (tabControl1.SelectedIndex)
             {
-                NTSCPaletteGenerator.contrast = (v / 1000);
-                label_const.Text = NTSCPaletteGenerator.contrast.ToString("F3");
-                int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
-            else
-            {
-                PALBPaletteGenerator.contrast = (v / 1000);
-                label_const.Text = PALBPaletteGenerator.contrast.ToString("F3");
-                int[] palette = PALBPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
+                case 0:// NTSC
+                    {
+                        trackBar_ntsc_hue.Value = ToHue(PALBPaletteGenerator.default_hue_tweak);
+                        trackBar_ntsc_contrast.Value = ToContrast(PALBPaletteGenerator.default_contrast);
+                        trackBar_ntsc_gamma.Value = ToGamma(PALBPaletteGenerator.default_gamma);
+                        trackBar_ntsc_brightness.Value = ToBrightness(PALBPaletteGenerator.default_brightness);
+                        trackBar_ntsc_saturation.Value = ToSaturation(PALBPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
+                case 1:// PAL
+                    {
+                        trackBar_pal_hue.Value = ToHue(PALBPaletteGenerator.default_hue_tweak);
+                        trackBar_pal_contrast.Value = ToContrast(PALBPaletteGenerator.default_contrast);
+                        trackBar_pal_gamma.Value = ToGamma(PALBPaletteGenerator.default_gamma);
+                        trackBar_pal_brightness.Value = ToBrightness(PALBPaletteGenerator.default_brightness);
+                        trackBar_pal_saturation.Value = ToSaturation(PALBPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
+                case 2:// DENDY
+                    {
+                        trackBar_dendy_hue.Value = ToHue(PALBPaletteGenerator.default_hue_tweak);
+                        trackBar_dendy_contrast.Value = ToContrast(PALBPaletteGenerator.default_contrast);
+                        trackBar_dendy_gamma.Value = ToGamma(PALBPaletteGenerator.default_gamma);
+                        trackBar_dendy_brightness.Value = ToBrightness(PALBPaletteGenerator.default_brightness);
+                        trackBar_dendy_saturation.Value = ToSaturation(PALBPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
             }
         }
-        private void hScrollBar_brightness_Scroll(object sender, ScrollEventArgs e)
+        private void DENDYDefaults(object sender, EventArgs e)
         {
-            float v = hScrollBar_brightness.Value;
-            if (radioButton_ntsc.Checked)
+            switch (tabControl1.SelectedIndex)
             {
-                NTSCPaletteGenerator.brightness = (v / 1000);
-                label_bright.Text = NTSCPaletteGenerator.brightness.ToString("F3");
-                int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
-            else
-            {
-                PALBPaletteGenerator.brightness = (v / 1000);
-                label_bright.Text = PALBPaletteGenerator.brightness.ToString("F3");
-                int[] palette = PALBPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
+                case 0:// NTSC
+                    {
+                        trackBar_ntsc_hue.Value = ToHue(DENDYPaletteGenerator.default_hue_tweak);
+                        trackBar_ntsc_contrast.Value = ToContrast(DENDYPaletteGenerator.default_contrast);
+                        trackBar_ntsc_gamma.Value = ToGamma(DENDYPaletteGenerator.default_gamma);
+                        trackBar_ntsc_brightness.Value = ToBrightness(DENDYPaletteGenerator.default_brightness);
+                        trackBar_ntsc_saturation.Value = ToSaturation(DENDYPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
+                case 1:// PAL
+                    {
+                        trackBar_pal_hue.Value = ToHue(DENDYPaletteGenerator.default_hue_tweak);
+                        trackBar_pal_contrast.Value = ToContrast(DENDYPaletteGenerator.default_contrast);
+                        trackBar_pal_gamma.Value = ToGamma(DENDYPaletteGenerator.default_gamma);
+                        trackBar_pal_brightness.Value = ToBrightness(DENDYPaletteGenerator.default_brightness);
+                        trackBar_pal_saturation.Value = ToSaturation(DENDYPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
+                case 2:// DENDY
+                    {
+                        trackBar_dendy_hue.Value = ToHue(DENDYPaletteGenerator.default_hue_tweak);
+                        trackBar_dendy_contrast.Value = ToContrast(DENDYPaletteGenerator.default_contrast);
+                        trackBar_dendy_gamma.Value = ToGamma(DENDYPaletteGenerator.default_gamma);
+                        trackBar_dendy_brightness.Value = ToBrightness(DENDYPaletteGenerator.default_brightness);
+                        trackBar_dendy_saturation.Value = ToSaturation(DENDYPaletteGenerator.default_saturation);
+                        ApplyToPalette();
+                        break;
+                    }
             }
         }
-        private void hScrollBar_gamma_Scroll(object sender, ScrollEventArgs e)
+        private void FLAT(object sender, EventArgs e)
         {
-            float v = hScrollBar_gamma.Value;
-            if (radioButton_ntsc.Checked)
+            switch (tabControl1.SelectedIndex)
             {
-                NTSCPaletteGenerator.gamma = (v / 1000);
-                label_gamma.Text = NTSCPaletteGenerator.gamma.ToString("F3");
-                int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
-            else
-            {
-                PALBPaletteGenerator.gamma = (v / 1000);
-                label_gamma.Text = PALBPaletteGenerator.gamma.ToString("F3");
-                int[] palette = PALBPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
+                case 0:// NTSC
+                    {
+                        trackBar_ntsc_hue.Value = 2;
+                        trackBar_ntsc_contrast.Value = 3;
+                        trackBar_ntsc_gamma.Value = 3;
+                        trackBar_ntsc_brightness.Value = 3;
+                        trackBar_ntsc_saturation.Value = 2;
+                        ApplyToPalette();
+                        break;
+                    }
+                case 1:// PAL
+                    {
+                        trackBar_pal_hue.Value = 2;
+                        trackBar_pal_contrast.Value = 3;
+                        trackBar_pal_gamma.Value = 3;
+                        trackBar_pal_brightness.Value = 3;
+                        trackBar_pal_saturation.Value = 2;
+                        ApplyToPalette();
+                        break;
+                    }
+                case 2:// DENDY
+                    {
+                        trackBar_dendy_hue.Value = 2;
+                        trackBar_dendy_contrast.Value = 3;
+                        trackBar_dendy_gamma.Value = 3;
+                        trackBar_dendy_brightness.Value = 3;
+                        trackBar_dendy_saturation.Value = 2;
+                        ApplyToPalette();
+                        break;
+                    }
             }
         }
-        //load
-        private void button9_Click(object sender, EventArgs e)
+        private void LoadFile(object sender, EventArgs e)
         {
             OpenFileDialog op = new OpenFileDialog();
             op.Filter = "My Nes Palette Present (*.mnpp)|*.mnpp";
             if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 string[] lines = File.ReadAllLines(op.FileName);
-                if (radioButton_ntsc.Checked)
-                {
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        string[] pars = lines[i].Split(new char[] { '=' });
-                        switch (pars[0])
-                        {
-                            case "Brightness":
-                                NTSCPaletteGenerator.brightness = float.Parse(pars[1]);
-                                hScrollBar_brightness.Value = (int)(NTSCPaletteGenerator.brightness * 1000);
-                                break;
-                            case "Contrast":
-                                NTSCPaletteGenerator.contrast = float.Parse(pars[1]);
-                                hScrollBar_contrast.Value = (int)(NTSCPaletteGenerator.contrast * 1000);
-                                break;
-                            case "Gamma":
-                                NTSCPaletteGenerator.gamma = float.Parse(pars[1]);
-                                hScrollBar_gamma.Value = (int)(NTSCPaletteGenerator.gamma * 1000);
-                                break;
-                            case "Hue":
-                                NTSCPaletteGenerator.hue_tweak = float.Parse(pars[1]);
-                                hScrollBar_hue_tweak.Value = (int)(NTSCPaletteGenerator.hue_tweak * 1000);
-                                break;
-                            case "Saturation":
-                                NTSCPaletteGenerator.saturation = float.Parse(pars[1]);
-                                hScrollBar_saturation.Value = (int)(NTSCPaletteGenerator.saturation * 1000);
-                                break;
-                        }
-                    }
-                    label_bright.Text = NTSCPaletteGenerator.brightness.ToString("F3");
-                    label_const.Text = NTSCPaletteGenerator.contrast.ToString("F3");
-                    label_gamma.Text = NTSCPaletteGenerator.gamma.ToString("F3");
-                    label_hue.Text = NTSCPaletteGenerator.hue_tweak.ToString("F3");
-                    label_satur.Text = NTSCPaletteGenerator.saturation.ToString("F3");
+                float brightness = 0;
+                float contrast=0;
+                float gamma = 0;
+                float hue = 0;
+                float saturation = 0;
 
-                    int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                    ShowPalette(palette);
-                    if (Nes.ON)
-                        Nes.Ppu.SetupPalette(palette);
-                }
-                else
+                // Calculate
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    for (int i = 0; i < lines.Length; i++)
+                    string[] pars = lines[i].Split(new char[] { '=' });
+                    switch (pars[0])
                     {
-                        string[] pars = lines[i].Split(new char[] { '=' });
-                        switch (pars[0])
-                        {
-                            case "Brightness":
-                                PALBPaletteGenerator.brightness = float.Parse(pars[1]);
-                                hScrollBar_brightness.Value = (int)(PALBPaletteGenerator.brightness * 1000);
-                                break;
-                            case "Contrast":
-                                PALBPaletteGenerator.contrast = float.Parse(pars[1]);
-                                hScrollBar_contrast.Value = (int)(PALBPaletteGenerator.contrast * 1000);
-                                break;
-                            case "Gamma":
-                                PALBPaletteGenerator.gamma = float.Parse(pars[1]);
-                                hScrollBar_gamma.Value = (int)(PALBPaletteGenerator.gamma * 1000);
-                                break;
-                            case "Hue":
-                                PALBPaletteGenerator.hue_tweak = float.Parse(pars[1]);
-                                hScrollBar_hue_tweak.Value = (int)(PALBPaletteGenerator.hue_tweak * 1000);
-                                break;
-                            case "Saturation":
-                                PALBPaletteGenerator.saturation = float.Parse(pars[1]);
-                                hScrollBar_saturation.Value = (int)(PALBPaletteGenerator.saturation * 1000);
-                                break;
-                        }
+                        case "Brightness": brightness = float.Parse(pars[1]); break;
+                        case "Contrast": contrast = float.Parse(pars[1]); break;
+                        case "Gamma": gamma = float.Parse(pars[1]); break;
+                        case "Hue": hue = float.Parse(pars[1]); break;
+                        case "Saturation": saturation = float.Parse(pars[1]); break;
                     }
-                    label_bright.Text = PALBPaletteGenerator.brightness.ToString("F3");
-                    label_const.Text = PALBPaletteGenerator.contrast.ToString("F3");
-                    label_gamma.Text = PALBPaletteGenerator.gamma.ToString("F3");
-                    label_hue.Text = PALBPaletteGenerator.hue_tweak.ToString("F3");
-                    label_satur.Text = PALBPaletteGenerator.saturation.ToString("F3");
-                    int[] palette = PALBPaletteGenerator.GeneratePalette();
-                    ShowPalette(palette);
-                    if (Nes.ON)
-                        Nes.Ppu.SetupPalette(palette);
+                }
+                switch (tabControl1.SelectedIndex)
+                {
+                    case 0:// NTSC
+                        {
+                            trackBar_ntsc_hue.Value = ToHue(hue);
+                            trackBar_ntsc_contrast.Value = ToContrast(contrast);
+                            trackBar_ntsc_gamma.Value = ToGamma(gamma);
+                            trackBar_ntsc_brightness.Value = ToBrightness(brightness);
+                            trackBar_ntsc_saturation.Value = ToSaturation(saturation);
+                            break;
+                        }
+                    case 1:// PAL
+                        {
+                            trackBar_pal_hue.Value = ToHue(hue);
+                            trackBar_pal_contrast.Value = ToContrast(contrast);
+                            trackBar_pal_gamma.Value = ToGamma(gamma);
+                            trackBar_pal_brightness.Value = ToBrightness(brightness);
+                            trackBar_pal_saturation.Value = ToSaturation(saturation);
+                            break;
+                        }
+                    case 2:// DENDY
+                        {
+                            trackBar_dendy_hue.Value = ToHue(hue);
+                            trackBar_dendy_contrast.Value = ToContrast(contrast);
+                            trackBar_dendy_gamma.Value = ToGamma(gamma);
+                            trackBar_dendy_brightness.Value = ToBrightness(brightness);
+                            trackBar_dendy_saturation.Value = ToSaturation(saturation);
+                            break;
+                        }
                 }
             }
         }
-        //save
-        private void button8_Click(object sender, EventArgs e)
+        private void SaveFile(object sender, EventArgs e)
         {
             SaveFileDialog sav = new SaveFileDialog();
             sav.Filter = "My Nes Palette Present (*.mnpp)|*.mnpp";
             if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 List<string> lines = new List<string>();
-                lines.Add("Brightness=" + NTSCPaletteGenerator.brightness);
-                lines.Add("Contrast=" + NTSCPaletteGenerator.contrast);
-                lines.Add("Gamma=" + NTSCPaletteGenerator.gamma);
-                lines.Add("Hue=" + NTSCPaletteGenerator.hue_tweak);
-                lines.Add("Saturation=" + NTSCPaletteGenerator.saturation);
+                switch (tabControl1.SelectedIndex)
+                {
+                    case 0:// NTSC
+                        {
+                            lines.Add("Brightness=" + NTSCPaletteGenerator.brightness);
+                            lines.Add("Contrast=" + NTSCPaletteGenerator.contrast);
+                            lines.Add("Gamma=" + NTSCPaletteGenerator.gamma);
+                            lines.Add("Hue=" + NTSCPaletteGenerator.hue_tweak);
+                            lines.Add("Saturation=" + NTSCPaletteGenerator.saturation);
+                            break;
+                        }
+                    case 1:// PAL
+                        {
+                            lines.Add("Brightness=" + PALBPaletteGenerator.brightness);
+                            lines.Add("Contrast=" + PALBPaletteGenerator.contrast);
+                            lines.Add("Gamma=" + PALBPaletteGenerator.gamma);
+                            lines.Add("Hue=" + PALBPaletteGenerator.hue_tweak);
+                            lines.Add("Saturation=" + PALBPaletteGenerator.saturation);
+                            break;
+                        }
+                    case 2:// DENDY
+                        {
+                            lines.Add("Brightness=" + DENDYPaletteGenerator.brightness);
+                            lines.Add("Contrast=" + DENDYPaletteGenerator.contrast);
+                            lines.Add("Gamma=" + DENDYPaletteGenerator.gamma);
+                            lines.Add("Hue=" + DENDYPaletteGenerator.hue_tweak);
+                            lines.Add("Saturation=" + DENDYPaletteGenerator.saturation);
+                            break;
+                        }
+                }
                 File.WriteAllLines(sav.FileName, lines.ToArray());
             }
         }
-        //flat
-        private void button6_Click(object sender, EventArgs e)
+        private void UPDATEValues(object sender, EventArgs e)
         {
-            if (radioButton_ntsc.Checked)
-            {
-                NTSCPaletteGenerator.saturation = 1.0f;
-                hScrollBar_saturation.Value = 1000;
-                NTSCPaletteGenerator.hue_tweak = 0.0f;
-                hScrollBar_hue_tweak.Value = 0;
-                NTSCPaletteGenerator.contrast = 1.0f;
-                hScrollBar_contrast.Value = 1000;
-                NTSCPaletteGenerator.brightness = 1.0f;
-                hScrollBar_brightness.Value = 1000;
-                NTSCPaletteGenerator.gamma = 1.8f;
-                hScrollBar_gamma.Value = 1800;
-
-                label_satur.Text = NTSCPaletteGenerator.saturation.ToString("F3");
-                label_hue.Text = NTSCPaletteGenerator.hue_tweak.ToString("F3");
-                label_const.Text = NTSCPaletteGenerator.contrast.ToString("F3");
-                label_bright.Text = NTSCPaletteGenerator.brightness.ToString("F3");
-                label_gamma.Text = NTSCPaletteGenerator.gamma.ToString("F3");
-
-                int[] palette = NTSCPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
-            else
-            {
-                PALBPaletteGenerator.saturation = 1.0f;
-                hScrollBar_saturation.Value = 1000;
-                PALBPaletteGenerator.hue_tweak = 0.0f;
-                hScrollBar_hue_tweak.Value = 0;
-                PALBPaletteGenerator.contrast = 1.0f;
-                hScrollBar_contrast.Value = 1000;
-                PALBPaletteGenerator.brightness = 1.0f;
-                hScrollBar_brightness.Value = 1000;
-                PALBPaletteGenerator.gamma = 1.8f;
-                hScrollBar_gamma.Value = 1800;
-
-                label_satur.Text = PALBPaletteGenerator.saturation.ToString("F3");
-                label_hue.Text = PALBPaletteGenerator.hue_tweak.ToString("F3");
-                label_const.Text = PALBPaletteGenerator.contrast.ToString("F3");
-                label_bright.Text = PALBPaletteGenerator.brightness.ToString("F3");
-                label_gamma.Text = PALBPaletteGenerator.gamma.ToString("F3");
-
-                int[] palette = PALBPaletteGenerator.GeneratePalette();
-                ShowPalette(palette);
-                if (Nes.ON)
-                    Nes.Ppu.SetupPalette(palette);
-            }
+            ApplyToPalette();
+            // Apply to emulation core !
+            NesCore.SetupPalette();
         }
-        //save as .pal
-        private void button7_Click(object sender, EventArgs e)
+        // Apply
+        private void button21_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sav = new SaveFileDialog();
-            sav.Filter = "Palette file '64 indexes' (*.pal)|*.pal|Palette file '512 indexes' (*.pal)|*.pal";
-            if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                //get pallete
-                List<byte> palette = new List<byte>();
-                int[] NesPalette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() :
-                    PALBPaletteGenerator.GeneratePalette();
-
-                for (int i = 0; i < ((sav.FilterIndex == 1) ? 64 : 512); i++)
-                {
-                    int color = NesPalette[i];
-                    palette.Add((byte)((color >> 16) & 0xFF));//Red
-                    palette.Add((byte)((color >> 8) & 0xFF));//Green
-                    palette.Add((byte)((color >> 0) & 0xFF));//Blue
-                }
-
-                Stream str = new FileStream(sav.FileName, FileMode.Create, FileAccess.Write);
-                str.Write(palette.ToArray(), 0, palette.Count);
-                str.Close();
-            }
-        }
-        //cancel
-        private void button2_Click(object sender, EventArgs e)
-        {
-            //reset and close
-            NTSCPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness;
-            NTSCPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast;
-            NTSCPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma;
-            NTSCPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak;
-            NTSCPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation;
-
-            PALBPaletteGenerator.brightness = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_brightness;
-            PALBPaletteGenerator.contrast = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_contrast;
-            PALBPaletteGenerator.gamma = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_gamma;
-            PALBPaletteGenerator.hue_tweak = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_hue_tweak;
-            PALBPaletteGenerator.saturation = RenderersCore.SettingsManager.Settings.Video_Palette.PALB_saturation;
-
-            int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() : PALBPaletteGenerator.GeneratePalette();
-            ShowPalette(palette);
-            if (Nes.ON)
-                Nes.Ppu.SetupPalette(palette);
-
-            Close();
-        }
-        //ok
-        private void button1_Click(object sender, EventArgs e)
-        {
-            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_brightness = NTSCPaletteGenerator.brightness;
-            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_contrast = NTSCPaletteGenerator.contrast;
-            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_gamma = NTSCPaletteGenerator.gamma;
-            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_hue_tweak = NTSCPaletteGenerator.hue_tweak;
-            RenderersCore.SettingsManager.Settings.Video_Palette.NTSC_saturation = NTSCPaletteGenerator.saturation;
-
-            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_brightness = PALBPaletteGenerator.brightness;
-            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_contrast = PALBPaletteGenerator.contrast;
-            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_gamma = PALBPaletteGenerator.gamma;
-            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_hue_tweak = PALBPaletteGenerator.hue_tweak;
-            RenderersCore.SettingsManager.Settings.Video_Palette.PALB_saturation = PALBPaletteGenerator.saturation;
-
-            int[] palette = radioButton_ntsc.Checked ? NTSCPaletteGenerator.GeneratePalette() :
-                PALBPaletteGenerator.GeneratePalette();
-            ShowPalette(palette);
-            if (Nes.ON)
-                Nes.Ppu.SetupPalette(palette);
-
-            RenderersCore.SettingsManager.SaveSettings();
-            Close();
+            NesCore.SetupPalette();
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿/* This file is part of My Nes
- * A Nintendo Entertainment System Emulator.
+ * 
+ * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
+ * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2013
+ * Copyright © Ala Ibrahim Hadid 2009 - 2014
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,96 +28,88 @@ using System.Text;
 using System.Windows.Forms;
 using SlimDX;
 using SlimDX.Direct3D9;
-using MyNes.Renderers;
 namespace MyNes
 {
     public partial class FormVideoSettings : Form
     {
         public FormVideoSettings()
         {
-            Direct3D d3d = new Direct3D();
             InitializeComponent();
+            // Fill fullscreen res
             //res
+            Direct3D d3d = new Direct3D();
+            comboBox_fullscreenRes.Items.Clear();
             for (int i = 0; i < d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8).Count; i++)
             {
                 comboBox_fullscreenRes.Items.Add(d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8)[i].Width + " x " +
                     d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8)[i].Height + " " +
                     d3d.Adapters[0].GetDisplayModes(SlimDX.Direct3D9.Format.X8R8G8B8)[i].RefreshRate + " Hz");
             }
-            comboBox_fullscreenRes.SelectedIndex = RenderersCore.SettingsManager.Settings.Video_ResIndex;
-            checkBox_showFps.Checked = RenderersCore.SettingsManager.Settings.Video_ShowFPS;
-            checkBox_hideLines.Checked = RenderersCore.SettingsManager.Settings.Video_HideLines;
-            checkBox_imMode.Checked = RenderersCore.SettingsManager.Settings.Video_ImmediateMode;
-            checkBox_fullscreen.Checked = RenderersCore.SettingsManager.Settings.Video_Fullscreen;
-            checkBox_showNotifications.Checked = RenderersCore.SettingsManager.Settings.Video_ShowNotifications;
-            checkBox_keepAspectRatio.Checked = RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch;
-            //stretch
-            numericUpDown1.Value = RenderersCore.SettingsManager.Settings.Video_StretchMultiply;
-            //snapshot image format
-            switch (RenderersCore.SettingsManager.Settings.Video_SnapshotFormat.ToLower())
+            // Load settings
+            checkBox_fullscreen.Checked = Program.Settings.VideoLaunchFullscreen;
+            checkBox_hideLines.Checked = Program.Settings.VideoCutLines;
+            checkBox_immediateMode.Checked = Program.Settings.VideoImmediateMode;
+            checkBox_keepAspectRatio.Checked = Program.Settings.VideoKeepAspectRatio;
+            checkBox_showFps.Checked = Program.Settings.VideoShowFPS;
+            checkBox_showNot.Checked = Program.Settings.VideoShowNotifications;
+            comboBox_fullscreenRes.SelectedIndex = Program.Settings.VideoFullscreenResIndex;
+            switch (Program.Settings.VideoOutputMode)
             {
-                case ".jpg": radioButton_jpg.Checked = true; break;
-                case ".bmp": radioButton_bmp.Checked = true; break;
-                case ".png": radioButton_png.Checked = true; break;
-                case ".gif": radioButton_gif.Checked = true; break;
-                case ".tiff": radioButton_tiff.Checked = true; break;
-                case ".emf": radioButton_emf.Checked = true; break;
-                case ".wmf": radioButton_wmf.Checked = true; break;
-                case ".exif": radioButton_exif.Checked = true; break;
+                case VideoOutputMode.DirectX9: comboBox_mode.SelectedIndex = 0; break;
             }
+            comboBox_snapshotFormat.SelectedItem = Program.Settings.SnapshotsFormat;
+            comboBox_windowSize.SelectedIndex = Program.Settings.VideoWindowStretchMultiply - 1;
+            checkBox_stretchWindow.Checked = Program.Settings.VideoStretchWindowToFitSize;
         }
-        //ok
+        // Mode settings
         private void button1_Click(object sender, EventArgs e)
         {
-            RenderersCore.SettingsManager.Settings.Video_ResIndex = comboBox_fullscreenRes.SelectedIndex;
-            RenderersCore.SettingsManager.Settings.Video_HideLines = checkBox_hideLines.Checked;
-            RenderersCore.SettingsManager.Settings.Video_ImmediateMode = checkBox_imMode.Checked;
-            RenderersCore.SettingsManager.Settings.Video_Fullscreen = checkBox_fullscreen.Checked;
-            RenderersCore.SettingsManager.Settings.Video_StretchMultiply = (int)numericUpDown1.Value;
-            RenderersCore.SettingsManager.Settings.Video_ShowFPS = checkBox_showFps.Checked;
-            RenderersCore.SettingsManager.Settings.Video_ShowNotifications = checkBox_showNotifications.Checked;
-            RenderersCore.SettingsManager.Settings.Video_KeepAspectRationOnStretch = checkBox_keepAspectRatio.Checked;
-            //snapshot image format
-            if (radioButton_jpg.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".jpg";
-            else if (radioButton_bmp.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".bmp";
-            else if (radioButton_png.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".png";
-            else if (radioButton_gif.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".gif";
-            else if (radioButton_tiff.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".tiff";
-            else if (radioButton_emf.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".emf";
-            else if (radioButton_wmf.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".wmf";
-            else if (radioButton_exif.Checked)
-                RenderersCore.SettingsManager.Settings.Video_SnapshotFormat = ".exif";
-            RenderersCore.SettingsManager.SaveSettings();
-            Close();
+            if (comboBox_mode.SelectedIndex == 0)
+            {
+                FormSlimDXSettings frm = new FormSlimDXSettings();
+                frm.ShowDialog(this);
+            }
         }
-        //cancel
-        private void button2_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-        //defaults
+        // Cancel
         private void button3_Click(object sender, EventArgs e)
         {
-            comboBox_fullscreenRes.SelectedIndex = 0;
-            numericUpDown1.Value = 2;
-            checkBox_hideLines.Checked = true;
-            checkBox_imMode.Checked = true;
-            checkBox_fullscreen.Checked = false;
-            checkBox_showFps.Checked = false;
-            checkBox_showNotifications.Checked = true;
-            checkBox_keepAspectRatio.Checked = true;
+            Close();
         }
-        // renderer settings
+        // Save
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Program.Settings.VideoLaunchFullscreen = checkBox_fullscreen.Checked;
+            Program.Settings.VideoCutLines = checkBox_hideLines.Checked;
+            Program.Settings.VideoImmediateMode = checkBox_immediateMode.Checked;
+            Program.Settings.VideoKeepAspectRatio = checkBox_keepAspectRatio.Checked;
+            Program.Settings.VideoShowFPS = checkBox_showFps.Checked;
+            Program.Settings.VideoShowNotifications = checkBox_showNot.Checked;
+            Program.Settings.VideoFullscreenResIndex = comboBox_fullscreenRes.SelectedIndex;
+            switch (comboBox_mode.SelectedIndex)
+            {
+                case 0: Program.Settings.VideoOutputMode = VideoOutputMode.DirectX9; break;
+            }
+            Program.Settings.SnapshotsFormat = comboBox_snapshotFormat.SelectedItem.ToString();
+            Program.Settings.VideoWindowStretchMultiply = comboBox_windowSize.SelectedIndex + 1;
+            Program.Settings.VideoStretchWindowToFitSize = checkBox_stretchWindow.Checked;
+            Program.Settings.Save();
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            Close();
+        }
+        // Defaults
         private void button4_Click(object sender, EventArgs e)
         {
-            RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ChangeSettings();
+            checkBox_fullscreen.Checked = false;
+            checkBox_hideLines.Checked = true;
+            checkBox_immediateMode.Checked = true;
+            checkBox_keepAspectRatio.Checked = true;
+            checkBox_showFps.Checked = false;
+            checkBox_showNot.Checked = true;
+            comboBox_fullscreenRes.SelectedIndex = 0;
+            comboBox_mode.SelectedIndex = 0;
+            comboBox_windowSize.SelectedIndex = 1;
+            checkBox_stretchWindow.Checked = true;
+            comboBox_snapshotFormat.SelectedItem = ".png";
         }
     }
 }

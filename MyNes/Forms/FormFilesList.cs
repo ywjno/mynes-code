@@ -1,7 +1,9 @@
 ﻿/* This file is part of My Nes
- * A Nintendo Entertainment System Emulator.
+ * 
+ * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
+ * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2013
+ * Copyright © Ala Ibrahim Hadid 2009 - 2014
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

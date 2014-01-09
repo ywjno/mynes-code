@@ -1,7 +1,9 @@
 ﻿/* This file is part of My Nes
- * A Nintendo Entertainment System Emulator.
+ * 
+ * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
+ * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2013
+ * Copyright © Ala Ibrahim Hadid 2009 - 2014
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,83 +19,190 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
-using System.IO;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
-using MyNes.Properties;
-using MyNes.Forms;
+using System.IO;
+using System.Globalization;
+using System.Diagnostics;
+using System.Threading;
+using System.Resources;
+using System.Reflection;
 using MyNes.Core;
-using MyNes.Core.Database;
-using MyNes.Renderers;
+
 namespace MyNes
 {
     static class Program
     {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        static void Main(string[] Args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            // initialize the core
-            RenderersCore.Initialize();
-            // load settings
+
+            // Enable trace
+            bool addTextWritterLogger = false;
+            if (Args != null)
+                if (Args.Contains("/logger"))
+                    addTextWritterLogger = true;
+            DefineLoggers(addTextWritterLogger);
+            Trace.WriteLine("My Nes launched at " + DateTime.Now.ToLocalTime());
+            Trace.WriteLine("--------------------------------");
+            if (addTextWritterLogger) Trace.WriteLine("Text Logger enabled !");
+
+            // Create the working folders
+            Trace.WriteLine("Creating working folders ...", "My Nes Win GUI");
+            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
+            Directory.CreateDirectory("Logs");
+            Trace.WriteLine("Working folders created successfully.", "My Nes Win GUI");
+
+            // Settings
+            Trace.WriteLine("Loading settings ...", "My Nes Win GUI");
+            settings = new Properties.Settings();
             settings.Reload();
-            RenderersCore.SettingsManager.LoadSettings();
-            FixDefaultSettings();
-            // find renderers
-            RenderersCore.FindRenderers(Application.StartupPath);
-            // add default commands
-            ConsoleCommands.AddDefaultCommands();
-            // if first time run, choose the slimdx renderer for default
-            if (!settings.FirstRun)
+
+            FixSettings();
+
+            // Language resources
+            Trace.WriteLine("Loading user-interface language resources ...", "My Nes Win GUI");
+            DetectSupportedLanguages();
+            resources = new ResourceManager("MyNes.LanguageResources.Resource", Assembly.GetExecutingAssembly());
+            Language = settings.Language;
+
+            // Misc ...
+            dbManager = new MyNes.DBManager(settings.FileDB);
+
+            // Nes emulation engine start up
+            Trace.WriteLine("Nes emulation engine warm up ...", "My Nes Win GUI");
+            NesCore.StartUp();
+
+            // Run main form
+            Trace.WriteLine("Running main window.", "My Nes Win GUI");
+            mainForm = new FormMain();
+            Application.Run(mainForm);
+        }
+
+        private static Properties.Settings settings;
+        private static string[,] supportedLanguages; // This should filled at startup
+        private static ResourceManager resources;
+        private static DBManager dbManager;
+        private static FormMain mainForm;
+
+        /// <summary>
+        /// Get the application settings
+        /// </summary>
+        public static Properties.Settings Settings
+        { get { return settings; } }
+        /// <summary>
+        /// Get the supported languages.
+        /// </summary>
+        public static string[,] SupportedLanguages
+        { get { return supportedLanguages; } }
+        /// <summary>
+        /// Get or set the selected language
+        /// </summary>
+        public static string Language
+        {
+            get
             {
-                settings.FirstRun = true;
-                for (int i = 0; i < RenderersCore.AvailableRenderers.Length; i++)
+                return Thread.CurrentThread.CurrentUICulture.NativeName;
+            }
+            set
+            {
+                for (int i = 0; i < SupportedLanguages.Length / 3; i++)
                 {
-                    if (RenderersCore.AvailableRenderers[i].Name == "SlimDX Direct3D9")
+                    if (SupportedLanguages[i, 0] == value)
                     {
-                        settings.CurrentRendererIndex = i;
+                        Thread.CurrentThread.CurrentUICulture = new CultureInfo(SupportedLanguages[i, 1]);
+                        Trace.WriteLine("Language set to: " + supportedLanguages[i, 0], "My Nes Win GUI");
                         break;
                     }
                 }
-                // make the default browser database at user documents folder.
-                Program.Settings.FoldersDatabasePath = Path.Combine(RenderersCore.DocumentsFolder, "folders.fl");
-                // load default columns
-                settings.ColumnsManager = new ColumnsManager();
-                settings.ColumnsManager.BuildDefaultCollection();
-                settings.Save();
             }
-            //launch the core
-            Nes.StartUp();
-            //start gui
-            Application.Run(mainForm = new FormMain(args));
         }
-
-        private static BDatabaseManager bdatabase = new BDatabaseManager();
-        private static Properties.Settings settings = new Settings();
-        private static FormMain mainForm;
-        //properties
-        public static Settings Settings
-        { get { return settings; } }
-        public static BDatabaseManager BDatabaseManager
-        { get { return bdatabase; } set { bdatabase = value; } }
+        /// <summary>
+        /// Get or set current CultureInfo
+        /// </summary>
+        public static CultureInfo CultureInfo
+        { get { return Thread.CurrentThread.CurrentUICulture; } }
+        /// <summary>
+        /// Get the ResourceManager
+        /// </summary>
+        public static ResourceManager ResourceManager
+        { get { return resources; } }
+        /// <summary>
+        /// Get the folders database manager object
+        /// </summary>
+        public static DBManager DBManager
+        { get { return dbManager; } }
+        /// <summary>
+        /// Get the main form
+        /// </summary>
         public static FormMain FormMain
-        { get { return mainForm; } set { mainForm = value; } }
-        //methods
-        public static void FixDefaultSettings()
+        { get { return mainForm; } }
+
+        private static void DefineLoggers(bool AddTextWriter)
         {
-            //fix paths
-            RenderersCore.SettingsManager.Settings.Folders_StateFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
-            RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder = Path.GetFullPath(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
-            Program.Settings.FoldersDatabasePath = Path.GetFullPath(Program.Settings.FoldersDatabasePath);
-            Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
-            Directory.CreateDirectory(RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder);
-            //build default controls profile if necessary
-            ControlProfile.BuildDefaultProfile();
-            RenderersCore.SettingsManager.SaveSettings();
-            //fix palette settings
-            if (RenderersCore.SettingsManager.Settings.Video_Palette == null)
-                RenderersCore.SettingsManager.Settings.Video_Palette = new PaletteSettings();
+            //Trace.AutoFlush = true;
+            Trace.Listeners.Clear();
+            // Add console listener
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            // add text writer listener
+            if (AddTextWriter)
+                Trace.Listeners.Add(new TextWriterTraceListener(".\\Logs\\log.txt"));
+        }
+        private static void DetectSupportedLanguages()
+        {
+            string[] langsFolders = Directory.GetDirectories(Application.StartupPath);
+            List<string> ids = new List<string>();
+            List<string> englishNames = new List<string>();
+            List<string> NativeNames = new List<string>();
+            foreach (string folder in langsFolders)
+            {
+                try
+                {
+                    CultureInfo inf = new CultureInfo(Path.GetFileName(folder));
+                    // no errors lol add the id
+                    ids.Add(Path.GetFileName(folder));
+                    englishNames.Add(inf.EnglishName);
+                    NativeNames.Add(inf.NativeName);
+                    Trace.WriteLine("Language pack added: " + inf.EnglishName, "My Nes Win GUI");
+                }
+                catch
+                {
+                    Trace.WriteLine("Can't add language pack (" + folder + ")", "My Nes Win GUI");
+                }
+            }
+            if (ids.Count > 0)
+            {
+                supportedLanguages = new string[ids.Count, 3];
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    supportedLanguages[i, 0] = englishNames[i];
+                    supportedLanguages[i, 1] = ids[i];
+                    supportedLanguages[i, 2] = NativeNames[i];
+                }
+            }
+        }
+        private static void FixSettings()
+        {
+            Trace.Write("Creating folders ...", "My Nes Win GUI");
+            if (settings.FolderSnapshots == "")
+                settings.FolderSnapshots = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\Snapshots\\";
+            if (settings.FolderSrams == "")
+                settings.FolderSrams = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\SramSaves\\";
+            if (settings.FolderStates == "")
+                settings.FolderStates = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\StateSaves\\";
+            if (settings.FileDB == "")
+                settings.FileDB = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\FoldersDatabase.fdb";
+
+            Directory.CreateDirectory(Path.GetFullPath(settings.FolderSnapshots));
+            Directory.CreateDirectory(Path.GetFullPath(settings.FolderSrams));
+            Directory.CreateDirectory(Path.GetFullPath(settings.FolderStates));
+            Trace.Write("Folders created successfully.", "My Nes Win GUI");
         }
     }
 }

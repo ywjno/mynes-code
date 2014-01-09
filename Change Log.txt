@@ -1,5 +1,0 @@
-* Improvrd: added hi resolution timer for all renderers.
-* Fixed: game genie config window, when adding more than one code at a time.
-* Fixed: Sdl.Net renderer: the sound keep playing prevending the renderer window to close.
-* Fixed: Sdl.Net renderer: resizing window never update render surface.
-* Fixed: Sdl.Net renderer: error taking snapshot, wrong file path.

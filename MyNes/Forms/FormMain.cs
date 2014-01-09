@@ -1,7 +1,9 @@
 ﻿/* This file is part of My Nes
- * A Nintendo Entertainment System Emulator.
+ * 
+ * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
+ * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2013
+ * Copyright © Ala Ibrahim Hadid 2009 - 2014
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,180 +18,146 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-using MyNes.Core;
-using MyNes.Core.Exceptions;
-using MyNes.Core.ROM;
-using MyNes.Core.Types;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Threading;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics;
+using System.IO;
+using MyNes.Core;
+using MyNes.Core.IO;
+using MyNes.Core.PPU;
+using MyNes.Core.ROM.Exceptions;
+using MyNes.Core.ROM;
 using MyNes.Renderers;
-using MyNes.Core.Boards;
-using MyNes.Core.NetPlay;
-using MLV;
-namespace MyNes.Forms
+using MMB;
+namespace MyNes
 {
     public partial class FormMain : Form
     {
-        private FormConsole consoleForm;
-        private FormSpeed speedForm;
-        private Thread gameThread;
-        private bool savedb;
-        private string currentRomPath = "";
-        private bool SaveDB
-        {
-            get { return savedb; }
-            set
-            {
-                savedb = value;
-                if (value)
-                    this.Text = "My Nes 5 *";
-                else
-                    this.Text = "My Nes 5";
-            }
-        }
-
-        public FormMain(string[] args)
+        public FormMain()
         {
             InitializeComponent();
             LoadSettings();
         }
 
+        private const string mainTitle = "My Nes [v6 beta]";// Never change this !
+        private string currentGameFile;
+        private int mouseHideTimer = 0;
+        private bool mouseHiding = false;
+
         private void LoadSettings()
         {
-            this.Location = Program.Settings.MainFormLocation;
-            this.Size = Program.Settings.MainFormSize;
-            //database
-            if (File.Exists(Program.Settings.FoldersDatabasePath))
-            {
-                if (Program.BDatabaseManager.Load(Program.Settings.FoldersDatabasePath))
-                {
-                    RefreshFolders();
-                }
-            }
-            //columns
-            RefreshColumns();
-            //spliters
-            splitContainer1.SplitterDistance = Program.Settings.SplitContainer1;
-            splitContainer2.SplitterDistance = Program.Settings.SplitContainer2;
-            //filter
-            ComboBox_filterBy.SelectedIndex = Program.Settings.FilterIndex;
-            if (Program.Settings.FilterLatestItems == null)
-                Program.Settings.FilterLatestItems = new System.Collections.Specialized.StringCollection();
-            ComboBox_filter.Items.Clear();
-            foreach (string item in Program.Settings.FilterLatestItems)
-            {
-                ComboBox_filter.Items.Add(item);
-            }
-            if (ComboBox_filter.Items.Count > 0)
-                ComboBox_filter.SelectedIndex = ComboBox_filter.Items.Count - 1;
-            //view
-            ThumbnailsViewSwitch.Checked = Program.Settings.IsThumbnailsView;
-            ManagedListView1.ThunmbnailsHeight = ManagedListView1.ThunmbnailsWidth = trackBar_thumbnailsZoom.Value =
-                Program.Settings.ThumbnailsSize;
-            label_thumbnailsSize.Text = Program.Settings.ThumbnailsSize + " x " + Program.Settings.ThumbnailsSize;
-            comboBox_thumbnailsMode.SelectedIndex = Program.Settings.ThumbnailsModeSelection;
+            LoadLanguages();
+            ApplyViewSettings();
+            this.Location = Program.Settings.MainWindowLocation;
+            this.Size = Program.Settings.MainWindowSize;
+            LoadRecents();
+            // This will reload state slot menu items
+            stateToolStripMenuItem_DropDownOpening(this, null);
+            // Load text for state slot
+            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
+                  + " " + NesCore.StateSlot;
         }
         private void SaveSettings()
         {
-            Program.Settings.MainFormLocation = this.Location;
-            Program.Settings.MainFormSize = this.Size;
-            //spliters
-            Program.Settings.SplitContainer1 = splitContainer1.SplitterDistance;
-            Program.Settings.SplitContainer2 = splitContainer2.SplitterDistance;
-            //database
-            if (Program.BDatabaseManager.FilePath == "")
-                Program.BDatabaseManager.FilePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
-
-            Program.BDatabaseManager.FilePath = Path.GetFullPath(Program.BDatabaseManager.FilePath);
-            Program.Settings.FoldersDatabasePath = Program.BDatabaseManager.FilePath;
-            if (savedb)
-            {
-                if (Program.BDatabaseManager.Save(Program.BDatabaseManager.FilePath))
-                    savedb = false;
-            }
-            //columns
-            SaveColumns();
-            //filter
-            Program.Settings.FilterIndex = ComboBox_filterBy.SelectedIndex;
-            Program.Settings.FilterLatestItems = new System.Collections.Specialized.StringCollection();
-            foreach (string item in ComboBox_filter.Items)
-            {
-                Program.Settings.FilterLatestItems.Add(item);
-            }
-            Program.Settings.ThumbnailsModeSelection = comboBox_thumbnailsMode.SelectedIndex;
-            //save
+            Program.Settings.MainWindowLocation = this.Location;
+            Program.Settings.MainWindowSize = this.Size;
             Program.Settings.Save();
         }
-        private void PlaySelectedRom()
+        private void LoadRecents()
         {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            { MessageBox.Show("Select one rom please."); return; }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
+            if (Program.Settings.FileRecents == null)
+                Program.Settings.FileRecents = new System.Collections.Specialized.StringCollection();
 
-            if (File.Exists(rom.Path))
-                OpenRom(rom.Path);
-
-            rom.PlayedTimes++;
-            ManagedListView1.SelectedItems[0].GetSubItemByID("played times").Text = rom.PlayedTimes.ToString() + " time(s)";
-
-            SaveDB = true;
-        }
-        public void OpenRom(string FileName)
-        {
-            currentRomPath = FileName;
-            if (Nes.ON)
+            recentRomsToolStripMenuItem.DropDownItems.Clear();
+            toolStripSplitButton_recents.DropDownItems.Clear();
+            foreach (string file in Program.Settings.FileRecents)
             {
-                // Nes.Shutdown();//this will end the thread
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Kill();
-                timer1.Start();
-            }
-            else
-                CreateNewNes();
-        }
-        // wait timer
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            if (RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].IsAlive)
-                return;
-            if (gameThread == null)
-            {
-                timer1.Stop();
-                CreateNewNes();
-                return;
-            }
-            if (!gameThread.IsAlive)
-            {
-                timer1.Stop();
-                CreateNewNes();
-                return;
+                if (File.Exists(file))
+                {
+                    ToolStripMenuItem item = new ToolStripMenuItem();
+                    item.Text = Path.GetFileName(file);
+                    item.Tag = item.ToolTipText = file;
+                    recentRomsToolStripMenuItem.DropDownItems.Add(item);
+                    // Add another items
+                    item = new ToolStripMenuItem();
+                    item.Text = Path.GetFileName(file);
+                    item.Tag = item.ToolTipText = file;
+                    toolStripSplitButton_recents.DropDownItems.Add(item);
+                }
             }
         }
-        private void CreateNewNes()
+        private void LoadLanguages()
         {
+            for (int i = 0; i < Program.SupportedLanguages.Length / 3; i++)
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem();
+                item.Text = Program.SupportedLanguages[i, 2];
+                item.Checked = Program.SupportedLanguages[i, 0] == Program.Settings.Language;
+                languageToolStripMenuItem.DropDownItems.Add(item);
+            }
+        }
+        private void AddRecent(string fileName)
+        {
+            // If the file exists, remove it
+            if (Program.Settings.FileRecents.Contains(fileName))
+                Program.Settings.FileRecents.Remove(fileName);
+            // Insert at the beginning
+            Program.Settings.FileRecents.Insert(0, fileName);
+            // Limit to 10 !
+            if (Program.Settings.FileRecents.Count == 10)
+                Program.Settings.FileRecents.RemoveAt(9);
+            Program.Settings.Save();
+            // Refresh !
+            LoadRecents();
+        }
+        private void ApplyViewSettings()
+        {
+            if (!Program.Settings.ShowMenu && Program.Settings.HidingMenuForFirstTime)
+            {
+                Program.Settings.HidingMenuForFirstTime = false;
+                ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YoureHidingTheMainMenuForTheFirstTime"), "My Nes");
+            }
+            menuStrip1.Visible = showMenuStripToolStripMenuItem.Checked = Program.Settings.ShowMenu;
+            toolStrip1.Visible = showToolsStripToolStripMenuItem.Checked = Program.Settings.ShowToolsBar;
+            statusStrip1.Visible = showStatusStripToolStripMenuItem.Checked = Program.Settings.ShowStatus;
+        }
+
+        public void LoadRom(string FileName, bool addRecent)
+        {
+            currentGameFile = FileName;
             #region Check if archive
             SevenZip.SevenZipExtractor EXTRACTOR;
-            if (Path.GetExtension(currentRomPath).ToLower() != ".nes")
+            if (Path.GetExtension(FileName).ToLower() != ".nes")
             {
+                if (!File.Exists("7z.dll"))
+                {
+                    ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_7zIsNotExist"),
+                       Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                    if (NesCore.ON) NesCore.PAUSED = false;
+                    return;
+                }
                 try
                 {
-                    EXTRACTOR = new SevenZip.SevenZipExtractor(currentRomPath);
+                    EXTRACTOR = new SevenZip.SevenZipExtractor(FileName);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    ManagedMessageBox.ShowErrorMessage(ex.Message,
+                     Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                    if (NesCore.ON) NesCore.PAUSED = false;
                     return;
                 }
                 if (EXTRACTOR.ArchiveFileData.Count == 1)
                 {
-                    if (EXTRACTOR.ArchiveFileData[0].FileName.Substring(EXTRACTOR.ArchiveFileData[0].FileName.Length - 4, 4).ToLower() == ".nes")
+                    if (EXTRACTOR.ArchiveFileData[0].FileName.Substring(EXTRACTOR.ArchiveFileData[0].FileName.Length - 4, 4).ToLower() == ".NesCore")
                     {
                         EXTRACTOR.ExtractArchive(Path.GetTempPath());
-                        currentRomPath = Path.GetTempPath() + EXTRACTOR.ArchiveFileData[0].FileName;
+                        FileName = Path.GetTempPath() + EXTRACTOR.ArchiveFileData[0].FileName;
                     }
                 }
                 else
@@ -204,1747 +172,1178 @@ namespace MyNes.Forms
                     {
                         string[] fil = { ar.SelectedRom };
                         EXTRACTOR.ExtractFiles(Path.GetTempPath(), fil);
-                        currentRomPath = Path.GetTempPath() + ar.SelectedRom;
+                        FileName = Path.GetTempPath() + ar.SelectedRom;
                     }
                     else
-                    { return; }
+                    { if (NesCore.ON) NesCore.PAUSED = false; return; }
                 }
             }
             #endregion
+            // Check rom ...
+            int mapperN = 0;
+            switch (NesCore.CheckRom(FileName, out mapperN))
+            {
+                case RomReadResult.NotSupportedBoard:
+                    {
+                        ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NotsupportedMapper") + " #" + mapperN,
+                            Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                        if (NesCore.ON) NesCore.PAUSED = false;
+                        return;
+                    }
+                case RomReadResult.Invalid:
+                    {
+                        ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_RomInvalid"),
+                                    Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                        if (NesCore.ON) NesCore.PAUSED = false;
+                        return;
+                    }
+            }
+            if (NesCore.ON)
+            {
+                NesCore.ShutDown();
+            }
             try
             {
-                Nes.CreateNew(currentRomPath, RenderersCore.SettingsManager.Settings.Emu_EmulationSystem);
+                NesCore.CreateNew(FileName, Program.Settings.TVFormat);
             }
-            catch (NotSupportedMapperException ex)
+            // These exceptions should happen only when we never do the check above !
+            catch (NotSupportedMapperOrBoardExcption ex)
             {
-                MessageBox.Show(ex.Message);
+                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NotsupportedMapper") + " #" + ex.Mapper,
+                          Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                if (NesCore.ON) NesCore.PAUSED = false;
                 return;
             }
-            catch (ReadRomFailedException ex)
+            catch (InvailedRomException ex)
             {
-                MessageBox.Show(ex.Message);
+                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_RomInvalid"),
+                           Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                if (NesCore.ON) NesCore.PAUSED = false;
                 return;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n\n" + ex.ToString());
+                ManagedMessageBox.ShowErrorMessage(ex.Message + "\n\n" + ex.ToString(),
+                       Program.ResourceManager.GetString("MessageCaption_OpenRom"));
+                if (NesCore.ON) NesCore.PAUSED = false;
                 return;
             }
-            // turn on
-            Nes.TurnOn();
+            // add recent !
+            if (addRecent)
+                AddRecent(currentGameFile);
             // pause the emulation so the renderer should continue once it's ready
-            Nes.Pause = true;
-            // the renderer (or the host) will setup input and output
-            LaunchTheRenderer();
-            // launch thread
-            gameThread = new Thread(new ThreadStart(Nes.Run));
-            gameThread.Start();
-
-            AddRecent(currentRomPath);
+            NesCore.PAUSED = true;
+            // apply settings !
+            ApplyEmuSettings();
+            // turn on
+            NesCore.TurnOn(true);
+            // initialize renderer
+            InitializeRenderer();
+            // un-pause !
+            NesCore.PAUSED = false;
         }
-        private void RefreshFolders()
+        private void InitializeRenderer()
         {
-            treeView.Nodes.Clear();
-            ManagedListView1.Items.Clear();
-
-            foreach (BFolder folder in Program.BDatabaseManager.BrowserDatabase.Folders)
+            // Video and sound
+            ApplyVideo();
+            ApplyAudio();
+            SetupPalette();
+            SetupInput();
+            // Rom title !
+            if (NesCore.RomInfo.DatabaseGameInfo.Game_Name != null)
             {
-                TreeNodeBFolder tr = new TreeNodeBFolder();
-                tr.BFolder = folder;
-                tr.ImageIndex = 0;
-                tr.SelectedImageIndex = 0;
-                tr.RefreshFolders(0, 0);
-                treeView.Nodes.Add(tr);
+                this.Text = NesCore.RomInfo.DatabaseGameInfo.Game_Name +
+                    " (" + NesCore.RomInfo.DatabaseGameInfo.Game_AltName + ") - " + mainTitle;
+            }
+            else
+            {
+                this.Text = Path.GetFileNameWithoutExtension(NesCore.RomInfo.RomPath) + " - " + mainTitle;
             }
         }
-        private void BuildCachForFolder(BFolder folder)
+        private void SetupInput()
         {
-            ProgressBar1.Visible = true;
-            StatusLabel.Text = "Building cache, please wait ..";
-            statusStrip.Refresh();
+            // Initialize ..
+            SlimDXInputManager inputManager = new SlimDXInputManager(this.Handle);
+            //Setup input
+            SlimDXJoypad joy1 = new SlimDXJoypad(inputManager);
+            SlimDXJoypad joy2 = new SlimDXJoypad(inputManager);
+            SlimDXJoypad joy3 = new SlimDXJoypad(inputManager);
+            SlimDXJoypad joy4 = new SlimDXJoypad(inputManager);
 
-            List<string> files = new List<string>(Directory.GetFiles(folder.Path));
-            List<BRom> oldBromCollection = folder.BRoms;
-            folder.BRoms = new List<BRom>();
+            NesCore.SetupInput(inputManager, joy1, joy2, joy3, joy4, false);
 
-            ProgressBar1.Maximum = files.Count;
-            int x = 0;
-            foreach (string file in files)
+            NesCore.ControlsUnit.VSunisystemDIP = new SlimDXVSUnisystemDIP(inputManager);
+
+            ApplyInput();
+        }
+        private void ApplyInput()
+        {
+            // Get profiles
+            if (Program.Settings.InputProfiles == null)
+                ControlProfile.BuildDefaultProfile();
+            if (Program.Settings.InputProfiles.Count == 0)
+                ControlProfile.BuildDefaultProfile();
+
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.A;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.B;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.TurboA;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.TurboB;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Down;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Left;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Right;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Up;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Select;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Start;
+
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.A;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.B;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.TurboA;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.TurboB;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Down;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Left;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Right;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Up;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Select;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Start;
+
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.A;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.B;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.TurboA;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.TurboB;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Down;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Left;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Right;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Up;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Select;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Start;
+
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.A;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.B;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.TurboA;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.TurboB;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Down;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Left;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Right;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Up;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Select;
+            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Start;
+
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).CreditLeftCoinSlot.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.CreditLeftCoinSlot;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).CreditRightCoinSlot.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.CreditRightCoinSlot;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).CreditServiceButton.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.CreditServiceButton;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch1.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch1;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch2.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch2;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch3.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch3;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch4.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch4;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch5.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch5;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch6.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch6;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch7.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch7;
+            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch8.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch8;
+
+            if (Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper)
             {
-                // First let's see if this rom already exists
-                // This way, we keep old rom information like ratings, covers...etc
-                foreach (BRom oldRom in oldBromCollection)
+                NesCore.ControlsUnit.IsZapperConnected = true;
+                NesCore.ControlsUnit.Zapper = new SlimDXZapper();
+            }
+            NesCore.ControlsUnit.IsFourPlayers = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
+        }
+        private void ApplyVideo()
+        {
+            if (NesCore.VideoOutput != null)
+                NesCore.VideoOutput.ShutDown();
+            NesCore.VideoOutput = null;
+            NesCore.PAUSED = true;
+            // Windowed stretch !
+            if (Program.Settings.VideoStretchWindowToFitSize)
+            {
+                // Determine res
+                int w = 256;
+                int h = 240;
+                if (Program.Settings.VideoCutLines)
                 {
-                    if (oldRom.Path == file)
-                    {
-                        folder.BRoms.Add(oldRom);
-                        goto Advance;
-                    }
-                }
-                #region INES
-                if (Path.GetExtension(file).ToLower() == ".nes")
-                {
-                    BRom rom = new BRom();
-                    rom.BRomType = BRomType.INES;
-                    rom.Name = Path.GetFileName(file);
-                    rom.Size = Helper.GetFileSize(file);
-                    rom.Path = file;
-                    //INES header
-                    INESHeader header = new INESHeader(file);
-                    if (header.IsValid)
-                    {
-                        rom.HasTrainer = header.HasTrainer ? "Yes" : "No";
-                        rom.IsBattery = header.HasSaveRam ? "Yes" : "No";
-                        rom.IsPc10 = header.IsPlaychoice10 ? "Yes" : "No";
-                        rom.IsVsUnisystem = header.IsVSUnisystem ? "Yes" : "No";
-                        rom.Mapper = header.Mapper.ToString();
-                        foreach (Board brd in BoardsManager.AvailableBoards)
-                        {
-                            if (brd.INESMapperNumber == header.Mapper)
-                            {
-                                rom.Board = brd.Name;
-                                break;
-                            }
-                        }
-                        switch (header.Mirroring)
-                        {
-                            case Mirroring.Mode1ScA: rom.Mirroring = "One-Screen A"; break;
-                            case Mirroring.Mode1ScB: rom.Mirroring = "One-Screen B"; break;
-                            case Mirroring.ModeFull: rom.Mirroring = "4-Screen"; break;
-                            case Mirroring.ModeHorz: rom.Mirroring = "Horizontal"; break;
-                            case Mirroring.ModeVert: rom.Mirroring = "Vertical"; break;
-                        }
-                    }
+                    if (NesCore.TV == TVSystem.NTSC)
+                        h = 224;
                     else
-                    {
-                        rom.HasTrainer = "N/A";
-                        rom.IsBattery = "N/A";
-                        rom.IsPc10 = "N/A";
-                        rom.IsVsUnisystem = "N/A";
-                        rom.Mapper = "N/A";
-                        rom.Board = "N/A";
-                        rom.Mirroring = "N/A";
-                    }
-                    folder.BRoms.Add(rom);
+                        h = 238;
                 }
-                #endregion
-                #region Archive
-                else if (Path.GetExtension(file).ToLower() == ".rar" ||
-                         Path.GetExtension(file).ToLower() == ".zip" ||
-                         Path.GetExtension(file).ToLower() == ".7z" ||
-                         Path.GetExtension(file).ToLower() == ".tar")
+                w *= Program.Settings.VideoWindowStretchMultiply;
+                h *= Program.Settings.VideoWindowStretchMultiply;
+                // Do the stretch !
+                int windowW = w + 16;
+                int windowH = h + 39;
+                if (menuStrip1.Visible)
+                    windowH += menuStrip1.Height;
+                if (toolStrip1.Visible)
+                    windowH += toolStrip1.Height;
+                if (statusStrip1.Visible)
+                    windowH += statusStrip1.Height;
+                this.Size = new Size(windowW, windowH);
+
+                //MessageBox.Show("Surface size is "+panel_surface.Width +" x "+panel_surface.Height);
+            }
+            IVideoDevice video = null;
+            switch (Program.Settings.VideoOutputMode)
+            {
+                case VideoOutputMode.DirectX9: video = new SlimDXVideo(panel_surface); break;
+            }
+            video.Initialize();
+
+            NesCore.VideoOutput = video;
+        }
+        private void ApplyAudio()
+        {
+            IAudioDevice audio = null;
+
+            switch (Program.Settings.AudioOutputMode)
+            {
+                case SoundOutputMode.DirectSound: audio = new SlimDXDirectSound(this.Handle); break;
+            }
+
+            NesCore.APU.SetupPlayback(Program.Settings.AudioFrequency);
+            NesCore.AudioOutput = audio;
+        }
+        private void ApplyEmuSettings()
+        {
+            NesCore.ApplySettings(new NesCoreSettings(
+                  Program.Settings.AudioSoundEnabled,
+                  Program.Settings.FolderSrams,
+                  Program.Settings.SaveSRAMOnShutdown));
+            // Frame skipping
+            NesCore.FrameSkipEnabled = Program.Settings.FrameSkippingEnabled;
+            NesCore.frameSkipReload = Program.Settings.FrameSkippingCount;
+        }
+        private void SetupPalette()
+        {
+            NTSCPaletteGenerator.hue_tweak = Program.Settings.PaletteNTSCHue;
+            NTSCPaletteGenerator.contrast = Program.Settings.PaletteNTSCContrast;
+            NTSCPaletteGenerator.gamma = Program.Settings.PaletteNTSCGamma;
+            NTSCPaletteGenerator.brightness = Program.Settings.PaletteNTSCBrightness;
+            NTSCPaletteGenerator.saturation = Program.Settings.PaletteNTSCSaturation;
+
+            PALBPaletteGenerator.hue_tweak = Program.Settings.PalettePALBHue;
+            PALBPaletteGenerator.contrast = Program.Settings.PalettePALBContrast;
+            PALBPaletteGenerator.gamma = Program.Settings.PalettePALBGamma;
+            PALBPaletteGenerator.brightness = Program.Settings.PalettePALBBrightness;
+            PALBPaletteGenerator.saturation = Program.Settings.PalettePALBSaturation;
+
+            DENDYPaletteGenerator.hue_tweak = (float)Program.Settings.PaletteDENDYHue;
+            DENDYPaletteGenerator.contrast = (float)Program.Settings.PaletteDENDYContrast;
+            DENDYPaletteGenerator.gamma = (float)Program.Settings.PaletteDENDYGamma;
+            DENDYPaletteGenerator.brightness = (float)Program.Settings.PaletteDENDYBrightness;
+            DENDYPaletteGenerator.saturation = (float)Program.Settings.PaletteDENDYSaturation;
+
+            NesCore.SetupPalette();
+        }
+
+        private void Form_Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.ShutDown();
+            SaveSettings();
+        }
+        private void ShowConsole(object sender, EventArgs e)
+        {
+            foreach (Form frm in this.OwnedForms)
+            {
+                if (frm.Tag.ToString() == "Console")
                 {
-                    BRom rom = new BRom();
-                    rom.BRomType = BRomType.Archive;
-                    rom.Name = Path.GetFileName(file);
-                    rom.Size = Helper.GetFileSize(file);
-                    rom.Path = file;
-                    rom.HasTrainer = "N/A";
-                    rom.IsBattery = "N/A";
-                    rom.IsPc10 = "N/A";
-                    rom.IsVsUnisystem = "N/A";
-                    rom.Mapper = "N/A";
-                    rom.Mirroring = "N/A";
-                    folder.BRoms.Add(rom);
-                }
-                #endregion
-
-            Advance:
-                ProgressBar1.Value = x;
-                x++;
-            }
-            folder.CacheBuilt = true;
-            SaveDB = true;
-            ProgressBar1.Visible = false;
-            StatusLabel.Text = "Ready.";
-        }
-        private void RefreshFilesFromFolder(BFolder folder)
-        {
-            ManagedListView1.Items.Clear();
-            ManagedListView1.Visible = false;
-            ProgressBar1.Visible = true;
-            StatusLabel.Text = "Loading roms list ..";
-            statusStrip.Refresh();
-            ProgressBar1.Maximum = folder.BRoms.Count;
-            int x = 0;
-            foreach (BRom rom in folder.BRoms)
-            {
-                AddRomToList(rom);
-
-                ProgressBar1.Value = x;
-                x++;
-            }
-            ProgressBar1.Visible = false;
-            ManagedListView1.Visible = true;
-            StatusLabel.Text = "Ready.";
-            string st = " roms";
-            if (ManagedListView1.Items.Count == 1)
-                st = " rom";
-            StatusLabel_romsCount.Text = ManagedListView1.Items.Count + st;
-        }
-        private void LaunchTheRenderer()
-        {
-            try
-            {
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Start();
-            }
-            catch { }
-        }
-        private void AddRecent(string fileName)
-        {
-            if (Program.Settings.RecentFiles == null)
-                Program.Settings.RecentFiles = new System.Collections.Specialized.StringCollection();
-            for (int i = 0; i < Program.Settings.RecentFiles.Count; i++)
-            {
-                if (fileName == Program.Settings.RecentFiles[i])
-                { Program.Settings.RecentFiles.Remove(fileName); }
-            }
-            Program.Settings.RecentFiles.Insert(0, fileName);
-            //limit to 9 elements
-            if (Program.Settings.RecentFiles.Count > 9)
-                Program.Settings.RecentFiles.RemoveAt(9);
-        }
-        private void DetectSnapshots(object sender, EventArgs e)
-        {
-            if (treeView.SelectedNode == null)
-            {
-                MessageBox.Show("Please select folder first");
-                return;
-            }
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, DetectorDetectMode.Snapshots);
-            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                SaveDB = true;
-            }
-            if (Nes.ON)
-                Nes.TogglePause(false);
-        }
-        private void DetectCovers(object sender, EventArgs e)
-        {
-            if (treeView.SelectedNode == null)
-            {
-                MessageBox.Show("Please select folder first");
-                return;
-            }
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, DetectorDetectMode.Covers);
-            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                SaveDB = true;
-            }
-            if (Nes.ON)
-                Nes.TogglePause(false);
-        }
-        private void DetectInfoTexts(object sender, EventArgs e)
-        {
-            if (treeView.SelectedNode == null)
-            {
-                MessageBox.Show("Please select folder first");
-                return;
-            }
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormDetectImages frm = new FormDetectImages(((TreeNodeBFolder)treeView.SelectedNode).BFolder, DetectorDetectMode.InfoTexts);
-            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                SaveDB = true;
-            }
-            if (Nes.ON)
-                Nes.TogglePause(false);
-        }
-        private void AddRomToList(BRom rom)
-        {
-            ManagedListViewItem_BRom item = new ManagedListViewItem_BRom();
-            item.BRom = rom;
-            item.DrawMode = ManagedListViewItemDrawMode.UserDraw;
-            //add subitems
-            //name
-            ManagedListViewSubItem subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "name";
-            subitem.DrawMode = ManagedListViewItemDrawMode.TextAndImage;
-            subitem.Text = rom.Name;
-            switch (rom.BRomType)
-            {
-                /*
-                     * 1: cartidge
-                     * 2: zip file
-                     */
-                case BRomType.Archive: subitem.ImageIndex = 2; break;
-                case BRomType.INES: subitem.ImageIndex = 1; break;
-            }
-            item.SubItems.Add(subitem);
-            //file size
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "size";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.Size;
-            item.SubItems.Add(subitem);
-            //file type
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "file type";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = Path.GetExtension(rom.Path);
-            item.SubItems.Add(subitem);
-            //played times
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "played times";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.PlayedTimes.ToString() + " time(s)";
-            item.SubItems.Add(subitem);
-            //rating
-            ManagedListViewRatingSubItem ratingItem = new ManagedListViewRatingSubItem();
-            ratingItem.Rating = rom.Rating;
-            ratingItem.RatingChanged += ratingItem_RatingChanged;
-            ratingItem.UpdateRatingRequest += ratingItem_UpdateRatingRequest;
-            ratingItem.ColumnID = "rating";
-            item.SubItems.Add(ratingItem);
-            //path
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "path";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.Path;
-            if (!File.Exists(rom.Path))
-            {
-                subitem.Text = @"[/!\ Not Exist] " + rom.Path;
-                subitem.Color = Color.Red;
-            }
-            item.SubItems.Add(subitem);
-            //mapper
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "mapper";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.Mapper;
-            item.SubItems.Add(subitem);
-            //board
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "board";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.Board;
-            item.SubItems.Add(subitem);
-            //has trainer
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "trainer";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.HasTrainer;
-            switch (rom.HasTrainer.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //is battery packed
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "battery";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.IsBattery;
-            switch (rom.IsBattery.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //is pc10
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "pc10";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.IsPc10;
-            switch (rom.IsPc10.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //is vsunisystem
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "vs";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.IsVsUnisystem;
-            switch (rom.IsVsUnisystem.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //mirroing
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "mirroring";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.Mirroring;
-            item.SubItems.Add(subitem);
-            //has snapshot
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "snapshot";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = File.Exists(rom.SnapshotPath) ? "Yes" : "No";
-            switch (subitem.Text.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //has cover
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "cover";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = File.Exists(rom.CoverPath) ? "Yes" : "No";
-            switch (subitem.Text.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //has info text
-            subitem = new ManagedListViewSubItem();
-            subitem.ColumnID = "info";
-            subitem.DrawMode = ManagedListViewItemDrawMode.Text;
-            subitem.Text = rom.InfoText.Length > 0 ? "Yes" : "No";
-            switch (subitem.Text.ToLower())
-            {
-                case "yes": subitem.Color = Color.Green; break;
-                case "no": subitem.Color = Color.Red; break;
-            }
-            item.SubItems.Add(subitem);
-            //add the item !
-            ManagedListView1.Items.Add(item);
-        }
-
-        void ratingItem_UpdateRatingRequest(object sender, ManagedListViewRatingChangedArgs e)
-        {
-            ((ManagedListViewRatingSubItem)ManagedListView1.Items[e.ItemIndex].GetSubItemByID("rating")).Rating =
-            ((ManagedListViewItem_BRom)ManagedListView1.Items[e.ItemIndex]).BRom.Rating;
-        }
-        void ratingItem_RatingChanged(object sender, ManagedListViewRatingChangedArgs e)
-        {
-            ((ManagedListViewItem_BRom)ManagedListView1.Items[e.ItemIndex]).BRom.Rating = e.Rating; ;
-            SaveDB = true;
-        }
-        private void DoFilter(object sender, EventArgs e)
-        {
-            if (ComboBox_filter.Text == "")
-            {
-                MessageBox.Show("Please enter a text first !");
-                return;
-            }
-            if (treeView.SelectedNode == null)
-            {
-                MessageBox.Show("Please select a folder first !");
-                return;
-            }
-            if (!ComboBox_filter.Items.Contains(ComboBox_filter.Text))
-                ComboBox_filter.Items.Add(ComboBox_filter.Text);
-            if (ComboBox_filter.Items.Count > 100)
-                ComboBox_filter.Items.RemoveAt(0);//limit to 100 items.
-            // do the filter !
-            BFolder folder = ((TreeNodeBFolder)treeView.SelectedNode).BFolder;
-
-            ManagedListView1.Items.Clear();
-            ProgressBar1.Visible = true;
-            StatusLabel.Text = "Filtering ..";
-            statusStrip.Refresh();
-            ProgressBar1.Maximum = folder.BRoms.Count;
-            int x = 0;
-
-            string FindWhat = ComboBox_filter.Text;
-            bool matchCase = FilterOption_MatchCase.Checked;
-            bool matchWord = FilterOption_MachWord.Checked;
-            foreach (BRom rom in folder.BRoms)
-            {
-                switch (ComboBox_filterBy.SelectedIndex)
-                {
-                    case 0:// name ?
-                        if (rom.Name.Length >= FindWhat.Length)
-                        {
-                            if (!matchWord)
-                            {
-                                for (int SearchWordIndex = 0; SearchWordIndex <
-                                        (rom.Name.Length - FindWhat.Length) + 1; SearchWordIndex++)
-                                {
-                                    string Ser = rom.Name.Substring(SearchWordIndex, FindWhat.Length);
-                                    if (!matchCase)
-                                    {
-                                        if (Ser.ToLower() == FindWhat.ToLower())
-                                        {
-                                            //this is it !
-                                            AddRomToList(rom);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Ser == FindWhat)
-                                        {
-                                            //this is it !
-                                            AddRomToList(rom);
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                string[] wordToFind = FindWhat.Split(new char[] { ' ' });
-                                string[] texts = rom.Name.Split(new char[] { ' ' });
-                                int matched = 0;
-                                for (int j = 0; j < texts.Length; j++)
-                                {
-                                    for (int h = 0; h < wordToFind.Length; h++)
-                                    {
-                                        if (!matchCase)
-                                        {
-                                            if (texts[j].ToLower() == wordToFind[h].ToLower())
-                                            {
-                                                matched++;
-                                                wordToFind[h] = "";
-                                                break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (texts[j] == wordToFind[h])
-                                            {
-                                                wordToFind[h] = "";
-                                                matched++;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (matched >= wordToFind.Length)
-                                {
-                                    //this is it !
-                                    AddRomToList(rom);
-                                }
-                            }
-                        }
-                        break;
-                    case 1:// mapper #
-                        if (rom.Mapper == FindWhat)
-                        {
-                            //this is it !
-                            AddRomToList(rom);
-                        }
-                        break;
-                }
-
-                ProgressBar1.Value = x;
-                x++;
-            }
-            ProgressBar1.Visible = false;
-            StatusLabel.Text = "Done.";
-            string st = " roms";
-            if (ManagedListView1.Items.Count == 1)
-                st = " rom";
-            StatusLabel_romsCount.Text = ManagedListView1.Items.Count + st;
-
-            ManagedListView1.Invalidate();
-        }
-        private void RefreshColumns()
-        {
-            ManagedListView1.Columns = new ManagedListViewColumnsCollection();
-            columnsToolStripMenuItem.DropDownItems.Clear();
-            ComboBox_filter.Items.Clear();
-            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
-            {
-                if (item.Visible)
-                {
-                    ManagedListViewColumn column = new ManagedListViewColumn();
-                    column.HeaderText = item.ColumnName;
-                    column.ID = item.ColumnID;
-                    column.Width = item.Width;
-                    column.SortMode = ManagedListViewSortMode.None;
-                    ManagedListView1.Columns.Add(column);
-                }
-
-                ToolStripMenuItem mitem = new ToolStripMenuItem();
-                mitem.Text = item.ColumnName;
-                mitem.Checked = item.Visible;
-                columnsToolStripMenuItem.DropDownItems.Add(mitem);
-            }
-            if (ComboBox_filter.Items.Count > 0)
-                ComboBox_filter.SelectedIndex = 0;
-        }
-        private void SaveColumns()
-        {
-            List<ColumnItem> oldCollection = Program.Settings.ColumnsManager.Columns;
-            //create new, save the visible columns first
-            Program.Settings.ColumnsManager.Columns = new List<ColumnItem>();
-            foreach (ManagedListViewColumn column in ManagedListView1.Columns)
-            {
-                ColumnItem item = new ColumnItem();
-                item.ColumnID = column.ID;
-                item.ColumnName = column.HeaderText;
-                item.Visible = true;
-                item.Width = column.Width;
-
-                Program.Settings.ColumnsManager.Columns.Add(item);
-                //look for the same item in the old collection then remove it
-                foreach (ColumnItem olditem in oldCollection)
-                {
-                    if (olditem.ColumnID == column.ID)
-                    {
-                        oldCollection.Remove(olditem);
-                        break;
-                    }
+                    frm.Activate();
+                    return;
                 }
             }
-            //now add the rest of the items (not visible)
-            foreach (ColumnItem olditem in oldCollection)
-            {
-                ColumnItem item = new ColumnItem();
-                item.ColumnID = olditem.ColumnID;
-                item.ColumnName = olditem.ColumnName;
-                item.Visible = false;
-                item.Width = olditem.Width;
-                Program.Settings.ColumnsManager.Columns.Add(item);
-            }
-        }
-        private void SwitchViewMode()
-        {
-            ManagedListView1.ViewMode = Program.Settings.IsThumbnailsView ?
-                ManagedListViewViewMode.Thumbnails : ManagedListViewViewMode.Details;
-            panel_thumbnailsPanel.Visible = Program.Settings.IsThumbnailsView;
-
-        }
-
-        private void buttonCreateFolder_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog fol = new FolderBrowserDialog();
-            fol.Description = "Add roms folder";
-            if (fol.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                if (!Program.BDatabaseManager.BrowserDatabase.IsFolderExist(fol.SelectedPath))
-                {
-                    BFolder bfolder = new BFolder();
-                    bfolder.Path = fol.SelectedPath;
-                    bfolder.RefreshFolders();
-                    Program.BDatabaseManager.BrowserDatabase.Folders.Add(bfolder);
-                    SaveDB = true;
-                    RefreshFolders();
-                }
-            }
-        }
-        private void buttonPlay_Click(object sender, EventArgs e)
-        {
-            Nes.Pause = !Nes.Pause;
-        }
-        private void buttonStop_Click(object sender, EventArgs e)
-        {
-            Nes.Shutdown();
-        }
-        private void buttonConsole_Click(object sender, EventArgs e)
-        {
-            if (consoleForm != null)
-            {
-                buttonConsole.Checked = false;
-                consoleForm.Close();
-                consoleForm = null;
-            }
-            else
-            {
-                buttonConsole.Checked = true;
-                consoleForm = new FormConsole();
-                consoleForm.FormClosed += new FormClosedEventHandler(consoleForm_FormClosed);
-                consoleForm.Show();
-            }
-        }
-        private void consoleForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            consoleForm = null;
-            buttonConsole.Checked = false;
-        }
-        private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            buttonDeleteFolder.Enabled = false;
-
-            if (treeView.SelectedNode == null)
-                return;
-
-            buttonDeleteFolder.Enabled = (treeView.SelectedNode.Parent == null);
-
-            if (((TreeNodeBFolder)treeView.SelectedNode).BFolder.CacheBuilt)
-            {
-                RefreshFilesFromFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
-            }
-            else
-            {
-                BuildCachForFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
-                RefreshFilesFromFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
-                SaveDB = true;
-            }
-        }
-        private void treeView_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            openToolStripMenuItem1_Click(sender, e);
-        }
-        private void consoleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            buttonConsole_Click(sender, e);
-        }
-        private void buttonConsole_CheckedChanged(object sender, EventArgs e)
-        {
-            consoleToolStripMenuItem.Checked = buttonConsole.Checked;
-        }
-        private void toolStripToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            toolStripToolStripMenuItem.Checked = !toolStripToolStripMenuItem.Checked;
-        }
-        private void menuStripToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            menuStripToolStripMenuItem.Checked = !menuStripToolStripMenuItem.Checked;
-        }
-        private void toolStripToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            toolStrip.Visible = toolStripToolStripMenuItem.Checked;
-        }
-        private void menuStripToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            menuStrip.Visible = menuStripToolStripMenuItem.Checked;
+            FormConsole newfrm = new FormConsole();
+            newfrm.Show(this);
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Nes.Shutdown();
             Close();
         }
-        private void ShowHelp(object sender, EventArgs e)
+        private void ShowMemoryWatcher(object sender, EventArgs e)
         {
-            Help.ShowHelp(this, "Help.chm", HelpNavigator.TableOfContents);
-        }
-        private void openRomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog op = new OpenFileDialog();
-            op.Filter = "All Supported Files |*.nes;*.NES;*.7z;*.7Z;*.rar;*.RAR;*.zip;*.ZIP|INES rom (*.nes)|*.nes;*.NES|Archives (*.7z *.rar *.zip)|*.7z;*.7Z;*.rar;*.RAR;*.zip;*.ZIP";
-            if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            foreach (Form frm in this.OwnedForms)
             {
-                OpenRom(op.FileName);
-            }
-        }
-        private void aboutMyNesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FormAbout frm = new FormAbout();
-            frm.ShowDialog(this);
-        }
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            try
-            {
-                if (RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].IsAlive)
-                { 
-                    RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Kill();
-                    RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].Dispose();
-                }
-            }
-            catch { }
-            //Nes.Shutdown();
-        }
-        private void emulationSpeedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (speedForm != null)
-            {
-                emulationSpeedToolStripMenuItem.Checked = false;
-                speedForm.Close();
-                speedForm = null;
-            }
-            else
-            {
-                emulationSpeedToolStripMenuItem.Checked = true;
-                speedForm = new FormSpeed();
-                speedForm.FormClosed += new FormClosedEventHandler(speedForm_FormClosed);
-                speedForm.Show();
-            }
-        }
-        private void speedForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            speedForm = null;
-            emulationSpeedToolStripMenuItem.Checked = false;
-        }
-        private void softResetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Nes.SoftReset();
-        }
-        private void saveDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Program.BDatabaseManager.FilePath == "")
-                Program.BDatabaseManager.FilePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\folders.fl";
-
-            Program.BDatabaseManager.FilePath = Path.GetFullPath(Program.BDatabaseManager.FilePath);
-            if (Program.BDatabaseManager.Save(Program.BDatabaseManager.FilePath))
-            {
-                SaveDB = false;
-                StatusLabel.Text = "Folders database saved success";
-            }
-            else
-                MessageBox.Show("Unable to save !!");
-        }
-        private void openDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog op = new OpenFileDialog();
-            op.Title = "Open MyNes folders database";
-            op.Filter = "MyNes folders database (*.fl)|*.fl";
-            if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                if (savedb)
+                if (frm.Tag.ToString() == "Memory")
                 {
-                    if (MessageBox.Show("Do you want to save current database first ?", "MyNes",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                    {
-                        if (Program.BDatabaseManager.Save(Program.BDatabaseManager.FilePath))
-                            savedb = false;
-                        else
-                        { MessageBox.Show("Unable to save !!"); return; }
-                    }
-                }
-                if (Program.BDatabaseManager.Load(op.FileName))
-                {
-                    savedb = false;
-                    RefreshFolders();
-                }
-            }
-        }
-        private void saveDatabaseAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog save = new SaveFileDialog();
-            save.Title = "Save MyNes folders database";
-            save.Filter = "MyNes folders database (*.fl)|*.fl";
-            if (save.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                if (Program.BDatabaseManager.Save(save.FileName))
-                    savedb = false;
-                else
-                    MessageBox.Show("Unable to save !!");
-            }
-        }
-        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            SaveSettings();
-        }
-        private void rebuildCacheToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (treeView.SelectedNode == null)
-                return;
-            BuildCachForFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
-            RefreshFilesFromFolder(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
-            SaveDB = true;
-        }
-        private void deleteFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Are you sure you want to delete selected folder from the list ?", "My Nes",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-            {
-                if (treeView.SelectedNode == null)
+                    frm.Activate();
                     return;
-                Program.BDatabaseManager.BrowserDatabase.Folders.Remove(((TreeNodeBFolder)treeView.SelectedNode).BFolder);
-                RefreshFolders();
-                SaveDB = true;
+                }
+            }
+            FormMemoryWatcher newfrm = new FormMemoryWatcher();
+            newfrm.Show(this);
+        }
+        private void ShowSpeed(object sender, EventArgs e)
+        {
+            foreach (Form frm in this.OwnedForms)
+            {
+                if (frm.Tag.ToString() == "Speed")
+                {
+                    frm.Activate();
+                    return;
+                }
+            }
+            FormSpeed newfrm = new FormSpeed();
+            newfrm.Show(this);
+        }
+        private void OpenRom(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = true;
+            OpenFileDialog op = new OpenFileDialog();
+            op.Filter = Program.ResourceManager.GetString("Filter_ROM");
+            op.Title = Program.ResourceManager.GetString("Title_OpenRom");
+            if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                LoadRom(op.FileName, true);
+            }
+            else
+            {
+                if (NesCore.ON)
+                    NesCore.PAUSED = false;
             }
         }
-        private void romInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowVideoSettings(object sender, EventArgs e)
         {
-            FormRomInfo frm = new FormRomInfo();
+            NesCore.PAUSED = true;
+
+            FormVideoSettings frm = new FormVideoSettings();
             frm.ShowDialog(this);
+            if (NesCore.ON)
+            {
+                NesCore.VideoOutput.ShutDown();
+
+                ApplyVideo();
+                NesCore.PAUSED = false;
+            }
+        }
+        private void ShowAudioSettings(object sender, EventArgs e)
+        {
+            NesCore.PAUSED = true;
+
+            FormAudioSettings frm = new FormAudioSettings();
+            frm.ShowDialog(this);
+
+            if (NesCore.ON)
+            {
+                NesCore.AudioOutput.Shutdown();
+                // Apply
+                ApplyAudio();
+                NesCore.PAUSED = false;
+            }
+        }
+        private void shutdownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NesCore.ShutDown();
+        }
+        private void ShowPaletteSettings(object sender, EventArgs e)
+        {
+            // NesCore.PAUSED = true;
+            // turn of auto pause
+            bool autoPause = Program.Settings.MainWindowAutoPauseOnFocusLost;
+            Program.Settings.MainWindowAutoPauseOnFocusLost = false;
+            FormPaletteSettings frm = new FormPaletteSettings();
+            frm.ShowDialog(this);
+            if (NesCore.ON)
+            {
+                SetupPalette();// Apply palette to emulation !
+                //   NesCore.PAUSED = false;
+            }
+
+            Program.Settings.MainWindowAutoPauseOnFocusLost = autoPause;
+        }
+        private void ShowPathsSettings(object sender, EventArgs e)
+        {
+            NesCore.PAUSED = true;
+
+            FormPaths frm = new FormPaths();
+            frm.ShowDialog(this);
+
+            if (NesCore.ON)
+            {
+                NesCore.SRAMFolder = Program.Settings.FolderSrams;
+                NesCore.PAUSED = false;
+            }
+        }
+        private void ShowInputSetting(object sender, EventArgs e)
+        {
+            NesCore.PAUSED = true;
+            FormInputSettings frm = new FormInputSettings();
+            frm.ShowDialog(this);
+            if (NesCore.ON)
+            {
+                ApplyInput();
+                NesCore.PAUSED = false;
+            }
+        }
+        private void ShowBrowser(object sender, EventArgs e)
+        {
+            foreach (Form frm in this.OwnedForms)
+            {
+                if (frm.Tag.ToString() == "Browser")
+                {
+                    frm.Activate();
+                    return;
+                }
+            }
+            FormBrowser newfrm = new FormBrowser();
+            newfrm.Show(this);
+        }
+        private void regionToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            // Load tv setting
+            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
+                it.Checked = false;
+            switch (Program.Settings.TVFormat)
+            {
+                case TVSystemSettings.AUTO: aUTOToolStripMenuItem.Checked = true; break;
+                case TVSystemSettings.DENDY: dENDYToolStripMenuItem.Checked = true; break;
+                case TVSystemSettings.NTSC: nTSCToolStripMenuItem.Checked = true; break;
+                case TVSystemSettings.PALB: pALBToolStripMenuItem.Checked = true; break;
+            }
+        }
+        private void aUTOToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
+                it.Checked = false;
+            aUTOToolStripMenuItem.Checked = true;
+            // Save
+            Program.Settings.TVFormat = TVSystemSettings.AUTO;
+            Program.Settings.Save();
+            if (NesCore.ON)
+                if (NesCore.VideoOutput != null)
+                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToAuto"),
+                        120, Color.Yellow.ToArgb());
+        }
+        private void nTSCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
+                it.Checked = false;
+            nTSCToolStripMenuItem.Checked = true;
+            // Save
+            Program.Settings.TVFormat = TVSystemSettings.NTSC;
+            Program.Settings.Save();
+            if (NesCore.ON)
+                if (NesCore.VideoOutput != null)
+                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToNTSC"), 120, Color.Yellow.ToArgb());
+
+        }
+        private void pALBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
+                it.Checked = false;
+            pALBToolStripMenuItem.Checked = true;
+            // Save
+            Program.Settings.TVFormat = TVSystemSettings.PALB;
+            Program.Settings.Save();
+            if (NesCore.ON)
+                if (NesCore.VideoOutput != null)
+                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToPALB"), 120, Color.Yellow.ToArgb());
+        }
+        private void dENDYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
+                it.Checked = false;
+            dENDYToolStripMenuItem.Checked = true;
+            // Save
+            Program.Settings.TVFormat = TVSystemSettings.DENDY;
+            Program.Settings.Save();
+            if (NesCore.ON)
+                if (NesCore.VideoOutput != null)
+                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToDENDY"), 120, Color.Yellow.ToArgb());
+        }
+        private void TogglePause(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = !NesCore.PAUSED;
+        }
+        private void HardReset(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                LoadRom(NesCore.RomInfo.RomPath, false);
+        }
+        private void SoftReset(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.SoftReset();
+        }
+        private void fileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            recentRomsToolStripMenuItem.Enabled = recentRomsToolStripMenuItem.DropDownItems.Count > 0;
+        }
+        private void recordSoundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                if (NesCore.AudioOutput == null)
+                {
+                    return;
+                }
+                NesCore.PAUSED = true;
+                if (NesCore.AudioOutput.IsRecording)
+                {
+                    NesCore.AudioOutput.RecordStop();
+                }
+                else
+                {
+                    SaveFileDialog sav = new SaveFileDialog();
+                    sav.Title = Program.ResourceManager.GetString("Title_SaveWav");
+                    sav.Filter = Program.ResourceManager.GetString("Filter_PCMWav");
+                    if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                        NesCore.AudioOutput.Record(sav.FileName);
+                }
+                NesCore.PAUSED = false;
+            }
+        }
+        private void fileToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                takesnapshotToolStripMenuItem.Enabled = true;
+                if (NesCore.AudioOutput == null)
+                {
+                    recordSoundToolStripMenuItem.Enabled = false;
+                    recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_RecordSound");
+                    return;
+                }
+                recordSoundToolStripMenuItem.Enabled = true;
+                if (NesCore.AudioOutput.IsRecording)
+                {
+                    recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_StopRecordSound");
+                }
+                else
+                {
+                    recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_RecordSound");
+                }
+            }
+            else
+            {
+                takesnapshotToolStripMenuItem.Enabled = false;
+                recordSoundToolStripMenuItem.Enabled = false;
+                recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_RecordSound");
+            }
+        }
+        private void inputToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            // Fix
+            if (Program.Settings.InputProfiles == null)
+                ControlProfile.BuildDefaultProfile();
+            if (Program.Settings.InputProfiles.Count == 0)
+                ControlProfile.BuildDefaultProfile();
+
+            connect4PlayersToolStripMenuItem.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
+            connectZapperToolStripMenuItem.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper;
+
+            profileToolStripMenuItem.DropDownItems.Clear();
+
+            foreach (ControlProfile p in Program.Settings.InputProfiles)
+            {
+                ToolStripMenuItem it = new ToolStripMenuItem();
+                it.Text = p.Name;
+                it.Checked = p.Name == Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Name;
+
+                profileToolStripMenuItem.DropDownItems.Add(it);
+            }
+        }
+        private void connectZapperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NesCore.PAUSED = true;
+            // Get profiles
+            if (Program.Settings.InputProfiles == null)
+                ControlProfile.BuildDefaultProfile();
+            if (Program.Settings.InputProfiles.Count == 0)
+                ControlProfile.BuildDefaultProfile();
+
+            Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper =
+                !Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper;
+            Program.Settings.Save();
+            if (NesCore.ON)
+            {
+                ApplyInput();
+                NesCore.PAUSED = false;
+            }
+        }
+        private void connect4PlayersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NesCore.PAUSED = true;
+            // Get profiles
+            if (Program.Settings.InputProfiles == null)
+                ControlProfile.BuildDefaultProfile();
+            if (Program.Settings.InputProfiles.Count == 0)
+                ControlProfile.BuildDefaultProfile();
+
+            Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players =
+                !Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
+            Program.Settings.Save();
+            if (NesCore.ON)
+            {
+                ApplyInput();
+                NesCore.PAUSED = false;
+            }
+        }
+        private void profileToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            NesCore.PAUSED = true;
+            // Get profiles
+            if (Program.Settings.InputProfiles == null)
+                ControlProfile.BuildDefaultProfile();
+            if (Program.Settings.InputProfiles.Count == 0)
+                ControlProfile.BuildDefaultProfile();
+            for (int i = 0; i < Program.Settings.InputProfiles.Count; i++)
+            {
+                if (e.ClickedItem.Text == Program.Settings.InputProfiles[i].Name)
+                {
+                    Program.Settings.InputProfileIndex = i;
+                    // Save
+                    Program.Settings.Save();
+                    if (NesCore.ON)
+                    {
+                        ApplyInput();
+                        NesCore.PAUSED = false;
+                    }
+
+                    break;
+                }
+            }
+        }
+        private void TakeSnapshot(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.PAUSED = true;
+
+                // Make sure
+                Directory.CreateDirectory(Program.Settings.FolderSnapshots);
+                // Take it !
+                if (NesCore.VideoOutput != null)
+                    NesCore.VideoOutput.TakeSnapshot(Program.Settings.FolderSnapshots,
+                    Path.GetFileNameWithoutExtension(NesCore.RomInfo.RomPath),
+                    Program.Settings.SnapshotsFormat,
+                    false);
+
+                NesCore.PAUSED = false;
+            }
+        }
+        private void recentRomsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = true;
+            LoadRom(e.ClickedItem.Tag.ToString(), true);
+        }
+        private void SwitchToFullscreen(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.PAUSED = true;
+                NesCore.VideoOutput.SwitchFullscreen();
+            }
+        }
+        private void FormMain_ResizeBegin(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.VideoOutput.ResizeBegin();
+            }
+        }
+        private void FormMain_ResizeEnd(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.VideoOutput.ResizeEnd();
+            }
         }
         private void stateToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             slotToolStripMenuItem.DropDownItems.Clear();
             for (int i = 0; i < 10; i++)
             {
-                ToolStripMenuItem item = new ToolStripMenuItem(i.ToString());
-                item.Checked = (Nes.StateSlot == i);
+                ToolStripMenuItem item = new ToolStripMenuItem();
+                item.Text = Program.ResourceManager.GetString("Item_StateSlot") + " " + i;
+                item.Tag = i;
+                item.Checked = (i == NesCore.StateSlot);
+                Keys k = (Keys)Enum.Parse(typeof(Keys), "D" + i.ToString());
+                item.ShortcutKeys = Keys.Control | k;
                 slotToolStripMenuItem.DropDownItems.Add(item);
             }
         }
         private void slotToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            Nes.StateSlot = int.Parse(e.ClickedItem.Text.Substring(0, 1));
+            NesCore.StateSlot = (int)e.ClickedItem.Tag;
+            if (NesCore.VideoOutput != null)
+                NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_StateSlotChangedTo")
+                    + " " + NesCore.StateSlot, 120, Color.White.ToArgb());
+            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
+                + " " + NesCore.StateSlot;
         }
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveState(object sender, EventArgs e)
         {
-            if (Nes.ON && Directory.Exists(RenderersCore.SettingsManager.Settings.Folders_StateFolder))
-                Nes.SaveState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
+            if (NesCore.ON)
+                NesCore.SaveState(Program.Settings.FolderStates);
         }
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveStateAs(object sender, EventArgs e)
         {
-            if (Nes.ON && Directory.Exists(RenderersCore.SettingsManager.Settings.Folders_StateFolder))
-                Nes.LoadState(RenderersCore.SettingsManager.Settings.Folders_StateFolder);
-        }
-        private void inputToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormInput frm = new FormInput();
-            frm.ShowDialog(this);
-            // apply
-            if (Nes.ON)
+            if (NesCore.ON)
             {
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
-                Nes.TogglePause(false);
-            }
-        }
-        private void inputToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            profileToolStripMenuItem.DropDownItems.Clear();
-            for (int i = 0; i < RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection.Count; i++)
-            {
-                ToolStripMenuItem item = new ToolStripMenuItem();
-                item.Text = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[i].Name;
-                item.Checked = i == RenderersCore.SettingsManager.Settings.Controls_ProfileIndex;
-                profileToolStripMenuItem.DropDownItems.Add(item);
-            }
-            connect4PlayersToolStripMenuItem.Checked = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players;
-            connectZapperToolStripMenuItem.Checked = RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper;
-        }
-        private void profileToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            for (int i = 0; i < RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection.Count; i++)
-            {
-                if (e.ClickedItem.Text == RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[i].Name)
+                NesCore.PAUSED = true;
+                SaveFileDialog sav = new SaveFileDialog();
+                sav.Title = Program.ResourceManager.GetString("Title_SaveStateFile");
+                sav.Filter = Program.ResourceManager.GetString("Filter_StateFile");
+                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
                 {
-                    RenderersCore.SettingsManager.Settings.Controls_ProfileIndex = i;
-
-                    if (Nes.ON)
-                    {
-                        RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
-                        Nes.TogglePause(false);
-                    }
-
-                    break;
+                    NesCore.SaveStateAs(sav.FileName);
                 }
             }
         }
-        private void pathsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadState(object sender, EventArgs e)
         {
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormPathSettings frm = new FormPathSettings();
-            frm.ShowDialog(this);
-            if (frm.RefreshBrowser)
+            if (NesCore.ON)
+                NesCore.LoadState(Program.Settings.FolderStates);
+        }
+        private void LoadStateAs(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
             {
-                if (savedb)
+                NesCore.PAUSED = true;
+                OpenFileDialog op = new OpenFileDialog();
+                op.Title = Program.ResourceManager.GetString("Title_LoadStateFile");
+                op.Filter = Program.ResourceManager.GetString("Filter_StateFile");
+                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
                 {
-                    if (MessageBox.Show("Browser database file changed and it will be loaded now. Do you want to save current database first ?", "MyNes",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                    {
-                        if (Program.BDatabaseManager.Save(Program.BDatabaseManager.FilePath))
-                            savedb = false;
-                        else
-                        { MessageBox.Show("Unable to save !!"); return; }
-                    }
-                }
-                if (Program.BDatabaseManager.Load(Program.Settings.FoldersDatabasePath))
-                {
-                    savedb = false;
-                    RefreshFolders();
+                    NesCore.LoadStateAs(op.FileName);
                 }
             }
-            if (Nes.ON)
-                Nes.TogglePause(false);
         }
-        private void soundToolStripMenuItem_Click(object sender, EventArgs e)
+        private void QuickSaveState(object sender, EventArgs e)
         {
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormSoundSettings frm = new FormSoundSettings();
-            frm.ShowDialog(this);
+            if (NesCore.ON)
+                NesCore.SaveMemoryState();
+        }
+        private void QuickLoadState(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.LoadMemoryState();
+        }
+        private void SaveSRAM(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.RequestSRAMSave();
+        }
+        private void SaveSRAMAs(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.PAUSED = true;
+                SaveFileDialog sav = new SaveFileDialog();
+                sav.Title = Program.ResourceManager.GetString("Title_SaveSRAM");
+                sav.Filter = Program.ResourceManager.GetString("Filter_SRAMFile");
+                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    NesCore.SaveSramAs(sav.FileName);
+                }
+            }
+        }
+        private void LoadSRAM(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.RequestSRAMLoad();
+        }
+        private void LoadSRAMAs(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.PAUSED = true;
+                OpenFileDialog op = new OpenFileDialog();
+                op.Title = Program.ResourceManager.GetString("Title_LoadStateFile");
+                op.Filter = Program.ResourceManager.GetString("Title_LoadSRAMFile");
+                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    NesCore.LoadSramAs(op.FileName);
+                }
+            }
+        }
+        private void ToggleTurbo(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.SpeedLimiter.ON = !NesCore.SpeedLimiter.ON;
+                if (!NesCore.SpeedLimiter.ON)
+                {
+                    NesCore.VideoOutput.DrawNotification("Turbo enabled !", 120, Color.Green.ToArgb());
+                }
+                else
+                {
+                    NesCore.VideoOutput.DrawNotification("Turbo disabled !", 120, Color.Green.ToArgb());
+                }
+                NesCore.AudioOutput.ResetBuffer();
+                NesCore.APU.ResetBuffer();
+            }
+        }
+        private void toolsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                turboSpeedToolStripMenuItem.Checked = !NesCore.SpeedLimiter.ON;
+            }
+            else
+            { turboSpeedToolStripMenuItem.Checked = false; }
+        }
+        private void frameskippingToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            // Uncheck all
+            for (int i = 0; i < frameskippingToolStripMenuItem.DropDownItems.Count; i++)
+            {
+                ((ToolStripMenuItem)frameskippingToolStripMenuItem.DropDownItems[i]).Checked = false;
+            }
+            if (!Program.Settings.FrameSkippingEnabled)
+                disableToolStripMenuItem.Checked = true;
+            else
+            {
+                switch (Program.Settings.FrameSkippingCount)
+                {
+                    default: disableToolStripMenuItem.Checked = true; break;
+                    case 1: fPSForNTSCToolStripMenuItem.Checked = true; break;
+                    case 2: fPSForNTSCToolStripMenuItem1.Checked = true; break;
+                    case 3: fPSForNTSCToolStripMenuItem2.Checked = true; break;
+                    case 4: toolStripMenuItem2.Checked = true; break;
+                }
+            }
+        }
+        private void disableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkippingEnabled = false;
+            if (NesCore.ON)
+                ApplyEmuSettings();
+        }
+        private void fPSForNTSCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkippingEnabled = true;
+            Program.Settings.FrameSkippingCount = 1;
+            if (NesCore.ON)
+                ApplyEmuSettings();
+        }
+        private void fPSForNTSCToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkippingEnabled = true;
+            Program.Settings.FrameSkippingCount = 2;
+            if (NesCore.ON)
+                ApplyEmuSettings();
+        }
+        private void fPSForNTSCToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkippingEnabled = true;
+            Program.Settings.FrameSkippingCount = 3;
+            if (NesCore.ON)
+                ApplyEmuSettings();
+        }
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkippingEnabled = true;
+            Program.Settings.FrameSkippingCount = 4;
+            if (NesCore.ON)
+                ApplyEmuSettings();
+        }
+        private void languageToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            int i = 0;
+            int index = 0;
+            foreach (ToolStripMenuItem item in languageToolStripMenuItem.DropDownItems)
+            {
+                if (item.Text == e.ClickedItem.Text)
+                {
+                    item.Checked = true;
+                    index = i;
+                }
+                else
+                    item.Checked = false;
+                i++;
+            }
+            Program.Language = Program.SupportedLanguages[index, 0];
+            Program.Settings.Language = Program.SupportedLanguages[index, 0];
 
-            // apply
-            if (Nes.ON)
-            {
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Audio);
-                Nes.TogglePause(false);
-            }
+            MessageBox.Show(Program.ResourceManager.GetString("Message_YouMustRestartTheProgramToApplyLanguage"),
+                Program.ResourceManager.GetString("MessageCaption_ApplyLanguage"));
         }
-        private void emulationSystemToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        private void showMenuStripToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            switch (RenderersCore.SettingsManager.Settings.Emu_EmulationSystem)
-            {
-                case EmulationSystem.AUTO:
-                    autoToolStripMenuItem.Checked = true;
-                    nTSCToolStripMenuItem.Checked = false;
-                    pALToolStripMenuItem.Checked = false;
-                    dENDYToolStripMenuItem.Checked = false;
-                    break;
-                case EmulationSystem.NTSC:
-                    autoToolStripMenuItem.Checked = false;
-                    nTSCToolStripMenuItem.Checked = true;
-                    pALToolStripMenuItem.Checked = false;
-                    dENDYToolStripMenuItem.Checked = false;
-                    break;
-                case EmulationSystem.PALB:
-                    autoToolStripMenuItem.Checked = false;
-                    nTSCToolStripMenuItem.Checked = false;
-                    pALToolStripMenuItem.Checked = true;
-                    dENDYToolStripMenuItem.Checked = false;
-                    break;
-                case EmulationSystem.DENDY:
-                    autoToolStripMenuItem.Checked = false;
-                    nTSCToolStripMenuItem.Checked = false;
-                    pALToolStripMenuItem.Checked = false;
-                    dENDYToolStripMenuItem.Checked = true;
-                    break;
-            }
+            Program.Settings.ShowMenu = !Program.Settings.ShowMenu;
+            ApplyViewSettings();
         }
-        private void autoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void showToolsStripToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.AUTO;
+            Program.Settings.ShowToolsBar = !Program.Settings.ShowToolsBar;
+            ApplyViewSettings();
         }
-        private void nTSCToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowHelp(object sender, EventArgs e)
         {
-            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.NTSC;
-        }
-        private void pALToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.PALB;
-        }
-        private void videoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormVideoSettings frm = new FormVideoSettings();
-            frm.ShowDialog(this);
-            // apply
-            if (Nes.ON)
-            {
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Video);
-                Nes.TogglePause(false);
-            }
-        }
-        private void paletteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FormPaletteSettings frm = new FormPaletteSettings();
-            frm.Show();
-        }
-        private void configureToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-                Nes.TogglePause(true);
             try
             {
-                FormGameGenie frm = new FormGameGenie();
-                frm.ShowDialog(this);
+                string startup = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                Help.ShowHelp(this, startup + "\\" + Program.CultureInfo.Name + "\\Help.chm", HelpNavigator.TableOfContents);
             }
-            catch { }
-            if (Nes.ON)
-                Nes.TogglePause(false);
-        }
-        //active game genie
-        private void activeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
+            catch (Exception ex)
             {
-                Nes.TogglePause(true);
-                if (!Nes.Board.IsGameGenieActive && Nes.Board.GameGenieCodes == null)
+                ManagedMessageBox.ShowErrorMessage(ex.Message, mainTitle);
+            }
+        }
+        private void toolStripSplitButton1_DropDownOpening(object sender, EventArgs e)
+        {
+            foreach (ToolStripMenuItem it in toolStripSplitButton1.DropDownItems)
+                it.Checked = false;
+            switch (Program.Settings.TVFormat)
+            {
+                case TVSystemSettings.AUTO: aUTOToolStripMenuItem1.Checked = true; break;
+                case TVSystemSettings.DENDY: dENDYToolStripMenuItem1.Checked = true; break;
+                case TVSystemSettings.NTSC: nTSCToolStripMenuItem1.Checked = true; break;
+                case TVSystemSettings.PALB: pALBToolStripMenuItem1.Checked = true; break;
+            }
+        }
+        private void toolStripSplitButton2_DropDownOpening(object sender, EventArgs e)
+        {
+            toolStripSplitButton_stateSlot.DropDownItems.Clear();
+            for (int i = 0; i < 10; i++)
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem();
+                item.Text = Program.ResourceManager.GetString("Item_StateSlot") + " " + i;
+                item.Tag = i;
+                item.Checked = (i == NesCore.StateSlot);
+
+                toolStripSplitButton_stateSlot.DropDownItems.Add(item);
+            }
+        }
+        private void toolStripSplitButton2_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            NesCore.StateSlot = (int)e.ClickedItem.Tag;
+            if (NesCore.VideoOutput != null)
+                NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_StateSlotChangedTo")
+                    + " " + NesCore.StateSlot, 120, Color.White.ToArgb());
+            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
+                    + " " + NesCore.StateSlot;
+        }
+        private void toolStripSplitButton1_ButtonClick(object sender, EventArgs e)
+        {
+            // Switch region..
+            switch (Program.Settings.TVFormat)
+            {
+                case TVSystemSettings.AUTO: nTSCToolStripMenuItem_Click(this, null); break;
+                case TVSystemSettings.DENDY: aUTOToolStripMenuItem_Click(this, null); break;
+                case TVSystemSettings.NTSC: pALBToolStripMenuItem_Click(this, null); break;
+                case TVSystemSettings.PALB: dENDYToolStripMenuItem_Click(this, null); break;
+            }
+        }
+        private void toolStripSplitButton_stateSlot_ButtonClick(object sender, EventArgs e)
+        {
+            NesCore.StateSlot = (NesCore.StateSlot + 1) % 10;
+            if (NesCore.VideoOutput != null)
+                NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_StateSlotChangedTo")
+                    + " " + NesCore.StateSlot, 120, Color.White.ToArgb());
+            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
+                    + " " + NesCore.StateSlot;
+        }
+        private void aboutMyNesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = true;
+
+            FormAbout frm = new FormAbout();
+            frm.ShowDialog(this);
+
+            if (NesCore.ON)
+                NesCore.PAUSED = false;
+        }
+        private void FormMain_Deactivate(object sender, EventArgs e)
+        {
+            if (NesCore.ON && Program.Settings.MainWindowAutoPauseOnFocusLost)
+                NesCore.PAUSED = true;
+        }
+        private void FormMain_Activated(object sender, EventArgs e)
+        {
+            if (NesCore.ON && Program.Settings.MainWindowAutoPauseOnFocusLost)
+                NesCore.PAUSED = false;
+        }
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = true;
+
+            FormPreferences frm = new FormPreferences();
+            frm.ShowDialog(this);
+
+            if (NesCore.ON)
+                NesCore.PAUSED = false;
+        }
+        // The status timer
+        private void timer_status_Tick(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                // Game genie
+                if (NesCore.BOARD.IsGameGenieActive)
+                    StatusLabel_GameGenie.Text = "Game Genie";
+                else
+                    StatusLabel_GameGenie.Text = "";
+
+                if (NesCore.PAUSED)
+                {
+                    StatusLabel_emulation.Text = Program.ResourceManager.GetString("Status_Emulation") + ": " +
+                   Program.ResourceManager.GetString("Status_PAUSED");
+                    // Show mouse cursor
+                    if (mouseHiding)
+                    { Cursor.Show(); mouseHiding = false; }
+                }
+                else
+                {
+                    StatusLabel_emulation.Text = Program.ResourceManager.GetString("Status_Emulation") + ": " +
+                      Program.ResourceManager.GetString("Status_ON");
+                    // Mouse hiding ?
+                    if (Program.Settings.AutoHideMouse)
+                    {
+                        if (mouseHideTimer > 0)
+                            mouseHideTimer--;
+                        else if (mouseHideTimer == 0)
+                        {
+                            mouseHideTimer = -1;
+                            if (this.Focused)
+                            {
+                                if (!mouseHiding)
+                                {
+                                    mouseHiding = true;
+                                    Cursor.Hide();
+                                }
+                            }
+                            else  // Show mouse cursor
+                            {
+                                if (mouseHiding)
+                                { Cursor.Show(); mouseHiding = false; }
+                            }
+                        }
+                    }
+
+                }
+                StatusLabel_tv.Text = NesCore.TV.ToString();
+                // Normal status
+                string status = "";
+
+                if (NesCore.AudioOutput != null)
+                {
+                    if (NesCore.AudioOutput.IsRecording)
+                    {
+                        status += Program.ResourceManager.GetString("Status_RecordingSound") +
+                         " [" + TimeSpan.FromSeconds(NesCore.AudioOutput.RecordTime) + "]";
+                    }
+                }
+                StatusLabel_notifications.Text = status;
+
+            }
+            else
+            {
+                StatusLabel_emulation.Text = Program.ResourceManager.GetString("Status_Emulation") + ": " +
+                  Program.ResourceManager.GetString("Status_OFF");
+                StatusLabel_tv.Text = "";
+                StatusLabel_GameGenie.Text = "";
+                if (this.Text != mainTitle)
+                    this.Text = mainTitle;
+                // Show mouse cursor
+                if (mouseHiding)
+                { Cursor.Show(); mouseHiding = false; }
+            }
+        }
+        private void showStatusStripToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.ShowStatus = !Program.Settings.ShowStatus;
+            ApplyViewSettings();
+        }
+        private void FormMain_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseHiding)
+            { Cursor.Show(); mouseHiding = false; }
+            if (Program.Settings.AutoHideMouse)
+                mouseHideTimer = Program.Settings.AutoHideMousePeriod;
+        }
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+        private void menuStrip1_MenuActivate(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = true;
+        }
+        private void menuStrip1_MenuDeactivate(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+                NesCore.PAUSED = false;
+        }
+        private void toolStripSplitButton2_DropDownOpening_1(object sender, EventArgs e)
+        {
+            // Fix
+            if (Program.Settings.InputProfiles == null)
+                ControlProfile.BuildDefaultProfile();
+            if (Program.Settings.InputProfiles.Count == 0)
+                ControlProfile.BuildDefaultProfile();
+
+            connect4PlayersToolStripMenuItem1.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
+            connectZapperToolStripMenuItem1.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper;
+
+            profileToolStripMenuItem1.DropDownItems.Clear();
+
+            foreach (ControlProfile p in Program.Settings.InputProfiles)
+            {
+                ToolStripMenuItem it = new ToolStripMenuItem();
+                it.Text = p.Name;
+                it.Checked = p.Name == Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Name;
+
+                profileToolStripMenuItem1.DropDownItems.Add(it);
+            }
+        }
+        private void ActiveGameGenie(object sender, EventArgs e)
+        {
+            if (NesCore.ON)
+            {
+                NesCore.PAUSED = true;
+                if (!NesCore.BOARD.IsGameGenieActive && NesCore.BOARD.GameGenieCodes == null)
                 {
                     //configure
                     FormGameGenie frm = new FormGameGenie();
                     frm.ShowDialog(this);
-                    activeToolStripMenuItem.Checked = Nes.Board.IsGameGenieActive;
                 }
                 else
                 {
-                    Nes.Board.IsGameGenieActive = !Nes.Board.IsGameGenieActive;
-                    activeToolStripMenuItem.Checked = Nes.Board.IsGameGenieActive;
+                    NesCore.BOARD.IsGameGenieActive = !NesCore.BOARD.IsGameGenieActive;
                 }
-                Nes.TogglePause(false);
+                NesCore.PAUSED = false;
             }
-            else
-            { activeToolStripMenuItem.Checked = false; }
         }
-        private void connectZapperToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ConfigureGameGenie(object sender, EventArgs e)
         {
-            if (Nes.ON)
-                Nes.TogglePause(true);
+            if (NesCore.ON)
+            {
+                NesCore.PAUSED = true;
 
-            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper = !
-                RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].ConnectZapper;
-
-            if (Nes.ON)
-            { 
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
-                Nes.TogglePause(false); 
-            }
-        }
-        private void connect4PlayersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-                Nes.TogglePause(true);
-
-            RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players = !
-                RenderersCore.SettingsManager.Settings.Controls_ProfilesCollection[RenderersCore.SettingsManager.Settings.Controls_ProfileIndex].Connect4Players;
-
-            if (Nes.ON)
-            {
-                RenderersCore.AvailableRenderers[Program.Settings.CurrentRendererIndex].ApplySettings(SettingType.Input);
-                Nes.TogglePause(false);
-            }
-        }
-        private void hardResetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Nes.HardReset();
-        }
-        private void playToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PlaySelectedRom();
-        }
-        private void fileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            if (Program.Settings.RecentFiles == null)
-                Program.Settings.RecentFiles = new System.Collections.Specialized.StringCollection();
-
-            recentFilesToolStripMenuItem.DropDownItems.Clear();
-            foreach (string file in Program.Settings.RecentFiles)
-            {
-                ToolStripMenuItem item = new ToolStripMenuItem();
-                item.Text = Path.GetFileName(file);
-                item.ToolTipText = file;
-                recentFilesToolStripMenuItem.DropDownItems.Add(item);
-            }
-
-            //others
-            if (Nes.ON)
-            {
-                recordSoundToolStripMenuItem.Enabled = true;
-                recordSoundToolStripMenuItem.Text = Nes.AudioDevice.IsRecording ? "Stop re&codring sound" : "Re&cord sound";
-            }
-            else
-            {
-                recordSoundToolStripMenuItem.Enabled = false;
-                recordSoundToolStripMenuItem.Text = "Re&cord sound";
-            }
-        }
-        private void recentFilesToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            if (File.Exists(e.ClickedItem.ToolTipText))
-            {
-                OpenRom(e.ClickedItem.ToolTipText);
-                AddRecent(e.ClickedItem.ToolTipText);
-            }
-        }
-        private void imageViewer_snaps_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            openContainerFolderToolStripMenuItem_Click(sender, null);
-        }
-        private void imageViewer_covers_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            toolStripMenuItem2_Click(sender, null);
-        }
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            try { System.Diagnostics.Process.Start(rom.SnapshotPath); }
-            catch { }
-        }
-        private void openContainerFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.SnapshotPath); }
-            catch { }
-        }
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            try { System.Diagnostics.Process.Start(rom.CoverPath); }
-            catch { }
-        }
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.CoverPath); }
-            catch { }
-        }
-        private void dENDYToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RenderersCore.SettingsManager.Settings.Emu_EmulationSystem = EmulationSystem.DENDY;
-        }
-        private void buttonDeleteFolder_EnabledChanged(object sender, EventArgs e)
-        {
-            deleteToolStripMenuItem.Enabled = deleteFolderToolStripMenuItem.Enabled = buttonDeleteFolder.Enabled;
-        }
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                SaveFileDialog sav = new SaveFileDialog();
-                sav.Title = "Save state as";
-                sav.Filter = "My Nes State (*.mns)|*.mns";
-                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    Nes.SaveStateAs(sav.FileName);
-                }
-            }
-        }
-        private void loadAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                OpenFileDialog op = new OpenFileDialog();
-                op.Title = "Load state as";
-                op.Filter = "My Nes State (*.mns)|*.mns";
-                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    Nes.LoadStateAs(op.FileName);
-                }
-            }
-        }
-        private void recordSoundToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                Nes.TogglePause(true);
-                if (Nes.AudioDevice.IsRecording)
-                {
-                    Nes.AudioDevice.RecordStop();
-                }
-                else
-                {
-                    SaveFileDialog sav = new SaveFileDialog();
-                    sav.Title = "Save wav file";
-                    sav.Filter = "PCM Wav (*.wav)|*.wav";
-                    if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                        Nes.AudioDevice.Record(sav.FileName);
-                }
-                Nes.TogglePause(false);
-            }
-        }
-        private void ComboBox_filter_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Return)
-                DoFilter(this, new EventArgs());
-        }
-        private void rendererToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-                Nes.TogglePause(true);
-            FormRendererSelect frm = new FormRendererSelect();
-            frm.ShowDialog(this);
-
-            if (Nes.ON)
-                Nes.TogglePause(false);
-        }
-        private void locateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-                return;
-
-            string path = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom.Path;
-
-            if (File.Exists(path))
-                System.Diagnostics.Process.Start("explorer.exe", @"/select, " + path);
-        }
-        private void openToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (treeView.SelectedNode == null)
-                return;
-            string path = ((TreeNodeBFolder)treeView.SelectedNode).BFolder.Path;
-            if (Directory.Exists(path))
-                System.Diagnostics.Process.Start(path);
-        }
-        private void ManagedListView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                richTextBox_romInfo.Text = "";
-                imageViewer_covers.ImageToView = imageViewer_snaps.ImageToView = null;
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-            if (File.Exists(rom.CoverPath))
-                imageViewer_covers.ImageToView = (Bitmap)Image.FromFile(rom.CoverPath);
-            else
-                imageViewer_covers.ImageToView = null;
-            if (File.Exists(rom.SnapshotPath))
-                imageViewer_snaps.ImageToView = (Bitmap)Image.FromFile(rom.SnapshotPath);
-            else
-                imageViewer_snaps.ImageToView = null;
-            richTextBox_romInfo.Text = rom.InfoText;
-        }
-        private void ManagedListView1_ItemDoubleClick(object sender, ManagedListViewItemDoubleClickArgs e)
-        {
-            PlaySelectedRom();
-        }
-        private void ManagedListView1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Return)
-                PlaySelectedRom();
-            if (e.KeyData == Keys.D0)
-                Nes.StateSlot = 0;
-            if (e.KeyData == Keys.D1)
-                Nes.StateSlot = 1;
-            if (e.KeyData == Keys.D2)
-                Nes.StateSlot = 2;
-            if (e.KeyData == Keys.D3)
-                Nes.StateSlot = 3;
-            if (e.KeyData == Keys.D4)
-                Nes.StateSlot = 4;
-            if (e.KeyData == Keys.D5)
-                Nes.StateSlot = 5;
-            if (e.KeyData == Keys.D6)
-                Nes.StateSlot = 6;
-            if (e.KeyData == Keys.D7)
-                Nes.StateSlot = 7;
-            if (e.KeyData == Keys.D8)
-                Nes.StateSlot = 8;
-            if (e.KeyData == Keys.D9)
-                Nes.StateSlot = 9;
-        }
-        private void ManagedListView1_EnterPressed(object sender, EventArgs e)
-        {
-            PlaySelectedRom();
-        }
-        // Draw thumbnails
-        private void ManagedListView1_DrawItem(object sender, ManagedListViewItemDrawArgs e)
-        {
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.Items[e.ItemIndex]).BRom;
-            e.TextToDraw = rom.Name;
-            switch (comboBox_thumbnailsMode.SelectedIndex)
-            {
-                case 0:// auto
-                    if (File.Exists(rom.SnapshotPath))
-                    {
-                        e.ImageToDraw = Image.FromFile(rom.SnapshotPath);
-                    }
-                    else if (File.Exists(rom.CoverPath))
-                    {
-                        e.ImageToDraw = Image.FromFile(rom.CoverPath);
-                    }
-                    else// draw cart image or compressed file image
-                    {
-                        switch (rom.BRomType)
-                        {
-                            case BRomType.INES: e.ImageToDraw = imageList.Images[1]; break;
-                            case BRomType.Archive: e.ImageToDraw = imageList.Images[2]; break;
-                        }
-                    }
-                    break;
-                case 1:// snapshot
-                    if (File.Exists(rom.SnapshotPath))
-                    {
-                        e.ImageToDraw = Image.FromFile(rom.SnapshotPath);
-                    }
-                    else// draw cart image or compressed file image
-                    {
-                        switch (rom.BRomType)
-                        {
-                            case BRomType.INES: e.ImageToDraw = imageList.Images[1]; break;
-                            case BRomType.Archive: e.ImageToDraw = imageList.Images[2]; break;
-                        }
-                    }
-                    break;
-                case 2: //cover
-                    if (File.Exists(rom.CoverPath))
-                    {
-                        e.ImageToDraw = Image.FromFile(rom.CoverPath);
-                    }
-                    else// draw cart image or compressed file image
-                    {
-                        switch (rom.BRomType)
-                        {
-                            case BRomType.INES: e.ImageToDraw = imageList.Images[1]; break;
-                            case BRomType.Archive: e.ImageToDraw = imageList.Images[2]; break;
-                        }
-                    }
-                    break;
-            }
-        }
-        private void ThumbnailsViewSwitch_CheckedChanged(object sender, EventArgs e)
-        {
-            Program.Settings.IsThumbnailsView = ThumbnailsViewSwitch.Checked;
-            SwitchViewMode();
-        }
-        private void trackBar_thumbnailsZoom_Scroll(object sender, EventArgs e)
-        {
-            Program.Settings.ThumbnailsSize = trackBar_thumbnailsZoom.Value;
-            ManagedListView1.ThunmbnailsHeight = ManagedListView1.ThunmbnailsWidth = Program.Settings.ThumbnailsSize;
-            label_thumbnailsSize.Text = Program.Settings.ThumbnailsSize + " x " + Program.Settings.ThumbnailsSize;
-
-            ManagedListView1.Invalidate();
-        }
-        private void comboBox_thumbnailsMode_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ManagedListView1.Invalidate();
-        }
-        // columns show/hide
-        private void columnsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            int i = 0;
-            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
-            {
-                if (item.ColumnName == e.ClickedItem.Text)
-                {
-                    item.Visible = !item.Visible;
-                    ((ToolStripMenuItem)e.ClickedItem).Checked = item.Visible;
-                    RefreshColumns();
-                    break;
-                }
-                i++;
-            }
-            ManagedListView1.Invalidate();
-            SaveColumns();
-        }
-        private void contextMenuStrip_columns_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            contextMenuStrip_columns.Items.Clear();
-
-            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
-            {
-                ToolStripMenuItem mitem = new ToolStripMenuItem();
-                mitem.Text = item.ColumnName;
-                mitem.Checked = item.Visible;
-                contextMenuStrip_columns.Items.Add(mitem);
-            }
-        }
-        private void contextMenuStrip_columns_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            int i = 0;
-            foreach (ColumnItem item in Program.Settings.ColumnsManager.Columns)
-            {
-                if (item.ColumnName == e.ClickedItem.Text)
-                {
-                    item.Visible = !item.Visible;
-                    ((ToolStripMenuItem)e.ClickedItem).Checked = item.Visible;
-                    RefreshColumns();
-                    break;
-                }
-                i++;
-            }
-            ManagedListView1.Invalidate();
-            SaveColumns();
-        }
-        private void ManagedListView1_SwitchToColumnsContextMenu(object sender, EventArgs e)
-        {
-            ManagedListView1.ContextMenuStrip = contextMenuStrip_columns;
-        }
-        private void ManagedListView1_SwitchToNormalContextMenu(object sender, EventArgs e)
-        {
-            ManagedListView1.ContextMenuStrip = contextMenuStrip_roms;
-        }
-        private void playToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            PlaySelectedRom();
-        }
-        private void locateOnDiskToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                MessageBox.Show("Select one rom please.");
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            try { System.Diagnostics.Process.Start("explorer.exe", @"/select, " + rom.Path); }
-            catch { }
-        }
-        private void resetPlaydTimesCounterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("Select rom(s) please.");
-                return;
-            }
-            foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
-            {
-                item.BRom.PlayedTimes = 0;
-                item.GetSubItemByID("played times").Text = "0 time(s)";
-            }
-            ManagedListView1.Invalidate();
-            SaveDB = true;
-        }
-        private void resetRatingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("Select rom(s) please.");
-                return;
-            }
-            foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
-            {
-                item.BRom.Rating = 0;
-                ((ManagedListViewRatingSubItem)item.GetSubItemByID("rating")).Rating = 0;
-
-            }
-            ManagedListView1.Invalidate();
-            SaveDB = true;
-        }
-        private void setSnapshotToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("Select rom(s) please.");
-                return;
-            }
-            OpenFileDialog Op = new OpenFileDialog();
-            Op.Title = "Set snapshot for rom";
-            Op.Filter = "Image file (*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;)|*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;";
-            Op.Multiselect = false;
-            if (Op.ShowDialog(this) == DialogResult.OK)
-            {
-                foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
-                {
-                    item.BRom.SnapshotPath = Op.FileName;
-                }
-                ManagedListView1.Invalidate();
-                SaveDB = true;
-            }
-        }
-        private void setCoverToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("Select rom(s) please.");
-                return;
-            }
-            OpenFileDialog Op = new OpenFileDialog();
-            Op.Title = "Set cover for rom";
-            Op.Filter = "Image file (*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;)|*.jpg;*.png;*.bmp;*.gif;*.jpeg;*.tiff;*.tga;";
-            Op.Multiselect = false;
-            if (Op.ShowDialog(this) == DialogResult.OK)
-            {
-                foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
-                {
-                    item.BRom.CoverPath = Op.FileName;
-                }
-                ManagedListView1.Invalidate();
-                SaveDB = true;
-            }
-        }
-        // Sort when click column
-        private void ManagedListView1_ColumnClicked(object sender, ManagedListViewColumnClickArgs e)
-        {
-            if (treeView.SelectedNode == null)
-                return;
-            //get column and detect sort information
-            ManagedListViewColumn column = ManagedListView1.Columns.GetColumnByID(e.ColumnID);
-            if (column == null) return;
-            bool az = false;
-            switch (column.SortMode)
-            {
-                case ManagedListViewSortMode.AtoZ: az = false; break;
-                case ManagedListViewSortMode.None:
-                case ManagedListViewSortMode.ZtoA: az = true; break;
-            }
-            foreach (ManagedListViewColumn cl in ManagedListView1.Columns)
-                cl.SortMode = ManagedListViewSortMode.None;
-            // do sort
-            BFolder folder = ((TreeNodeBFolder)treeView.SelectedNode).BFolder;
-            folder.BRoms.Sort(new RomsComparer(az, column.ID));
-
-            if (az)
-                column.SortMode = ManagedListViewSortMode.AtoZ;
-            else
-                column.SortMode = ManagedListViewSortMode.ZtoA;
-
-            RefreshFilesFromFolder(folder);
-            SaveDB = true;
-        }
-        private void toolStripButton13_Click(object sender, EventArgs e)
-        {
-            foreach (ManagedListViewItem_BRom item in ManagedListView1.SelectedItems)
-            {
-                item.BRom.InfoText = richTextBox_romInfo.Text;
-            }
-            SaveDB = true;
-        }
-        private void toolStripButton12_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog Op = new OpenFileDialog();
-            Op.Title = "Get information from text file";
-            Op.Filter = "Text file (*.txt)|*.txt;";
-            Op.Multiselect = false;
-            if (Op.ShowDialog(this) == DialogResult.OK)
-            {
-                richTextBox_romInfo.Lines = File.ReadAllLines(Op.FileName);
-            }
-        }
-        private void toolStripButton14_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog save = new OpenFileDialog();
-            save.Title = "Save information to text file";
-            save.Filter = "Text file (*.txt)|*.txt;";
-            if (ManagedListView1.SelectedItems.Count == 1)
-            {
-                save.FileName =
-                      Path.GetFileNameWithoutExtension(ManagedListView1.SelectedItems[0].GetSubItemByID("name").Text) + ".txt";
-            }
-            if (save.ShowDialog(this) == DialogResult.OK)
-            {
-                File.WriteAllLines(save.FileName, richTextBox_romInfo.Lines);
-            }
-        }
-        private void iNESHeaderEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                MessageBox.Show("Please close current game first. Can't edit while emulation is on.");
-                return;
-            }
-            FormInesHeaderEditor frm = new FormInesHeaderEditor();
-            frm.ShowDialog(this);
-        }
-        private void romInfoToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                MessageBox.Show("Select one rom please.");
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            if (Nes.ON)
-            { Nes.TogglePause(true); }
-
-            FormRomInfo frm = new FormRomInfo(rom.Path);
-            frm.ShowDialog(this);
-
-            if (Nes.ON)
-            { Nes.TogglePause(false); }
-        }
-        private void editINESHeaderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                MessageBox.Show("Please close current game first. Can't edit while emulation is on.");
-                return;
-            }
-            if (ManagedListView1.SelectedItems.Count != 1)
-            {
-                MessageBox.Show("Select one rom please.");
-                return;
-            }
-            BRom rom = ((ManagedListViewItem_BRom)ManagedListView1.SelectedItems[0]).BRom;
-
-            FormInesHeaderEditor frm = new FormInesHeaderEditor(rom.Path);
-            frm.ShowDialog(this);
-        }
-        private void fixINESHeaderForFilesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                MessageBox.Show("Please close current game first. Can't edit while emulation is on.");
-                return;
-            }
-
-            if (ManagedListView1.SelectedItems.Count > 0)
-            {
-                List<string> files = new List<string>();
-                foreach (ManagedListViewItem_BRom rom in ManagedListView1.SelectedItems)
-                    files.Add(rom.BRom.Path);
-                FormINESFilesFixer frm = new FormINESFilesFixer(files.ToArray());
+                //configure
+                FormGameGenie frm = new FormGameGenie();
                 frm.ShowDialog(this);
-            }
-            else
-            {
-                FormINESFilesFixer frm = new FormINESFilesFixer();
-                frm.ShowDialog(this);
-            }
-        }
-        private void welcomeWindowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FormWelcome frm = new FormWelcome();
-            frm.ShowDialog(this);
-        }
-        private void FormMain_Shown(object sender, EventArgs e)
-        {
-            if (Program.Settings.ShowWelcomeAtStartup)
-            {
-                FormWelcome frm = new FormWelcome();
-                frm.ShowDialog(this);
-            }
-        }
 
-        private void visitWebsiteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try { Process.Start("http://sourceforge.net/projects/mynes/"); }
-            catch { }
+                NesCore.PAUSED = false;
+            }
         }
-        private void facebookPageToolStripMenuItem_Click(object sender, EventArgs e)
+        private void gameGenieToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            try { Process.Start("http://www.facebook.com/pages/My-Nes/427707727244076"); }
-            catch { }
-        }
-        private void theCodeProjectArticleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try { Process.Start("http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx"); }
-            catch { }
-        }
-        private void createServerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-                Nes.TogglePause(true);
+            if (NesCore.ON)
+            {
+                activeToolStripMenuItem.Checked = NesCore.BOARD.IsGameGenieActive;
+            }
             else
             {
-                MessageBox.Show("You must play a game first.");
-                return;
-            }
-            if (NP.Status == ServerStatus.Running)
-            {
-                MessageBox.Show("Server is already created.");
-                return;
-            }
-            FormCreateServer frm = new FormCreateServer();
-            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-            {
-                // enter the net play rom as registered user ...
-                FormNetPlayRoom room = new FormNetPlayRoom(frm.UserName, frm.Password, NP.GetServerAddress(), true);
-                try
-                {
-                    room.Show();
-                }
-                catch { }
+                activeToolStripMenuItem.Checked = false;
             }
         }
-        private void joinServerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void toolStripSplitButton3_DropDownOpening(object sender, EventArgs e)
         {
-            if (Nes.ON)
-                Nes.TogglePause(true);
+            if (NesCore.ON)
+            {
+                activeToolStripMenuItem1.Checked = NesCore.BOARD.IsGameGenieActive;
+            }
             else
             {
-                MessageBox.Show("You must play a game first.");
-                return;
-            }
-            FormJoinServer frm = new FormJoinServer();
-            frm.CheckLogin += frm_CheckLogin;
-            frm.ShowDialog(this);
-        }
-        private void frm_CheckLogin(object sender, ServerJoinArgs e)
-        {
-            FormNetPlayRoom room = new FormNetPlayRoom(e.UserName, e.Password,
-                e.ServerAddress, false);
-            try
-            {
-                room.Show();
-                e.CanJoin = true;
-            }
-            catch { e.CanJoin = false; }
-        }
-
-        private void takeSnapshotToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Nes.ON)
-            {
-                Nes.VideoDevice.TakeSnapshot(
-                    RenderersCore.SettingsManager.Settings.Folders_SnapshotsFolder,
-                    System.IO.Path.GetFileNameWithoutExtension(Nes.RomInfo.Path),
-                    RenderersCore.SettingsManager.Settings.Video_SnapshotFormat,
-                    false);
+                activeToolStripMenuItem1.Checked = false;
             }
         }
     }
