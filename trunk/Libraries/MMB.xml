@@ -1,0 +1,984 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MMB</name>
+    </assembly>
+    <members>
+        <member name="T:MMB.ManagedMessageBoxButtons">
+            <summary>
+            Present const arrays for buttons.
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.OK">
+            <summary>
+            Ok button
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.OKNo">
+            <summary>
+            Ok + No buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.OKNoCancel">
+            <summary>
+            Ok + No + Cancel buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.OKCancel">
+            <summary>
+            Ok + Cancel buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.Yes">
+            <summary>
+            Yes button
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.YesNo">
+            <summary>
+            Yes + No buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.YesNoCancel">
+            <summary>
+            Yes + No + Cancel buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.SaveDontsaveCancel">
+            <summary>
+            Save + Don't save + Cancel buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.SaveDontsave">
+            <summary>
+            Save + Don't save buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.Abort">
+            <summary>
+            Abort button
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.AbortRetryIgnore">
+            <summary>
+            Abort + Retry + Ignore buttons
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxButtons.RetryCancel">
+            <summary>
+            Retry + Cancel buttons
+            </summary>
+        </member>
+        <member name="T:MMB.ManagedMessageBox">
+            <summary>
+            A message box component with advanced capacities
+            </summary>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.String)">
+            <summary>
+            Show simple question message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.Windows.Forms.IWin32Window,System.String)">
+            <summary>
+            Show simple question message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.String,System.String)">
+            <summary>
+            Show simple question message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.Windows.Forms.IWin32Window,System.String,System.String)">
+            <summary>
+            Show simple question message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show question message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show question message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple question message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The background color of the message box</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple question message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show question message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowQuestionMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show question message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, the button index result will be either 0 or 1 (0=yes and 1=no) with the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.String)">
+            <summary>
+            Show simple warning message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.Windows.Forms.IWin32Window,System.String)">
+            <summary>
+            Show simple warning message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.String,System.String)">
+            <summary>
+            Show simple warning message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.Windows.Forms.IWin32Window,System.String,System.String)">
+            <summary>
+            Show simple warning message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show warning message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show warning message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple warning message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The background color of the message box</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple warning message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show warning message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowWarningMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show warning message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.String)">
+            <summary>
+            Show simple error message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.Windows.Forms.IWin32Window,System.String)">
+            <summary>
+            Show simple error message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.String,System.String)">
+            <summary>
+            Show simple error message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.Windows.Forms.IWin32Window,System.String,System.String)">
+            <summary>
+            Show simple error message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show error message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show error message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple error message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple error message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show error message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowErrorMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show error message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.String[],System.Int32,System.Windows.Forms.Control[],MMB.ManagedMessageBoxIcon,System.Boolean,System.Boolean,System.String,System.Boolean)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <param name="RightToLeft">Indicate whether the message box should be right to left alignment for right to left languages like Arabic</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.String[],System.Int32,System.Windows.Forms.Control[],MMB.ManagedMessageBoxIcon,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.String[],System.Int32,System.Windows.Forms.Control[],MMB.ManagedMessageBoxIcon,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.String[],System.Int32,System.Windows.Forms.Control[],MMB.ManagedMessageBoxIcon)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.String[],System.Int32,System.Windows.Forms.Control[],MMB.ManagedMessageBoxIcon)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.String[],System.Int32,MMB.ManagedMessageBoxIcon)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="icon">The managed message box icon</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.String[],System.Int32,MMB.ManagedMessageBoxIcon)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="icon">The managed message box icon</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.String[],System.Int32,MMB.ManagedMessageBoxIcon,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="icon">The managed message box icon</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.String[],System.Int32,MMB.ManagedMessageBoxIcon,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="icon">The managed message box icon</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Drawing.Image)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Drawing.Image)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Windows.Forms.Control[],System.Drawing.Image)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Windows.Forms.Control[],System.Drawing.Image)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Windows.Forms.Control[],System.Drawing.Image,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Windows.Forms.Control[],System.Drawing.Image,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Windows.Forms.Control[],System.Drawing.Image,System.Boolean,System.Boolean,System.String,System.Boolean)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <param name="RightToLeft">Indicate whether the message box should be right to left alignment for right to left languages like Arabic</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowCustomMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.String[],System.Int32,System.Windows.Forms.Control[],System.Drawing.Image,System.Boolean,System.Boolean,System.String,System.Boolean)">
+            <summary>
+            Show customized managed message box
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The message box background color</param>
+            <param name="buttons">The buttons collection to use (one button text must be presented at least)</param>
+            <param name="defaultButtonIndex">The zero index value indicates the default button in the buttons list.</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="icon">The managed message box icon, PNG format image is recommended</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <param name="RightToLeft">Indicate whether the message box should be right to left alignment for right to left languages like Arabic</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object includes which button clicked and the check box result.</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String)">
+            <summary>
+            Show simple info message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String)">
+            <summary>
+            Show simple info message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String)">
+            <summary>
+            Show simple info message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String)">
+            <summary>
+            Show simple info message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show info message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show info message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple info message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="messageTextFont">The font to use for message text</param>
+            <param name="messageTextColor">The color to use for message text</param>
+            <param name="backgroundColor">The background color of the message box</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[])">
+            <summary>
+            Show simple info message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show info message
+            </summary>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="M:MMB.ManagedMessageBox.ShowMessage(System.Windows.Forms.IWin32Window,System.String,System.String,System.Windows.Forms.Control[],System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Show info message
+            </summary>
+            <param name="ParentWindow">The parent window that should handle the managed message box window</param>
+            <param name="messageText">The message text to show</param>
+            <param name="messageCaption">The message caption (title of the managed message box window)</param>
+            <param name="controls">More control to add long side with buttons. The controls you may add will not effect the result
+            , The result is for buttons and the check box only. This can be null to add no control.</param>
+            <param name="showCheckBox">Indicate whether to show the check box or not</param>
+            <param name="checkBoxValue">The default check box value if the check box is enabled (showCheckBox = true).</param>
+            <param name="checkBoxText">The check box text if the check box is enabled (showCheckBox = true).</param>
+            <returns><see cref="T:MMB.ManagedMessageBoxResult"/> object, will always tell that the first button is clicked and the check box result</returns>
+        </member>
+        <member name="P:MMB.ManagedMessageBox.DefaultMessageTextFont">
+            <summary>
+            Get or set the default message text font to use when using the simple methods.
+            </summary>
+        </member>
+        <member name="P:MMB.ManagedMessageBox.DefaultBackgroundColor">
+            <summary>
+            Get or set the default background color to use when using the simple methods.
+            </summary>
+        </member>
+        <member name="P:MMB.ManagedMessageBox.DefaultMessageTextColor">
+            <summary>
+            Get or set the default message text color to use when using the simple methods.
+            </summary>
+        </member>
+        <member name="P:MMB.ManagedMessageBox.RightToLeft">
+            <summary>
+            Get or set if all simple methods should use the right to left align option set to true.
+            </summary>
+        </member>
+        <member name="T:MMB.Forms.Form_ManagedMesssageBox">
+            <summary>
+            The managed box form
+            </summary>
+        </member>
+        <member name="M:MMB.Forms.Form_ManagedMesssageBox.#ctor">
+            <summary>
+            The managed box form
+            </summary>
+        </member>
+        <member name="F:MMB.Forms.Form_ManagedMesssageBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:MMB.Forms.Form_ManagedMesssageBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:MMB.Forms.Form_ManagedMesssageBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:MMB.Forms.Form_ManagedMesssageBox.label_icon">
+            <summary>
+            The icon
+            </summary>
+        </member>
+        <member name="F:MMB.Forms.Form_ManagedMesssageBox.label_message">
+            <summary>
+            The message
+            </summary>
+        </member>
+        <member name="F:MMB.Forms.Form_ManagedMesssageBox.tableLayoutPanel1">
+            <summary>
+            The buttons layout
+            </summary>
+        </member>
+        <member name="F:MMB.Forms.Form_ManagedMesssageBox.checkBox1">
+            <summary>
+            The check box
+            </summary>
+        </member>
+        <member name="F:MMB.Forms.Form_ManagedMesssageBox.richTextBox1">
+            <summary>
+            The rich text box to use for huge text
+            </summary>
+        </member>
+        <member name="T:MMB.ManagedMessageBoxIcon">
+            <summary>
+            Managed Message Box icon
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.None">
+            <summary>
+            Show no icon.
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.Info">
+            <summary>
+            Shows info icon
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.Question">
+            <summary>
+            Shows a question mark icon
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.Save">
+            <summary>
+            Shows a save icon (big old yellow floppy icon)
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.Error">
+            <summary>
+            Shows an error icon
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.Warning">
+            <summary>
+            Shows warning icon
+            </summary>
+        </member>
+        <member name="F:MMB.ManagedMessageBoxIcon.Stop">
+            <summary>
+            Shows red stop icon
+            </summary>
+        </member>
+        <member name="T:MMB.ManagedMessageBoxResult">
+            <summary>
+            The Managed Message Box Result
+            </summary>
+        </member>
+        <member name="M:MMB.ManagedMessageBoxResult.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            The Managed Message Box Result
+            </summary>
+            <param name="clickedButton">The clicked button</param>
+            <param name="clickedButtonIndex">The clicked button index</param>
+            <param name="isChecked">Indicate if the check box is checked.</param>
+        </member>
+        <member name="P:MMB.ManagedMessageBoxResult.Checked">
+            <summary>
+            Get if the check box checked.
+            </summary>
+        </member>
+        <member name="P:MMB.ManagedMessageBoxResult.ClickedButton">
+            <summary>
+            Get the clicked button text.
+            </summary>
+        </member>
+        <member name="P:MMB.ManagedMessageBoxResult.ClickedButtonIndex">
+            <summary>
+            Get the clicked button zero based index within given buttons array.
+            </summary>
+        </member>
+        <member name="T:MMB.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.MessageIcon_Error">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.MessageIcon_Info">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.MessageIcon_Question">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.MessageIcon_Save">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.MessageIcon_Stop">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:MMB.Properties.Resources.MessageIcon_Warning">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+    </members>
+</doc>
