@@ -28,8 +28,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using MyNes.Core;
-using MyNes.Core.GameGenie;
-using MMB;
 namespace MyNes
 {
     public partial class FormGameGenie : Form
@@ -37,29 +35,27 @@ namespace MyNes
         public FormGameGenie()
         {
             InitializeComponent();
-            if (!NesCore.ON)
+            if (!NesEmu.EmulationON)
             {
-                MessageBox.Show("Nes Is Off");
+                MessageBox.Show(Program.ResourceManager.GetString("Message_NesIsOff"));
                 Close();
                 return;
             }
             gameGenie = new GameGenie();
             textBox2.SelectAll();
             //load list if found
-            if (NesCore.BOARD.GameGenieCodes != null)
+            if (NesEmu.GameGenieCodes != null)
             {
-                foreach (GameGenieCode code in NesCore.BOARD.GameGenieCodes)
+                foreach (GameGenieCode code in NesEmu.GameGenieCodes)
                 {
                     listView1.Items.Add(code.Name);
                     listView1.Items[listView1.Items.Count - 1].Checked = code.Enabled;
                     listView1.Items[listView1.Items.Count - 1].SubItems.Add(code.Descreption);
                 }
             }
-            checkBox1.Checked = NesCore.BOARD.IsGameGenieActive;
+            checkBox1.Checked = NesEmu.IsGameGenieActive;
         }
-
         private GameGenie gameGenie;
-
         private void ShowValues()
         {
             if (textBox2.Text.Length == 6)
@@ -76,8 +72,8 @@ namespace MyNes
             }
             else//code incomplete
             {
-                textBox_address.Text = "ERROR";
-                textBox_value.Text = textBox1.Text = "ERROR";
+                textBox_address.Text = Program.ResourceManager.GetString("ERROR");
+                textBox_value.Text = textBox1.Text = Program.ResourceManager.GetString("ERROR");
             }
         }
         private void button2_Click(object sender, EventArgs e)
@@ -209,13 +205,12 @@ namespace MyNes
             {
                 if (item.Text == textBox2.Text)
                 {
-                    ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_CodeAlreadyExistInTheList"),
-                      Program.ResourceManager.GetString("MessageCaption_GameGenie"));
+                    MessageBox.Show(Program.ResourceManager.GetString("Message_CodeAlreadyExistInTheList"));
                     return;
                 }
             }
             FormEnterName comment = new FormEnterName(Program.ResourceManager.GetString("Title_EnterComment"),
-               Program.ResourceManager.GetString("Title_GameGenieCode"), true, false);
+                Program.ResourceManager.GetString("Title_GameGenieCode"), true, false);
             if (comment.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 listView1.Items.Add(textBox2.Text);
@@ -228,14 +223,9 @@ namespace MyNes
         {
             if (listView1.SelectedItems.Count != 1)
                 return;
-            ManagedMessageBoxResult r = ManagedMessageBox.ShowMessage(
-                 Program.ResourceManager.GetString("Message_AreYouSureToDeleteGameGenieCode"),
-                 Program.ResourceManager.GetString("MessageCaption_GameGenie"),
-                 new string[] { 
-              Program.ResourceManager.GetString("Button_Yes"),
-              Program.ResourceManager.GetString("Button_No")
-              }, 0, ManagedMessageBoxIcon.Question, false, false, "");
-            if (r.ClickedButtonIndex == 0)
+            if (MessageBox.Show(Program.ResourceManager.GetString("Message_AreYouSure"),
+                Program.ResourceManager.GetString("MessageCaption_RemoveCode"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                == System.Windows.Forms.DialogResult.Yes)
             {
                 listView1.Items.Remove(listView1.SelectedItems[0]);
             }
@@ -257,13 +247,12 @@ namespace MyNes
         {
             if (listView1.Items.Count == 0)
             {
-                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NoCodeInTheList"),
-                     Program.ResourceManager.GetString("MessageCaption_GameGenie"));
+                MessageBox.Show(Program.ResourceManager.GetString("Message_NoCodeInTheListToSave!"));
                 return;
             }
             SaveFileDialog save = new SaveFileDialog();
             save.Filter = Program.ResourceManager.GetString("Filter_XML");
-            save.FileName = System.IO.Path.GetFileNameWithoutExtension(NesCore.RomInfo.RomPath) + ".xml";
+            save.FileName = System.IO.Path.GetFileNameWithoutExtension(NesEmu.GAMEFILE) + ".xml";
             if (save.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 XmlWriterSettings sett = new XmlWriterSettings();
@@ -297,8 +286,7 @@ namespace MyNes
                 XMLread.Read();//Reads the header
                 if (XMLread.Name != "MyNesGameGenieCodesList")
                 {
-                    ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_ThisFileIsNotMyNesGameGenieCodesListFile"),
-                    Program.ResourceManager.GetString("MessageCaption_GameGenie"));
+                    MessageBox.Show(Program.ResourceManager.GetString("Message_ThisFileIsNotMyNesGameGenieCodesListFile"));
                     XMLread.Close();
                     return;
                 }
@@ -322,11 +310,10 @@ namespace MyNes
         {
             if (listView1.Items.Count == 0)
             {
-                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NoCodeInTheList"),
-              Program.ResourceManager.GetString("MessageCaption_GameGenie"));
+                MessageBox.Show(Program.ResourceManager.GetString("Message_ThereIsNoCodeInTheList"));
                 return;
             }
-            NesCore.BOARD.IsGameGenieActive = checkBox1.Checked;
+            //Nes.Board.IsGameGenieActive = checkBox1.Checked;
             List<GameGenieCode> codes = new List<GameGenieCode>();
             gameGenie = new GameGenie();
             foreach (ListViewItem item in listView1.Items)
@@ -351,7 +338,7 @@ namespace MyNes
                 //add to active list
                 codes.Add(code);
             }
-            NesCore.BOARD.GameGenieCodes = codes.ToArray();
+            NesEmu.SetupGameGenie(checkBox1.Checked, codes.ToArray());
             this.Close();
         }
     }

@@ -21,15 +21,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 using System.Globalization;
-using System.Diagnostics;
 using System.Threading;
 using System.Resources;
 using System.Reflection;
+using System.Diagnostics;
 using MyNes.Core;
-
 namespace MyNes
 {
     static class Program
@@ -42,117 +41,144 @@ namespace MyNes
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            // Enable trace
-            bool addTextWritterLogger = false;
-            if (Args != null)
-                if (Args.Contains("/logger"))
-                    addTextWritterLogger = true;
-            DefineLoggers(addTextWritterLogger);
-            Trace.WriteLine("My Nes launched at " + DateTime.Now.ToLocalTime());
-            Trace.WriteLine("--------------------------------");
-            if (addTextWritterLogger) Trace.WriteLine("Text Logger enabled !");
-
-            // Create the working folders
-            Trace.WriteLine("Creating working folders ...", "My Nes Win GUI");
-            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
-            Directory.CreateDirectory("Logs");
-            Trace.WriteLine("Working folders created successfully.", "My Nes Win GUI");
-
-            // Settings
-            Trace.WriteLine("Loading settings ...", "My Nes Win GUI");
-            settings = new Properties.Settings();
-            settings.Reload();
-
-            FixSettings();
-
-            // Language resources
-            Trace.WriteLine("Loading user-interface language resources ...", "My Nes Win GUI");
+        
+            // Add listeners
+            System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.ConsoleTraceListener());
+            // Detect languages
             DetectSupportedLanguages();
-            resources = new ResourceManager("MyNes.LanguageResources.Resource", Assembly.GetExecutingAssembly());
-            Language = settings.Language;
-
-            // Misc ...
-            dbManager = new MyNes.DBManager(settings.FileDB);
-
-            // Nes emulation engine start up
-            Trace.WriteLine("Nes emulation engine warm up ...", "My Nes Win GUI");
-            NesCore.StartUp();
-
-            // Run main form
-            Trace.WriteLine("Running main window.", "My Nes Win GUI");
-            mainForm = new FormMain();
-            Application.Run(mainForm);
-        }
-
-        private static Properties.Settings settings;
-        private static string[,] supportedLanguages; // This should filled at startup
-        private static ResourceManager resources;
-        private static DBManager dbManager;
-        private static FormMain mainForm;
-
-        /// <summary>
-        /// Get the application settings
-        /// </summary>
-        public static Properties.Settings Settings
-        { get { return settings; } }
-        /// <summary>
-        /// Get the supported languages.
-        /// </summary>
-        public static string[,] SupportedLanguages
-        { get { return supportedLanguages; } }
-        /// <summary>
-        /// Get or set the selected language
-        /// </summary>
-        public static string Language
-        {
-            get
+            // Load settings
+            Settings = new Properties.Settings();
+            Settings.Reload();
+            // First run ?
+            if (!Program.Settings.FirstRun)
             {
-                return Thread.CurrentThread.CurrentUICulture.NativeName;
-            }
-            set
-            {
-                for (int i = 0; i < SupportedLanguages.Length / 3; i++)
+                FixFolders();
+                FixPalette();
+                ControlMappingSettings.BuildDefaultControlSettings();
+                try
                 {
-                    if (SupportedLanguages[i, 0] == value)
-                    {
-                        Thread.CurrentThread.CurrentUICulture = new CultureInfo(SupportedLanguages[i, 1]);
-                        Trace.WriteLine("Language set to: " + supportedLanguages[i, 0], "My Nes Win GUI");
-                        break;
-                    }
+                    FormFirstRun frm = new FormFirstRun();
+                    frm.ShowDialog();
+
+                    Program.Settings.FirstRun = true;
+                }
+                catch (Exception ex)
+                {
+                    MMB.ManagedMessageBox.ShowErrorMessage(ex.Message);
                 }
             }
-        }
-        /// <summary>
-        /// Get or set current CultureInfo
-        /// </summary>
-        public static CultureInfo CultureInfo
-        { get { return Thread.CurrentThread.CurrentUICulture; } }
-        /// <summary>
-        /// Get the ResourceManager
-        /// </summary>
-        public static ResourceManager ResourceManager
-        { get { return resources; } }
-        /// <summary>
-        /// Get the folders database manager object
-        /// </summary>
-        public static DBManager DBManager
-        { get { return dbManager; } }
-        /// <summary>
-        /// Get the main form
-        /// </summary>
-        public static FormMain FormMain
-        { get { return mainForm; } }
+            // Set language
+            Language = Settings.Language;
+            ResourceManager = new ResourceManager("MyNes.LanguageResources.Resource",
+              Assembly.GetExecutingAssembly());
 
-        private static void DefineLoggers(bool AddTextWriter)
+            // Start-up nes emulation engine
+            MyNes.Core.NesEmu.WarmUp();
+
+            // Create the main form
+            FormMain = new FormMain();
+
+            // Do command lines
+            DoCommandLines(Args);
+
+            // Run !
+            Application.Run(FormMain);
+        }
+        private static void DoCommandLines(string[] args)
         {
-            //Trace.AutoFlush = true;
-            Trace.Listeners.Clear();
-            // Add console listener
-            Trace.Listeners.Add(new ConsoleTraceListener());
-            // add text writer listener
-            if (AddTextWriter)
-                Trace.Listeners.Add(new TextWriterTraceListener(".\\Logs\\log.txt"));
+            if (args == null) return;
+            if (args.Length == 0) return;
+
+            // Loop through commands and execute them one by one
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "/audio_on": Program.Settings.Audio_SoundEnabled = true; FormMain.InitializeSoundRenderer(); break;
+                    case "/audio_off": Program.Settings.Audio_SoundEnabled = false; FormMain.InitializeSoundRenderer(); break;
+                    case "/f_skip_off": Program.Settings.FrameSkip_Enabled = false; break;
+                    case "/f_skip_1": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 1; break;
+                    case "/f_skip_2": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 2; break;
+                    case "/f_skip_3": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 3; break;
+                    case "/f_skip_4": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 4; break;
+                    case "/f_skip_5": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 5; break;
+                    case "/f_skip_6": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 6; break;
+                    case "/f_skip_7": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 7; break;
+                    case "/f_skip_8": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 8; break;
+                    case "/f_skip_9": Program.Settings.FrameSkip_Enabled = true; Program.Settings.FrameSkip_Reload = 9; break;
+                    case "/pal_use_gen": Program.Settings.Palette_UseGenerators = true; break;
+                    case "/pal_dontuse_gen": Program.Settings.Palette_UseGenerators = false; break;
+                    case "/pal_gen_auto": Program.Settings.Palette_GeneratorUsageMode = PaletteGeneratorUsage.AUTO; break;
+                    case "/pal_gen_ntsc": Program.Settings.Palette_GeneratorUsageMode = PaletteGeneratorUsage.NTSC; break;
+                    case "/pal_gen_pal": Program.Settings.Palette_GeneratorUsageMode = PaletteGeneratorUsage.PAL; break;
+                    case "/sram_save_on": Program.Settings.SaveSramOnShutdown = true; break;
+                    case "/sram_save_off": Program.Settings.SaveSramOnShutdown = false; break;
+                    case "/show_issues_on": Program.Settings.ShowRomIssuesIfHave = true; break;
+                    case "/show_issues_off": Program.Settings.ShowRomIssuesIfHave = true; break;
+                    case "/tv_auto": Program.Settings.TVSystemSetting = Core.TVSystemSetting.AUTO; break;
+                    case "/tv_ntsc": Program.Settings.TVSystemSetting = Core.TVSystemSetting.NTSC; break;
+                    case "/tv_pal": Program.Settings.TVSystemSetting = Core.TVSystemSetting.PALB; break;
+                    case "/tv_dendy": Program.Settings.TVSystemSetting = Core.TVSystemSetting.DENDY; break;
+                    case "/vid_hide_lines_on": Program.Settings.Video_CutLines = true; break;
+                    case "/vid_hide_lines_off": Program.Settings.Video_CutLines = false; break;
+                    case "/vid_filter_point": Program.Settings.Video_Filter = SlimDX.Direct3D9.TextureFilter.Point; break;
+                    case "/vid_filter_none": Program.Settings.Video_Filter = SlimDX.Direct3D9.TextureFilter.None; break;
+                    case "/vid_filter_linear": Program.Settings.Video_Filter = SlimDX.Direct3D9.TextureFilter.Linear; break;
+                    case "/vid_vertex_hardware": Program.Settings.Video_HardwareVertexProcessing = true; break;
+                    case "/vid_vertex_software": Program.Settings.Video_HardwareVertexProcessing = false; break;
+                    case "/vid_keep_apsect_on": Program.Settings.Video_KeepAspectRatio = true; break;
+                    case "/vid_keep_apsect_off": Program.Settings.Video_KeepAspectRatio = false; break;
+                    case "/vid_fps_on": Program.Settings.Video_ShowFPS = true; break;
+                    case "/vid_fps_off": Program.Settings.Video_ShowFPS = false; break;
+                    case "/vid_noti_on": Program.Settings.Video_ShowNotifications = true; break;
+                    case "/vid_noti_off": Program.Settings.Video_ShowNotifications = false; break;
+                    case "/vid_fullscreen": Program.Settings.Video_StartFullscreen = true; break;
+                    case "/vid_wind": Program.Settings.Video_StartFullscreen = false; break;
+                    case "/vid_stretch_wind_on": Program.Settings.Video_StretchToMulti = true; break;
+                    case "/vid_stretch_wind_off": Program.Settings.Video_StretchToMulti = false; break;
+                    case "/state_slot_0": NesEmu.STATESlot = 0; break;
+                    case "/state_slot_1": NesEmu.STATESlot = 1; break;
+                    case "/state_slot_2": NesEmu.STATESlot = 2; break;
+                    case "/state_slot_3": NesEmu.STATESlot = 3; break;
+                    case "/state_slot_4": NesEmu.STATESlot = 4; break;
+                    case "/state_slot_5": NesEmu.STATESlot = 5; break;
+                    case "/state_slot_6": NesEmu.STATESlot = 6; break;
+                    case "/state_slot_7": NesEmu.STATESlot = 7; break;
+                    case "/state_slot_8": NesEmu.STATESlot = 8; break;
+                    case "/state_slot_9": NesEmu.STATESlot = 9; break;
+                    case "/state_load": NesEmu.LoadState(); break;// Request a state load on the first rendered frame !
+                }
+            }
+
+            // First command must be file path, run it here to apply commands first.
+            if (File.Exists(args[0]))
+                FormMain.OpenRom(args[0]);
+        }
+        public static void FixFolders()
+        {
+            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyNes\\");
+            Program.Settings.Folder_Sram = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyNes\\SRAM\\";
+            Directory.CreateDirectory(Program.Settings.Folder_Sram);
+            Program.Settings.Folder_State = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyNes\\STATE\\";
+            Directory.CreateDirectory(Program.Settings.Folder_State);
+            Program.Settings.Folder_Snapshots = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyNes\\SNAPS\\";
+            Directory.CreateDirectory(Program.Settings.Folder_Snapshots);
+        }
+        public static void FixPalette()
+        {
+            Program.Settings.Palette_UseGenerators = true;
+            Directory.CreateDirectory(Application.StartupPath + "\\Palettes\\");
+            // Load all palette files
+            string[] files = Directory.GetFiles(Application.StartupPath + "\\Palettes\\");
+            // Set the first one
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (Path.GetExtension(files[i]).ToLower() == ".pal")
+                {
+                    Program.Settings.Palette_FilePath = files[i];
+                    break;
+                }
+            }
         }
         private static void DetectSupportedLanguages()
         {
@@ -169,40 +195,64 @@ namespace MyNes
                     ids.Add(Path.GetFileName(folder));
                     englishNames.Add(inf.EnglishName);
                     NativeNames.Add(inf.NativeName);
-                    Trace.WriteLine("Language pack added: " + inf.EnglishName, "My Nes Win GUI");
                 }
-                catch
-                {
-                    Trace.WriteLine("Can't add language pack (" + folder + ")", "My Nes Win GUI");
-                }
+                catch { }
             }
             if (ids.Count > 0)
             {
-                supportedLanguages = new string[ids.Count, 3];
+                SupportedLanguages = new string[ids.Count, 3];
                 for (int i = 0; i < ids.Count; i++)
                 {
-                    supportedLanguages[i, 0] = englishNames[i];
-                    supportedLanguages[i, 1] = ids[i];
-                    supportedLanguages[i, 2] = NativeNames[i];
+                    SupportedLanguages[i, 0] = englishNames[i];
+                    SupportedLanguages[i, 1] = ids[i];
+                    SupportedLanguages[i, 2] = NativeNames[i];
                 }
             }
         }
-        private static void FixSettings()
+        // Properties
+        public static string Version
         {
-            Trace.Write("Creating folders ...", "My Nes Win GUI");
-            if (settings.FolderSnapshots == "")
-                settings.FolderSnapshots = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\Snapshots\\";
-            if (settings.FolderSrams == "")
-                settings.FolderSrams = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\SramSaves\\";
-            if (settings.FolderStates == "")
-                settings.FolderStates = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\StateSaves\\";
-            if (settings.FileDB == "")
-                settings.FileDB = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MyNes\\FoldersDatabase.fdb";
-
-            Directory.CreateDirectory(Path.GetFullPath(settings.FolderSnapshots));
-            Directory.CreateDirectory(Path.GetFullPath(settings.FolderSrams));
-            Directory.CreateDirectory(Path.GetFullPath(settings.FolderStates));
-            Trace.Write("Folders created successfully.", "My Nes Win GUI");
+            get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
+        }
+        public static Properties.Settings Settings
+        { get; private set; }
+        public static FormMain FormMain
+        { get; private set; }
+        public static ResourceManager ResourceManager
+        { get; private set; }
+        public static string[,] SupportedLanguages
+        { get; private set; }
+        public static string Language
+        {
+            get
+            {
+                return Thread.CurrentThread.CurrentUICulture.NativeName;
+            }
+            set
+            {
+                for (int i = 0; i < Program.SupportedLanguages.Length / 3; i++)
+                {
+                    if (Program.SupportedLanguages[i, 0] == value)
+                    {
+                        Thread.CurrentThread.CurrentUICulture = new CultureInfo(Program.SupportedLanguages[i, 1]);
+                        break;
+                    }
+                }
+            }
+        }
+        public static CultureInfo CultureInfo
+        {
+            get
+            {
+                for (int i = 0; i < Program.SupportedLanguages.Length / 3; i++)
+                {
+                    if (Program.SupportedLanguages[i, 0] == Program.Settings.Language)
+                    {
+                        return new CultureInfo(Program.SupportedLanguages[i, 1]);
+                    }
+                }
+                return Thread.CurrentThread.CurrentUICulture;
+            }
         }
     }
 }

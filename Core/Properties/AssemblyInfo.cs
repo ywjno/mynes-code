@@ -26,10 +26,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Core")]
-[assembly: AssemblyDescription("My Nes core library, a Nintendo Entertainment System / Family Computer (Nes/Famicom) Emulator written in C#.")]
+[assembly: AssemblyDescription("My Nes Core Library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("My Nes Core")]
+[assembly: AssemblyProduct("Core")]
 [assembly: AssemblyCopyright("Copyright © Ala Ibrahim Hadid 2009 - 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -40,7 +40,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e4c95d91-81f6-4dac-8dbd-e61ad87a1161")]
+[assembly: Guid("06a28026-6513-4823-b88c-6236b4e28f37")]
 
 // Version information for an assembly consists of the following four values:
 //

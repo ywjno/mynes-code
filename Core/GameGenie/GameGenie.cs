@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System.Collections.Generic;
-namespace MyNes.Core.GameGenie
+namespace MyNes.Core
 {
     public class GameGenie
     {

@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A Nintendo Entertainment System / Family Computer (Nes/Famicom) Emulator written in C#.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MyNes")]
+[assembly: AssemblyProduct("My Nes")]
 [assembly: AssemblyCopyright("Copyright © Ala Ibrahim Hadid 2009 - 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -40,7 +40,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8e732215-06f7-4375-b89c-851c8b15229d")]
+[assembly: Guid("3cde9459-d3e8-4110-87b8-2ded44a84d08")]
 
 // Version information for an assembly consists of the following four values:
 //

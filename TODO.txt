@@ -1,2 +1,4 @@
-* APU mixer for apu external sound channels
-* Fix DMC DMA and SPR DMA
+Things to do generally.
+-----------------------
+* FDS
+* NET PLAY

@@ -34,7 +34,7 @@ namespace MyNes
     {
         public FormFilesList(string[] FILES)
         {
-            InitializeComponent(); 
+            InitializeComponent();
             for (int i = 0; i < FILES.Length; i++)
             {
                 if (Path.GetExtension(FILES[i]).ToLower() == ".nes")
@@ -43,6 +43,7 @@ namespace MyNes
                 }
             }
             listBox1.SelectedIndex = (listBox1.Items.Count > 0) ? 0 : -1;
+            listBox1.Select();
         }
 
         public string SelectedRom { get { return listBox1.SelectedItem.ToString(); } }
@@ -71,6 +72,12 @@ namespace MyNes
                 return;
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
+        }
+
+        private void listBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+                button1_Click(this, null);
         }
     }
 }

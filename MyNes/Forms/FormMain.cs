@@ -26,13 +26,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
 using MyNes.Core;
-using MyNes.Core.IO;
-using MyNes.Core.PPU;
-using MyNes.Core.ROM.Exceptions;
-using MyNes.Core.ROM;
-using MyNes.Renderers;
+using System.IO;
+using SlimDX;
+using SlimDX.DirectInput;
 using MMB;
 namespace MyNes
 {
@@ -42,57 +39,19 @@ namespace MyNes
         {
             InitializeComponent();
             LoadSettings();
+            InitializeVideoRenderer();
+            InitializeSoundRenderer();
+            InitializeInputRenderer();
+            NesEmu.EMUShutdown += NesEmu_EMUShutdown;
         }
 
-        private const string mainTitle = "My Nes [v6 beta]";// Never change this !
-        private string currentGameFile;
-        private int mouseHideTimer = 0;
-        private bool mouseHiding = false;
+        public DirectXVideo video;
+        public DirectSoundRenderer audio;
+        public ZapperConnecter zapper;
 
         private void LoadSettings()
         {
-            LoadLanguages();
-            ApplyViewSettings();
-            this.Location = Program.Settings.MainWindowLocation;
-            this.Size = Program.Settings.MainWindowSize;
-            LoadRecents();
-            // This will reload state slot menu items
-            stateToolStripMenuItem_DropDownOpening(this, null);
-            // Load text for state slot
-            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
-                  + " " + NesCore.StateSlot;
-        }
-        private void SaveSettings()
-        {
-            Program.Settings.MainWindowLocation = this.Location;
-            Program.Settings.MainWindowSize = this.Size;
-            Program.Settings.Save();
-        }
-        private void LoadRecents()
-        {
-            if (Program.Settings.FileRecents == null)
-                Program.Settings.FileRecents = new System.Collections.Specialized.StringCollection();
-
-            recentRomsToolStripMenuItem.DropDownItems.Clear();
-            toolStripSplitButton_recents.DropDownItems.Clear();
-            foreach (string file in Program.Settings.FileRecents)
-            {
-                if (File.Exists(file))
-                {
-                    ToolStripMenuItem item = new ToolStripMenuItem();
-                    item.Text = Path.GetFileName(file);
-                    item.Tag = item.ToolTipText = file;
-                    recentRomsToolStripMenuItem.DropDownItems.Add(item);
-                    // Add another items
-                    item = new ToolStripMenuItem();
-                    item.Text = Path.GetFileName(file);
-                    item.Tag = item.ToolTipText = file;
-                    toolStripSplitButton_recents.DropDownItems.Add(item);
-                }
-            }
-        }
-        private void LoadLanguages()
-        {
+            // languages
             for (int i = 0; i < Program.SupportedLanguages.Length / 3; i++)
             {
                 ToolStripMenuItem item = new ToolStripMenuItem();
@@ -100,948 +59,1042 @@ namespace MyNes
                 item.Checked = Program.SupportedLanguages[i, 0] == Program.Settings.Language;
                 languageToolStripMenuItem.DropDownItems.Add(item);
             }
+            this.Location = Program.Settings.WinLocation;
+            this.Size = Program.Settings.WinSize;
+            if (Program.Settings.LauncherShowAyAppStart)
+                launcherToolStripMenuItem_Click(this, null);
+            RefreshRecent();
+            InitializePalette();
         }
-        private void AddRecent(string fileName)
+        public void AddRecent(string recent)
         {
-            // If the file exists, remove it
-            if (Program.Settings.FileRecents.Contains(fileName))
-                Program.Settings.FileRecents.Remove(fileName);
-            // Insert at the beginning
-            Program.Settings.FileRecents.Insert(0, fileName);
-            // Limit to 10 !
-            if (Program.Settings.FileRecents.Count == 10)
-                Program.Settings.FileRecents.RemoveAt(9);
+            if (Program.Settings.RecentPlayed == null)
+                Program.Settings.RecentPlayed = new System.Collections.Specialized.StringCollection();
+            RefreshRecent();
+            if (!Program.Settings.RecentPlayed.Contains(recent))
+                Program.Settings.RecentPlayed.Insert(0, recent);
+            if (Program.Settings.RecentPlayed.Count == 10)
+                Program.Settings.RecentPlayed.RemoveAt(9);
+            RefreshRecent();
+        }
+        private void RefreshRecent()
+        {
+            openRecentToolStripMenuItem.DropDownItems.Clear();
+            if (Program.Settings.RecentPlayed == null)
+                Program.Settings.RecentPlayed = new System.Collections.Specialized.StringCollection();
+            foreach (string recent in Program.Settings.RecentPlayed)
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem();
+                item.Text = Path.GetFileName(recent);
+                item.Tag = item.ToolTipText = recent;
+                openRecentToolStripMenuItem.DropDownItems.Add(item);
+            }
+        }
+        private void SaveSettings()
+        {
+            Program.Settings.WinLocation = this.Location;
+            Program.Settings.WinSize = this.Size;
             Program.Settings.Save();
-            // Refresh !
-            LoadRecents();
         }
-        private void ApplyViewSettings()
+        public void OpenRom(string fileName)
         {
-            if (!Program.Settings.ShowMenu && Program.Settings.HidingMenuForFirstTime)
+            // Pause emulation
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            switch (Path.GetExtension(fileName).ToLower())
             {
-                Program.Settings.HidingMenuForFirstTime = false;
-                ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YoureHidingTheMainMenuForTheFirstTime"), "My Nes");
-            }
-            menuStrip1.Visible = showMenuStripToolStripMenuItem.Checked = Program.Settings.ShowMenu;
-            toolStrip1.Visible = showToolsStripToolStripMenuItem.Checked = Program.Settings.ShowToolsBar;
-            statusStrip1.Visible = showStatusStripToolStripMenuItem.Checked = Program.Settings.ShowStatus;
-        }
-
-        public void LoadRom(string FileName, bool addRecent)
-        {
-            currentGameFile = FileName;
-            #region Check if archive
-            SevenZip.SevenZipExtractor EXTRACTOR;
-            if (Path.GetExtension(FileName).ToLower() != ".nes")
-            {
-                if (!File.Exists("7z.dll"))
-                {
-                    ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_7zIsNotExist"),
-                       Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                    if (NesCore.ON) NesCore.PAUSED = false;
-                    return;
-                }
-                try
-                {
-                    EXTRACTOR = new SevenZip.SevenZipExtractor(FileName);
-                }
-                catch (Exception ex)
-                {
-                    ManagedMessageBox.ShowErrorMessage(ex.Message,
-                     Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                    if (NesCore.ON) NesCore.PAUSED = false;
-                    return;
-                }
-                if (EXTRACTOR.ArchiveFileData.Count == 1)
-                {
-                    if (EXTRACTOR.ArchiveFileData[0].FileName.Substring(EXTRACTOR.ArchiveFileData[0].FileName.Length - 4, 4).ToLower() == ".NesCore")
+                case ".7z":
+                case ".zip":
+                case ".rar":
+                case ".gzip":
+                case ".tar":
+                case ".bzip2":
+                case ".xz":
                     {
-                        EXTRACTOR.ExtractArchive(Path.GetTempPath());
-                        FileName = Path.GetTempPath() + EXTRACTOR.ArchiveFileData[0].FileName;
+                        string tempFolder = Path.GetTempPath() + "\\MYNES\\";
+                        SevenZip.SevenZipExtractor EXTRACTOR;
+                        try
+                        {
+                            EXTRACTOR = new SevenZip.SevenZipExtractor(fileName);
+                        }
+                        catch (Exception ex)
+                        {
+                            ManagedMessageBox.ShowErrorMessage(ex.Message);
+                            return;
+                        }
+                        if (EXTRACTOR.ArchiveFileData.Count == 1)
+                        {
+                            if (EXTRACTOR.ArchiveFileData[0].FileName.Substring(EXTRACTOR.ArchiveFileData[0].FileName.Length - 4, 4).ToLower() == ".nes")
+                            {
+                                EXTRACTOR.ExtractArchive(tempFolder);
+                                fileName = tempFolder + EXTRACTOR.ArchiveFileData[0].FileName;
+                            }
+                        }
+                        else
+                        {
+                            List<string> filenames = new List<string>();
+                            foreach (SevenZip.ArchiveFileInfo file in EXTRACTOR.ArchiveFileData)
+                            {
+                                filenames.Add(file.FileName);
+                            }
+                            FormFilesList ar = new FormFilesList(filenames.ToArray());
+                            if (ar.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                            {
+                                string[] fil = { ar.SelectedRom };
+                                EXTRACTOR.ExtractFiles(tempFolder, fil);
+                                fileName = tempFolder + ar.SelectedRom;
+                            }
+                            else
+                            { return; }
+                        }
                     }
-                }
-                else
-                {
-                    List<string> filenames = new List<string>();
-                    foreach (SevenZip.ArchiveFileInfo file in EXTRACTOR.ArchiveFileData)
-                    {
-                        filenames.Add(file.FileName);
-                    }
-                    FormFilesList ar = new FormFilesList(filenames.ToArray());
-                    if (ar.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string[] fil = { ar.SelectedRom };
-                        EXTRACTOR.ExtractFiles(Path.GetTempPath(), fil);
-                        FileName = Path.GetTempPath() + ar.SelectedRom;
-                    }
-                    else
-                    { if (NesCore.ON) NesCore.PAUSED = false; return; }
-                }
-            }
-            #endregion
-            // Check rom ...
-            int mapperN = 0;
-            switch (NesCore.CheckRom(FileName, out mapperN))
-            {
-                case RomReadResult.NotSupportedBoard:
-                    {
-                        ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NotsupportedMapper") + " #" + mapperN,
-                            Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                        if (NesCore.ON) NesCore.PAUSED = false;
-                        return;
-                    }
-                case RomReadResult.Invalid:
-                    {
-                        ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_RomInvalid"),
-                                    Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                        if (NesCore.ON) NesCore.PAUSED = false;
-                        return;
-                    }
-            }
-            if (NesCore.ON)
-            {
-                NesCore.ShutDown();
+                    break;
             }
             try
             {
-                NesCore.CreateNew(FileName, Program.Settings.TVFormat);
-            }
-            // These exceptions should happen only when we never do the check above !
-            catch (NotSupportedMapperOrBoardExcption ex)
-            {
-                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NotsupportedMapper") + " #" + ex.Mapper,
-                          Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                if (NesCore.ON) NesCore.PAUSED = false;
-                return;
-            }
-            catch (InvailedRomException ex)
-            {
-                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_RomInvalid"),
-                           Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                if (NesCore.ON) NesCore.PAUSED = false;
-                return;
+                NesEmu.EmulationPaused = true;// Make sure it's still paused !
+                bool is_supported_mapper;
+                bool has_issues;
+                string issues;
+                if (NesEmu.CheckRom(fileName, out is_supported_mapper, out has_issues, out issues))
+                {
+                    if (!is_supported_mapper && !Program.Settings.IgnoreNotSupportedMapper)
+                    {
+                        ManagedMessageBoxResult res = ManagedMessageBox.ShowQuestionMessage(
+                            Program.ResourceManager.GetString("Message_ThisGameMapperMarkedAsNotSupported"), "My Nes",
+                            null, true, Program.Settings.IgnoreNotSupportedMapper,
+                            Program.ResourceManager.GetString("Text_AlwaysTryToRunGameWithNoSupportedMappers"));
+                        Program.Settings.IgnoreNotSupportedMapper = res.Checked;
+                        if (res.ClickedButtonIndex == 1)// No
+                            return;
+                    }
+                    if (has_issues && Program.Settings.ShowRomIssuesIfHave)
+                    {
+                        ManagedMessageBoxResult res = ManagedMessageBox.ShowMessage(
+                            Program.ResourceManager.GetString("Message_ThisGameHaveKnownIssues") + ":\n" + issues,
+                            "My Nes", null, true, Program.Settings.ShowRomIssuesIfHave,
+                            Program.ResourceManager.GetString("Text_AlwaysWarnAboutIssues"));
+                        Program.Settings.ShowRomIssuesIfHave = res.Checked;
+                    }
+                    NesEmu.EmulationON = false;
+                    // Kill the original thread
+                    if (NesEmu.EmulationThread != null)
+                        // while (NesEmu.EmulationThread.IsAlive)
+                        //  { }
+                        if (NesEmu.EmulationThread.IsAlive)
+                            NesEmu.EmulationThread.Abort();
+                    // Shutdown emu
+                    NesEmu.ShutDown();
+
+                    // Settings first
+                    ApplyEmuSettings();
+
+                    // Create new
+                    NesEmu.CreateNew(fileName, Program.Settings.TVSystemSetting, true);
+                    // Stop video for a while
+                    video.threadPAUSED = true;
+                    // Apply video stretch
+                    ApplyVideoStretch();
+
+                    // Initialize renderers
+                    //InitializeInputRenderer();
+                    //InitializeVideoRenderer();
+                    //InitializeSoundRenderer();
+
+                    video.Reset();
+
+                    if (NesEmu.IsGameFoundOnDB)
+                    {
+                        if (NesEmu.GameInfo.Game_AltName != null && NesEmu.GameInfo.Game_AltName != "")
+                            this.Text = NesEmu.GameInfo.Game_Name + " (" + NesEmu.GameInfo.Game_AltName + ") - My Nes";
+                        else
+                            this.Text = NesEmu.GameInfo.Game_Name + " - My Nes";
+                    }
+                    else
+                    {
+                        this.Text = Path.GetFileName(NesEmu.GAMEFILE) + " - My Nes";
+                    }
+                    NesEmu.EmulationPaused = false;
+                }
+                else
+                {
+                    ManagedMessageBox.ShowErrorMessage("My Nes can't run this game.", "My Nes");
+                    if (NesEmu.EmulationON)
+                        NesEmu.EmulationPaused = false;
+                }
             }
             catch (Exception ex)
             {
-                ManagedMessageBox.ShowErrorMessage(ex.Message + "\n\n" + ex.ToString(),
-                       Program.ResourceManager.GetString("MessageCaption_OpenRom"));
-                if (NesCore.ON) NesCore.PAUSED = false;
-                return;
+                ManagedMessageBox.ShowErrorMessage(ex.Message, "My Nes");
+                if (NesEmu.EmulationON)
+                    NesEmu.EmulationPaused = false;
             }
-            // add recent !
-            if (addRecent)
-                AddRecent(currentGameFile);
-            // pause the emulation so the renderer should continue once it's ready
-            NesCore.PAUSED = true;
-            // apply settings !
-            ApplyEmuSettings();
-            // turn on
-            NesCore.TurnOn(true);
-            // initialize renderer
-            InitializeRenderer();
-            // un-pause !
-            NesCore.PAUSED = false;
         }
-        private void InitializeRenderer()
+        public void InitializeInputRenderer()
         {
-            // Video and sound
-            ApplyVideo();
-            ApplyAudio();
-            SetupPalette();
-            SetupInput();
-            // Rom title !
-            if (NesCore.RomInfo.DatabaseGameInfo.Game_Name != null)
+            // Preper things
+            IJoypadConnecter joy1 = null;
+            IJoypadConnecter joy2 = null;
+            IJoypadConnecter joy3 = null;
+            IJoypadConnecter joy4 = null;
+            // Refresh input devices !
+            DirectInput di = new DirectInput();
+            List<DeviceInstance> devices = new List<DeviceInstance>(di.GetDevices());
+            #region Player 1
+            foreach (DeviceInstance dev in devices)
             {
-                this.Text = NesCore.RomInfo.DatabaseGameInfo.Game_Name +
-                    " (" + NesCore.RomInfo.DatabaseGameInfo.Game_AltName + ") - " + mainTitle;
+                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad1DeviceGuid)
+                {
+                    // We found the device !!
+                    // Let's see if we have the settings for this device
+                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                    {
+                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        {
+                            // This is it !
+                            switch (dev.Type)
+                            {
+                                case DeviceType.Keyboard:
+                                    {
+                                        joy1 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                        break;
+                                    }
+                                case DeviceType.Joystick:
+                                    {
+                                        joy1 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
-            else
+            #endregion
+            #region Player 2
+            foreach (DeviceInstance dev in devices)
             {
-                this.Text = Path.GetFileNameWithoutExtension(NesCore.RomInfo.RomPath) + " - " + mainTitle;
+                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad2DeviceGuid)
+                {
+                    // We found the device !!
+                    // Let's see if we have the settings for this device
+                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                    {
+                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        {
+                            // This is it !
+                            switch (dev.Type)
+                            {
+                                case DeviceType.Keyboard:
+                                    {
+                                        joy2 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                        break;
+                                    }
+                                case DeviceType.Joystick:
+                                    {
+                                        joy2 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
-        }
-        private void SetupInput()
-        {
-            // Initialize ..
-            SlimDXInputManager inputManager = new SlimDXInputManager(this.Handle);
-            //Setup input
-            SlimDXJoypad joy1 = new SlimDXJoypad(inputManager);
-            SlimDXJoypad joy2 = new SlimDXJoypad(inputManager);
-            SlimDXJoypad joy3 = new SlimDXJoypad(inputManager);
-            SlimDXJoypad joy4 = new SlimDXJoypad(inputManager);
-
-            NesCore.SetupInput(inputManager, joy1, joy2, joy3, joy4, false);
-
-            NesCore.ControlsUnit.VSunisystemDIP = new SlimDXVSUnisystemDIP(inputManager);
-
-            ApplyInput();
-        }
-        private void ApplyInput()
-        {
-            // Get profiles
-            if (Program.Settings.InputProfiles == null)
-                ControlProfile.BuildDefaultProfile();
-            if (Program.Settings.InputProfiles.Count == 0)
-                ControlProfile.BuildDefaultProfile();
-
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.A;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.B;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.TurboA;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.TurboB;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Down;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Left;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Right;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Up;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Select;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad1).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player1.Start;
-
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.A;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.B;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.TurboA;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.TurboB;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Down;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Left;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Right;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Up;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Select;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad2).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player2.Start;
-
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.A;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.B;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.TurboA;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.TurboB;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Down;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Left;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Right;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Up;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Select;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad3).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player3.Start;
-
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).A.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.A;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).B.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.B;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).TurboA.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.TurboA;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).TurboB.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.TurboB;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Down.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Down;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Left.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Left;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Right.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Right;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Up.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Up;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Select.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Select;
-            ((SlimDXJoypad)NesCore.ControlsUnit.Joypad4).Start.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Player4.Start;
-
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).CreditLeftCoinSlot.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.CreditLeftCoinSlot;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).CreditRightCoinSlot.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.CreditRightCoinSlot;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).CreditServiceButton.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.CreditServiceButton;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch1.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch1;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch2.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch2;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch3.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch3;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch4.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch4;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch5.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch5;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch6.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch6;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch7.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch7;
-            ((SlimDXVSUnisystemDIP)NesCore.ControlsUnit.VSunisystemDIP).DIPSwitch8.Input = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].VSunisystemDIP.DIPSwitch8;
-
-            if (Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper)
+            #endregion
+            #region Player 3
+            foreach (DeviceInstance dev in devices)
             {
-                NesCore.ControlsUnit.IsZapperConnected = true;
-                NesCore.ControlsUnit.Zapper = new SlimDXZapper();
+                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad3DeviceGuid)
+                {
+                    // We found the device !!
+                    // Let's see if we have the settings for this device
+                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                    {
+                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        {
+                            // This is it !
+                            switch (dev.Type)
+                            {
+                                case DeviceType.Keyboard:
+                                    {
+                                        joy3 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                        break;
+                                    }
+                                case DeviceType.Joystick:
+                                    {
+                                        joy3 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
-            NesCore.ControlsUnit.IsFourPlayers = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
+            #endregion
+            #region Player 4
+            foreach (DeviceInstance dev in devices)
+            {
+                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad4DeviceGuid)
+                {
+                    // We found the device !!
+                    // Let's see if we have the settings for this device
+                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                    {
+                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        {
+                            // This is it !
+                            switch (dev.Type)
+                            {
+                                case DeviceType.Keyboard:
+                                    {
+                                        joy4 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                        break;
+                                    }
+                                case DeviceType.Joystick:
+                                    {
+                                        joy4 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            #endregion
+            NesEmu.SetupJoypads(joy1, joy2, joy3, joy4);
+            #region VSUnisystem DIP
+            foreach (DeviceInstance dev in devices)
+            {
+                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid)
+                {
+                    // We found the device !!
+                    // Let's see if we have the settings for this device
+                    foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                    {
+                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        {
+                            // This is it !
+                            switch (dev.Type)
+                            {
+                                case DeviceType.Keyboard:
+                                    {
+                                        NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPKeyboardConnection(this.Handle, con));
+                                        break;
+                                    }
+                                case DeviceType.Joystick:
+                                    {
+                                        NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con));
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            #endregion
+            // ZAPPER
+            NesEmu.SetupZapper(zapper = new ZapperConnecter(this.Handle, this.Location.X, this.Location.Y + menuStrip1.Height,
+                panel_surface.Width, panel_surface.Height));
+            video.SetupZapperBounds();
         }
-        private void ApplyVideo()
+        public void InitializeVideoRenderer()
         {
-            if (NesCore.VideoOutput != null)
-                NesCore.VideoOutput.ShutDown();
-            NesCore.VideoOutput = null;
-            NesCore.PAUSED = true;
+            video = new DirectXVideo(panel_surface);
+            video.Initialize();
+            NesEmu.SetupVideoRenderer(video);
+        }
+        public void InitializeSoundRenderer()
+        {
+            if (audio != null)
+                audio.Dispose();
+            audio = new DirectSoundRenderer(this.Handle);
+            NesEmu.SetupSoundPlayback(audio, Program.Settings.Audio_SoundEnabled, Program.Settings.Audio_Frequency,
+                audio.BufferSize, audio.latency_in_bytes);
+        }
+        public void InitializePalette()
+        {
+            // Load generator values
+            NTSCPaletteGenerator.brightness = Program.Settings.Palette_NTSC_brightness;
+            NTSCPaletteGenerator.contrast = Program.Settings.Palette_NTSC_contrast;
+            NTSCPaletteGenerator.gamma = Program.Settings.Palette_NTSC_gamma;
+            NTSCPaletteGenerator.hue_tweak = Program.Settings.Palette_NTSC_hue_tweak;
+            NTSCPaletteGenerator.saturation = Program.Settings.Palette_NTSC_saturation;
+
+            PALBPaletteGenerator.brightness = Program.Settings.Palette_PALB_brightness;
+            PALBPaletteGenerator.contrast = Program.Settings.Palette_PALB_contrast;
+            PALBPaletteGenerator.gamma = Program.Settings.Palette_PALB_gamma;
+            PALBPaletteGenerator.hue_tweak = Program.Settings.Palette_PALB_hue_tweak;
+            PALBPaletteGenerator.saturation = Program.Settings.Palette_PALB_saturation;
+            // Let's see the settings
+            if (Program.Settings.Palette_UseGenerators)
+            {
+                InitializePaletteGenerators();
+            }
+            else// Use custom palette
+            {
+                if (File.Exists(Program.Settings.Palette_FilePath))
+                {
+                    try
+                    {
+                        int[] palette = null;
+                        if (PaletteFileWrapper.LoadFile(Program.Settings.Palette_FilePath, out palette))
+                        {
+                            NesEmu.SetPalette(palette);
+                        }
+                        else
+                        {
+                            ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_PaletteFileNotValid"));
+                            Program.Settings.Palette_UseGenerators = true;
+                            InitializePaletteGenerators();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ManagedMessageBox.ShowErrorMessage(ex.Message);
+                        ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_PaletteFileNotValid"));
+                        Program.Settings.Palette_UseGenerators = true;
+                        InitializePaletteGenerators();
+                    }
+                }
+                else// ERROR ! switch back to generators.
+                {
+                    ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_PaletteFileCantBeFound"));
+                    Program.Settings.Palette_UseGenerators = true;
+                    InitializePaletteGenerators();
+                }
+            }
+        }
+        private void InitializePaletteGenerators()
+        {
+            switch (Program.Settings.Palette_GeneratorUsageMode)
+            {
+                case PaletteGeneratorUsage.AUTO:
+                    {
+                        switch (NesEmu.TVFormat)
+                        {
+                            case TVSystem.DENDY:
+                            case TVSystem.NTSC: NesEmu.SetPalette(NTSCPaletteGenerator.GeneratePalette()); break;
+                            case TVSystem.PALB: NesEmu.SetPalette(PALBPaletteGenerator.GeneratePalette()); break;
+                        }
+                        break;
+                    }
+                case PaletteGeneratorUsage.NTSC: NesEmu.SetPalette(NTSCPaletteGenerator.GeneratePalette()); break;
+                case PaletteGeneratorUsage.PAL: NesEmu.SetPalette(PALBPaletteGenerator.GeneratePalette()); break;
+            }
+        }
+        private void ApplyEmuSettings()
+        {
+            NesEmu.SpeedLimitterON = true;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+            NesEmu.ApplySettings(Program.Settings.SaveSramOnShutdown, Program.Settings.Folder_Sram,
+                Program.Settings.Folder_State, Program.Settings.Folder_Snapshots, Program.Settings.SnapshotFormat,
+                Program.Settings.ReplaceSnapshot);
+        }
+        private void ApplyVideoStretch()
+        {
             // Windowed stretch !
-            if (Program.Settings.VideoStretchWindowToFitSize)
+            if (Program.Settings.Video_StretchToMulti)
             {
                 // Determine res
                 int w = 256;
                 int h = 240;
-                if (Program.Settings.VideoCutLines)
+                if (Program.Settings.Video_CutLines)
                 {
-                    if (NesCore.TV == TVSystem.NTSC)
+                    if (NesEmu.TVFormat == TVSystem.NTSC)
                         h = 224;
                     else
                         h = 238;
                 }
-                w *= Program.Settings.VideoWindowStretchMultiply;
-                h *= Program.Settings.VideoWindowStretchMultiply;
+                w *= Program.Settings.Video_StretchMulti;
+                h *= Program.Settings.Video_StretchMulti;
                 // Do the stretch !
                 int windowW = w + 16;
                 int windowH = h + 39;
                 if (menuStrip1.Visible)
                     windowH += menuStrip1.Height;
-                if (toolStrip1.Visible)
-                    windowH += toolStrip1.Height;
-                if (statusStrip1.Visible)
-                    windowH += statusStrip1.Height;
+                //if (toolStrip1.Visible)
+                //    windowH += toolStrip1.Height;
+                //if (statusStrip1.Visible)
+                //    windowH += statusStrip1.Height;
                 this.Size = new Size(windowW, windowH);
 
                 //MessageBox.Show("Surface size is "+panel_surface.Width +" x "+panel_surface.Height);
             }
-            IVideoDevice video = null;
-            switch (Program.Settings.VideoOutputMode)
-            {
-                case VideoOutputMode.DirectX9: video = new SlimDXVideo(panel_surface); break;
-            }
-            video.Initialize();
-
-            NesCore.VideoOutput = video;
         }
-        private void ApplyAudio()
+        private void ResetWindowText()
+        { try { this.Text = "My Nes"; } catch { } }
+
+        private void NesEmu_EMUShutdown(object sender, EventArgs e)
         {
-            IAudioDevice audio = null;
-
-            switch (Program.Settings.AudioOutputMode)
-            {
-                case SoundOutputMode.DirectSound: audio = new SlimDXDirectSound(this.Handle); break;
-            }
-
-            NesCore.APU.SetupPlayback(Program.Settings.AudioFrequency);
-            NesCore.AudioOutput = audio;
-        }
-        private void ApplyEmuSettings()
-        {
-            NesCore.ApplySettings(new NesCoreSettings(
-                  Program.Settings.AudioSoundEnabled,
-                  Program.Settings.FolderSrams,
-                  Program.Settings.SaveSRAMOnShutdown));
-            // Frame skipping
-            NesCore.FrameSkipEnabled = Program.Settings.FrameSkippingEnabled;
-            NesCore.frameSkipReload = Program.Settings.FrameSkippingCount;
-        }
-        private void SetupPalette()
-        {
-            NTSCPaletteGenerator.hue_tweak = Program.Settings.PaletteNTSCHue;
-            NTSCPaletteGenerator.contrast = Program.Settings.PaletteNTSCContrast;
-            NTSCPaletteGenerator.gamma = Program.Settings.PaletteNTSCGamma;
-            NTSCPaletteGenerator.brightness = Program.Settings.PaletteNTSCBrightness;
-            NTSCPaletteGenerator.saturation = Program.Settings.PaletteNTSCSaturation;
-
-            PALBPaletteGenerator.hue_tweak = Program.Settings.PalettePALBHue;
-            PALBPaletteGenerator.contrast = Program.Settings.PalettePALBContrast;
-            PALBPaletteGenerator.gamma = Program.Settings.PalettePALBGamma;
-            PALBPaletteGenerator.brightness = Program.Settings.PalettePALBBrightness;
-            PALBPaletteGenerator.saturation = Program.Settings.PalettePALBSaturation;
-
-            DENDYPaletteGenerator.hue_tweak = (float)Program.Settings.PaletteDENDYHue;
-            DENDYPaletteGenerator.contrast = (float)Program.Settings.PaletteDENDYContrast;
-            DENDYPaletteGenerator.gamma = (float)Program.Settings.PaletteDENDYGamma;
-            DENDYPaletteGenerator.brightness = (float)Program.Settings.PaletteDENDYBrightness;
-            DENDYPaletteGenerator.saturation = (float)Program.Settings.PaletteDENDYSaturation;
-
-            NesCore.SetupPalette();
-        }
-
-        private void Form_Main_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.ShutDown();
-            SaveSettings();
-        }
-        private void ShowConsole(object sender, EventArgs e)
-        {
-            foreach (Form frm in this.OwnedForms)
-            {
-                if (frm.Tag.ToString() == "Console")
-                {
-                    frm.Activate();
-                    return;
-                }
-            }
-            FormConsole newfrm = new FormConsole();
-            newfrm.Show(this);
+            if (!this.InvokeRequired)
+                ResetWindowText();
+            else
+                try { this.Invoke(new Action(ResetWindowText)); }
+                catch { }
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
-        private void ShowMemoryWatcher(object sender, EventArgs e)
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Form frm in this.OwnedForms)
-            {
-                if (frm.Tag.ToString() == "Memory")
-                {
-                    frm.Activate();
-                    return;
-                }
-            }
-            FormMemoryWatcher newfrm = new FormMemoryWatcher();
-            newfrm.Show(this);
-        }
-        private void ShowSpeed(object sender, EventArgs e)
-        {
-            foreach (Form frm in this.OwnedForms)
-            {
-                if (frm.Tag.ToString() == "Speed")
-                {
-                    frm.Activate();
-                    return;
-                }
-            }
-            FormSpeed newfrm = new FormSpeed();
-            newfrm.Show(this);
-        }
-        private void OpenRom(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.PAUSED = true;
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
             OpenFileDialog op = new OpenFileDialog();
-            op.Filter = Program.ResourceManager.GetString("Filter_ROM");
             op.Title = Program.ResourceManager.GetString("Title_OpenRom");
+            op.Filter = Program.ResourceManager.GetString("Filter_Rom");
             if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                LoadRom(op.FileName, true);
+                OpenRom(op.FileName);
+                if (NesEmu.EmulationON)
+                    AddRecent(op.FileName);
             }
             else
             {
-                if (NesCore.ON)
-                    NesCore.PAUSED = false;
+                if (NesEmu.EmulationON)
+                    NesEmu.EmulationPaused = false;
             }
         }
-        private void ShowVideoSettings(object sender, EventArgs e)
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            NesCore.PAUSED = true;
-
-            FormVideoSettings frm = new FormVideoSettings();
-            frm.ShowDialog(this);
-            if (NesCore.ON)
-            {
-                NesCore.VideoOutput.ShutDown();
-
-                ApplyVideo();
-                NesCore.PAUSED = false;
-            }
+            NesEmu.EmulationON = false;
+            video.CloseThread();
+            if (audio != null)
+                audio.Dispose();
+            SaveSettings();
         }
-        private void ShowAudioSettings(object sender, EventArgs e)
+        private void hardResetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NesCore.PAUSED = true;
-
-            FormAudioSettings frm = new FormAudioSettings();
-            frm.ShowDialog(this);
-
-            if (NesCore.ON)
+            NesEmu.EMUHardReset();
+        }
+        private void softResetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NesEmu.EMUSoftReset();
+        }
+        private void audioSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormAudioSettings set = new FormAudioSettings();
+            if (set.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                NesCore.AudioOutput.Shutdown();
-                // Apply
-                ApplyAudio();
-                NesCore.PAUSED = false;
+                InitializeSoundRenderer();
             }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = false;
+        }
+        private void togglePauseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NesEmu.EmulationPaused = !NesEmu.EmulationPaused;
+        }
+        private void launcherToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Form frm in this.OwnedForms)
+            {
+                if (frm.Tag.ToString() == "Launcher")
+                {
+                    frm.Activate();
+                    return;
+                }
+            }
+            FormLauncher newfrm = new FormLauncher();
+            newfrm.Show(this);
         }
         private void shutdownToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NesCore.ShutDown();
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationON = false;
         }
-        private void ShowPaletteSettings(object sender, EventArgs e)
+        private void romInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // NesCore.PAUSED = true;
-            // turn of auto pause
-            bool autoPause = Program.Settings.MainWindowAutoPauseOnFocusLost;
-            Program.Settings.MainWindowAutoPauseOnFocusLost = false;
-            FormPaletteSettings frm = new FormPaletteSettings();
-            frm.ShowDialog(this);
-            if (NesCore.ON)
+            if (NesEmu.EmulationON)
             {
-                SetupPalette();// Apply palette to emulation !
-                //   NesCore.PAUSED = false;
-            }
+                NesEmu.EmulationPaused = true;
 
-            Program.Settings.MainWindowAutoPauseOnFocusLost = autoPause;
-        }
-        private void ShowPathsSettings(object sender, EventArgs e)
-        {
-            NesCore.PAUSED = true;
+                FormRomInfo frm = new FormRomInfo(NesEmu.GAMEFILE);
+                frm.ShowDialog(this);
 
-            FormPaths frm = new FormPaths();
-            frm.ShowDialog(this);
-
-            if (NesCore.ON)
-            {
-                NesCore.SRAMFolder = Program.Settings.FolderSrams;
-                NesCore.PAUSED = false;
-            }
-        }
-        private void ShowInputSetting(object sender, EventArgs e)
-        {
-            NesCore.PAUSED = true;
-            FormInputSettings frm = new FormInputSettings();
-            frm.ShowDialog(this);
-            if (NesCore.ON)
-            {
-                ApplyInput();
-                NesCore.PAUSED = false;
-            }
-        }
-        private void ShowBrowser(object sender, EventArgs e)
-        {
-            foreach (Form frm in this.OwnedForms)
-            {
-                if (frm.Tag.ToString() == "Browser")
-                {
-                    frm.Activate();
-                    return;
-                }
-            }
-            FormBrowser newfrm = new FormBrowser();
-            newfrm.Show(this);
-        }
-        private void regionToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            // Load tv setting
-            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
-                it.Checked = false;
-            switch (Program.Settings.TVFormat)
-            {
-                case TVSystemSettings.AUTO: aUTOToolStripMenuItem.Checked = true; break;
-                case TVSystemSettings.DENDY: dENDYToolStripMenuItem.Checked = true; break;
-                case TVSystemSettings.NTSC: nTSCToolStripMenuItem.Checked = true; break;
-                case TVSystemSettings.PALB: pALBToolStripMenuItem.Checked = true; break;
-            }
-        }
-        private void aUTOToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
-                it.Checked = false;
-            aUTOToolStripMenuItem.Checked = true;
-            // Save
-            Program.Settings.TVFormat = TVSystemSettings.AUTO;
-            Program.Settings.Save();
-            if (NesCore.ON)
-                if (NesCore.VideoOutput != null)
-                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToAuto"),
-                        120, Color.Yellow.ToArgb());
-        }
-        private void nTSCToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
-                it.Checked = false;
-            nTSCToolStripMenuItem.Checked = true;
-            // Save
-            Program.Settings.TVFormat = TVSystemSettings.NTSC;
-            Program.Settings.Save();
-            if (NesCore.ON)
-                if (NesCore.VideoOutput != null)
-                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToNTSC"), 120, Color.Yellow.ToArgb());
-
-        }
-        private void pALBToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
-                it.Checked = false;
-            pALBToolStripMenuItem.Checked = true;
-            // Save
-            Program.Settings.TVFormat = TVSystemSettings.PALB;
-            Program.Settings.Save();
-            if (NesCore.ON)
-                if (NesCore.VideoOutput != null)
-                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToPALB"), 120, Color.Yellow.ToArgb());
-        }
-        private void dENDYToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ToolStripMenuItem it in regionToolStripMenuItem.DropDownItems)
-                it.Checked = false;
-            dENDYToolStripMenuItem.Checked = true;
-            // Save
-            Program.Settings.TVFormat = TVSystemSettings.DENDY;
-            Program.Settings.Save();
-            if (NesCore.ON)
-                if (NesCore.VideoOutput != null)
-                    NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_RegionChangedToDENDY"), 120, Color.Yellow.ToArgb());
-        }
-        private void TogglePause(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.PAUSED = !NesCore.PAUSED;
-        }
-        private void HardReset(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                LoadRom(NesCore.RomInfo.RomPath, false);
-        }
-        private void SoftReset(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.SoftReset();
-        }
-        private void fileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            recentRomsToolStripMenuItem.Enabled = recentRomsToolStripMenuItem.DropDownItems.Count > 0;
-        }
-        private void recordSoundToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                if (NesCore.AudioOutput == null)
-                {
-                    return;
-                }
-                NesCore.PAUSED = true;
-                if (NesCore.AudioOutput.IsRecording)
-                {
-                    NesCore.AudioOutput.RecordStop();
-                }
-                else
-                {
-                    SaveFileDialog sav = new SaveFileDialog();
-                    sav.Title = Program.ResourceManager.GetString("Title_SaveWav");
-                    sav.Filter = Program.ResourceManager.GetString("Filter_PCMWav");
-                    if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                        NesCore.AudioOutput.Record(sav.FileName);
-                }
-                NesCore.PAUSED = false;
-            }
-        }
-        private void fileToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                takesnapshotToolStripMenuItem.Enabled = true;
-                if (NesCore.AudioOutput == null)
-                {
-                    recordSoundToolStripMenuItem.Enabled = false;
-                    recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_RecordSound");
-                    return;
-                }
-                recordSoundToolStripMenuItem.Enabled = true;
-                if (NesCore.AudioOutput.IsRecording)
-                {
-                    recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_StopRecordSound");
-                }
-                else
-                {
-                    recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_RecordSound");
-                }
+                NesEmu.EmulationPaused = false;
             }
             else
             {
-                takesnapshotToolStripMenuItem.Enabled = false;
-                recordSoundToolStripMenuItem.Enabled = false;
-                recordSoundToolStripMenuItem.Text = Program.ResourceManager.GetString("Button_RecordSound");
-            }
-        }
-        private void inputToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            // Fix
-            if (Program.Settings.InputProfiles == null)
-                ControlProfile.BuildDefaultProfile();
-            if (Program.Settings.InputProfiles.Count == 0)
-                ControlProfile.BuildDefaultProfile();
-
-            connect4PlayersToolStripMenuItem.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
-            connectZapperToolStripMenuItem.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper;
-
-            profileToolStripMenuItem.DropDownItems.Clear();
-
-            foreach (ControlProfile p in Program.Settings.InputProfiles)
-            {
-                ToolStripMenuItem it = new ToolStripMenuItem();
-                it.Text = p.Name;
-                it.Checked = p.Name == Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Name;
-
-                profileToolStripMenuItem.DropDownItems.Add(it);
-            }
-        }
-        private void connectZapperToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            NesCore.PAUSED = true;
-            // Get profiles
-            if (Program.Settings.InputProfiles == null)
-                ControlProfile.BuildDefaultProfile();
-            if (Program.Settings.InputProfiles.Count == 0)
-                ControlProfile.BuildDefaultProfile();
-
-            Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper =
-                !Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper;
-            Program.Settings.Save();
-            if (NesCore.ON)
-            {
-                ApplyInput();
-                NesCore.PAUSED = false;
-            }
-        }
-        private void connect4PlayersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            NesCore.PAUSED = true;
-            // Get profiles
-            if (Program.Settings.InputProfiles == null)
-                ControlProfile.BuildDefaultProfile();
-            if (Program.Settings.InputProfiles.Count == 0)
-                ControlProfile.BuildDefaultProfile();
-
-            Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players =
-                !Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
-            Program.Settings.Save();
-            if (NesCore.ON)
-            {
-                ApplyInput();
-                NesCore.PAUSED = false;
-            }
-        }
-        private void profileToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            NesCore.PAUSED = true;
-            // Get profiles
-            if (Program.Settings.InputProfiles == null)
-                ControlProfile.BuildDefaultProfile();
-            if (Program.Settings.InputProfiles.Count == 0)
-                ControlProfile.BuildDefaultProfile();
-            for (int i = 0; i < Program.Settings.InputProfiles.Count; i++)
-            {
-                if (e.ClickedItem.Text == Program.Settings.InputProfiles[i].Name)
+                OpenFileDialog op = new OpenFileDialog();
+                op.Title = Program.ResourceManager.GetString("Title_OpenRom");
+                op.Filter = Program.ResourceManager.GetString("Filter_Rom");
+                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
                 {
-                    Program.Settings.InputProfileIndex = i;
-                    // Save
-                    Program.Settings.Save();
-                    if (NesCore.ON)
-                    {
-                        ApplyInput();
-                        NesCore.PAUSED = false;
-                    }
-
-                    break;
+                    FormRomInfo frm = new FormRomInfo(op.FileName);
+                    frm.ShowDialog(this);
                 }
             }
         }
-        private void TakeSnapshot(object sender, EventArgs e)
+        private void pathsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (NesCore.ON)
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormPathsSettings set = new FormPathsSettings();
+            if (set.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                NesCore.PAUSED = true;
-
-                // Make sure
-                Directory.CreateDirectory(Program.Settings.FolderSnapshots);
-                // Take it !
-                if (NesCore.VideoOutput != null)
-                    NesCore.VideoOutput.TakeSnapshot(Program.Settings.FolderSnapshots,
-                    Path.GetFileNameWithoutExtension(NesCore.RomInfo.RomPath),
-                    Program.Settings.SnapshotsFormat,
-                    false);
-
-                NesCore.PAUSED = false;
+                if (NesEmu.EmulationON)
+                {
+                    ApplyEmuSettings();
+                }
+            }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = false;
+        }
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormPreferences set = new FormPreferences();
+            if (set.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                if (NesEmu.EmulationON)
+                {
+                    ApplyEmuSettings();
+                }
+            }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = false;
+        }
+        private void toolStripMenuItem8_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(0);
+        }
+        private void toolStripMenuItem7_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(1);
+        }
+        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(2);
+        }
+        private void toolStripMenuItem5_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(3);
+        }
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(4);
+        }
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(5);
+        }
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(6);
+        }
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(7);
+        }
+        private void toolStripMenuItem10_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(8);
+        }
+        private void toolStripMenuItem9_Click(object sender, EventArgs e)
+        {
+            NesEmu.UpdateStateSlot(9);
+        }
+        private void stateToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            for (int i = 0; i < stateToolStripMenuItem.DropDownItems.Count; i++)
+                if (stateToolStripMenuItem.DropDownItems[i] is ToolStripMenuItem)
+                    ((ToolStripMenuItem)stateToolStripMenuItem.DropDownItems[i]).Checked = false;
+            switch (NesEmu.STATESlot)
+            {
+                case 0: toolStripMenuItem8.Checked = true; break;
+                case 1: toolStripMenuItem7.Checked = true; break;
+                case 2: toolStripMenuItem6.Checked = true; break;
+                case 3: toolStripMenuItem5.Checked = true; break;
+                case 4: toolStripMenuItem4.Checked = true; break;
+                case 5: toolStripMenuItem3.Checked = true; break;
+                case 6: toolStripMenuItem2.Checked = true; break;
+                case 7: toolStripMenuItem1.Checked = true; break;
+                case 8: toolStripMenuItem10.Checked = true; break;
+                case 9: toolStripMenuItem9.Checked = true; break;
             }
         }
-        private void recentRomsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void saveStateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (NesCore.ON)
-                NesCore.PAUSED = true;
-            LoadRom(e.ClickedItem.Tag.ToString(), true);
+            if (NesEmu.EmulationON)
+                NesEmu.SaveState();
         }
-        private void SwitchToFullscreen(object sender, EventArgs e)
+        private void loadStateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (NesCore.ON)
+            if (NesEmu.EmulationON)
+                NesEmu.LoadState();
+        }
+        private void saveStateAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
             {
-                NesCore.PAUSED = true;
-                NesCore.VideoOutput.SwitchFullscreen();
+                NesEmu.EmulationPaused = true;
+                try
+                {
+                    SaveFileDialog sav = new SaveFileDialog();
+                    sav.Title = Program.ResourceManager.GetString("Title_SaveStateAs");
+                    sav.Filter = Program.ResourceManager.GetString("Filter_MyNesState");
+                    if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                        NesEmu.SaveStateAs(sav.FileName);
+                }
+                catch (Exception ex)
+                {
+                    ManagedMessageBox.ShowErrorMessage(ex.Message);
+                }
+                NesEmu.EmulationPaused = false;
+            }
+        }
+        private void loadStateAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+            {
+                NesEmu.EmulationPaused = true;
+                try
+                {
+                    OpenFileDialog op = new OpenFileDialog();
+                    op.Title = Program.ResourceManager.GetString("Title_LoadStateAs");
+                    op.Filter = Program.ResourceManager.GetString("Filter_MyNesState");
+                    if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                        NesEmu.LoadStateAs(op.FileName);
+                }
+                catch (Exception ex)
+                {
+                    ManagedMessageBox.ShowErrorMessage(ex.Message);
+                }
+                NesEmu.EmulationPaused = false;
             }
         }
         private void FormMain_ResizeBegin(object sender, EventArgs e)
         {
-            if (NesCore.ON)
+            if (NesEmu.EmulationON)
             {
-                NesCore.VideoOutput.ResizeBegin();
+                NesEmu.EmulationPaused = true;
+
+                NesEmu.videoOut.OnResizeBegin();
+            }
+            else
+            {
+                video.threadPAUSED = true;
+                video.OnResizeBegin();
             }
         }
         private void FormMain_ResizeEnd(object sender, EventArgs e)
         {
-            if (NesCore.ON)
+            if (NesEmu.EmulationON)
             {
-                NesCore.VideoOutput.ResizeEnd();
-            }
-        }
-        private void stateToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            slotToolStripMenuItem.DropDownItems.Clear();
-            for (int i = 0; i < 10; i++)
-            {
-                ToolStripMenuItem item = new ToolStripMenuItem();
-                item.Text = Program.ResourceManager.GetString("Item_StateSlot") + " " + i;
-                item.Tag = i;
-                item.Checked = (i == NesCore.StateSlot);
-                Keys k = (Keys)Enum.Parse(typeof(Keys), "D" + i.ToString());
-                item.ShortcutKeys = Keys.Control | k;
-                slotToolStripMenuItem.DropDownItems.Add(item);
-            }
-        }
-        private void slotToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            NesCore.StateSlot = (int)e.ClickedItem.Tag;
-            if (NesCore.VideoOutput != null)
-                NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_StateSlotChangedTo")
-                    + " " + NesCore.StateSlot, 120, Color.White.ToArgb());
-            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
-                + " " + NesCore.StateSlot;
-        }
-        private void SaveState(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.SaveState(Program.Settings.FolderStates);
-        }
-        private void SaveStateAs(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.PAUSED = true;
-                SaveFileDialog sav = new SaveFileDialog();
-                sav.Title = Program.ResourceManager.GetString("Title_SaveStateFile");
-                sav.Filter = Program.ResourceManager.GetString("Filter_StateFile");
-                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    NesCore.SaveStateAs(sav.FileName);
-                }
-            }
-        }
-        private void LoadState(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.LoadState(Program.Settings.FolderStates);
-        }
-        private void LoadStateAs(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.PAUSED = true;
-                OpenFileDialog op = new OpenFileDialog();
-                op.Title = Program.ResourceManager.GetString("Title_LoadStateFile");
-                op.Filter = Program.ResourceManager.GetString("Filter_StateFile");
-                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    NesCore.LoadStateAs(op.FileName);
-                }
-            }
-        }
-        private void QuickSaveState(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.SaveMemoryState();
-        }
-        private void QuickLoadState(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.LoadMemoryState();
-        }
-        private void SaveSRAM(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.RequestSRAMSave();
-        }
-        private void SaveSRAMAs(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.PAUSED = true;
-                SaveFileDialog sav = new SaveFileDialog();
-                sav.Title = Program.ResourceManager.GetString("Title_SaveSRAM");
-                sav.Filter = Program.ResourceManager.GetString("Filter_SRAMFile");
-                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    NesCore.SaveSramAs(sav.FileName);
-                }
-            }
-        }
-        private void LoadSRAM(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.RequestSRAMLoad();
-        }
-        private void LoadSRAMAs(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.PAUSED = true;
-                OpenFileDialog op = new OpenFileDialog();
-                op.Title = Program.ResourceManager.GetString("Title_LoadStateFile");
-                op.Filter = Program.ResourceManager.GetString("Title_LoadSRAMFile");
-                if (op.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    NesCore.LoadSramAs(op.FileName);
-                }
-            }
-        }
-        private void ToggleTurbo(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.SpeedLimiter.ON = !NesCore.SpeedLimiter.ON;
-                if (!NesCore.SpeedLimiter.ON)
-                {
-                    NesCore.VideoOutput.DrawNotification("Turbo enabled !", 120, Color.Green.ToArgb());
-                }
-                else
-                {
-                    NesCore.VideoOutput.DrawNotification("Turbo disabled !", 120, Color.Green.ToArgb());
-                }
-                NesCore.AudioOutput.ResetBuffer();
-                NesCore.APU.ResetBuffer();
-            }
-        }
-        private void toolsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                turboSpeedToolStripMenuItem.Checked = !NesCore.SpeedLimiter.ON;
+                NesEmu.EmulationPaused = true;
+
+                NesEmu.videoOut.OnResizeEnd();
+
+                NesEmu.EmulationPaused = false;
             }
             else
-            { turboSpeedToolStripMenuItem.Checked = false; }
-        }
-        private void frameskippingToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            // Uncheck all
-            for (int i = 0; i < frameskippingToolStripMenuItem.DropDownItems.Count; i++)
             {
-                ((ToolStripMenuItem)frameskippingToolStripMenuItem.DropDownItems[i]).Checked = false;
+                video.OnResizeEnd();
             }
-            if (!Program.Settings.FrameSkippingEnabled)
-                disableToolStripMenuItem.Checked = true;
+        }
+        private void fullscreenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+            {
+                NesEmu.EmulationPaused = true;
+
+                NesEmu.videoOut.SwitchFullscreen();
+
+                NesEmu.EmulationPaused = false;
+            }
             else
             {
-                switch (Program.Settings.FrameSkippingCount)
+                Program.Settings.Video_StartFullscreen = !Program.Settings.Video_StartFullscreen;
+            }
+        }
+        private void videoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormVideoSettings set = new FormVideoSettings();
+            if (set.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                if (NesEmu.EmulationON)
                 {
-                    default: disableToolStripMenuItem.Checked = true; break;
-                    case 1: fPSForNTSCToolStripMenuItem.Checked = true; break;
-                    case 2: fPSForNTSCToolStripMenuItem1.Checked = true; break;
-                    case 3: fPSForNTSCToolStripMenuItem2.Checked = true; break;
-                    case 4: toolStripMenuItem2.Checked = true; break;
+                    video.threadPAUSED = true;
+                    // Apply video stretch
+                    ApplyVideoStretch();
+                    if (NesEmu.videoOut != null)
+                        video.Reset();
+                }
+            }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = false;
+        }
+        private void settingsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            fullscreenToolStripMenuItem.Checked = Program.Settings.Video_StartFullscreen;
+            turboToolStripMenuItem.Checked = !NesEmu.SpeedLimitterON;
+            connect4PlayersToolStripMenuItem.Checked = NesEmu.IsFourPlayers;
+            connectZapperToolStripMenuItem.Checked = NesEmu.IsZapperConnected;
+        }
+        private void FormMain_Activated(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON && Program.Settings.PauseAtFocusLost)
+                NesEmu.EmulationPaused = false;
+        }
+        private void FormMain_Deactivate(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON && Program.Settings.PauseAtFocusLost)
+                NesEmu.EmulationPaused = true;
+        }
+        private void takesnapshotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+                NesEmu.TakeSnapshot();
+        }
+        private void inputsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormInputSettings set = new FormInputSettings();
+            if (set.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                if (NesEmu.EmulationON)
+                {
+                    InitializeInputRenderer();
+                }
+            }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = false;
+        }
+        private void palettesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormPaletteSettings frm = new FormPaletteSettings();
+            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                InitializePalette();
+            }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = false;
+        }
+        private void fileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            recordSoundToolStripMenuItem.Enabled = NesEmu.EmulationON;
+            recordSoundToolStripMenuItem.Text = audio.IsRecording ?
+                Program.ResourceManager.GetString("Button_StopSoundRecording") :
+                Program.ResourceManager.GetString("Button_RecordSound");
+            openRecentToolStripMenuItem.Enabled = Program.Settings.RecentPlayed.Count > 0;
+            takesnapshotToolStripMenuItem.Enabled = NesEmu.EmulationON;
+        }
+        private void recordSoundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!NesEmu.EmulationON)
+                return;
+            if (audio.IsRecording)
+                audio.RecordStop();
+            else
+            {
+                NesEmu.EmulationPaused = true;
+                SaveFileDialog sav = new SaveFileDialog();
+                sav.Title = Program.ResourceManager.GetString("Title_SaveWavFile");
+                sav.Filter = Program.ResourceManager.GetString("Filter_Wav");
+                if (sav.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    audio.Record(sav.FileName);
+                    NesEmu.EmulationPaused = false;
                 }
             }
         }
-        private void disableToolStripMenuItem_Click(object sender, EventArgs e)
+        private void turboToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.FrameSkippingEnabled = false;
-            if (NesCore.ON)
-                ApplyEmuSettings();
+            NesEmu.SpeedLimitterON = !NesEmu.SpeedLimitterON;
         }
-        private void fPSForNTSCToolStripMenuItem_Click(object sender, EventArgs e)
+        private void frameSkipToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            Program.Settings.FrameSkippingEnabled = true;
-            Program.Settings.FrameSkippingCount = 1;
-            if (NesCore.ON)
-                ApplyEmuSettings();
+            for (int i = 0; i < frameSkipToolStripMenuItem.DropDownItems.Count; i++)
+                ((ToolStripMenuItem)frameSkipToolStripMenuItem.DropDownItems[i]).Checked = false;
+            if (!Program.Settings.FrameSkip_Enabled)
+                noneToolStripMenuItem.Checked = true;
+            else
+            {
+                switch (Program.Settings.FrameSkip_Reload)
+                {
+                    case 1: toolStripMenuItem12.Checked = true; break;
+                    case 2: toolStripMenuItem13.Checked = true; break;
+                    case 3: toolStripMenuItem14.Checked = true; break;
+                    case 4: toolStripMenuItem15.Checked = true; break;
+                    case 5: toolStripMenuItem16.Checked = true; break;
+                    case 6: toolStripMenuItem17.Checked = true; break;
+                    case 7: toolStripMenuItem18.Checked = true; break;
+                    case 8: toolStripMenuItem19.Checked = true; break;
+                    case 9: toolStripMenuItem20.Checked = true; break;
+                }
+            }
         }
-        private void fPSForNTSCToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void noneToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.FrameSkippingEnabled = true;
-            Program.Settings.FrameSkippingCount = 2;
-            if (NesCore.ON)
-                ApplyEmuSettings();
+            Program.Settings.FrameSkip_Enabled = false;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
         }
-        private void fPSForNTSCToolStripMenuItem2_Click(object sender, EventArgs e)
+        private void toolStripMenuItem12_Click(object sender, EventArgs e)
         {
-            Program.Settings.FrameSkippingEnabled = true;
-            Program.Settings.FrameSkippingCount = 3;
-            if (NesCore.ON)
-                ApplyEmuSettings();
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 1;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
         }
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        private void toolStripMenuItem13_Click(object sender, EventArgs e)
         {
-            Program.Settings.FrameSkippingEnabled = true;
-            Program.Settings.FrameSkippingCount = 4;
-            if (NesCore.ON)
-                ApplyEmuSettings();
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 2;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem14_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 3;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem15_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 4;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem16_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 5;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem17_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 6;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem18_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 7;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem19_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 8;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void toolStripMenuItem20_Click(object sender, EventArgs e)
+        {
+            Program.Settings.FrameSkip_Enabled = true;
+            Program.Settings.FrameSkip_Reload = 9;
+            NesEmu.SetupFrameSkip(Program.Settings.FrameSkip_Enabled, Program.Settings.FrameSkip_Reload);
+        }
+        private void regionToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            for (int i = 0; i < regionToolStripMenuItem.DropDownItems.Count; i++)
+                ((ToolStripMenuItem)regionToolStripMenuItem.DropDownItems[i]).Checked = false;
+            switch (Program.Settings.TVSystemSetting)
+            {
+                case TVSystemSetting.AUTO: aUTOToolStripMenuItem.Checked = true; break;
+                case TVSystemSetting.DENDY: dENDYToolStripMenuItem.Checked = true; break;
+                case TVSystemSetting.NTSC: nTSCToolStripMenuItem.Checked = true; break;
+                case TVSystemSetting.PALB: pALBToolStripMenuItem.Checked = true; break;
+            }
+        }
+        private void aUTOToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.TVSystemSetting = TVSystemSetting.AUTO;
+            if (NesEmu.EmulationON)
+            {
+                NesEmu.EmulationPaused = true;
+                ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YouNeedToHardResetCurrentGameToApplyRegionSettings"));
+                NesEmu.EmulationPaused = false;
+            }
+        }
+        private void nTSCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.TVSystemSetting = TVSystemSetting.NTSC;
+            if (NesEmu.EmulationON)
+            {
+                NesEmu.EmulationPaused = true;
+                ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YouNeedToHardResetCurrentGameToApplyRegionSettings"));
+                NesEmu.EmulationPaused = false;
+            }
+        }
+        private void pALBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.TVSystemSetting = TVSystemSetting.PALB;
+            if (NesEmu.EmulationON)
+            {
+                NesEmu.EmulationPaused = true;
+                ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YouNeedToHardResetCurrentGameToApplyRegionSettings"));
+                NesEmu.EmulationPaused = false;
+            }
+        }
+        private void dENDYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Settings.TVSystemSetting = TVSystemSetting.DENDY;
+            if (NesEmu.EmulationON)
+            {
+                NesEmu.EmulationPaused = true;
+                ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YouNeedToHardResetCurrentGameToApplyRegionSettings"));
+                NesEmu.EmulationPaused = false;
+            }
+        }
+        private void openRecentToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            string path = e.ClickedItem.Tag.ToString();
+            if (File.Exists(path))
+            {
+                OpenRom(path);
+                if (NesEmu.EmulationON)
+                    AddRecent(path);
+            }
+            else
+            {
+                ManagedMessageBoxResult res = ManagedMessageBox.ShowQuestionMessage(
+                    Program.ResourceManager.GetString("Message_ThisFileIsNoLongerExistDoYouWantToDeleteItFromTheRecentList"));
+                if (res.ClickedButtonIndex == 0)
+                {
+                    for (int i = 0; i < Program.Settings.RecentPlayed.Count; i++)
+                    {
+                        if (Program.Settings.RecentPlayed[i] == path)
+                        {
+                            Program.Settings.RecentPlayed.RemoveAt(i);
+                            break;
+                        }
+                    }
+                    RefreshRecent();
+                }
+            }
+        }
+        private void gameGenieToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!NesEmu.EmulationON)
+            {
+                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_GameGenieCantBeUSedWhileEmuOf"));
+                return;
+            }
+            NesEmu.EmulationPaused = true;
+            FormGameGenie frm = new FormGameGenie();
+            frm.ShowDialog(this);
+            NesEmu.EmulationPaused = false;
         }
         private void languageToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
+            NesEmu.EmulationPaused = true;
             int i = 0;
             int index = 0;
             foreach (ToolStripMenuItem item in languageToolStripMenuItem.DropDownItems)
@@ -1055,296 +1108,70 @@ namespace MyNes
                     item.Checked = false;
                 i++;
             }
-            Program.Language = Program.SupportedLanguages[index, 0];
             Program.Settings.Language = Program.SupportedLanguages[index, 0];
-
-            MessageBox.Show(Program.ResourceManager.GetString("Message_YouMustRestartTheProgramToApplyLanguage"),
+            Program.Settings.Save();
+            ManagedMessageBox.ShowMessage(Program.ResourceManager.GetString("Message_YouMustRestartTheProgramToApplyLanguage"),
                 Program.ResourceManager.GetString("MessageCaption_ApplyLanguage"));
+            NesEmu.EmulationPaused = false;
         }
-        private void showMenuStripToolStripMenuItem_Click(object sender, EventArgs e)
+        private void menuStrip1_MenuActivate(object sender, EventArgs e)
         {
-            Program.Settings.ShowMenu = !Program.Settings.ShowMenu;
-            ApplyViewSettings();
+            NesEmu.EmulationPaused = true;
         }
-        private void showToolsStripToolStripMenuItem_Click(object sender, EventArgs e)
+        private void menuStrip1_MenuDeactivate(object sender, EventArgs e)
         {
-            Program.Settings.ShowToolsBar = !Program.Settings.ShowToolsBar;
-            ApplyViewSettings();
+            NesEmu.EmulationPaused = false;
         }
-        private void ShowHelp(object sender, EventArgs e)
+        private void visitWebsiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                string startup = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-                Help.ShowHelp(this, startup + "\\" + Program.CultureInfo.Name + "\\Help.chm", HelpNavigator.TableOfContents);
+                System.Diagnostics.Process.Start("http://sourceforge.net/projects/mynes/");
             }
-            catch (Exception ex)
+            catch { }
+        }
+        private void facebookPageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
             {
-                ManagedMessageBox.ShowErrorMessage(ex.Message, mainTitle);
+                System.Diagnostics.Process.Start("http://www.facebook.com/pages/My-Nes/427707727244076");
             }
+            catch { }
         }
-        private void toolStripSplitButton1_DropDownOpening(object sender, EventArgs e)
+        private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (ToolStripMenuItem it in toolStripSplitButton1.DropDownItems)
-                it.Checked = false;
-            switch (Program.Settings.TVFormat)
-            {
-                case TVSystemSettings.AUTO: aUTOToolStripMenuItem1.Checked = true; break;
-                case TVSystemSettings.DENDY: dENDYToolStripMenuItem1.Checked = true; break;
-                case TVSystemSettings.NTSC: nTSCToolStripMenuItem1.Checked = true; break;
-                case TVSystemSettings.PALB: pALBToolStripMenuItem1.Checked = true; break;
-            }
-        }
-        private void toolStripSplitButton2_DropDownOpening(object sender, EventArgs e)
-        {
-            toolStripSplitButton_stateSlot.DropDownItems.Clear();
-            for (int i = 0; i < 10; i++)
-            {
-                ToolStripMenuItem item = new ToolStripMenuItem();
-                item.Text = Program.ResourceManager.GetString("Item_StateSlot") + " " + i;
-                item.Tag = i;
-                item.Checked = (i == NesCore.StateSlot);
-
-                toolStripSplitButton_stateSlot.DropDownItems.Add(item);
-            }
-        }
-        private void toolStripSplitButton2_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            NesCore.StateSlot = (int)e.ClickedItem.Tag;
-            if (NesCore.VideoOutput != null)
-                NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_StateSlotChangedTo")
-                    + " " + NesCore.StateSlot, 120, Color.White.ToArgb());
-            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
-                    + " " + NesCore.StateSlot;
-        }
-        private void toolStripSplitButton1_ButtonClick(object sender, EventArgs e)
-        {
-            // Switch region..
-            switch (Program.Settings.TVFormat)
-            {
-                case TVSystemSettings.AUTO: nTSCToolStripMenuItem_Click(this, null); break;
-                case TVSystemSettings.DENDY: aUTOToolStripMenuItem_Click(this, null); break;
-                case TVSystemSettings.NTSC: pALBToolStripMenuItem_Click(this, null); break;
-                case TVSystemSettings.PALB: dENDYToolStripMenuItem_Click(this, null); break;
-            }
-        }
-        private void toolStripSplitButton_stateSlot_ButtonClick(object sender, EventArgs e)
-        {
-            NesCore.StateSlot = (NesCore.StateSlot + 1) % 10;
-            if (NesCore.VideoOutput != null)
-                NesCore.VideoOutput.DrawNotification(Program.ResourceManager.GetString("Status_StateSlotChangedTo")
-                    + " " + NesCore.StateSlot, 120, Color.White.ToArgb());
-            toolStripSplitButton_stateSlot.Text = Program.ResourceManager.GetString("Item_StateSlot")
-                    + " " + NesCore.StateSlot;
+            try { System.Diagnostics.Process.Start(".\\Help\\index.htm"); }
+            catch(Exception ex)
+            { ManagedMessageBox.ShowErrorMessage(ex.Message); }
         }
         private void aboutMyNesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (NesCore.ON)
-                NesCore.PAUSED = true;
+            NesEmu.EmulationPaused = true;
 
             FormAbout frm = new FormAbout();
             frm.ShowDialog(this);
 
-            if (NesCore.ON)
-                NesCore.PAUSED = false;
+            NesEmu.EmulationPaused = false;
         }
-        private void FormMain_Deactivate(object sender, EventArgs e)
+        private void codeprojectArticleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (NesCore.ON && Program.Settings.MainWindowAutoPauseOnFocusLost)
-                NesCore.PAUSED = true;
-        }
-        private void FormMain_Activated(object sender, EventArgs e)
-        {
-            if (NesCore.ON && Program.Settings.MainWindowAutoPauseOnFocusLost)
-                NesCore.PAUSED = false;
-        }
-        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.PAUSED = true;
-
-            FormPreferences frm = new FormPreferences();
-            frm.ShowDialog(this);
-
-            if (NesCore.ON)
-                NesCore.PAUSED = false;
-        }
-        // The status timer
-        private void timer_status_Tick(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
+            try
             {
-                // Game genie
-                if (NesCore.BOARD.IsGameGenieActive)
-                    StatusLabel_GameGenie.Text = "Game Genie";
-                else
-                    StatusLabel_GameGenie.Text = "";
-
-                if (NesCore.PAUSED)
-                {
-                    StatusLabel_emulation.Text = Program.ResourceManager.GetString("Status_Emulation") + ": " +
-                   Program.ResourceManager.GetString("Status_PAUSED");
-                    // Show mouse cursor
-                    if (mouseHiding)
-                    { Cursor.Show(); mouseHiding = false; }
-                }
-                else
-                {
-                    StatusLabel_emulation.Text = Program.ResourceManager.GetString("Status_Emulation") + ": " +
-                      Program.ResourceManager.GetString("Status_ON");
-                    // Mouse hiding ?
-                    if (Program.Settings.AutoHideMouse)
-                    {
-                        if (mouseHideTimer > 0)
-                            mouseHideTimer--;
-                        else if (mouseHideTimer == 0)
-                        {
-                            mouseHideTimer = -1;
-                            if (this.Focused)
-                            {
-                                if (!mouseHiding)
-                                {
-                                    mouseHiding = true;
-                                    Cursor.Hide();
-                                }
-                            }
-                            else  // Show mouse cursor
-                            {
-                                if (mouseHiding)
-                                { Cursor.Show(); mouseHiding = false; }
-                            }
-                        }
-                    }
-
-                }
-                StatusLabel_tv.Text = NesCore.TV.ToString();
-                // Normal status
-                string status = "";
-
-                if (NesCore.AudioOutput != null)
-                {
-                    if (NesCore.AudioOutput.IsRecording)
-                    {
-                        status += Program.ResourceManager.GetString("Status_RecordingSound") +
-                         " [" + TimeSpan.FromSeconds(NesCore.AudioOutput.RecordTime) + "]";
-                    }
-                }
-                StatusLabel_notifications.Text = status;
-
+                System.Diagnostics.Process.Start("http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx");
             }
-            else
-            {
-                StatusLabel_emulation.Text = Program.ResourceManager.GetString("Status_Emulation") + ": " +
-                  Program.ResourceManager.GetString("Status_OFF");
-                StatusLabel_tv.Text = "";
-                StatusLabel_GameGenie.Text = "";
-                if (this.Text != mainTitle)
-                    this.Text = mainTitle;
-                // Show mouse cursor
-                if (mouseHiding)
-                { Cursor.Show(); mouseHiding = false; }
-            }
+            catch { }
         }
-        private void showStatusStripToolStripMenuItem_Click(object sender, EventArgs e)
+        private void connect4PlayersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.Settings.ShowStatus = !Program.Settings.ShowStatus;
-            ApplyViewSettings();
+            NesEmu.IsFourPlayers = !NesEmu.IsFourPlayers;
         }
-        private void FormMain_MouseMove(object sender, MouseEventArgs e)
+        private void connectZapperToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (mouseHiding)
-            { Cursor.Show(); mouseHiding = false; }
-            if (Program.Settings.AutoHideMouse)
-                mouseHideTimer = Program.Settings.AutoHideMousePeriod;
+            NesEmu.IsZapperConnected = !NesEmu.IsZapperConnected;
         }
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void statusToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-        }
-        private void menuStrip1_MenuActivate(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.PAUSED = true;
-        }
-        private void menuStrip1_MenuDeactivate(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-                NesCore.PAUSED = false;
-        }
-        private void toolStripSplitButton2_DropDownOpening_1(object sender, EventArgs e)
-        {
-            // Fix
-            if (Program.Settings.InputProfiles == null)
-                ControlProfile.BuildDefaultProfile();
-            if (Program.Settings.InputProfiles.Count == 0)
-                ControlProfile.BuildDefaultProfile();
-
-            connect4PlayersToolStripMenuItem1.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Connect4Players;
-            connectZapperToolStripMenuItem1.Checked = Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].ConnectZapper;
-
-            profileToolStripMenuItem1.DropDownItems.Clear();
-
-            foreach (ControlProfile p in Program.Settings.InputProfiles)
-            {
-                ToolStripMenuItem it = new ToolStripMenuItem();
-                it.Text = p.Name;
-                it.Checked = p.Name == Program.Settings.InputProfiles[Program.Settings.InputProfileIndex].Name;
-
-                profileToolStripMenuItem1.DropDownItems.Add(it);
-            }
-        }
-        private void ActiveGameGenie(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.PAUSED = true;
-                if (!NesCore.BOARD.IsGameGenieActive && NesCore.BOARD.GameGenieCodes == null)
-                {
-                    //configure
-                    FormGameGenie frm = new FormGameGenie();
-                    frm.ShowDialog(this);
-                }
-                else
-                {
-                    NesCore.BOARD.IsGameGenieActive = !NesCore.BOARD.IsGameGenieActive;
-                }
-                NesCore.PAUSED = false;
-            }
-        }
-        private void ConfigureGameGenie(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                NesCore.PAUSED = true;
-
-                //configure
-                FormGameGenie frm = new FormGameGenie();
-                frm.ShowDialog(this);
-
-                NesCore.PAUSED = false;
-            }
-        }
-        private void gameGenieToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                activeToolStripMenuItem.Checked = NesCore.BOARD.IsGameGenieActive;
-            }
-            else
-            {
-                activeToolStripMenuItem.Checked = false;
-            }
-        }
-        private void toolStripSplitButton3_DropDownOpening(object sender, EventArgs e)
-        {
-            if (NesCore.ON)
-            {
-                activeToolStripMenuItem1.Checked = NesCore.BOARD.IsGameGenieActive;
-            }
-            else
-            {
-                activeToolStripMenuItem1.Checked = false;
-            }
+            video.ShowEmulationStatus();
         }
     }
 }

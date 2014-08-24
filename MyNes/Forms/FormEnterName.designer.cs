@@ -72,9 +72,9 @@ namespace MyNes
             // 
             // panel2
             // 
-            resources.ApplyResources(this.panel2, "panel2");
             this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
+            resources.ApplyResources(this.panel2, "panel2");
             this.panel2.Name = "panel2";
             // 
             // button2
@@ -101,7 +101,7 @@ namespace MyNes
             resources.ApplyResources(this.panel4, "panel4");
             this.panel4.Name = "panel4";
             // 
-            // EnterNameForm
+            // FormEnterName
             // 
             this.AcceptButton = this.button1;
             resources.ApplyResources(this, "$this");
@@ -113,7 +113,7 @@ namespace MyNes
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Name = "EnterNameForm";
+            this.Name = "FormEnterName";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.panel2.ResumeLayout(false);
