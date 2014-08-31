@@ -82,7 +82,8 @@ namespace MyNes.Core
         }
         private static bool Sq1IsValidFrequency()
         {
-            return (sq1_frequency >= 0x8) && ((sq1_sweepNegateFlag) || (((sq1_frequency + (sq1_frequency >> sq1_sweepShiftCount)) & 0x800) == 0));
+            return (sq1_frequency >= 0x8) && ((sq1_sweepNegateFlag) || (((sq1_frequency + (sq1_frequency >> sq1_sweepShiftCount))
+                & 0x800) == 0));
         }
         private static void Sq1ClockEnvelope()
         {

@@ -122,10 +122,11 @@ namespace MyNes.Core
         }
         private static void APUShutdown()
         {
+            if (audio_playback_buffer == null) return;
             // Noise on shutdown; MISC
-            //Random r = new Random();
-            //for (int i = 0; i < DATA.Length; i++)
-            //    DATA[i] = (byte)r.Next(0, 20);
+            Random r = new Random();
+            for (int i = 0; i < audio_playback_buffer.Length; i++)
+                audio_playback_buffer[i] = (byte)r.Next(0, 20);
         }
         private static void InitializeSoundMixTable()
         {
@@ -184,13 +185,18 @@ namespace MyNes.Core
                              [sq2_output]
                              [trl_output]
                              [noz_output]
-                            [dmc_output] + (board.enable_external_sound ? board.APUGetSamples() : 0);
+                             [dmc_output] + (board.enable_external_sound ? board.APUGetSamples() : 0);
                 y = x - x_1 + (0.995 * y_1);// y[n] = x[n] - x[n - 1] + R * y[n - 1]; R = 0.995 for 44100 Hz
 
                 x_1 = x;
                 y_1 = y;
 
                 audio_playback_out = (int)Math.Ceiling(y);
+
+                // NO DC Blocker
+                //audio_playback_out = (int)(mix_table[sq1_output][sq2_output][trl_output][noz_output][dmc_output] 
+                //    + (board.enable_external_sound ? board.APUGetSamples() : 0));
+
                 if (audio_playback_out > 160)
                     audio_playback_out = 160;
                 else if (audio_playback_out < -160)

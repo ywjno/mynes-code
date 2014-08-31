@@ -101,9 +101,12 @@ namespace MyNes.Core
                 trl_cycles = trl_frequency + 1;
                 if (trl_duration_counter > 0 && trl_linearCounter > 0)
                 {
-                    trl_step++;
-                    trl_step &= 0x1F;
-                    trl_output = TrlStepSequence[trl_step];
+                    if (trl_frequency >= 4)
+                    {
+                        trl_step++;
+                        trl_step &= 0x1F;
+                        trl_output = TrlStepSequence[trl_step];
+                    }
                 }
             }
         }

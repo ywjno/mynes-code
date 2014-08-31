@@ -94,8 +94,8 @@ namespace MyNes.Core
             else if (dmaDMC_occurring)
             {
                 // DMC occurring now !!? is that possible ?
-                // Anyway, let's use the normal way
-                dmaDMCDMAWaitCycles = BUS_RW ? 3 : 2;
+                // Anyway, let's ignore this call !
+                return;
             }
             else
             {
@@ -113,8 +113,6 @@ namespace MyNes.Core
             isOamDma = true;
             // Setup
             // OAM DMA depends on apu odd timer for odd cycles
-            dmaOAMOn = true;
-            dmaOAMFinishCounter = 0;
             if (dmaDMC_occurring)
             {
                 // DMC DMA occurring here, use r/w flag
@@ -123,14 +121,16 @@ namespace MyNes.Core
             else if (dmaOAM_occurring)
             {
                 // OAM DMA inside OAM DMA !?? is that possible ?
-                // Do normal way anyway
-                dmaOAMDMAWaitCycles = oddCycle ? 1 : 2;
+                // Ignore !
+                return;
             }
             else
             {
                 // OAM DMA depends on the apu odd timer to add the waiting cycles
                 dmaOAMDMAWaitCycles = oddCycle ? 1 : 2;
             }
+            dmaOAMOn = true;
+            dmaOAMFinishCounter = 0;
         }
         private static void DMAClock()
         {

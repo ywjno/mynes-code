@@ -37,7 +37,7 @@ namespace MyNes
             // Version
             Version ver = Assembly.GetExecutingAssembly().GetName().Version;
             label_version.Text = Program.ResourceManager.GetString("Version")
-                + ": " + ver.Major + "." + ver.Minor + "\n[" + Program.ResourceManager.GetString("Build") + " " + ver.Build + "]\n";
+                + ": " + ver.Major + "." + ver.Minor + "." + ver.Build;
             Assembly asm = Assembly.LoadFile
                 (System.IO.Path.Combine(Application.StartupPath,
                     "Core.dll"));
