@@ -476,12 +476,13 @@ namespace MyNes
             button5.Enabled = radioButton_searchmode_both.Enabled =
             radioButton_searchmode_fileinrom.Enabled = radioButton_searchmode_rominfile.Enabled =
             radioButton_contains.Enabled = radioButton_endwith.Enabled = radioButton_startWith.Enabled =
-            checkBox_useNameWhenPathNotValid.Checked = false;
+            checkBox_useNameWhenPathNotValid.Enabled = false;
             progressBar1.Visible = label_status.Visible = groupBox1.Enabled = groupBox2.Enabled = true;
             timer1.Start();
             button4.Text = Program.ResourceManager.GetString("Button_Stop");
             // Start the thread !
             mainThread = new Thread(new ThreadStart(SEARCH));
+            mainThread.CurrentUICulture = Program.CultureInfo;
             mainThread.Start();
         }
         // Status timer
