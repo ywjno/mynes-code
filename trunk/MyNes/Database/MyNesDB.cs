@@ -762,7 +762,7 @@ namespace MyNes
             }
             return true;
         }
-        /*Snapshots*/
+        /*DETECTS*/
         public static void AddDetect(string table, string gameId, string name, string path, string fileInfo)
         {
             using (SQLiteTransaction mytransaction = myconnection.BeginTransaction())

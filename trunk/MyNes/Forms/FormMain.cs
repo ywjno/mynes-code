@@ -71,10 +71,11 @@ namespace MyNes
             if (Program.Settings.RecentPlayed == null)
                 Program.Settings.RecentPlayed = new System.Collections.Specialized.StringCollection();
             RefreshRecent();
-            if (!Program.Settings.RecentPlayed.Contains(recent))
-                Program.Settings.RecentPlayed.Insert(0, recent);
-            if (Program.Settings.RecentPlayed.Count == 10)
-                Program.Settings.RecentPlayed.RemoveAt(9);
+            if (Program.Settings.RecentPlayed.Contains(recent))
+                Program.Settings.RecentPlayed.Remove(recent);
+            Program.Settings.RecentPlayed.Insert(0, recent);
+            if (Program.Settings.RecentPlayed.Count == 20)
+                Program.Settings.RecentPlayed.RemoveAt(19);
             RefreshRecent();
         }
         private void RefreshRecent()
@@ -196,13 +197,11 @@ namespace MyNes
                     // Apply video stretch
                     ApplyVideoStretch();
 
-                    // Initialize renderers
-                    //InitializeInputRenderer();
-                    //InitializeVideoRenderer();
-                    //InitializeSoundRenderer();
-
+                    // Reset video renderer
                     video.Reset();
 
+                    InitializeInputRenderer();
+                    
                     if (NesEmu.IsGameFoundOnDB)
                     {
                         if (NesEmu.GameInfo.Game_AltName != null && NesEmu.GameInfo.Game_AltName != "")
@@ -240,6 +239,7 @@ namespace MyNes
             // Refresh input devices !
             DirectInput di = new DirectInput();
             List<DeviceInstance> devices = new List<DeviceInstance>(di.GetDevices());
+            bool found = false;
             #region Player 1
             foreach (DeviceInstance dev in devices)
             {
@@ -257,11 +257,13 @@ namespace MyNes
                                 case DeviceType.Keyboard:
                                     {
                                         joy1 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                        found = true;
                                         break;
                                     }
                                 case DeviceType.Joystick:
                                     {
                                         joy1 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                        found = true;
                                         break;
                                     }
                             }
@@ -271,8 +273,30 @@ namespace MyNes
                     break;
                 }
             }
+            if (!found && Program.Settings.ControlSettings.Joypad1AutoSwitchBackToKeyboard)
+            {
+                foreach (DeviceInstance dev in devices)
+                {
+                    if (dev.Type == DeviceType.Keyboard)
+                    {
+                        // We found the device !!
+                        // Let's see if we have the settings for this device
+                        foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                        {
+                            if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                            {
+                                // This is it !
+                                joy1 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
             #endregion
             #region Player 2
+            found = false;
             foreach (DeviceInstance dev in devices)
             {
                 if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad2DeviceGuid)
@@ -289,12 +313,12 @@ namespace MyNes
                                 case DeviceType.Keyboard:
                                     {
                                         joy2 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        break;
+                                        found = true; break;
                                     }
                                 case DeviceType.Joystick:
                                     {
                                         joy2 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        break;
+                                        found = true; break;
                                     }
                             }
                             break;
@@ -303,8 +327,30 @@ namespace MyNes
                     break;
                 }
             }
+            if (!found && Program.Settings.ControlSettings.Joypad2AutoSwitchBackToKeyboard)
+            {
+                foreach (DeviceInstance dev in devices)
+                {
+                    if (dev.Type == DeviceType.Keyboard)
+                    {
+                        // We found the device !!
+                        // Let's see if we have the settings for this device
+                        foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                        {
+                            if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                            {
+                                // This is it !
+                                joy2 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
             #endregion
             #region Player 3
+            found = false;
             foreach (DeviceInstance dev in devices)
             {
                 if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad3DeviceGuid)
@@ -321,12 +367,12 @@ namespace MyNes
                                 case DeviceType.Keyboard:
                                     {
                                         joy3 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        break;
+                                        found = true; break;
                                     }
                                 case DeviceType.Joystick:
                                     {
                                         joy3 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        break;
+                                        found = true; break;
                                     }
                             }
                             break;
@@ -335,8 +381,30 @@ namespace MyNes
                     break;
                 }
             }
+            if (!found && Program.Settings.ControlSettings.Joypad3AutoSwitchBackToKeyboard)
+            {
+                foreach (DeviceInstance dev in devices)
+                {
+                    if (dev.Type == DeviceType.Keyboard)
+                    {
+                        // We found the device !!
+                        // Let's see if we have the settings for this device
+                        foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                        {
+                            if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                            {
+                                // This is it !
+                                joy3 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
             #endregion
             #region Player 4
+            found = false;
             foreach (DeviceInstance dev in devices)
             {
                 if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad4DeviceGuid)
@@ -353,12 +421,12 @@ namespace MyNes
                                 case DeviceType.Keyboard:
                                     {
                                         joy4 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        break;
+                                        found = true; break;
                                     }
                                 case DeviceType.Joystick:
                                     {
                                         joy4 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        break;
+                                        found = true; break;
                                     }
                             }
                             break;
@@ -367,9 +435,31 @@ namespace MyNes
                     break;
                 }
             }
+            if (!found && Program.Settings.ControlSettings.Joypad4AutoSwitchBackToKeyboard)
+            {
+                foreach (DeviceInstance dev in devices)
+                {
+                    if (dev.Type == DeviceType.Keyboard)
+                    {
+                        // We found the device !!
+                        // Let's see if we have the settings for this device
+                        foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                        {
+                            if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                            {
+                                // This is it !
+                                joy4 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
             #endregion
             NesEmu.SetupJoypads(joy1, joy2, joy3, joy4);
             #region VSUnisystem DIP
+            found = false;
             foreach (DeviceInstance dev in devices)
             {
                 if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid)
@@ -386,18 +476,39 @@ namespace MyNes
                                 case DeviceType.Keyboard:
                                     {
                                         NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPKeyboardConnection(this.Handle, con));
-                                        break;
+                                        found = true; break;
                                     }
                                 case DeviceType.Joystick:
                                     {
                                         NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con));
-                                        break;
+                                        found = true; break;
                                     }
                             }
                             break;
                         }
                     }
                     break;
+                }
+            }
+            if (!found && Program.Settings.ControlSettings.VSUnisystemDIPAutoSwitchBackToKeyboard)
+            {
+                foreach (DeviceInstance dev in devices)
+                {
+                    if (dev.Type == DeviceType.Keyboard)
+                    {
+                        // We found the device !!
+                        // Let's see if we have the settings for this device
+                        foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                        {
+                            if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                            {
+                                // This is it !
+                                NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPKeyboardConnection(this.Handle, con));
+                                break;
+                            }
+                        }
+                        break;
+                    }
                 }
             }
             #endregion
@@ -419,6 +530,12 @@ namespace MyNes
             audio = new DirectSoundRenderer(this.Handle);
             NesEmu.SetupSoundPlayback(audio, Program.Settings.Audio_SoundEnabled, Program.Settings.Audio_Frequency,
                 audio.BufferSize, audio.latency_in_bytes);
+
+            NesEmu.audio_playback_dmc_enabled = Program.Settings.AudioChannelDMCEnabled;
+            NesEmu.audio_playback_noz_enabled = Program.Settings.AudioChannelNOZEnabled;
+            NesEmu.audio_playback_sq1_enabled = Program.Settings.AudioChannelSQ1Enabled;
+            NesEmu.audio_playback_sq2_enabled = Program.Settings.AudioChannelSQ2Enabled;
+            NesEmu.audio_playback_trl_enabled = Program.Settings.AudioChannelTRLEnabled;
         }
         public void InitializePalette()
         {
@@ -499,7 +616,7 @@ namespace MyNes
                 Program.Settings.Folder_State, Program.Settings.Folder_Snapshots, Program.Settings.SnapshotFormat,
                 Program.Settings.ReplaceSnapshot);
         }
-        private void ApplyVideoStretch()
+        public void ApplyVideoStretch()
         {
             // Windowed stretch !
             if (Program.Settings.Video_StretchToMulti)
@@ -1141,7 +1258,7 @@ namespace MyNes
         private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try { System.Diagnostics.Process.Start(".\\Help\\index.htm"); }
-            catch(Exception ex)
+            catch (Exception ex)
             { ManagedMessageBox.ShowErrorMessage(ex.Message); }
         }
         private void aboutMyNesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1172,6 +1289,13 @@ namespace MyNes
         private void statusToolStripMenuItem_Click(object sender, EventArgs e)
         {
             video.ShowEmulationStatus();
+        }
+        private void showBoardsListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NesEmu.EmulationPaused = true;
+            FormBoardsList frm = new FormBoardsList();
+            frm.ShowDialog(this);
+            NesEmu.EmulationPaused = false;
         }
     }
 }

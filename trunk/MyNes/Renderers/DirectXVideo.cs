@@ -63,6 +63,7 @@ namespace MyNes
         private int fullscreen_mode_index = 0;
         private int show_emulation_status_timer;
         private string emulation_status_game_name;
+        private bool cursor_visible = false;
         // Settings
         private SlimDX.Direct3D9.TextureFilter filter = TextureFilter.Point;
         private bool cut_lines = true;
@@ -71,7 +72,9 @@ namespace MyNes
         private bool keep_aspect_ratio = true;
         private bool show_fps = true;
         private bool show_notification = true;
+        private string emu_fps;
         private int frame_timer = 2;
+        private System.Threading.Timer fps_cal_timer;
         // Thread
         private Thread thread;
         public bool threadON;
@@ -81,6 +84,7 @@ namespace MyNes
 
         public DirectXVideo(Control surface_control)
         {
+            cursor_visible = true;
             this.surface_control = surface_control;
             // Make it not fullscreen
             fullScreen = false;
@@ -138,9 +142,9 @@ namespace MyNes
                     presentParams);
                     bufferSize = (256 * scanlines * 4);
                     font = new SlimDX.Direct3D9.Font(displayDevice,
-                        new System.Drawing.Font("Tahoma", (8 * surface_control.Height) / scanlines, FontStyle.Bold));
+                        new System.Drawing.Font("Tahoma", (6 * surface_control.Height) / scanlines, FontStyle.Bold));
                     font_BIG = new SlimDX.Direct3D9.Font(displayDevice,
-                        new System.Drawing.Font("Tahoma", (10 * surface_control.Height) / scanlines, FontStyle.Bold));
+                        new System.Drawing.Font("Tahoma", (8 * surface_control.Height) / scanlines, FontStyle.Bold));
                     CreateDisplayObjects(displayDevice);
                     initialized = true;
                     disposed = false;
@@ -150,8 +154,14 @@ namespace MyNes
                         destinationRect = new Rectangle(0, 0, surface_control.Width, surface_control.Height);
                     notification_x = destinationRect.X + 2;
                     notification_y = surface_control.Height - ((surface_control.Height * 25) / scanlines);
-                    canRender = true;
+
                     surface_control.Select();
+                    if (!cursor_visible)
+                    {
+                        Cursor.Show();
+                        cursor_visible = true;
+                    }
+                    canRender = true;
                 }
                 else
                 {
@@ -166,6 +176,7 @@ namespace MyNes
                     presentParams.SwapEffect = SwapEffect.Discard;
                     presentParams.Multisample = MultisampleType.None;
                     presentParams.PresentationInterval = PresentInterval.Default;
+
                     displayFormat = mode.Format;
                     displayDevice = new Device(direct3D, 0, DeviceType.Hardware, surface_control.Parent.Handle,
                         hardware_vertex_processing ? CreateFlags.HardwareVertexProcessing : CreateFlags.SoftwareVertexProcessing,
@@ -184,9 +195,18 @@ namespace MyNes
                         destinationRect = new Rectangle(0, 0, mode.Width, mode.Height);
                     notification_x = destinationRect.X + 2;
                     notification_y = mode.Height - ((mode.Height * 25) / scanlines);
+                    if (cursor_visible)
+                    {
+                        Cursor.Hide();
+                        cursor_visible = false;
+                    }
                     canRender = true;
+
+                    //Program.FormMain.InitializeInputRenderer();
                 }
+
                 SetupZapperBounds();
+
                 Console.WriteLine("Direct3D: Direct 3d video device initialized.");
             }
             catch (Exception e)
@@ -396,6 +416,7 @@ namespace MyNes
                 {
                     fullScreen = false;
                     Reset();
+                    Program.FormMain.ApplyVideoStretch();
                 }
                 // Make a snow buffer when emulation is off
                 for (int i = 0; i < currentBuffer.Length; i++)
@@ -449,13 +470,53 @@ namespace MyNes
                 if (NesEmu.EmulationON)
                 {
                     if (NesEmu.EmulationPaused)
-                        font_BIG.DrawString(displaySprite, "PAUSED", 20, 20, Color.Lime);
+                    {
+                        switch (NesEmu.EmuStatus)
+                        {
+                            case NesEmu.EmulationStatus.HARDRESET:
+                                {
+                                    font_BIG.DrawString(displaySprite, "HARD RESETING ...", 20, 20, Color.Lime);
+                                    break;
+                                }
+                            case NesEmu.EmulationStatus.LOADINGSTATE:
+                                {
+                                    font_BIG.DrawString(displaySprite, "LOADING STATE ...", 20, 20, Color.Lime);
+                                    break;
+                                }
+                            case NesEmu.EmulationStatus.PAUSED:
+                                {
+                                    font_BIG.DrawString(displaySprite, "PAUSED", 20, 20, Color.Lime);
+                                    break;
+                                }
+                            case NesEmu.EmulationStatus.SAVINGSNAP:
+                                {
+                                    font_BIG.DrawString(displaySprite, "SAVING SNAPSHOT ...", 20, 20, Color.Lime);
+                                    break;
+                                }
+                            case NesEmu.EmulationStatus.SAVINGSRAM:
+                                {
+                                    font_BIG.DrawString(displaySprite, "SAVING SRAM ...", 20, 20, Color.Lime);
+                                    break;
+                                }
+                            case NesEmu.EmulationStatus.SAVINGSTATE:
+                                {
+                                    font_BIG.DrawString(displaySprite, "SAVING STATE ...", 20, 20, Color.Lime);
+                                    break;
+                                }
+                            case NesEmu.EmulationStatus.SOFTRESET:
+                                {
+                                    font_BIG.DrawString(displaySprite, "SOFT RESETTING ...", 20, 20, Color.Lime);
+                                    break;
+                                }
+                        }
+                    }
                     else if (Program.FormMain.audio != null)
                     {
                         if (Program.FormMain.audio.IsRecording)
                             font.DrawString(displaySprite, "RECORDING SOUND [" + TimeSpan.FromSeconds(Program.FormMain.audio.Recorder.Time) + "]", 20, 20, Color.OrangeRed);
                         // Debug sound sync by calculating the difference between pointers and show it
-                        //font.DrawString(displaySprite, (Program.FormMain.audio.CurrentWritePosition - NesEmu.audio_playback_w_pos).ToString(), 20, 20, Color.OrangeRed);
+                        // font.DrawString(displaySprite, (Program.FormMain.audio.CurrentWritePosition -
+                        //     NesEmu.audio_playback_w_pos).ToString(), 20, 20, Color.OrangeRed);
                     }
                     if (show_emulation_status_timer > 0)
                     {
@@ -465,21 +526,20 @@ namespace MyNes
                             "TV SYS: " + NesEmu.TVFormat.ToString() +
                             (NesEmu.IsGameGenieActive ? " | GAME GENIE ON" : "")
                             , 20, 50, Color.Lime);
-                        double fps = (1.0 / NesEmu.ImmediateFrameTime);
-                        double pfps = (1.0 / NesEmu.CurrentFrameTime);
-                        font.DrawString(displaySprite, "FPS: " + fps.ToString("F2") + "/" + pfps.ToString("F2"),
+
+                        font.DrawString(displaySprite, "FPS Can Make: " + (1.0 / NesEmu.CurrentFrameTime).ToString("F2"),
                             20, 80, Color.Lime);
                     }
-                    else if (show_fps)
+
+                    if (show_fps)
                     {
                         if (!NesEmu.EmulationPaused)
                         {
-                            double fps = (1.0 / NesEmu.ImmediateFrameTime);
-                            double pfps = (1.0 / NesEmu.CurrentFrameTime);
-                            font.DrawString(displaySprite, fps.ToString("F2") + "/" + pfps.ToString("F2"), 20, 20, Color.Lime);
+                            font.DrawString(displaySprite,
+                                "FPS: " + emu_fps + " / " + (1.0 / NesEmu.CurrentFrameTime).ToString("F2"),
+                                20, 20, Color.Lime);
                         }
                     }
-
                     if (!NesEmu.SpeedLimitterON)
                     {
                         if (frame_timer > 30)
@@ -506,9 +566,9 @@ namespace MyNes
         {
             // if (!isRendering)
             {
-                canRender = false;
+                //canRender = false;
                 buffer.CopyTo(currentBuffer, 0);
-                canRender = true;
+                // canRender = true;
             }
         }
         private double GetTime()
@@ -530,6 +590,26 @@ namespace MyNes
             hardware_vertex_processing = Program.Settings.Video_HardwareVertexProcessing;
             keep_aspect_ratio = Program.Settings.Video_KeepAspectRatio;
             filter = Program.Settings.Video_Filter;
+
+            if (show_fps)
+            {
+                if (fps_cal_timer == null)
+                    fps_cal_timer = new System.Threading.Timer(OnFPSTimerCallback, NesEmu.FPSDone, 0, 1000);
+            }
+            else
+            {
+                if (fps_cal_timer != null)
+                {
+                    fps_cal_timer.Dispose();
+                    fps_cal_timer = null;
+                    GC.Collect();
+                }
+            }
+        }
+        private void OnFPSTimerCallback(object state)
+        {
+            emu_fps = NesEmu.FPSDone.ToString() + " / " + (1.0 / NesEmu.CurrentFrameTime).ToString("F0");
+            NesEmu.FPSDone = 0;
         }
         public void WriteNotification(string text, int frames, Color color)
         {

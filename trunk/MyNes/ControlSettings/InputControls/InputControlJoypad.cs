@@ -37,38 +37,30 @@ namespace MyNes
             this.playerIndex = playerIndex;
             InitializeComponent();
         }
+
         private int playerIndex;
         private List<DeviceInstance> devices;
+
         public override void LoadSettings()
         {
             RefreshDevices();
             // Load settings
-            for (int i = 0; i < devices.Count; i++)
-            {
-                if (devices[i].InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad1DeviceGuid.ToLower())
-                {
-                    // This is it!
-                    // Select the device
-                    comboBox_device.SelectedIndex = i;
-                    break;
-                }
-            }
             switch (playerIndex)
             {
-                case 0: RefreshListPlayer1(); break;
-                case 1: RefreshListPlayer2(); break;
-                case 2: RefreshListPlayer3(); break;
-                case 3: RefreshListPlayer4(); break;
+                case 0: LoadDevicePlayer1(); RefreshListPlayer1(); checkBox1.Checked = Program.Settings.ControlSettings.Joypad1AutoSwitchBackToKeyboard; break;
+                case 1: LoadDevicePlayer2(); RefreshListPlayer2(); checkBox1.Checked = Program.Settings.ControlSettings.Joypad2AutoSwitchBackToKeyboard; break;
+                case 2: LoadDevicePlayer3(); RefreshListPlayer3(); checkBox1.Checked = Program.Settings.ControlSettings.Joypad3AutoSwitchBackToKeyboard; break;
+                case 3: LoadDevicePlayer4(); RefreshListPlayer4(); checkBox1.Checked = Program.Settings.ControlSettings.Joypad4AutoSwitchBackToKeyboard; break;
             }
         }
         public override void SaveSettings()
         {
             switch (playerIndex)
             {
-                case 0: SavePlayer1(); break;
-                case 1: SavePlayer2(); break;
-                case 2: SavePlayer3(); break;
-                case 3: SavePlayer4(); break;
+                case 0: SavePlayer1(); Program.Settings.ControlSettings.Joypad1AutoSwitchBackToKeyboard = checkBox1.Checked; break;
+                case 1: SavePlayer2(); Program.Settings.ControlSettings.Joypad2AutoSwitchBackToKeyboard = checkBox1.Checked; break;
+                case 2: SavePlayer3(); Program.Settings.ControlSettings.Joypad3AutoSwitchBackToKeyboard = checkBox1.Checked; break;
+                case 3: SavePlayer4(); Program.Settings.ControlSettings.Joypad4AutoSwitchBackToKeyboard = checkBox1.Checked; break;
             }
         }
         private void SavePlayer1()
@@ -583,6 +575,58 @@ namespace MyNes
             item1 = new ListViewItem("Down");
             item1.SubItems.Add("");
             listView1.Items.Add(item1);
+        }
+        private void LoadDevicePlayer1()
+        {
+            for (int i = 0; i < devices.Count; i++)
+            {
+                if (devices[i].InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad1DeviceGuid.ToLower())
+                {
+                    // This is it!
+                    // Select the device
+                    comboBox_device.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+        private void LoadDevicePlayer2()
+        {
+            for (int i = 0; i < devices.Count; i++)
+            {
+                if (devices[i].InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad2DeviceGuid.ToLower())
+                {
+                    // This is it!
+                    // Select the device
+                    comboBox_device.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+        private void LoadDevicePlayer3()
+        {
+            for (int i = 0; i < devices.Count; i++)
+            {
+                if (devices[i].InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad3DeviceGuid.ToLower())
+                {
+                    // This is it!
+                    // Select the device
+                    comboBox_device.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+        private void LoadDevicePlayer4()
+        {
+            for (int i = 0; i < devices.Count; i++)
+            {
+                if (devices[i].InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad4DeviceGuid.ToLower())
+                {
+                    // This is it!
+                    // Select the device
+                    comboBox_device.SelectedIndex = i;
+                    break;
+                }
+            }
         }
         private void SetPlayer()
         {

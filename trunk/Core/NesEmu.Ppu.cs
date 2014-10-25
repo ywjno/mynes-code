@@ -50,6 +50,9 @@ namespace MyNes.Core
         private static int[] palette;
         private static int[] bkg_pixels;
         private static int[] spr_pixels;
+        private const double fps_ntsc = 60.0988;
+        private const double fps_palb = 50.070;
+        private const double fps_dendy = 50.070;
         // Frame Timing
         private static int vbl_vclock_Start = 241;
         private static int vbl_vclock_End = 261;
@@ -623,9 +626,9 @@ namespace MyNes.Core
                                 }
                         }
                         #endregion
-                        if (HClock == 256)
+                        if (HClock == 256)// 257 in the Ntsc_timing diagram
                             vram_address = (vram_address & 0x7BE0) | (vram_temp & 0x041F);
-
+                        // 280-304 in the Ntsc_timing diagram
                         if (VClock == vbl_vclock_End && HClock >= 279 && HClock <= 303)
                             vram_address = (vram_address & 0x041F) | (vram_temp & 0x7BE0);
                     }
@@ -726,25 +729,29 @@ namespace MyNes.Core
                     #endregion
                 }
             }
-            vbl_flag = vbl_flag_temp;
+
+            // Clock Horz
             HClock++;
-            #region odd frame
-            if (HClock == 338)
+            // Update vbl flag from latch
+            vbl_flag = vbl_flag_temp;
+
+            // Check for nmi
+            if ((VClock == vbl_vclock_Start) && (HClock <= 3))
+                NMI_Current = (vbl_flag_temp & nmi_enabled);
+
+            #region odd frame in the idle cycle
+            if (UseOddFrame)
             {
-                if (UseOddFrame)
+                if (HClock == 338 && VClock == vbl_vclock_End)
                 {
-                    if (VClock == vbl_vclock_End)
+                    oddSwap = !oddSwap;
+                    if (!oddSwap & bkg_enabled)
                     {
-                        oddSwap = !oddSwap;
-                        if (!oddSwap & bkg_enabled)
-                        {
-                            HClock++;
-                        }
+                        HClock++;
                     }
                 }
             }
             #endregion
-            CheckNMI();
 
             #region VBLANK, NMI and frame end
             if (HClock == 341)

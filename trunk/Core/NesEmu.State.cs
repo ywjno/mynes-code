@@ -65,7 +65,7 @@ namespace MyNes.Core
                 EmulationPaused = false;
                 videoOut.WriteNotification("Can't save state while loading a state !", 120, Color.Red);
                 return;
-            } 
+            }
             if (state_is_saving_state)
             {
                 EmulationPaused = false;
@@ -164,7 +164,8 @@ namespace MyNes.Core
             bin.Write(IRQFlags);
             bin.Write(IRQ_Detected);
             bin.Write(interrupt_vector);
-            bin.Write(interrupt_suspend);
+            bin.Write(interrupt_suspend_nmi);
+            bin.Write(interrupt_suspend_irq);
             bin.Write(nmi_enabled);
             bin.Write(nmi_old);
             bin.Write(vbl_flag);
@@ -196,10 +197,10 @@ namespace MyNes.Core
             bin.Write(noz_duration_reloadEnabled);
             bin.Write(noz_duration_reload);
             bin.Write(noz_duration_reloadRequst);
-            bin.Write(noz_modeFlag);
+            bin.Write(noz_mode);
             bin.Write(noz_shiftRegister);
             bin.Write(noz_feedback);
-            bin.Write(noz_freqTimer);
+            bin.Write(noz_frequency);
             bin.Write(noz_cycles);
             #endregion
             #region PPU
@@ -281,7 +282,6 @@ namespace MyNes.Core
             bin.Write(sq1_sweepReload);
             bin.Write(sq1_sweepNegateFlag);
             bin.Write(sq1_frequency);
-            bin.Write(sq1_output);
             bin.Write(sq1_sweep);
             bin.Write(sq1_cycles);
             #endregion
@@ -307,7 +307,6 @@ namespace MyNes.Core
             bin.Write(sq2_sweepReload);
             bin.Write(sq2_sweepNegateFlag);
             bin.Write(sq2_frequency);
-            bin.Write(sq2_output);
             bin.Write(sq2_sweep);
             bin.Write(sq2_cycles);
             #endregion
@@ -324,7 +323,6 @@ namespace MyNes.Core
             bin.Write(trl_linearCounterHalt);
             bin.Write(trl_halt);
             bin.Write(trl_frequency);
-            bin.Write(trl_output);
             bin.Write(trl_cycles);
             #endregion
 
@@ -357,13 +355,18 @@ namespace MyNes.Core
                 EmulationPaused = false;
                 videoOut.WriteNotification("Can't load state while it's saving state !", 120, Color.Red);
                 return;
-            } 
+            }
             if (state_is_loading_state)
             {
                 EmulationPaused = false;
                 videoOut.WriteNotification("Already loading a state !", 120, Color.Red);
                 return;
-            } 
+            }
+            if (!File.Exists(fileName))
+            {
+                videoOut.WriteNotification("No state found at slot " + STATESlot, 120, Color.Red);
+                return;
+            }
             state_is_loading_state = true;
             // Read the file
             Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
@@ -383,7 +386,7 @@ namespace MyNes.Core
             {
                 EmulationPaused = false;
                 videoOut.WriteNotification("Unable load state at slot " + STATESlot + "; Not My Nes State File !", 120, Color.Red);
-                state_is_loading_state = false; 
+                state_is_loading_state = false;
                 return;
             }
             // Read version
@@ -391,7 +394,7 @@ namespace MyNes.Core
             {
                 EmulationPaused = false;
                 videoOut.WriteNotification("Unable load state at slot " + STATESlot + "; Not compatible state file version !", 120, Color.Red);
-                state_is_loading_state = false; 
+                state_is_loading_state = false;
                 return;
             }
             string sha1 = "";
@@ -403,7 +406,7 @@ namespace MyNes.Core
             {
                 EmulationPaused = false;
                 videoOut.WriteNotification("Unable load state at slot " + STATESlot + "; This state file is not for this game; not same SHA1 !", 120, Color.Red);
-                state_is_loading_state = false; 
+                state_is_loading_state = false;
                 return;
             }
             // Read data
@@ -485,7 +488,8 @@ namespace MyNes.Core
             IRQFlags = bin.ReadInt32();
             IRQ_Detected = bin.ReadBoolean();
             interrupt_vector = bin.ReadInt32();
-            interrupt_suspend = bin.ReadBoolean();
+            interrupt_suspend_nmi = bin.ReadBoolean();
+            interrupt_suspend_irq = bin.ReadBoolean();
             nmi_enabled = bin.ReadBoolean();
             nmi_old = bin.ReadBoolean();
             vbl_flag = bin.ReadBoolean();
@@ -517,10 +521,10 @@ namespace MyNes.Core
             noz_duration_reloadEnabled = bin.ReadBoolean();
             noz_duration_reload = bin.ReadByte();
             noz_duration_reloadRequst = bin.ReadBoolean();
-            noz_modeFlag = bin.ReadBoolean();
+            noz_mode = bin.ReadBoolean();
             noz_shiftRegister = bin.ReadInt32();
             noz_feedback = bin.ReadInt32();
-            noz_freqTimer = bin.ReadInt32();
+            noz_frequency = bin.ReadInt32();
             noz_cycles = bin.ReadInt32();
             #endregion
             #region PPU
@@ -602,7 +606,6 @@ namespace MyNes.Core
             sq1_sweepReload = bin.ReadBoolean();
             sq1_sweepNegateFlag = bin.ReadBoolean();
             sq1_frequency = bin.ReadInt32();
-            sq1_output = bin.ReadByte();
             sq1_sweep = bin.ReadInt32();
             sq1_cycles = bin.ReadInt32();
             #endregion
@@ -628,7 +631,6 @@ namespace MyNes.Core
             sq2_sweepReload = bin.ReadBoolean();
             sq2_sweepNegateFlag = bin.ReadBoolean();
             sq2_frequency = bin.ReadInt32();
-            sq2_output = bin.ReadByte();
             sq2_sweep = bin.ReadInt32();
             sq2_cycles = bin.ReadInt32();
             #endregion
@@ -645,14 +647,13 @@ namespace MyNes.Core
             trl_linearCounterHalt = bin.ReadBoolean();
             trl_halt = bin.ReadBoolean();
             trl_frequency = bin.ReadInt32();
-            trl_output = bin.ReadByte();
             trl_cycles = bin.ReadInt32();
             #endregion
 
             // Finished !
             bin.Close();
             EmulationPaused = false;
-            state_is_loading_state = false; 
+            state_is_loading_state = false;
             videoOut.WriteNotification("State loaded from slot " + STATESlot, 120, Color.Green);
         }
     }

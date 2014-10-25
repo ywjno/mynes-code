@@ -23,7 +23,7 @@ namespace MyNes.Core
 {
     class Namcot106SoundChannel
     {
-        // TODO: this channel is working, the problem is with the output mixer.
+        // TODO: this channel should be working, the problem is with the output mixer.
         //       don't know how to mix these channels (up to 8) specially when 
         //       game run more than one channel at time.
         public Namcot106SoundChannel(Namcot106 namcot)
@@ -33,7 +33,11 @@ namespace MyNes.Core
         private Namcot106 namcot;
         private int freqTimer;
         private int frequency;
-        private byte output;
+
+        public int output;
+        public int output_av;
+        public int clocks;
+
         private int cycles;
         private int InstrumentLength;
         private byte InstrumentAddress;
@@ -57,7 +61,7 @@ namespace MyNes.Core
             else
             {
                 freez = true;
-                output = 0;
+                output_av = 0;
             }
         }
         private void UpdatePlaybackParameters()
@@ -103,28 +107,31 @@ namespace MyNes.Core
                 if (readPoint >= startPoint && readPoint <= endPoint)
                 {
                     // Get the current value
-                    if ((readPoint & 1) == 0)
-                        output = (byte)(namcot.EXRAM[readPoint] & 0xF);// Low bits
+                    /*if ((readPoint & 1) == 0)
+                        output = (namcot.EXRAM[readPoint] & 0xF);// Low bits
                     else
                     {
                         output = (byte)((namcot.EXRAM[readPoint] >> 4) & 0xF);// high bits
+                    }*/
+                    if (Enabled && !freez)
+                    {
+                        if ((readPoint & 1) == 0)
+                            output_av += (namcot.EXRAM[readPoint] & 0xF) * volume;// Low bits
+                        else
+                        {
+                            output_av += ((namcot.EXRAM[readPoint] >> 4) & 0xF) * volume;// high bits
+                        }
                     }
                     // Increament reader
                     readPoint++;
                 }
                 else
                 {
-                    output = 0;
                     // Reset reader
                     readPoint = startPoint;
                 }
+                clocks++;
             }
-        }
-        public byte GetSample()
-        {
-            if (Enabled && !freez)
-                return (byte)(output * volume);
-            return 0;
         }
 
         public bool Enabled { get; set; }

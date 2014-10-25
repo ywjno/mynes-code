@@ -41,6 +41,7 @@ namespace MyNes.Core
         private byte temp_i;
         public byte[] EXRAM;
         private double soundOut;
+        private int sound_out_div;
 
         public override void HardReset()
         {
@@ -348,8 +349,29 @@ namespace MyNes.Core
         {
             // TODO: Namcot sound channels mixer !
             soundOut = 0;
-            for (int i = 0; i < sound_channels.Length; i++)
-                soundOut += sound_channels[i].GetSample();
+            sound_out_div = 0;
+            if (enabledChannels > 0)
+            {
+                for (int i = 0; i < sound_channels.Length; i++)
+                    if (sound_channels[i].Enabled)
+                    {
+                        if (sound_channels[i].clocks > 0)
+                            sound_channels[i].output = sound_channels[i].output_av / sound_channels[i].clocks;
+                        sound_channels[i].clocks = sound_channels[i].output_av = 0;
+
+                        soundOut += sound_channels[i].output;
+                        sound_out_div++;
+                    }
+                soundOut = (soundOut / 8) / 225;
+
+                // each x from 1.0
+                // each y from M (Max output value = max output of single channel * enabled channels count)
+                // x = y * 1.0 / M
+                // Then the output value (x) should be ranged 0 - 1.0
+                // In apu mixing, this value will be added to the internal
+                // sound channels mixer which output sound range 0 - 1.0
+                // After this mix, the max gain value will be 0 - 2.0
+            }
             return soundOut;
         }
         public override void SaveState(System.IO.BinaryWriter stream)

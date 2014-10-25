@@ -688,4 +688,7 @@ Adam Becker for the great help !!
   <data name="Status_EntrySkipped" xml:space="preserve">
     <value>سجل تم تجاهله</value>
   </data>
+  <data name="Status_Supported" xml:space="preserve">
+    <value>مدعومة.</value>
+  </data>
 </root>

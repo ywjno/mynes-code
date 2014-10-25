@@ -1,27 +1,19 @@
-﻿Mapper 1: Dragon Quest III doesn't work :(
-Mapper 5: split screen and Uchuu Keibitai SDF chr corruption for unknown reason in the intro (not in the split screen).
+﻿Mapper 5: split screen and Uchuu Keibitai SDF chr corruption for unknown reason in the intro (not in the split screen).
 Mapper 6: not implemented well.
+Mapper 7: Battletoads hangs sometimes in level 2.
 Mapper 12: not implemented due to incomplete information.
 Mapper 14: not implemented due to incomplete information.
-Mapper 17: not implemented due to incomplete information.
 Mapper 19: Setup mixer for sound channels.
 Mapper 20: not implemented; FDS system not implemented.
-Mapper 23: Wai Wai World is set as mapper 23 but VRC2 mode !!? game won't start when press start.
-Mapper 24-26: test and check the vrc6 sound channels.
-              mapper 26 game Esper Dream 2 glitchy
-Mapper 27-31: add support for 'em
-Mapper 35-43: add support for 'em
 Mapper 44: Super Big 7 - in - 1 : Double Dragon 3 game not work.
 Mapper 53-56: add support for 'em
 Mapper 58: Study and Game 32-in-1 (Ch) [!].nes needs keyboard ?
 Mapper 59: add support for it
 Mapper 63: support it !
-Mapper 69: Add mixer for sound channels.
 Mapper 83-84: Support 'em !!
 Mapper 85: Add support for VRC7 sound channels !
 Mapper 86: support sound.
-Mapper 90: the Super Mario World rom doesn't work while the Super Mario World [b1] works !!
-           DipSwitch not implemented, the irq modes 2-3 not implemented yet.
+Mapper 90: DipSwitch not implemented, the irq modes 2-3 not implemented yet.
 Mapper 96: not implemented well also needs special controller.
 Mapper 98-104: support 'em
 Mapper 105: game hangs on title screen !
@@ -66,4 +58,5 @@ Mapper 245: problems with these games:
             Yin He Shi Dai
             Yong Zhe Dou e Long - Dragon Quest VII (As)
             Dong Fang de Chuan Shuo - The Hyrule Fantasy
-Mappe 247-255:  support 'em
+Mappe 247-254:  support 'em
+Mapper 255: Test it !

@@ -46,9 +46,12 @@ namespace MyNes.Core
         private static bool sq2_sweepReload = false;
         private static bool sq2_sweepNegateFlag = false;
         private static int sq2_frequency;
-        private static byte sq2_output;
         private static int sq2_sweep;
         private static int sq2_cycles;
+        // Playback
+        private static int sq2_pl_clocks;
+        private static int sq2_pl_output_av;
+        private static int sq2_pl_output;
 
         private static void Sq2Shutdown()
         {
@@ -73,13 +76,20 @@ namespace MyNes.Core
             sq2_sweepDeviderPeriod = 0;
             sq2_sweepShiftCount = 0;
             sq2_sweepCounter = 0;
-            sq2_output = 0;
             sq2_sweepEnable = false;
             sq2_sweepReload = false;
             sq2_sweepNegateFlag = false;
             sq2_cycles = 0;
             sq2_frequency = 0;
             sq2_sweep = 0;
+            sq2_pl_clocks = 0;
+            sq2_pl_output_av = 0;
+            sq2_pl_output = 0;
+        }
+        private static void Sq2SoftReset()
+        {
+            sq2_duration_counter = 0;
+            sq2_duration_reloadEnabled = false;
         }
         private static bool Sq2IsValidFrequency()
         {
@@ -147,19 +157,19 @@ namespace MyNes.Core
                 sq2_duration_reloadRequst = false;
             }
 
-            if (sq2_cycles > 0)
-                sq2_cycles--;
-            else
+            if (--sq2_cycles <= 0)
             {
-                sq2_cycles = (sq2_frequency << 1) + 2;
+                sq2_cycles = (sq2_frequency + 1) << 1;
 
                 sq2_dutyStep--;
                 if (sq2_dutyStep < 0)
                     sq2_dutyStep = 0x7;
                 if (sq2_duration_counter > 0 && Sq2IsValidFrequency())
-                    sq2_output = (byte)(PulseDutyForms[sq2_dutyForm][sq2_dutyStep] * sq2_envelope);
-                else
-                    sq2_output = 0;
+                {
+                    if (audio_playback_sq2_enabled)
+                        sq2_pl_output_av += (byte)(PulseDutyForms[sq2_dutyForm][sq2_dutyStep] * sq2_envelope);
+                }
+                sq2_pl_clocks++;
             }
         }
     }

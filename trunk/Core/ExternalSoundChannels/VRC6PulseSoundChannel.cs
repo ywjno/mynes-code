@@ -27,11 +27,14 @@ namespace MyNes.Core
         private int dutyStep;
         private bool enabled = true;
         private bool mode = false;
-        public byte output;
         private byte volume;
         private int freqTimer;
         private int frequency;
         private int cycles;
+
+        public int clocks;
+        public int output;
+        public int output_av;
 
         public void HardReset()
         {
@@ -72,13 +75,12 @@ namespace MyNes.Core
                             dutyStep = 0xF;
 
                         if (dutyStep <= dutyForm)
-                            output = volume;
-                        else
-                            output = 0;
+                            output_av += volume;
+
                     }
                 }
-                else
-                    output = 0;
+
+                clocks++;
             }
         }
 
@@ -92,7 +94,6 @@ namespace MyNes.Core
             stream.Write(dutyStep);
             stream.Write(enabled);
             stream.Write(mode);
-            stream.Write(output);
             stream.Write(volume);
             stream.Write(freqTimer);
             stream.Write(frequency);
@@ -108,7 +109,6 @@ namespace MyNes.Core
             dutyStep = stream.ReadInt32();
             enabled = stream.ReadBoolean();
             mode = stream.ReadBoolean();
-            output = stream.ReadByte();
             volume = stream.ReadByte();
             freqTimer = stream.ReadInt32();
             frequency = stream.ReadInt32();

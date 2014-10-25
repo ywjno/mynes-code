@@ -35,7 +35,6 @@ namespace MyNes.Core
         private static bool sq1_duration_reloadEnabled;
         private static byte sq1_duration_reload = 0;
         private static bool sq1_duration_reloadRequst = false;
-
         private static int sq1_dutyForm;
         private static int sq1_dutyStep;
         private static int sq1_sweepDeviderPeriod = 0;
@@ -45,9 +44,12 @@ namespace MyNes.Core
         private static bool sq1_sweepReload = false;
         private static bool sq1_sweepNegateFlag = false;
         private static int sq1_frequency;
-        private static byte sq1_output;
         private static int sq1_sweep;
         private static int sq1_cycles;
+        // Playback
+        private static int sq1_pl_clocks;
+        private static int sq1_pl_output;
+        private static int sq1_pl_output_av;
 
         private static void Sq1Shutdown()
         {
@@ -76,9 +78,16 @@ namespace MyNes.Core
             sq1_sweepReload = false;
             sq1_sweepNegateFlag = false;
             sq1_frequency = 0;
-            sq1_output = 0;
             sq1_sweep = 0;
             sq1_cycles = 0;
+            sq1_pl_clocks = 0;
+            sq1_pl_output = 0;
+            sq1_pl_output_av = 0;
+        }
+        private static void Sq1SoftReset()
+        {
+            sq1_duration_counter = 0;
+            sq1_duration_reloadEnabled = false;
         }
         private static bool Sq1IsValidFrequency()
         {
@@ -146,23 +155,19 @@ namespace MyNes.Core
                 sq1_duration_reloadRequst = false;
             }
 
-            if (sq1_frequency == 0)
+            if (--sq1_cycles <= 0)
             {
-                sq1_output = 0;
-                return;
-            }
-            if (sq1_cycles > 0)
-                sq1_cycles--;
-            else
-            {
-                sq1_cycles = (sq1_frequency << 1) + 2;
+                sq1_cycles = (sq1_frequency + 1) << 1;
+
                 sq1_dutyStep--;
                 if (sq1_dutyStep < 0)
                     sq1_dutyStep = 0x7;
                 if (sq1_duration_counter > 0 && Sq1IsValidFrequency())
-                    sq1_output = (byte)(PulseDutyForms[sq1_dutyForm][sq1_dutyStep] * sq1_envelope);
-                else
-                    sq1_output = 0;
+                {
+                    if (audio_playback_sq1_enabled)
+                        sq1_pl_output_av += (byte)(PulseDutyForms[sq1_dutyForm][sq1_dutyStep] * sq1_envelope);
+                } 
+                sq1_pl_clocks++;
             }
         }
     }

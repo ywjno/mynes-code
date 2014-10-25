@@ -1,4 +1,5 @@
 Things to do generally.
 -----------------------
+* Fix all sound external channels.
 * FDS
 * NET PLAY

@@ -24,28 +24,11 @@ namespace MyNes.Core
     [BoardInfo("AxROM", 7)]
     class Mapper007 : Board
     {
-        private bool enableBusConflicts;
-        private byte writeData;
-        public override void Initialize(string sha1, byte[] prg_dump, byte[] chr_dump, byte[] trainer_dump, MyNes.Core.Mirroring defaultMirroring)
-        {
-            base.Initialize(sha1, prg_dump, chr_dump, trainer_dump, defaultMirroring);
-            enableBusConflicts = false;
-            // This is not a hack. We need to see if this board type uses bus conflicts.
-            if (BoardPCB.Contains("AMROM") || BoardPCB.Contains("AOROM"))
-            {
-                // TODO: bus conflicts in mapper 7
-                enableBusConflicts = true;
-                System.Console.WriteLine("AxROM: Bus Conflicts enabled [Board type = " + BoardPCB + "]");
-            }
-        }
+        // Battledoats hangs on stage 2
         public override void WritePRG(ref int address, ref byte data)
         {
-            if (enableBusConflicts)
-                writeData = (byte)(data | ReadPRG(ref address));
-            else
-                writeData = data;
-            base.SwitchNMT(((writeData & 0x10) == 0x10) ? Mirroring.OneScB : Mirroring.OneScA);
-            base.Switch32KPRG(writeData & 0x7, true);
+            base.SwitchNMT(((data & 0x10) == 0x10) ? Mirroring.OneScB : Mirroring.OneScA);
+            base.Switch32KPRG(data & 0x7, true);
         }
     }
 }

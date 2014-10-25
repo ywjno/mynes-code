@@ -22,10 +22,7 @@
 namespace MyNes.Core
 {
     [BoardInfo("C&E", 245, true, true)]
-    [NotImplementedWell("Mapper 245\nProblems with these games:\n" +
-          "Yin He Shi Dai\n"
-           + "Yong Zhe Dou e Long - Dragon Quest VII (As)\n"
-            + "Dong Fang de Chuan Shuo - The Hyrule Fantasy")]
+    [NotImplementedWell("Mapper 245\nGraphic glitches, maybe chr switches.")]
     class Mapper245 : Board
     {
         private bool flag_c;
@@ -48,20 +45,20 @@ namespace MyNes.Core
             // Flags
             flag_c = flag_p = false;
             address_8001 = 0;
-
             prg_reg = new int[4];
             prg_or = 0;
             prg_reg[0] = 0;
             prg_reg[1] = 1;
             prg_reg[2] = prg_08K_rom_mask - 1;
             prg_reg[3] = prg_08K_rom_mask;
-            SetupPRG();
 
             // CHR
             chr_reg = new int[6];
             for (int i = 0; i < 6; i++)
                 chr_reg[i] = 0;
 
+            SetupPRG();
+            SetupCHR();
             // IRQ
             irq_enabled = false;
             irq_counter = 0;
@@ -80,7 +77,8 @@ namespace MyNes.Core
                         flag_c = (data & 0x80) != 0;
                         flag_p = (data & 0x40) != 0;
                         SetupCHR();
-                        SetupPRG(); break;
+                        SetupPRG();
+                        break;
                     }
                 case 0x8001:
                     {
@@ -92,8 +90,8 @@ namespace MyNes.Core
                             case 3:
                             case 4:
                             case 5: chr_reg[address_8001] = data; SetupCHR(); break;
-                            case 6:
-                            case 7: prg_reg[address_8001 - 6] = data & prg_08K_rom_mask; SetupPRG(); break;
+                            case 6: prg_reg[0] = data & 0x3F; SetupPRG(); break;
+                            case 7: prg_reg[1] = data & 0x3F; SetupPRG(); break;
                         }
                         break;
                     }
@@ -145,7 +143,10 @@ namespace MyNes.Core
             {
                 // With CHR RAM mode, flag c can "flip" the left/right pattern tables.
                 if (!flag_c)
-                    Switch08KCHR(0, false);
+                {
+                    Switch04KCHR(0, 0x0000, false);
+                    Switch04KCHR(1, 0x1000, false);
+                }
                 else
                 {
                     Switch04KCHR(1, 0x0000, false);
@@ -156,10 +157,10 @@ namespace MyNes.Core
         private void SetupPRG()
         {
             prg_or = (chr_reg[0] & 0x2) << 5;
-            base.Switch08KPRG(prg_reg[flag_p ? 2 : 0] & 0x3F | prg_or, 0x8000, true);
-            base.Switch08KPRG(prg_reg[1] & 0x3F | prg_or, 0xA000, true);
-            base.Switch08KPRG(prg_reg[flag_p ? 0 : 2] & 0x3F | prg_or, 0xC000, true);
-            base.Switch08KPRG(prg_reg[3] & 0x3F | prg_or, 0xE000, true);
+            base.Switch08KPRG(prg_reg[flag_p ? 2 : 0] | prg_or, 0x8000, true);
+            base.Switch08KPRG(prg_reg[1] | prg_or, 0xA000, true);
+            base.Switch08KPRG(prg_reg[flag_p ? 0 : 2] | prg_or, 0xC000, true);
+            base.Switch08KPRG(prg_reg[3] | prg_or, 0xE000, true);
         }
         // The scanline timer, clocked on PPU A12 raising edge ...
         public override void OnPPUA12RaisingEdge()

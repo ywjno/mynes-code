@@ -22,8 +22,7 @@
 namespace MyNes.Core
 {
     [BoardInfo("FME-7/Sunsoft 5B", 69)]
-    [WithExternalSound]// TODO: look at Sunsoft 5B sound channels.
-    [NotImplementedWell("Mapper 69\nBad mixer for external sound channels.")]
+    [WithExternalSound]
     class Mapper069 : Board
     {
         private int address_A000;
@@ -51,7 +50,7 @@ namespace MyNes.Core
                     for (int sq3 = 0; sq3 < 16; sq3++)
                     {
                         double sqr = (95.88 / (8128.0 / (sq1 + sq2 + sq3) + 100));
-                        mix_table[sq1][sq2][sq3] = sqr * 128;
+                        mix_table[sq1][sq2][sq3] = sqr;
                     }
                 }
             }
@@ -182,9 +181,21 @@ namespace MyNes.Core
         }
         public override double APUGetSamples()
         {
-            return mix_table[channel0.GetSample()]
-                            [channel1.GetSample()]
-                            [channel2.GetSample()];
+            if (channel0.clocks > 0)
+                channel0.output = channel0.output_av / channel0.clocks;
+            channel0.clocks = channel0.output_av = 0;
+
+            if (channel1.clocks > 0)
+                channel1.output = channel1.output_av / channel1.clocks;
+            channel1.clocks = channel1.output_av = 0;
+
+            if (channel2.clocks > 0)
+                channel2.output = channel2.output_av / channel2.clocks;
+            channel2.clocks = channel2.output_av = 0;
+
+            return mix_table[channel0.output]
+                            [channel1.output]
+                            [channel2.output];
         }
         public override void SaveState(System.IO.BinaryWriter stream)
         {

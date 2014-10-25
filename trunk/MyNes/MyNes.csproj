@@ -130,6 +130,12 @@
     <Compile Include="Database\Crc32.cs" />
     <Compile Include="Database\DateTimeFormater.cs" />
     <Compile Include="Database\MyNesDetectEntryInfo.cs" />
+    <Compile Include="Forms\FormBoardsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormBoardsList.Designer.cs">
+      <DependentUpon>FormBoardsList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormFirstRun.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -338,6 +344,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Rating\Rating.resx">
       <DependentUpon>Rating.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBoardsList.ar-SY.resx">
+      <DependentUpon>FormBoardsList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBoardsList.resx">
+      <DependentUpon>FormBoardsList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormFirstRun.resx">
       <DependentUpon>FormFirstRun.cs</DependentUpon>
@@ -661,6 +673,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\application_get.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\accept.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

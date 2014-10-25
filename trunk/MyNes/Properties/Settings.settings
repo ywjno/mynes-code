@@ -189,7 +189,7 @@
       <Value Profile="(Default)">English (United States)</Value>
     </Setting>
     <Setting Name="Audio_BufferSizeInMilliseconds" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">400</Value>
+      <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="Palette_UseGenerators" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -204,6 +204,21 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ShowRomIssuesIfHave" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AudioChannelSQ1Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AudioChannelSQ2Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AudioChannelDMCEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AudioChannelTRLEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AudioChannelNOZEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>

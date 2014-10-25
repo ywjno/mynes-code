@@ -22,7 +22,7 @@
 namespace MyNes.Core
 {
     [BoardInfo("Pirate MMC5-style", 90)]
-    [NotImplementedWell("Mapper 90\nDipSwitch not implemented, the irq modes 2-3 not implemented yet.\nThe Super Mario World rom doesn't work while the Super Mario World [b1] works !!")]
+    [NotImplementedWell("Mapper 90\nDipSwitch not implemented, the irq modes 2-3 not implemented yet.")]
     class Mapper090 : Board
     {
         protected bool MAPPER90MODE;// Setting this to true disables the extended nametables control.
@@ -88,22 +88,16 @@ namespace MyNes.Core
             multiplication_b = 0;
             multiplication = 0;
         }
+        public override void SoftReset()
+        {
+            base.SoftReset();
+            if (Dipswitch == 0)
+                Dipswitch = 0xFF;
+            else
+                Dipswitch = 0;
+        }
         public override void WritePRG(ref int address, ref byte data)
         {
-            /*Write at $C002 : $00
-Write at $8002 : $3E
-Write at $8003 : $3F
-Write at $C001 : $85
-Write at $D000 : $3E
-Write at $B000 : $00
-Write at $B001 : $01
-Write at $B002 : $02
-Write at $B003 : $03
-Write at $C006 : $00
-Write at $D002 : $00
-Write at $D003 : $00
-Write at $D001 : $01
-Write at $C002 : $40*/
             switch (address & 0xF007)
             {
                 case 0x8000:
@@ -205,12 +199,11 @@ Write at $C002 : $40*/
         {
             if (flag_s)
                 return prg_banks[prg_indexes[0]][address & 0x1FFF];
-
             return 0;
         }
         public override byte ReadEXP(ref int address)
         {
-            switch (address & 0xF007)
+            switch (address)
             {
                 case 0x5000: return Dipswitch;
                 case 0x5800: return (byte)(multiplication & 0x00FF);
@@ -221,7 +214,7 @@ Write at $C002 : $40*/
         }
         public override void WriteEXP(ref int address, ref byte data)
         {
-            switch (address & 0xF007)
+            switch (address)
             {
                 case 0x5800: multiplication_a = data; multiplication = (ushort)(multiplication_a * multiplication_b); break;
                 case 0x5801: multiplication_b = data; multiplication = (ushort)(multiplication_a * multiplication_b); break;
@@ -411,10 +404,10 @@ Write at $C002 : $40*/
                     }
             }
         }
-        private int ReverseByte(int value)
+        private byte ReverseByte(int value)
         {
-            return ((value & 0x40) >> 6) | ((value & 0x20) >> 4) | ((value & 0x10) >> 2)
-                | ((value & 0x8)) | ((value & 0x4) << 2) | ((value & 0x2) << 4) | ((value & 0x1) << 6);
+            return (byte)(((value & 0x40) >> 6) | ((value & 0x20) >> 4) | ((value & 0x10) >> 2)
+                | ((value & 0x8)) | ((value & 0x4) << 2) | ((value & 0x2) << 4) | ((value & 0x1) << 6));
         }
         public override void OnCPUClock()
         {

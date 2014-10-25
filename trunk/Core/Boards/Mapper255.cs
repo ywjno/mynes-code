@@ -21,8 +21,47 @@
 namespace MyNes.Core
 {
     [BoardInfo("Unknown", 255)]
-    [NotSupported]
+    [NotImplementedWell("Mapper 255:\nNot tested.")]
     class Mapper255 : Board
     {
+        private byte[] RAM;
+        public override void HardReset()
+        {
+            base.HardReset();
+            RAM = new byte[4];
+        }
+        public override void WriteEXP(ref int address, ref byte data)
+        {
+            if (address >= 0x5800)
+                RAM[address & 0x3] = (byte)(data & 0xF);
+        }
+        public override byte ReadEXP(ref int address)
+        {
+            if (address >= 0x5800)
+                return RAM[address & 0x3];
+            return 0;
+        }
+        public override void WritePRG(ref int address, ref byte data)
+        {
+            Switch08KCHR(address & 0x3F, chr_01K_rom_count > 0);
+            if ((address & 0x1000) == 0x1000)
+            {
+                Switch16KPRG(address >> 6 & 0x3F, 0x8000, true);
+                Switch16KPRG(address >> 6 & 0x3F, 0xC000, true);
+            }
+            else
+                Switch32KPRG(((address >> 6) & 0x3F) >> 1, true);
+            SwitchNMT((address & 0x2000) == 0x2000 ? Mirroring.Horz : Mirroring.Vert);
+        }
+        public override void SaveState(System.IO.BinaryWriter stream)
+        {
+            base.SaveState(stream);
+            stream.Write(RAM);
+        }
+        public override void LoadState(System.IO.BinaryReader stream)
+        {
+            base.LoadState(stream);
+            stream.Read(RAM, 0, RAM.Length);
+        }
     }
 }

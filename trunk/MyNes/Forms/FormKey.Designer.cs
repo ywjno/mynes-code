@@ -53,12 +53,13 @@ namespace MyNes
             this.button1 = new System.Windows.Forms.Button();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.label_cancel = new System.Windows.Forms.Label();
+            this.timer_hold = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
             // 
-            resources.ApplyResources(this.label1, "label1");
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
             // 
             // timer1
@@ -81,6 +82,11 @@ namespace MyNes
             // 
             resources.ApplyResources(this.label_cancel, "label_cancel");
             this.label_cancel.Name = "label_cancel";
+            // 
+            // timer_hold
+            // 
+            this.timer_hold.Interval = 500;
+            this.timer_hold.Tick += new System.EventHandler(this.timer_hold_Tick);
             // 
             // FormKey
             // 
@@ -105,5 +111,6 @@ namespace MyNes
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.Label label_cancel;
+        private System.Windows.Forms.Timer timer_hold;
     }
 }

@@ -33,6 +33,7 @@ namespace MyNes.Core
         {
             // Depending on rom size (64k, 128k or 256k) the board determines which bits to use !
             // Here, the possible values are 0x3, 0x7 or 0xF
+            // Implemented in this method.
             base.Switch16KPRG(data, 0x8000, true);
         }
     }

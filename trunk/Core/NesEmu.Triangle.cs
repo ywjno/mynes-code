@@ -35,8 +35,11 @@ namespace MyNes.Core
         private static bool trl_linearCounterHalt;
         private static bool trl_halt;
         private static int trl_frequency;
-        private static byte trl_output;
         private static int trl_cycles;
+        // Playback
+        private static int trl_pl_clocks;
+        private static int trl_pl_output_av;
+        private static int trl_pl_output;
 
         private static void TrlShutdown()
         {
@@ -52,12 +55,19 @@ namespace MyNes.Core
             trl_duration_reloadRequst = false;
             trl_linearCounter = 0;
             trl_linearCounterReload = 0;
-            trl_output = 0;
-            trl_step = 0;
+            trl_step = 0xF;
             trl_linearCounterHalt = false;
             trl_halt = true;
             trl_frequency = 0;
             trl_cycles = 0;
+            trl_pl_output_av = 0;
+            trl_pl_clocks = 0;
+            trl_pl_output = 0;
+        }
+        private static void TrlSoftReset()
+        {
+            trl_duration_counter = 0;
+            trl_duration_reloadEnabled = false;
         }
         private static void TrlClockEnvelope()
         {
@@ -105,7 +115,9 @@ namespace MyNes.Core
                     {
                         trl_step++;
                         trl_step &= 0x1F;
-                        trl_output = TrlStepSequence[trl_step];
+                        if (audio_playback_trl_enabled)
+                            trl_pl_output_av += TrlStepSequence[trl_step];
+                        trl_pl_clocks++;
                     }
                 }
             }

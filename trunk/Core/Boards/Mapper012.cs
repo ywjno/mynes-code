@@ -21,7 +21,7 @@
 
 namespace MyNes.Core
 {
-    [BoardInfo("Unknown", 12)]
+    [BoardInfo("FFE F6xxx", 12)]
     [NotSupported]
     class Mapper012 : Board
     {

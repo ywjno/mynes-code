@@ -20,9 +20,51 @@
  */
 namespace MyNes.Core
 {
-    [BoardInfo("Unknown", 41)]
-    [NotSupported]
+    [BoardInfo("Caltron 6-in-1", 41)]
     class Mapper041 : Board
     {
+        private bool enableReg = false;
+        private int vromReg = 0;
+
+        public override void HardReset()
+        {
+            base.HardReset();
+            vromReg = 0;
+            enableReg = true;
+        }
+        public override void WriteSRM(ref int address, ref byte data)
+        {
+            if (address <= 0x67FF)
+            {
+                Switch32KPRG(address & 0x7, true);
+                enableReg = (address & 0x4) == 0x4;
+
+                vromReg = (vromReg & 0x03) | ((address >> 1) & 0x0C);
+                Switch08KCHR(vromReg, chr_01K_rom_count > 0);
+                SwitchNMT((address & 0x20) == 0x20 ? Mirroring.Horz : Mirroring.Vert);
+            }
+            else
+                base.WriteSRM(ref address, ref data);
+        }
+        public override void WritePRG(ref int address, ref byte data)
+        {
+            if (enableReg)
+            {
+                vromReg = (vromReg & 0x0C) | (data & 0x3);
+                Switch08KCHR(vromReg, chr_01K_rom_count > 0);
+            }
+        }
+        public override void SaveState(System.IO.BinaryWriter stream)
+        {
+            base.SaveState(stream);
+            stream.Write(enableReg);
+            stream.Write(vromReg);
+        }
+        public override void LoadState(System.IO.BinaryReader stream)
+        {
+            base.LoadState(stream);
+            enableReg = stream.ReadBoolean();
+            vromReg = stream.ReadInt32();
+        }
     }
 }

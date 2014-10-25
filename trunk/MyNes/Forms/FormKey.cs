@@ -34,7 +34,6 @@ namespace MyNes
     {
         public FormKey(DeviceType type, string deviceGuid, string keyName)
         {
-
             this.deviceType = type;
             InitializeComponent();
 
@@ -56,8 +55,8 @@ namespace MyNes
                         break;
                     }
             }
-            timer1.Interval = 1000 / 30;
-            timer1.Enabled = true;
+          
+            timer_hold.Start();
             label1.Text = string.Format(Program.ResourceManager.GetString("Text_PressAKeyFor") + " [{0}]", keyName);
             stopTimer = 10;
             label_cancel.Text = string.Format(Program.ResourceManager.GetString("Status_CancelIn") + " {0} " +
@@ -169,6 +168,12 @@ namespace MyNes
                 this.Close();
                 return;
             }
+        }
+        private void timer_hold_Tick(object sender, EventArgs e)
+        {
+            timer_hold.Stop();
+            timer1.Interval = 1000 / 30;
+            timer1.Start();
         }
     }
 }

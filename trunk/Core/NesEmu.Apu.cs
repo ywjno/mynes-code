@@ -51,10 +51,41 @@ namespace MyNes.Core
         };
         private static byte[] TrlStepSequence =
         {
-            0x0F, 0x0E, 0x0D, 0x0C, 0x0B, 0x0A, 0x09, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00,
-            0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+             15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0,
+             0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
+        };
+        private static int[][] NozFrequencyTable = 
+        { 
+            new int [] //NTSC
+            {  
+                 4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
+            },
+            new int [] //PAL
+            {  
+                 4, 7, 14, 30, 60, 88, 118, 148, 188, 236, 354, 472, 708,  944, 1890, 3778
+            },
+            new int [] //DENDY (same as ntsc for now)
+            {  
+                 4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
+            }
+        };
+        private static int[][] DMCFrequencyTable = 
+        { 
+            new int[]//NTSC
+            { 
+               428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
+            },
+            new int[]//PAL
+            { 
+               398, 354, 316, 298, 276, 236, 210, 198, 176, 148, 132, 118,  98,  78,  66,  50
+            },  
+            new int[]//DENDY (same as ntsc for now)
+            { 
+               428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
+            },
         };
         private static int Cycles = 0;
+        private static int systemIndex;
         private static bool SequencingMode;
         private static byte CurrentSeq = 0;
         private static bool isClockingDuration = false;
@@ -63,33 +94,37 @@ namespace MyNes.Core
         private static bool oddCycle;
         /*Playback*/
         private static IAudioProvider AudioOut;
-        private static double[][][][][] mix_table;
         private static bool SoundEnabled;
-        // default to 44.1KHz settings
-        private static float audio_playback_sampleCycles;
-        private static float audio_playback_samplePeriod;
-        private static float audio_playback_sampleReload;
-        private static float audio_playback_frequency;
+        // Output playback buffer
+        public static int audio_playback_buffer_frequency;
+        private static int audio_playback_buffer_timer;
+        private static int audio_playback_buffer_timer_reload;
+        private const int audio_playback_max_peek = 120;
+        private const int audio_playback_min_peek = -120;
         private static byte[] audio_playback_buffer = new byte[44100];
         private static int audio_playback_bufferSize;
         private static bool audio_playback_first_render;
         public static int audio_playback_w_pos = 0;//Write position
         public static int audio_playback_latency = 0;//Write position
         private static int audio_playback_out;
-        private static int systemIndex;
+        // DAC
+        private const double audio_playback_amplitude = 256;
+        private static double[] dac_sqr_table;
+        private static double[] dac_tnd_table;
+        // DC Blocker Filter.
         private static double x, x_1, y, y_1;
-        private const double R = 1;// 0.995 for 44100 Hz
-        private static double amplitude = 160;
+
+        /*Channels configuration*/
+        public static bool audio_playback_sq1_enabled;
+        public static bool audio_playback_sq2_enabled;
+        public static bool audio_playback_dmc_enabled;
+        public static bool audio_playback_trl_enabled;
+        public static bool audio_playback_noz_enabled;
 
         private static void APUHardReset()
         {
-            switch (TVFormat)
-            {
-                case TVSystem.NTSC: systemIndex = 0; audio_playback_samplePeriod = 1789772.67f; break;
-                case TVSystem.PALB: systemIndex = 1; audio_playback_samplePeriod = 1662607f; break;
-                case TVSystem.DENDY: systemIndex = 2; audio_playback_samplePeriod = 1773448f; break;
-            }
-            audio_playback_sampleReload = audio_playback_samplePeriod / audio_playback_frequency;
+            CalculateAudioPlaybackValues();
+
             Cycles = SequenceMode0[systemIndex][0] - 10;
             FrameIrqFlag = false;
             FrameIrqEnabled = true;
@@ -114,11 +149,11 @@ namespace MyNes.Core
             oddCycle = false;
             isClockingDuration = false;
 
-            Sq1HardReset();
-            Sq2HardReset();
-            TrlHardReset();
-            NozHardReset();
-            DMCHardReset();
+            Sq1SoftReset();
+            Sq2SoftReset();
+            TrlSoftReset();
+            NozSoftReset();
+            DMCSoftReset();
         }
         private static void APUShutdown()
         {
@@ -128,45 +163,42 @@ namespace MyNes.Core
             for (int i = 0; i < audio_playback_buffer.Length; i++)
                 audio_playback_buffer[i] = (byte)r.Next(0, 20);
         }
-        private static void InitializeSoundMixTable()
+        public static void CalculateAudioPlaybackValues()
         {
-            mix_table = new double[16][][][][];
-
-            for (int sq1 = 0; sq1 < 16; sq1++)
+            // Playback buffer
+            audio_playback_buffer_timer = 0;
+            audio_playback_buffer_timer_reload = cpuSpeedInHz / audio_playback_buffer_frequency;
+            audio_playback_first_render = true;
+        }
+        private static void InitializeDACTables()
+        {
+            // Squares table
+            dac_sqr_table = new double[32];
+            for (int i = 0; i < 32; i++)
             {
-                mix_table[sq1] = new double[16][][][];
-
-                for (int sq2 = 0; sq2 < 16; sq2++)
-                {
-                    mix_table[sq1][sq2] = new double[16][][];
-
-                    for (int tri = 0; tri < 16; tri++)
-                    {
-                        mix_table[sq1][sq2][tri] = new double[16][];
-
-                        for (int noi = 0; noi < 16; noi++)
-                        {
-                            mix_table[sq1][sq2][tri][noi] = new double[128];
-
-                            for (int dmc = 0; dmc < 128; dmc++)
-                            {
-                                double sqr = (95.88 / (8128.0 / (sq1 + sq2) + 100));
-                                double tnd = (159.79 / (1.0 / ((tri / 8227.0) + (noi / 12241.0) + (dmc / 22638.0)) + 100));
-
-                                mix_table[sq1][sq2][tri][noi][dmc] = (sqr + tnd) * amplitude;
-                            }
-                        }
-                    }
-                }
+                dac_sqr_table[i] = 95.52 / (8128.0 / i + 100);
+            }
+            // TND table
+            dac_tnd_table = new double[204];
+            for (int i = 0; i < 204; i++)
+            {
+                dac_tnd_table[i] = 163.67 / (24329.0 / i + 100);
             }
         }
+        /// <summary>
+        /// Setup audio playback.
+        /// </summary>
+        /// <param name="AudioOutput">The audio provider.</param>
+        /// <param name="soundEnabled">Indicates if the sound playbakc is enabled or not.</param>
+        /// <param name="frequency">The sound playback frequency in Hz. Prefered value is 44100 Hz</param>
+        /// <param name="bufferSize">The buffer size in bytes.</param>
+        /// <param name="latencyInBytes">The latency in bytes (number of samples * 2 for latency)</param>
         public static void SetupSoundPlayback(IAudioProvider AudioOutput, bool soundEnabled, int frequency, int bufferSize,
             int latencyInBytes)
         {
             audio_playback_latency = latencyInBytes;
             audio_playback_bufferSize = bufferSize;
-            audio_playback_frequency = frequency;
-            audio_playback_sampleReload = audio_playback_samplePeriod / audio_playback_frequency;
+            audio_playback_buffer_frequency = frequency;
             AudioOut = AudioOutput;
             SoundEnabled = soundEnabled;
             x = x_1 = y = y_1 = 0;
@@ -175,32 +207,65 @@ namespace MyNes.Core
         }
         private static void APUUpdatePlayback()
         {
-            if (audio_playback_sampleCycles > 0)
-                audio_playback_sampleCycles--;
-            else
+            audio_playback_buffer_timer++;
+            if (audio_playback_buffer_timer >= audio_playback_buffer_timer_reload)
             {
-                audio_playback_sampleCycles += audio_playback_sampleReload;
-                // DC Blocker Filter
-                x = mix_table[sq1_output]
-                             [sq2_output]
-                             [trl_output]
-                             [noz_output]
-                             [dmc_output] + (board.enable_external_sound ? board.APUGetSamples() : 0);
-                y = x - x_1 + (0.995 * y_1);// y[n] = x[n] - x[n - 1] + R * y[n - 1]; R = 0.995 for 44100 Hz
+                audio_playback_buffer_timer -= audio_playback_buffer_timer_reload;
 
+                #region Collect channel outputs
+
+                // SQ1
+                if (sq1_pl_clocks > 0)
+                    sq1_pl_output = sq1_pl_output_av / sq1_pl_clocks;
+                sq1_pl_clocks = sq1_pl_output_av = 0;
+
+                // SQ2
+                if (sq2_pl_clocks > 0)
+                    sq2_pl_output = sq2_pl_output_av / sq2_pl_clocks;
+                sq2_pl_clocks = sq2_pl_output_av = 0;
+
+                // NOZ
+                if (noz_pl_clocks > 0)
+                    noz_pl_output = noz_pl_output_av / noz_pl_clocks;
+                noz_pl_clocks = noz_pl_output_av = 0;
+
+                // TRL
+                if (trl_pl_clocks > 0)
+                    trl_pl_output = trl_pl_output_av / trl_pl_clocks;
+                trl_pl_clocks = trl_pl_output_av = 0;
+
+                // DMC
+                if (dmc_pl_clocks > 0)
+                    dmc_pl_output = dmc_pl_output_av / dmc_pl_clocks;
+                dmc_pl_clocks = dmc_pl_output_av = 0;
+
+                #endregion
+
+                #region DC Blocker Filter
+
+                // X[n] is the current NES DAC sample.
+                x = (dac_sqr_table[sq1_pl_output + sq2_pl_output] +
+                     dac_tnd_table[(3 * trl_pl_output) + (2 * noz_pl_output) + dmc_pl_output] +
+                   (board.enable_external_sound ? board.APUGetSamples() : 0)) * audio_playback_amplitude;
+
+                // Apply the formula. 
+                // Y[n] is the current sample that output into buffer.
+                y = x - x_1 + (0.995 * y_1);// y[n] = x[n] - x[n - 1] + R * y[n - 1]; R = 0.995 for 44100 Hz
                 x_1 = x;
                 y_1 = y;
+                // Convert from double to int32.
+                audio_playback_out = Convert.ToInt32(Math.Round(y));
 
-                audio_playback_out = (int)Math.Ceiling(y);
+                #endregion
 
-                // NO DC Blocker
-                //audio_playback_out = (int)(mix_table[sq1_output][sq2_output][trl_output][noz_output][dmc_output] 
-                //    + (board.enable_external_sound ? board.APUGetSamples() : 0));
+                #region Limit peek (this nesseccary for external channels)
+                if (audio_playback_out > audio_playback_max_peek)
+                    audio_playback_out = audio_playback_max_peek;
+                else if (audio_playback_out < audio_playback_min_peek)
+                    audio_playback_out = audio_playback_min_peek;
+                #endregion
 
-                if (audio_playback_out > 160)
-                    audio_playback_out = 160;
-                else if (audio_playback_out < -160)
-                    audio_playback_out = -160;
+                #region Add sample to the buffer.
                 if (audio_playback_first_render)
                 {
                     audio_playback_first_render = false;
@@ -219,6 +284,7 @@ namespace MyNes.Core
 
                 if (AudioOut.IsRecording)
                     AudioOut.RecorderAddSample(ref audio_playback_out);
+                #endregion
             }
         }
         private static void APUClockDuration()

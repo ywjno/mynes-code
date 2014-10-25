@@ -22,7 +22,7 @@
 namespace MyNes.Core
 {
     [BoardInfo("Sachen Poker", 243)]
-    [NotImplementedWell("Mapper 243\nShows glitches in Poker III 5-in-1 main menu although the mapper is implemented well.")]
+    [NotImplementedWell("Mapper 243\nShows glitches in some games.")]
     class Mapper243 : Board
     {
         private int addr;
@@ -34,7 +34,7 @@ namespace MyNes.Core
         }
         public override void WriteEXP(ref int address, ref byte data)
         {
-            if (address < 0x5000)
+            if ((address < 0x5000) && (address >= 0x4020))
                 switch (address & 0x4101)
                 {
                     case 0x4100: addr = data & 0x7; break;
@@ -45,10 +45,10 @@ namespace MyNes.Core
                                 case 2: chr_reg = ((data << 3) & 0x8) | (chr_reg & 0x7); Switch08KCHR(chr_reg, chr_01K_rom_count > 0); break;
                                 case 4: chr_reg = (data & 1) | (chr_reg & 0xE); Switch08KCHR(chr_reg, chr_01K_rom_count > 0); break;
                                 case 5: Switch32KPRG(data & 0x7, true); break;
-                                case 6: chr_reg = ((data << 1) & 0x6) | (chr_reg & 0x9); Switch08KCHR(chr_reg, chr_01K_rom_count > 0); break;
+                                case 6: chr_reg = ((data & 0x3) << 1) | (chr_reg & 0x9); Switch08KCHR(chr_reg, chr_01K_rom_count > 0); break;
                                 case 7:
                                     {
-                                        switch (data >> 1 & 3)
+                                        switch ((data >> 1) & 3)
                                         {
                                             case 0: SwitchNMT(Mirroring.Horz); break;
                                             case 1: SwitchNMT(Mirroring.Vert); break;

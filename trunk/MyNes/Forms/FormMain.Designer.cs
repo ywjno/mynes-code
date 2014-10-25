@@ -125,6 +125,8 @@ namespace MyNes
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.showBoardsListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
             this.visitWebsiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.codeprojectArticleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.facebookPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -667,6 +669,8 @@ namespace MyNes
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.viewHelpToolStripMenuItem,
             this.toolStripSeparator6,
+            this.showBoardsListToolStripMenuItem,
+            this.toolStripSeparator17,
             this.visitWebsiteToolStripMenuItem,
             this.codeprojectArticleToolStripMenuItem,
             this.facebookPageToolStripMenuItem,
@@ -685,6 +689,17 @@ namespace MyNes
             // 
             resources.ApplyResources(this.toolStripSeparator6, "toolStripSeparator6");
             this.toolStripSeparator6.Name = "toolStripSeparator6";
+            // 
+            // showBoardsListToolStripMenuItem
+            // 
+            resources.ApplyResources(this.showBoardsListToolStripMenuItem, "showBoardsListToolStripMenuItem");
+            this.showBoardsListToolStripMenuItem.Name = "showBoardsListToolStripMenuItem";
+            this.showBoardsListToolStripMenuItem.Click += new System.EventHandler(this.showBoardsListToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator17
+            // 
+            resources.ApplyResources(this.toolStripSeparator17, "toolStripSeparator17");
+            this.toolStripSeparator17.Name = "toolStripSeparator17";
             // 
             // visitWebsiteToolStripMenuItem
             // 
@@ -826,6 +841,8 @@ namespace MyNes
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showBoardsListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
     }
 }
 

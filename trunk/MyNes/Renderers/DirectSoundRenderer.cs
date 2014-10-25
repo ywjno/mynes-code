@@ -73,7 +73,6 @@ namespace MyNes
             des.Flags = BufferFlags.ControlVolume | BufferFlags.ControlFrequency | BufferFlags.ControlPan | BufferFlags.Software;
 
             buffer = new SecondarySoundBuffer(_SoundDevice, des);
-
             buffer.Play(0, PlayFlags.Looping);
             // Set volume
             SetVolume(volume);

@@ -51,8 +51,11 @@ namespace MyNes.Core
         private int dutyStep;
         private int freqTimer;
         private int frequency;
-        public byte output;
         private int cycles;
+
+        public int clocks;
+        public int output;
+        public int output_av;
 
         public void HardReset()
         {
@@ -67,6 +70,15 @@ namespace MyNes.Core
 
         public void ClockEnvelope()
         {
+            /*Length counter operates twice as fast as the APU length counter (might be clocked at the envelope rate). */
+            if (!length_counter_halt_flag)
+            {
+                if (duration_counter > 0)
+                {
+                    duration_counter--;
+                }
+            }
+
             if (env_startflag)
             {
                 env_startflag = false;
@@ -88,16 +100,7 @@ namespace MyNes.Core
             }
             envelope = constant_volume_flag ? volume_decay_time : env_counter;
         }
-        public void ClockLengthCounter()
-        {
-            if (!length_counter_halt_flag)
-            {
-                if (duration_counter > 0)
-                {
-                    duration_counter--;
-                }
-            }
-        }
+
         public void Write5000(byte data)
         {
             volume_decay_time = data & 0xF;
@@ -130,23 +133,15 @@ namespace MyNes.Core
                 duration_reloadRequst = false;
             }
 
-            if (frequency <= 8)
-            {
-                output = 0;
-                return;
-            }
-            if (cycles > 0)
-                cycles--;
-            else
+            if (--cycles <= 0)
             {
                 cycles = (frequency << 1) + 2;
                 dutyStep--;
                 if (dutyStep < 0)
                     dutyStep = 0x7;
                 if (duration_counter > 0)
-                    output = (byte)(DutyForms[dutyForm][dutyStep] * envelope);
-                else
-                    output = 0;
+                    output_av += DutyForms[dutyForm][dutyStep] * envelope;
+                clocks++;
             }
         }
         public bool Enabled
@@ -210,7 +205,7 @@ namespace MyNes.Core
             dutyStep = stream.ReadInt32();
             freqTimer = stream.ReadInt32();
             frequency = stream.ReadInt32();
-            output = stream.ReadByte();
+            output = stream.ReadInt32();
             cycles = stream.ReadInt32();
         }
     }

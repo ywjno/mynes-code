@@ -40,7 +40,13 @@ namespace MyNes
             trackBar_latency.Value = Program.Settings.Audio_LatencyInMilliseconds / 100;
             label_volume.Text = trackBar2.Value + "%";
             label_latency.Text = "0." + trackBar_latency.Value;
-            label_bufferLength.Text = "0." + trackBar_bufferLength.Value;
+            label_bufferLength.Text = (trackBar_bufferLength.Value / 10).ToString() + "." + (trackBar_bufferLength.Value % 10);
+
+            checkBox_dmc.Checked = Program.Settings.AudioChannelDMCEnabled;
+            checkBox_noize.Checked = Program.Settings.AudioChannelNOZEnabled;
+            checkBox_sq1.Checked = Program.Settings.AudioChannelSQ1Enabled;
+            checkBox_sq2.Checked = Program.Settings.AudioChannelSQ2Enabled;
+            checkBox_triangle.Checked = Program.Settings.AudioChannelTRLEnabled;
         }
         private void button2_Click(object sender, EventArgs e)
         {
@@ -50,9 +56,16 @@ namespace MyNes
         {
             Program.Settings.Audio_SoundEnabled = checkBox_enableSound.Checked;
 
+
             Program.Settings.Audio_Volume = trackBar2.Value;
             Program.Settings.Audio_BufferSizeInMilliseconds = trackBar_bufferLength.Value * 100;
             Program.Settings.Audio_LatencyInMilliseconds = trackBar_latency.Value * 100;
+
+            Program.Settings.AudioChannelDMCEnabled = checkBox_dmc.Checked;
+            Program.Settings.AudioChannelNOZEnabled = checkBox_noize.Checked;
+            Program.Settings.AudioChannelSQ1Enabled = checkBox_sq1.Checked;
+            Program.Settings.AudioChannelSQ2Enabled = checkBox_sq2.Checked;
+            Program.Settings.AudioChannelTRLEnabled = checkBox_triangle.Checked;
             Program.Settings.Save();
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
@@ -63,21 +76,43 @@ namespace MyNes
         }
         private void trackBar_bufferLength_Scroll(object sender, EventArgs e)
         {
-            label_bufferLength.Text = trackBar_bufferLength.Value < 10 ? "0." + trackBar_bufferLength.Value : "1";
+            label_bufferLength.Text = (trackBar_bufferLength.Value / 10).ToString() + "." + (trackBar_bufferLength.Value % 10);
         }
         private void trackBar_latency_Scroll(object sender, EventArgs e)
         {
-            label_latency.Text = trackBar_latency.Value < 10 ? "0." + trackBar_latency.Value : "1";
+            label_latency.Text = (trackBar_latency.Value / 10).ToString() + "." + (trackBar_latency.Value % 10);
         }
         private void button3_Click(object sender, EventArgs e)
         {
             checkBox_enableSound.Checked = true;
             trackBar2.Value = 100;
-            trackBar_bufferLength.Value = 4;
-            trackBar_latency.Value = 2;
+            trackBar_bufferLength.Value = 15;
+            trackBar_latency.Value = 1;
             label_volume.Text = trackBar2.Value + "%";
-            label_latency.Text = "0." + trackBar_latency.Value;
-            label_bufferLength.Text = "0." + trackBar_bufferLength.Value;
+            trackBar_bufferLength_Scroll(this, null);
+            trackBar_latency_Scroll(this, null);
+
+            checkBox_dmc.Checked = true;
+            checkBox_noize.Checked = true;
+            checkBox_sq1.Checked = true;
+            checkBox_sq2.Checked = true;
+            checkBox_triangle.Checked = true;
+        }
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            checkBox_dmc.Checked = true;
+            checkBox_noize.Checked = true;
+            checkBox_sq1.Checked = true;
+            checkBox_sq2.Checked = true;
+            checkBox_triangle.Checked = true;
+        }
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            checkBox_dmc.Checked = false;
+            checkBox_noize.Checked = false;
+            checkBox_sq1.Checked = false;
+            checkBox_sq2.Checked = false;
+            checkBox_triangle.Checked = false;
         }
     }
 }
