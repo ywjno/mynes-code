@@ -23,21 +23,6 @@ namespace MyNes.Core
 {
     public partial class NesEmu
     {
-        private static int[][] DMCFrequencyTable = 
-        { 
-            new int[]//NTSC
-            { 
-               428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
-            },
-            new int[]//PAL
-            { 
-               398, 354, 316, 298, 276, 236, 210, 198, 176, 148, 132, 118,  98,  78,  66,  50
-            },  
-            new int[]//DENDY (same as ntsc for now)
-            { 
-               428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
-            },
-        };
         private static bool DeltaIrqOccur;
         private static bool DMCIrqEnabled;
         private static bool dmc_dmaLooping;
@@ -53,6 +38,10 @@ namespace MyNes.Core
         private static byte dmc_output;
         private static int dmc_cycles;
         private static int dmc_freqTimer;
+        // Playback
+        private static int dmc_pl_clocks;
+        private static int dmc_pl_output_av;
+        private static int dmc_pl_output;
 
         private static void DMCShutdown()
         {
@@ -75,6 +64,11 @@ namespace MyNes.Core
             dmc_dmaBuffer = 0;
             dmc_freqTimer = 0;
             dmc_cycles = DMCFrequencyTable[systemIndex][dmc_freqTimer];
+            dmc_pl_clocks = 0;
+        }
+        private static void DMCSoftReset()
+        {
+            DeltaIrqOccur = false;
         }
         private static void DMCClockSingle()
         {
@@ -115,6 +109,9 @@ namespace MyNes.Core
                         dmc_dmaEnabled = false;
                     }
                 }
+                if (audio_playback_dmc_enabled)
+                    dmc_pl_output_av += dmc_output;
+                dmc_pl_clocks++;
             }
         }
     }

@@ -29,14 +29,19 @@ namespace MyNes
         // Joypads
         public List<IInputSettingsJoypad> Joypad1Devices = new List<IInputSettingsJoypad>();
         public string Joypad1DeviceGuid;
+        public bool Joypad1AutoSwitchBackToKeyboard;
         public List<IInputSettingsJoypad> Joypad2Devices = new List<IInputSettingsJoypad>();
         public string Joypad2DeviceGuid;
+        public bool Joypad2AutoSwitchBackToKeyboard;
         public List<IInputSettingsJoypad> Joypad3Devices = new List<IInputSettingsJoypad>();
         public string Joypad3DeviceGuid;
+        public bool Joypad3AutoSwitchBackToKeyboard;
         public List<IInputSettingsJoypad> Joypad4Devices = new List<IInputSettingsJoypad>();
         public string Joypad4DeviceGuid;
+        public bool Joypad4AutoSwitchBackToKeyboard;
         public List<IInputSettingsVSUnisystemDIP> VSUnisystemDIPDevices = new List<IInputSettingsVSUnisystemDIP>();
         public string VSUnisystemDIPDeviceGuid;
+        public bool VSUnisystemDIPAutoSwitchBackToKeyboard;
 
         public static void BuildDefaultControlSettings()
         {
@@ -67,7 +72,7 @@ namespace MyNes
                     joy1.ButtonStart = "V";
                     Program.Settings.ControlSettings.Joypad1Devices.Add(joy1);
                     Program.Settings.ControlSettings.Joypad1DeviceGuid = joy1.DeviceGuid;
-
+                    Program.Settings.ControlSettings.Joypad1AutoSwitchBackToKeyboard = true;
                     // Player 2 joypad
                     IInputSettingsJoypad joy2 = new IInputSettingsJoypad();
                     joy2.DeviceGuid = ins.InstanceGuid.ToString();
@@ -83,9 +88,17 @@ namespace MyNes
                     joy2.ButtonStart = "N";
                     Program.Settings.ControlSettings.Joypad2Devices.Add(joy2);
                     Program.Settings.ControlSettings.Joypad2DeviceGuid = joy2.DeviceGuid;
-
-                    IInputSettingsVSUnisystemDIP vs = new IInputSettingsVSUnisystemDIP();
+                    Program.Settings.ControlSettings.Joypad2AutoSwitchBackToKeyboard = true;
+                    // Player 3
+                    Program.Settings.ControlSettings.Joypad3Devices = new List<IInputSettingsJoypad>();
+                    Program.Settings.ControlSettings.Joypad3DeviceGuid = "";
+                    Program.Settings.ControlSettings.Joypad3AutoSwitchBackToKeyboard = true;
+                    // Player 4
+                    Program.Settings.ControlSettings.Joypad4Devices = new List<IInputSettingsJoypad>();
+                    Program.Settings.ControlSettings.Joypad4DeviceGuid = "";
+                    Program.Settings.ControlSettings.Joypad4AutoSwitchBackToKeyboard = true;
                     // VSUnisystem
+                    IInputSettingsVSUnisystemDIP vs = new IInputSettingsVSUnisystemDIP();
                     vs.DeviceGuid = ins.InstanceGuid.ToString();
                     vs.CreditServiceButton = "End";
                     vs.DIPSwitch1 = "NumberPad1";
@@ -100,6 +113,7 @@ namespace MyNes
                     vs.CreditRightCoinSlot = "Home";
                     Program.Settings.ControlSettings.VSUnisystemDIPDevices.Add(vs);
                     Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid = vs.DeviceGuid;
+                    Program.Settings.ControlSettings.VSUnisystemDIPAutoSwitchBackToKeyboard = true;
                     break;
                 }
             }

@@ -762,7 +762,7 @@ namespace MyNes.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
         public int Audio_BufferSizeInMilliseconds {
             get {
                 return ((int)(this["Audio_BufferSizeInMilliseconds"]));
@@ -829,6 +829,66 @@ namespace MyNes.Properties {
             }
             set {
                 this["ShowRomIssuesIfHave"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AudioChannelSQ1Enabled {
+            get {
+                return ((bool)(this["AudioChannelSQ1Enabled"]));
+            }
+            set {
+                this["AudioChannelSQ1Enabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AudioChannelSQ2Enabled {
+            get {
+                return ((bool)(this["AudioChannelSQ2Enabled"]));
+            }
+            set {
+                this["AudioChannelSQ2Enabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AudioChannelDMCEnabled {
+            get {
+                return ((bool)(this["AudioChannelDMCEnabled"]));
+            }
+            set {
+                this["AudioChannelDMCEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AudioChannelTRLEnabled {
+            get {
+                return ((bool)(this["AudioChannelTRLEnabled"]));
+            }
+            set {
+                this["AudioChannelTRLEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AudioChannelNOZEnabled {
+            get {
+                return ((bool)(this["AudioChannelNOZEnabled"]));
+            }
+            set {
+                this["AudioChannelNOZEnabled"] = value;
             }
         }
     }

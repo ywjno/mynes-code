@@ -54,6 +54,7 @@ namespace MyNes
                 }
             }
             RefreshList();
+            checkBox1.Checked = Program.Settings.ControlSettings.VSUnisystemDIPAutoSwitchBackToKeyboard;
         }
         private void RefreshDevices()
         {
@@ -152,9 +153,10 @@ namespace MyNes
         }
         public override void SaveSettings()
         {
+            Program.Settings.ControlSettings.VSUnisystemDIPAutoSwitchBackToKeyboard = checkBox1.Checked;
             if (comboBox_device.SelectedIndex < 0)
             {
-                Program.Settings.ControlSettings.Joypad1DeviceGuid = "";
+                Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid = "";
                 return;
             }
             bool found = false;
@@ -163,7 +165,7 @@ namespace MyNes
                 if (Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].DeviceGuid.ToLower() ==
                     devices[comboBox_device.SelectedIndex].InstanceGuid.ToString().ToLower())
                 {
-                    Program.Settings.ControlSettings.Joypad1DeviceGuid = Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].DeviceGuid;
+                    Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid = Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].DeviceGuid;
                     found = true;
                     // Add the inputs
                     Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].CreditLeftCoinSlot = listView1.Items[0].SubItems[1].Text;

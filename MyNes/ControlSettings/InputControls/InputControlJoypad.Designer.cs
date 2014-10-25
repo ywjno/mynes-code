@@ -48,6 +48,7 @@ namespace MyNes
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InputControlJoypad));
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_device = new System.Windows.Forms.ComboBox();
@@ -58,6 +59,8 @@ namespace MyNes
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -67,22 +70,23 @@ namespace MyNes
             // 
             // comboBox_device
             // 
-            resources.ApplyResources(this.comboBox_device, "comboBox_device");
             this.comboBox_device.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_device.FormattingEnabled = true;
+            resources.ApplyResources(this.comboBox_device, "comboBox_device");
             this.comboBox_device.Name = "comboBox_device";
+            this.toolTip1.SetToolTip(this.comboBox_device, resources.GetString("comboBox_device.ToolTip"));
             this.comboBox_device.SelectedIndexChanged += new System.EventHandler(this.comboBox_device_SelectedIndexChanged);
             // 
             // button1
             // 
             resources.ApplyResources(this.button1, "button1");
             this.button1.Name = "button1";
+            this.toolTip1.SetToolTip(this.button1, resources.GetString("button1.ToolTip"));
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // listView1
             // 
-            resources.ApplyResources(this.listView1, "listView1");
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
@@ -100,6 +104,7 @@ namespace MyNes
             ((System.Windows.Forms.ListViewItem)(resources.GetObject("listView1.Items7"))),
             ((System.Windows.Forms.ListViewItem)(resources.GetObject("listView1.Items8"))),
             ((System.Windows.Forms.ListViewItem)(resources.GetObject("listView1.Items9")))});
+            resources.ApplyResources(this.listView1, "listView1");
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
             this.listView1.UseCompatibleStateImageBehavior = false;
@@ -118,6 +123,7 @@ namespace MyNes
             // 
             resources.ApplyResources(this.button2, "button2");
             this.button2.Name = "button2";
+            this.toolTip1.SetToolTip(this.button2, resources.GetString("button2.ToolTip"));
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -125,6 +131,7 @@ namespace MyNes
             // 
             resources.ApplyResources(this.button3, "button3");
             this.button3.Name = "button3";
+            this.toolTip1.SetToolTip(this.button3, resources.GetString("button3.ToolTip"));
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -133,10 +140,18 @@ namespace MyNes
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
             // 
+            // checkBox1
+            // 
+            resources.ApplyResources(this.checkBox1, "checkBox1");
+            this.checkBox1.Name = "checkBox1";
+            this.toolTip1.SetToolTip(this.checkBox1, resources.GetString("checkBox1.ToolTip"));
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // InputControlJoypad
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -161,5 +176,7 @@ namespace MyNes
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

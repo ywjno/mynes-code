@@ -127,11 +127,17 @@
   <data name="checkBox_enableSound.ToolTip" xml:space="preserve">
     <value>تفعيل الصوت، إلغاء هذا الخيار سيكتم الصوت</value>
   </data>
+  <data name="button1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>290, 193</value>
+  </data>
   <data name="button1.Text" xml:space="preserve">
     <value>&amp;حفظ</value>
   </data>
   <data name="button1.ToolTip" xml:space="preserve">
     <value>حفظ الخيارات و تفعيلها</value>
+  </data>
+  <data name="button2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>209, 193</value>
   </data>
   <data name="button2.Text" xml:space="preserve">
     <value>إل&amp;غاء الأمر</value>
@@ -173,6 +179,9 @@
 مع تغيير قيمة طول المساحة المخصصة بالذاكرة
 قد تؤثر بشكل ملحوظ على دقة الصوت.</value>
   </data>
+  <data name="button3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 193</value>
+  </data>
   <data name="button3.Text" xml:space="preserve">
     <value>إ&amp;فتراضي</value>
   </data>
@@ -196,6 +205,78 @@
   </data>
   <data name="label_latency.Location" type="System.Drawing.Point, System.Drawing">
     <value>6, 16</value>
+  </data>
+  <data name="groupBox3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>97, 144</value>
+  </data>
+  <data name="groupBox3.Text" xml:space="preserve">
+    <value>قنوات الصوت</value>
+  </data>
+  <data name="linkLabel2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 128</value>
+  </data>
+  <data name="linkLabel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>49, 13</value>
+  </data>
+  <data name="linkLabel2.Text" xml:space="preserve">
+    <value>إلغاء الكل</value>
+  </data>
+  <data name="linkLabel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>64, 128</value>
+  </data>
+  <data name="linkLabel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>27, 13</value>
+  </data>
+  <data name="linkLabel1.Text" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="checkBox_noize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>21, 111</value>
+  </data>
+  <data name="checkBox_noize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>70, 17</value>
+  </data>
+  <data name="checkBox_noize.Text" xml:space="preserve">
+    <value>التشويش</value>
+  </data>
+  <data name="checkBox_triangle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>34, 88</value>
+  </data>
+  <data name="checkBox_triangle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 17</value>
+  </data>
+  <data name="checkBox_triangle.Text" xml:space="preserve">
+    <value>المثلث</value>
+  </data>
+  <data name="checkBox_dmc.Location" type="System.Drawing.Point, System.Drawing">
+    <value>5, 65</value>
+  </data>
+  <data name="checkBox_dmc.Size" type="System.Drawing.Size, System.Drawing">
+    <value>86, 17</value>
+  </data>
+  <data name="checkBox_dmc.Text" xml:space="preserve">
+    <value>الدي إم سي</value>
+  </data>
+  <data name="checkBox_sq2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>29, 42</value>
+  </data>
+  <data name="checkBox_sq2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 17</value>
+  </data>
+  <data name="checkBox_sq2.Text" xml:space="preserve">
+    <value>المربع 2</value>
+  </data>
+  <data name="checkBox_sq1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>29, 19</value>
+  </data>
+  <data name="checkBox_sq1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 17</value>
+  </data>
+  <data name="checkBox_sq1.Text" xml:space="preserve">
+    <value>المربع 1</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>377, 228</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="$this.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">

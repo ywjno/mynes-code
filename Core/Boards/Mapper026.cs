@@ -60,7 +60,7 @@ namespace MyNes.Core
                         double sqr = (95.88 / (8128.0 / (sq1 + sq2) + 100));
                         double tnd = (159.79 / (1.0 / (saw / 22638.0) + 100));
 
-                        mix_table[sq1][sq2][saw] = (sqr + tnd) * 128;
+                        mix_table[sq1][sq2][saw] = (sqr + tnd);
                     }
                 }
             }
@@ -92,7 +92,7 @@ namespace MyNes.Core
                 case 0xB001: sawtooth.Write2(ref data); break;
                 case 0xB003:
                     {
-                        switch (data & 0x3)
+                        switch ((data & 0xC) >> 2)
                         {
                             case 0: SwitchNMT(Mirroring.Vert); break;
                             case 1: SwitchNMT(Mirroring.Horz); break;
@@ -162,6 +162,18 @@ namespace MyNes.Core
         }
         public override double APUGetSamples()
         {
+            if (pulse1.clocks > 0)
+                pulse1.output = pulse1.output_av / pulse1.clocks;
+            pulse1.clocks = pulse1.output_av = 0;
+
+            if (pulse2.clocks > 0)
+                pulse2.output = pulse2.output_av / pulse2.clocks;
+            pulse2.clocks = pulse2.output_av = 0;
+
+            if (sawtooth.clocks > 0)
+                sawtooth.output = sawtooth.output_av / sawtooth.clocks;
+            sawtooth.clocks = sawtooth.output_av = 0;
+
             return mix_table[pulse1.output][pulse2.output][sawtooth.output];
         }
         public override void OnAPUClockSingle(ref bool isClockingLength)

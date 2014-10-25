@@ -68,17 +68,6 @@ namespace MyNes.Core
             old_irq_counter = 0;
             // mmc3_alt_behavior = false;
             irq_clear = false;
-
-            if (IsGameFoundOnDB)
-            {
-                switch (GameCartInfo.chip_type[0].ToLower())
-                {
-                    case "mmc3a": mmc3_alt_behavior = true; System.Console.WriteLine("Chip= MMC3 A, MMC3 IQR mode switched to RevA"); break;
-                    case "mmc3b": mmc3_alt_behavior = false; System.Console.WriteLine("Chip= MMC3 B, MMC3 IQR mode switched to RevB"); break;
-                    case "mmc3c": mmc3_alt_behavior = false; System.Console.WriteLine("Chip= MMC3 C, MMC3 IQR mode switched to RevB"); break;
-                }
-            }
-
         }
         public override void WritePRG(ref int address, ref byte data)
         {

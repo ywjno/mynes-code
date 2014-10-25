@@ -40,8 +40,9 @@ namespace MyNes.Core
         private static bool IRQ_Detected;
         // This is the interrupt vector to jump in the last 2 cycles of BRK/IRQ/NMI
         private static int interrupt_vector;
-        // This flag suspend interrupt polling
-        private static bool interrupt_suspend;
+        // These flags suspend interrupt polling
+        private static bool interrupt_suspend_nmi;
+        private static bool interrupt_suspend_irq;
         private static bool nmi_enabled;
         private static bool nmi_old;
         private static bool vbl_flag;
@@ -49,26 +50,20 @@ namespace MyNes.Core
 
         private static void PollInterruptStatus()
         {
-            if (!interrupt_suspend)
+            if (!interrupt_suspend_nmi)
             {
                 // The edge detector, see if nmi occurred. 
                 if (NMI_Current & !NMI_Old) // Raising edge, set nmi request
                     NMI_Detected = true;
                 NMI_Old = NMI_Current = false;// NMI detected or not, low both lines for this form ___|-|__
+            }
+            if (!interrupt_suspend_irq)
+            {
                 // irq level detector
                 IRQ_Detected = (!registers.i && IRQFlags != 0);
-                // Update interrupt vector !
-                interrupt_vector = NMI_Detected ? 0xFFFA : 0xFFFE;
             }
-        }
-        private static void CheckNMI()
-        {
-            // At VBL time
-            if ((VClock == vbl_vclock_Start) && (HClock < 3))
-            {
-                NMI_Current = (vbl_flag_temp & nmi_enabled);
-                // normally, ppu question for nmi at first 3 clocks of vblank
-            }
+            // Update interrupt vector !
+            interrupt_vector = NMI_Detected ? 0xFFFA : 0xFFFE;
         }
     }
 }

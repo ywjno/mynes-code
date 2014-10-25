@@ -23,29 +23,66 @@ namespace MyNes.Core
 {
     class MMC5PcmSoundChannel
     {
-        private byte output;
+        public byte output;
+        private bool readMode;
+        private bool PCMIRQenable;
+        private bool irqTrip;
+
         public void HardReset()
         {
             output = 0;
+            readMode = false;
+            PCMIRQenable = false;
+            irqTrip = false;
         }
         public void SoftReset()
         {
-            output = 0;
+            HardReset();
+        }
+        public void Write5010(byte data)
+        {
+            readMode = (data & 0x1) == 0x1;
+            PCMIRQenable = (data & 0x80) == 0x80;
+            // Update irq
+            if (PCMIRQenable && irqTrip)
+                NesEmu.IRQFlags |= NesEmu.IRQ_BOARD;
+        }
+        public byte Read5010()
+        {
+            byte data = (byte)((irqTrip & PCMIRQenable) ? 0x80 : 0);
+
+            irqTrip = false;
+            NesEmu.IRQFlags &= ~NesEmu.IRQ_BOARD;
+            return data;
         }
         public void Write5011(byte data)
         {
-            output = data;
+            if (!readMode)
+            {
+                if (data == 0)
+                {
+                    irqTrip = true;
+                }
+                else
+                {
+                    irqTrip = false;
+                    output = data;
+                }
+                // Update irq
+                if (PCMIRQenable && irqTrip)
+                    NesEmu.IRQFlags |= NesEmu.IRQ_BOARD;
+            }
         }
-        public byte GetSample()
-        {
-            return output;
-        } 
+
         /// <summary>
         /// Save state
         /// </summary>
         /// <param name="stream">The stream that should be used to write data</param>
         public virtual void SaveState(System.IO.BinaryWriter stream)
         {
+            stream.Write(readMode);
+            stream.Write(PCMIRQenable);
+            stream.Write(irqTrip);
         }
         /// <summary>
         /// Load state
@@ -53,6 +90,9 @@ namespace MyNes.Core
         /// <param name="stream">The stream that should be used to read data</param>
         public virtual void LoadState(System.IO.BinaryReader stream)
         {
+            readMode = stream.ReadBoolean();
+            PCMIRQenable = stream.ReadBoolean();
+            irqTrip = stream.ReadBoolean();
         }
     }
 }

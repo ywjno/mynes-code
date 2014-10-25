@@ -141,29 +141,7 @@ namespace MyNes.Core
             BUS_ADDRESS = address;
             BUS_RW = true;
 
-            #region Clock Components
-            PPUClock();
-            /*
-             * NMI edge detector polls the status of the NMI line during φ2 of each CPU cycle 
-             * (i.e., during the second half of each cycle) 
-             */
-            PollInterruptStatus();
-            PPUClock();
-            PPUClock();
-            if (DoPalAdditionalClock)// In pal system ..
-            {
-                palCyc++;
-                if (palCyc == 5)
-                {
-                    PPUClock();
-                    palCyc = 0;
-                }
-            }
-            APUClock();
-            DMAClock();
-
-            board.OnCPUClock();
-            #endregion
+            ClockComponents();
 
             if (address < 0x2000)// Internal 2K Work RAM (mirrored to 800h-1FFFh)
             {
@@ -188,7 +166,9 @@ namespace MyNes.Core
                             vbl_flag_temp = false;
                             vram_flipflop = false;
 
-                            CheckNMI();// NMI disable effect only at vbl set period (HClock between 1 and 3)
+                            // NMI disable effect only at vbl set period (HClock between 1 and 3)
+                            if ((VClock == vbl_vclock_Start) && (HClock <= 3))
+                                NMI_Current = (vbl_flag_temp & nmi_enabled);
 
                             return ppu_2002_temp;
                         }
@@ -329,29 +309,7 @@ namespace MyNes.Core
             BUS_ADDRESS = address;
             BUS_RW = false;
 
-            #region Clock Components
-            PPUClock();
-            /*
-             * NMI edge detector polls the status of the NMI line during φ2 of each CPU cycle 
-             * (i.e., during the second half of each cycle) 
-             */
-            PollInterruptStatus();
-            PPUClock();
-            PPUClock();
-            if (DoPalAdditionalClock)// In pal system ..
-            {
-                palCyc++;
-                if (palCyc == 5)
-                {
-                    PPUClock();
-                    palCyc = 0;
-                }
-            }
-            APUClock();
-            DMAClock();
-
-            board.OnCPUClock();
-            #endregion
+            ClockComponents();
 
             if (address < 0x2000)// Internal 2K Work RAM (mirrored to 800h-1FFFh)
             {
@@ -374,7 +332,10 @@ namespace MyNes.Core
                             nmi_enabled = (value & 0x80) != 0;
 
                             if (!nmi_enabled)// NMI disable effect only at vbl set period (HClock between 1 and 3)
-                                CheckNMI();
+                            {
+                                if ((VClock == vbl_vclock_Start) && (HClock <= 3))
+                                    NMI_Current = (vbl_flag_temp & nmi_enabled);
+                            }
                             else if (vbl_flag_temp & !nmi_old)// Special case ! NMI can be enabled anytime if vbl already set
                                 NMI_Current = true;
                             break;
@@ -558,8 +519,8 @@ namespace MyNes.Core
                         }
                     case 0x400E:
                         {
-                            noz_freqTimer = value & 0x0F;
-                            noz_modeFlag = (value & 0x80) == 0x80;
+                            noz_frequency = NozFrequencyTable[systemIndex][value & 0x0F];
+                            noz_mode = (value & 0x80) == 0x80;
                             break;
                         }
                     case 0x400F:

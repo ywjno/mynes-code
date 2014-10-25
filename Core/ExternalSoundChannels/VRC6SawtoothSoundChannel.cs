@@ -30,7 +30,9 @@ namespace MyNes.Core
         private int freqTimer;
         private int cycles;
         private bool enabled;
-        public byte output;
+        public int clocks;
+        public int output;
+        public int output_av;
 
         private void UpdateFrequency()
         {
@@ -76,10 +78,9 @@ namespace MyNes.Core
                             break;
                     }
 
-                    output = (byte)((accumulationRegister >> 3) & 0x1F);
+                    output_av += ((accumulationRegister >> 3) & 0x1F);
                 }
-                else
-                    output = 0;
+                clocks++;
             }
         }
         /// <summary>
@@ -95,7 +96,6 @@ namespace MyNes.Core
             stream.Write(freqTimer);
             stream.Write(cycles);
             stream.Write(enabled);
-            stream.Write(output);
         }
         /// <summary>
         /// Load state
@@ -110,7 +110,6 @@ namespace MyNes.Core
             freqTimer = stream.ReadInt32();
             cycles = stream.ReadInt32();
             enabled = stream.ReadBoolean();
-            output = stream.ReadByte();
         }
     }
 }

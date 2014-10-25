@@ -23,21 +23,6 @@ namespace MyNes.Core
 {
     public partial class NesEmu
     {
-        private static int[][] NozFrequencyTable = 
-        { 
-            new int [] //NTSC
-            {  
-                4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
-            },
-            new int [] //PAL
-            {  
-                4, 8, 14, 30, 60, 88, 118, 148, 188, 236, 354, 472, 708,  944, 1890, 3778
-            },
-            new int [] //DENDY (same as ntsc for now)
-            {  
-                4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
-            }
-        };
         private static int noz_envelope;
         private static bool noz_env_startflag;
         private static int noz_env_counter;
@@ -50,12 +35,16 @@ namespace MyNes.Core
         private static bool noz_duration_reloadEnabled;
         private static byte noz_duration_reload = 0;
         private static bool noz_duration_reloadRequst = false;
-        private static bool noz_modeFlag = false;
+        private static bool noz_mode = false;
         private static int noz_shiftRegister = 1;
         private static int noz_feedback;
-        private static int noz_freqTimer;
+        private static int noz_frequency;
         private static int noz_cycles;
-        private static int noz_output;
+
+        // Playback
+        private static int noz_pl_clocks;
+        private static int noz_pl_output_av;
+        private static int noz_pl_output;
 
         private static void NOZShutdown()
         {
@@ -75,11 +64,19 @@ namespace MyNes.Core
             noz_duration_reloadEnabled = false;
             noz_duration_reload = 0;
             noz_duration_reloadRequst = false;
-            noz_modeFlag = false;
+            noz_mode = false;
             noz_shiftRegister = 1;
             noz_cycles = 0;
-            noz_freqTimer = 0;
+            noz_frequency = NozFrequencyTable[systemIndex][0];
             noz_feedback = 0;
+            noz_pl_clocks = 0;
+            noz_pl_output_av = 0;
+            noz_pl_output = 0;
+        }
+        private static void NozSoftReset()
+        {
+            noz_duration_counter = 0;
+            noz_duration_reloadEnabled = false;
         }
         private static void NozClockEnvelope()
         {
@@ -125,21 +122,23 @@ namespace MyNes.Core
                     noz_duration_counter = noz_duration_reload;
                 noz_duration_reloadRequst = false;
             }
-
             if (--noz_cycles <= 0)
             {
-                noz_cycles = NozFrequencyTable[systemIndex][noz_freqTimer];
-                if (noz_modeFlag)
+                noz_cycles = noz_frequency;
+
+                if (noz_mode)
                     noz_feedback = (noz_shiftRegister >> 6 & 0x1) ^ (noz_shiftRegister & 0x1);
                 else
                     noz_feedback = (noz_shiftRegister >> 1 & 0x1) ^ (noz_shiftRegister & 0x1);
                 noz_shiftRegister >>= 1;
-                noz_shiftRegister = ((noz_shiftRegister & 0x3FFF) | (noz_feedback << 14));
+                noz_shiftRegister = (noz_shiftRegister & 0x3FFF) | (noz_feedback << 14);
 
                 if (noz_duration_counter > 0 && (noz_shiftRegister & 1) == 0)
-                    noz_output = noz_envelope;
-                else
-                    noz_output = 0;
+                {
+                    if (audio_playback_noz_enabled)
+                        noz_pl_output_av += noz_envelope;
+                }
+                noz_pl_clocks++;
             }
         }
     }

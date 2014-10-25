@@ -25,10 +25,11 @@ namespace MyNes.Core
 {
     public partial class NesEmu
     {
+        public static int cpuSpeedInHz;// CPU clock rate (i.e ~ 1.79 MHz)
         private static CPURegisters registers;
         private static byte M;
         private static byte opcode;
-        // Using temp valus increase performance by avoiding memory allocation.
+        // Using temp values increase performance by avoiding memory allocation.
         private static byte byte_temp;
         private static int int_temp;
         private static int int_temp1;
@@ -36,6 +37,13 @@ namespace MyNes.Core
 
         private static void CPUHardReset()
         {
+            // SPEED
+            switch (TVFormat)
+            {
+                case TVSystem.NTSC: systemIndex = 0; cpuSpeedInHz = 1789772; break;
+                case TVSystem.PALB: systemIndex = 1; cpuSpeedInHz = 1662607; break;
+                case TVSystem.DENDY: systemIndex = 2; cpuSpeedInHz = 1773448; break;
+            }
             // registers
             registers.a = 0x00;
             registers.x = 0x00;
@@ -58,7 +66,8 @@ namespace MyNes.Core
             IRQFlags = 0;
             IRQ_Detected = false;
             interrupt_vector = 0;
-            interrupt_suspend = false;
+            interrupt_suspend_irq = false;
+            interrupt_suspend_nmi = false;
             nmi_enabled = false;
             nmi_old = false;
             vbl_flag = false;
@@ -1878,12 +1887,12 @@ namespace MyNes.Core
             // the vector is detected during φ2 of previous cycle (before push about 2 ppu cycles)
             int_temp = interrupt_vector;
 
-            interrupt_suspend = true;
+            interrupt_suspend_nmi = true;
             registers.pcl = Read(int_temp);
             int_temp++;
             registers.i = true;
             registers.pch = Read(int_temp);
-            interrupt_suspend = false;
+            interrupt_suspend_nmi = false;
         }
         private static void Branch(bool condition)
         {
@@ -1892,10 +1901,10 @@ namespace MyNes.Core
 
             if (condition)
             {
-                interrupt_suspend = true;
+                interrupt_suspend_irq = true;
                 Read(registers.pc);
                 registers.pcl += byte_temp;
-                interrupt_suspend = false;
+                interrupt_suspend_irq = false;
                 if (byte_temp >= 0x80)
                 {
                     if (registers.pcl >= byte_temp)
@@ -2023,12 +2032,12 @@ namespace MyNes.Core
             // the vector is detected during φ2 of previous cycle (before push about 2 ppu cycles)
             int_temp = interrupt_vector;
 
-            interrupt_suspend = true;
+            interrupt_suspend_nmi = true;
             registers.pcl = Read(int_temp);
             int_temp++;
             registers.i = true;
             registers.pch = Read(int_temp);
-            interrupt_suspend = false;
+            interrupt_suspend_nmi = false;
         }
         private static void CMP()
         {
@@ -2131,20 +2140,21 @@ namespace MyNes.Core
         }
         private static void JMP_I()
         {
+            // Fetch pointer
             registers.eal = Read(registers.pc++);
             registers.eah = Read(registers.pc++);
 
-            byte_temp = Read(registers.ea);
+            registers.pcl = Read(registers.ea);
             registers.eal++; // only increment the low byte, causing the "JMP ($nnnn)" bug
             registers.pch = Read(registers.ea);
-
-            registers.pcl = byte_temp;
         }
         private static void JSR()
         {
             registers.eal = Read(registers.pc);
             registers.pc++;
-            registers.eah = Read(registers.pc);
+            //registers.eah = Read(registers.pc);
+
+            Read(registers.sp);// Dummy read !
 
             Push(registers.pch);
             Push(registers.pcl);

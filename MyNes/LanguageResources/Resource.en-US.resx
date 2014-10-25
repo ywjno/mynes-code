@@ -793,4 +793,7 @@ My Nes still can run this game using default Nes configuration (mapper 0). Do yo
   <data name="Status_EntrySkipped" xml:space="preserve">
     <value>Entry SKIPPED</value>
   </data>
+  <data name="Status_Supported" xml:space="preserve">
+    <value>supported.</value>
+  </data>
 </root>

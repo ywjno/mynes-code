@@ -22,7 +22,8 @@
 namespace MyNes.Core
 {
     [BoardInfo("Namcot 106", 19)]
-    [NotImplementedWell("Mapper 19: Baf mixer for external sound channels.")]
+    [NotImplementedWell("Mapper 19: Bad mixer for external sound channels.")]
+    [WithExternalSound]
     class Mapper019 : Namcot106
     {
     }

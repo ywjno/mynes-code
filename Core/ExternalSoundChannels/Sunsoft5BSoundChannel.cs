@@ -25,11 +25,14 @@ namespace MyNes.Core
     {
         public bool Enabled;
         public byte Volume;
-        private byte output = 0;
         private int dutyStep = 0;
         private int freqTimer;
         private int frequency;
         private int cycles;
+
+        public int clocks;
+        public int output;
+        public int output_av;
 
         public void HardReset() { }
         public void SoftReset() { }
@@ -43,12 +46,7 @@ namespace MyNes.Core
             frequency = (frequency & 0x00FF) | ((data & 0xF) << 8);
             freqTimer = (frequency + 1) * 2;
         }
-        public byte GetSample()
-        {
-            if (Enabled)
-                return output;
-            return 0;
-        }
+
         public void ClockSingle()
         {
             if (--cycles <= 0)
@@ -58,10 +56,11 @@ namespace MyNes.Core
 
                 if (dutyStep <= 15)
                 {
-                    output = Volume;
+                    if (Enabled)
+                        output_av += Volume;
                 }
-                else
-                    output = 0;
+
+                clocks++;
             }
         }
         /// <summary>
@@ -72,7 +71,6 @@ namespace MyNes.Core
         {
             stream.Write(Enabled);
             stream.Write(Volume);
-            stream.Write(output);
             stream.Write(dutyStep);
             stream.Write(freqTimer);
             stream.Write(frequency);
@@ -86,7 +84,6 @@ namespace MyNes.Core
         {
             Enabled = stream.ReadBoolean();
             Volume = stream.ReadByte();
-            output = stream.ReadByte();
             dutyStep = stream.ReadInt32();
             freqTimer = stream.ReadInt32();
             frequency = stream.ReadInt32();

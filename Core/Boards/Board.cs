@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 namespace MyNes.Core
 {
-    abstract class Board
+    public abstract class Board
     {
         public Board()
         {
@@ -108,6 +108,23 @@ namespace MyNes.Core
                 }
             }
             prg_indexes = new int[5];
+            // ********************************************************
+            // Trainer ************************************************
+            // Put trainer at first ram bank.
+            if (trainer_dump != null)
+            {
+                if (trainer_dump.Length > 0)
+                {
+                    for (int i = 0; i < prgBanks.Count; i++)
+                    {
+                        if (prg_isram[i])
+                        {
+                            trainer_dump.CopyTo(prg_banks[i], 0x1000);
+                            break;
+                        }
+                    }
+                }
+            }
             // ********************************************************
             // CHR data ***********************************************
             List<BankInfo> chrBanks = new List<BankInfo>(GetCHRRAM());
@@ -963,14 +980,14 @@ namespace MyNes.Core
                     stream.Read(prg_banks[i], 0, prg_banks[i].Length);
                 }
             }
-            // Write prg indexes, enable ...etc
+            // Read prg indexes, enable ...etc
             for (int i = 0; i < prg_indexes.Length; i++)
                 prg_indexes[i] = stream.ReadInt32();
             for (int i = 0; i < prg_enable.Length; i++)
                 prg_enable[i] = stream.ReadBoolean();
             for (int i = 0; i < prg_writable.Length; i++)
                 prg_writable[i] = stream.ReadBoolean();
-            // Write chr ram
+            // Read chr ram
             for (int i = 0; i < chr_banks.Length; i++)
             {
                 if (chr_isram[i])
@@ -978,19 +995,19 @@ namespace MyNes.Core
                     stream.Read(chr_banks[i], 0, chr_banks[i].Length);
                 }
             }
-            // Write chr indexes, enable ...etc
+            // Read chr indexes, enable ...etc
             for (int i = 0; i < chr_indexes.Length; i++)
                 chr_indexes[i] = stream.ReadInt32();
             for (int i = 0; i < chr_enable.Length; i++)
                 chr_enable[i] = stream.ReadBoolean();
             for (int i = 0; i < chr_writable.Length; i++)
                 chr_writable[i] = stream.ReadBoolean();
-            // Write nmt
+            // Read nmt
             for (int i = 0; i < nmt_banks.Length; i++)
             {
                 stream.Read(nmt_banks[i], 0, nmt_banks[i].Length);
             }
-            // Write chr indexes, enable ...etc
+            // Read chr indexes, enable ...etc
             for (int i = 0; i < nmt_indexes.Length; i++)
                 nmt_indexes[i] = stream.ReadInt32();
         }

@@ -59,6 +59,7 @@ namespace MyNes
                 else
                     return;
             }
+            Program.Settings.Save();
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }

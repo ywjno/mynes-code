@@ -64,12 +64,21 @@ namespace MyNes
             this.label_bufferLength = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label_latency = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.checkBox_noize = new System.Windows.Forms.CheckBox();
+            this.checkBox_triangle = new System.Windows.Forms.CheckBox();
+            this.checkBox_dmc = new System.Windows.Forms.CheckBox();
+            this.checkBox_sq2 = new System.Windows.Forms.CheckBox();
+            this.checkBox_sq1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_bufferLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_latency)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // checkBox_enableSound
@@ -107,6 +116,7 @@ namespace MyNes
             // trackBar_bufferLength
             // 
             resources.ApplyResources(this.trackBar_bufferLength, "trackBar_bufferLength");
+            this.trackBar_bufferLength.Maximum = 50;
             this.trackBar_bufferLength.Minimum = 1;
             this.trackBar_bufferLength.Name = "trackBar_bufferLength";
             this.toolTip1.SetToolTip(this.trackBar_bufferLength, resources.GetString("trackBar_bufferLength.ToolTip"));
@@ -119,7 +129,7 @@ namespace MyNes
             this.trackBar_latency.Minimum = 1;
             this.trackBar_latency.Name = "trackBar_latency";
             this.toolTip1.SetToolTip(this.trackBar_latency, resources.GetString("trackBar_latency.ToolTip"));
-            this.trackBar_latency.Value = 2;
+            this.trackBar_latency.Value = 1;
             this.trackBar_latency.Scroll += new System.EventHandler(this.trackBar_latency_Scroll);
             // 
             // button3
@@ -175,11 +185,77 @@ namespace MyNes
             this.label_latency.Name = "label_latency";
             this.toolTip1.SetToolTip(this.label_latency, resources.GetString("label_latency.ToolTip"));
             // 
+            // groupBox3
+            // 
+            resources.ApplyResources(this.groupBox3, "groupBox3");
+            this.groupBox3.Controls.Add(this.linkLabel2);
+            this.groupBox3.Controls.Add(this.linkLabel1);
+            this.groupBox3.Controls.Add(this.checkBox_noize);
+            this.groupBox3.Controls.Add(this.checkBox_triangle);
+            this.groupBox3.Controls.Add(this.checkBox_dmc);
+            this.groupBox3.Controls.Add(this.checkBox_sq2);
+            this.groupBox3.Controls.Add(this.checkBox_sq1);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.TabStop = false;
+            this.toolTip1.SetToolTip(this.groupBox3, resources.GetString("groupBox3.ToolTip"));
+            // 
+            // linkLabel2
+            // 
+            resources.ApplyResources(this.linkLabel2, "linkLabel2");
+            this.linkLabel2.Name = "linkLabel2";
+            this.linkLabel2.TabStop = true;
+            this.toolTip1.SetToolTip(this.linkLabel2, resources.GetString("linkLabel2.ToolTip"));
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            // 
+            // linkLabel1
+            // 
+            resources.ApplyResources(this.linkLabel1, "linkLabel1");
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.TabStop = true;
+            this.toolTip1.SetToolTip(this.linkLabel1, resources.GetString("linkLabel1.ToolTip"));
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // checkBox_noize
+            // 
+            resources.ApplyResources(this.checkBox_noize, "checkBox_noize");
+            this.checkBox_noize.Name = "checkBox_noize";
+            this.toolTip1.SetToolTip(this.checkBox_noize, resources.GetString("checkBox_noize.ToolTip"));
+            this.checkBox_noize.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_triangle
+            // 
+            resources.ApplyResources(this.checkBox_triangle, "checkBox_triangle");
+            this.checkBox_triangle.Name = "checkBox_triangle";
+            this.toolTip1.SetToolTip(this.checkBox_triangle, resources.GetString("checkBox_triangle.ToolTip"));
+            this.checkBox_triangle.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_dmc
+            // 
+            resources.ApplyResources(this.checkBox_dmc, "checkBox_dmc");
+            this.checkBox_dmc.Name = "checkBox_dmc";
+            this.toolTip1.SetToolTip(this.checkBox_dmc, resources.GetString("checkBox_dmc.ToolTip"));
+            this.checkBox_dmc.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_sq2
+            // 
+            resources.ApplyResources(this.checkBox_sq2, "checkBox_sq2");
+            this.checkBox_sq2.Name = "checkBox_sq2";
+            this.toolTip1.SetToolTip(this.checkBox_sq2, resources.GetString("checkBox_sq2.ToolTip"));
+            this.checkBox_sq2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_sq1
+            // 
+            resources.ApplyResources(this.checkBox_sq1, "checkBox_sq1");
+            this.checkBox_sq1.Name = "checkBox_sq1";
+            this.toolTip1.SetToolTip(this.checkBox_sq1, resources.GetString("checkBox_sq1.ToolTip"));
+            this.checkBox_sq1.UseVisualStyleBackColor = true;
+            // 
             // FormAudioSettings
             // 
             this.AcceptButton = this.button1;
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -200,6 +276,8 @@ namespace MyNes
             this.groupBox4.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -221,5 +299,13 @@ namespace MyNes
         private System.Windows.Forms.Label label_latency;
         private System.Windows.Forms.TrackBar trackBar_latency;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox checkBox_noize;
+        private System.Windows.Forms.CheckBox checkBox_triangle;
+        private System.Windows.Forms.CheckBox checkBox_dmc;
+        private System.Windows.Forms.CheckBox checkBox_sq2;
+        private System.Windows.Forms.CheckBox checkBox_sq1;
+        private System.Windows.Forms.LinkLabel linkLabel2;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }

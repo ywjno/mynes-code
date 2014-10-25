@@ -63,10 +63,14 @@ namespace MyNes.Core
         private int irq_current_counter;
         private int irq_current_inframe;
         /*Sound channels*/
+        // TODO: sound mixer for mapper 5
         private MMC5SqrSoundChannel channel_sq1;
         private MMC5SqrSoundChannel channel_sq2;
         private MMC5PcmSoundChannel channel_pcm;
         private double[][][] mix_table;
+        private int[] sound_seq = { 7459, 7456, 7458, 7457, 1, 1, 7457 };// 240Hz
+        private int sound_seq_cyc;
+        private int sound_seq_curr;
 
         public override void Initialize(string sha1, byte[] prg_dump, byte[] chr_dump, byte[] trainer_dump, Mirroring defaultMirroring)
         {
@@ -93,7 +97,7 @@ namespace MyNes.Core
                         double sqr = (95.88 / (8128.0 / (sq1 + sq2) + 100));
                         double tnd = (159.79 / (1.0 / (dmc / 22638.0) + 100));
 
-                        mix_table[sq1][sq2][dmc] = (sqr + tnd) * 160;
+                        mix_table[sq1][sq2][dmc] = (sqr + tnd);
                     }
                 }
             }
@@ -137,6 +141,9 @@ namespace MyNes.Core
             channel_sq1.HardReset();
             channel_sq2.HardReset();
             channel_pcm.HardReset();
+
+            sound_seq_curr = 0;
+            sound_seq_cyc += sound_seq[sound_seq_curr];
         }
         public override void SoftReset()
         {
@@ -170,7 +177,7 @@ namespace MyNes.Core
                 case 0x5004: channel_sq2.Write5000(value); break;
                 case 0x5006: channel_sq2.Write5002(value); break;
                 case 0x5007: channel_sq2.Write5003(value); break;
-                //case 0x5010: channel_pcm.Write5010(value); break;
+                case 0x5010: channel_pcm.Write5010(value); break;
                 case 0x5011: channel_pcm.Write5011(value); break;
                 case 0x5015:
                     {
@@ -430,6 +437,7 @@ namespace MyNes.Core
             }
             switch (address)
             {
+                case 0x5010: return channel_pcm.Read5010();
                 case 0x5204:
                     {
                         temp_val = (byte)(irq_current_inframe | irq_pending);
@@ -514,7 +522,6 @@ namespace MyNes.Core
              */
             if (split_doit)
             {
-                // TODO: MMC5 split
                 // ExRAM is always used as the nametable in split screen mode.
                 // return base.NMT[2][address & 0x03FF];
             }
@@ -675,26 +682,44 @@ namespace MyNes.Core
                 }
             }
         }
-        public override void OnAPUClockDuration()
-        {
-            channel_sq1.ClockLengthCounter();
-            channel_sq2.ClockLengthCounter();
-        }
-        public override void OnAPUClockEnvelope()
-        {
-            channel_sq1.ClockEnvelope();
-            channel_sq2.ClockEnvelope();
-        }
         public override void OnAPUClockSingle(ref bool isClockingLength)
         {
+            sound_seq_cyc--;
+            if (sound_seq_cyc == 0)
+            {
+                switch (sound_seq_curr)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 4:
+                        {
+                            channel_sq1.ClockEnvelope();
+                            channel_sq2.ClockEnvelope();
+                            break;
+                        }
+                }
+                sound_seq_curr++;
+                sound_seq_cyc += sound_seq[sound_seq_curr];
+                if (sound_seq_curr == 6)
+                    sound_seq_curr = 0;
+            }
             channel_sq1.ClockSingle(isClockingLength);
             channel_sq2.ClockSingle(isClockingLength);
         }
         public override double APUGetSamples()
         {
+            if (channel_sq1.clocks > 0)
+                channel_sq1.output = channel_sq1.output_av / channel_sq1.clocks;
+            channel_sq1.clocks = channel_sq1.output_av = 0;
+
+            if (channel_sq2.clocks > 0)
+                channel_sq2.output = channel_sq2.output_av / channel_sq2.clocks;
+            channel_sq2.clocks = channel_sq2.output_av = 0;
+
             return mix_table[channel_sq1.output]
                             [channel_sq2.output]
-                            [channel_pcm.GetSample()];
+                            [channel_pcm.output];
         }
 
         public override void SaveState(System.IO.BinaryWriter stream)
@@ -740,6 +765,8 @@ namespace MyNes.Core
             stream.Write(irq_pending);
             stream.Write(irq_current_counter);
             stream.Write(irq_current_inframe);
+            stream.Write(sound_seq_curr);
+            stream.Write(sound_seq_cyc);
             channel_sq1.SaveState(stream);
             channel_sq2.SaveState(stream);
             channel_pcm.SaveState(stream);
@@ -787,6 +814,8 @@ namespace MyNes.Core
             irq_pending = stream.ReadInt32();
             irq_current_counter = stream.ReadInt32();
             irq_current_inframe = stream.ReadInt32();
+            sound_seq_curr = stream.ReadInt32();
+            sound_seq_cyc = stream.ReadInt32();
             channel_sq1.LoadState(stream);
             channel_sq2.LoadState(stream);
             channel_pcm.LoadState(stream);

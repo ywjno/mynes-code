@@ -118,6 +118,36 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>42, 20</value>
+  </data>
+  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
+    <value>&amp;ملف</value>
+  </data>
+  <data name="machinToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 20</value>
+  </data>
+  <data name="machinToolStripMenuItem.Text" xml:space="preserve">
+    <value>ال&amp;جهاز</value>
+  </data>
+  <data name="stateToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>46, 20</value>
+  </data>
+  <data name="stateToolStripMenuItem.Text" xml:space="preserve">
+    <value>ال&amp;حالة</value>
+  </data>
+  <data name="settingsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
+  </data>
+  <data name="settingsToolStripMenuItem.Text" xml:space="preserve">
+    <value>الإ&amp;عدادات</value>
+  </data>
+  <data name="helpToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>66, 20</value>
+  </data>
+  <data name="helpToolStripMenuItem.Text" xml:space="preserve">
+    <value>ال&amp;تعليمات</value>
+  </data>
   <data name="openToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>190, 22</value>
   </data>
@@ -172,12 +202,6 @@
   <data name="exitToolStripMenuItem.Text" xml:space="preserve">
     <value>خرو&amp;ج</value>
   </data>
-  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>42, 20</value>
-  </data>
-  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
-    <value>&amp;ملف</value>
-  </data>
   <data name="togglePauseToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
   </data>
@@ -216,12 +240,6 @@
   </data>
   <data name="statusToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;حالة المحاكي</value>
-  </data>
-  <data name="machinToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 20</value>
-  </data>
-  <data name="machinToolStripMenuItem.Text" xml:space="preserve">
-    <value>ال&amp;جهاز</value>
   </data>
   <data name="toolStripMenuItem8.Size" type="System.Drawing.Size, System.Drawing">
     <value>207, 22</value>
@@ -313,12 +331,6 @@
   <data name="loadStateAsToolStripMenuItem.Text" xml:space="preserve">
     <value>تحميل الحالة بإسم</value>
   </data>
-  <data name="stateToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>46, 20</value>
-  </data>
-  <data name="stateToolStripMenuItem.Text" xml:space="preserve">
-    <value>ال&amp;حالة</value>
-  </data>
   <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
   </data>
@@ -328,14 +340,14 @@
   <data name="toolStripSeparator12.Size" type="System.Drawing.Size, System.Drawing">
     <value>220, 6</value>
   </data>
-  <data name="aUTOToolStripMenuItem.Text" xml:space="preserve">
-    <value>تلقائي</value>
-  </data>
   <data name="regionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
   </data>
   <data name="regionToolStripMenuItem.Text" xml:space="preserve">
     <value>ال&amp;منطقة</value>
+  </data>
+  <data name="aUTOToolStripMenuItem.Text" xml:space="preserve">
+    <value>تلقائي</value>
   </data>
   <data name="gameGenieToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
@@ -406,14 +418,14 @@
   <data name="toolStripSeparator11.Size" type="System.Drawing.Size, System.Drawing">
     <value>220, 6</value>
   </data>
-  <data name="noneToolStripMenuItem.Text" xml:space="preserve">
-    <value>0 (بدون تجاهل أطر)</value>
-  </data>
   <data name="frameSkipToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
   </data>
   <data name="frameSkipToolStripMenuItem.Text" xml:space="preserve">
     <value>تجا&amp;هل أطر</value>
+  </data>
+  <data name="noneToolStripMenuItem.Text" xml:space="preserve">
+    <value>0 (بدون تجاهل أطر)</value>
   </data>
   <data name="toolStripSeparator14.Size" type="System.Drawing.Size, System.Drawing">
     <value>220, 6</value>
@@ -424,23 +436,19 @@
   <data name="turboToolStripMenuItem.Text" xml:space="preserve">
     <value>تشغيل سريع تور&amp;بو</value>
   </data>
-  <data name="settingsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
-  </data>
-  <data name="settingsToolStripMenuItem.Text" xml:space="preserve">
-    <value>الإ&amp;عدادات</value>
-  </data>
   <data name="viewHelpToolStripMenuItem.Text" xml:space="preserve">
     <value>ال&amp;تعليمات</value>
   </data>
+  <data name="showBoardsListToolStripMenuItem.Text" xml:space="preserve">
+    <value>قائمة ال&amp;لوحات</value>
+  </data>
+  <data name="showBoardsListToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>أظهر الللوحات (أو المبرات) مع الحالة لكل
+لوحة، على سبيل المثال هل اللوحة مدعومة
+هل يوجد مشاكل مع هذه اللوحة ... إلخ</value>
+  </data>
   <data name="aboutMyNesToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;حول My Nes</value>
-  </data>
-  <data name="helpToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>66, 20</value>
-  </data>
-  <data name="helpToolStripMenuItem.Text" xml:space="preserve">
-    <value>ال&amp;تعليمات</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

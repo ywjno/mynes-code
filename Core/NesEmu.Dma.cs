@@ -76,18 +76,15 @@ namespace MyNes.Core
         }
         private static void AssertDMCDMA()
         {
-            isOamDma = false;
             if (dmaOAM_occurring)
             {
-
                 if (OAMCYCLE < 508)
-                    // OAM DMA is occurring here, then use the oam logic for waiting cycles
-                    // which depends on apu's odd toggle
-                    dmaDMCDMAWaitCycles = oddCycle ? 0 : 1;
+                    // OAM DMA is occurring here
+                    dmaDMCDMAWaitCycles = BUS_RW ? 1 : 0;
                 else
                 {
                     // Here the oam dma is about to finish
-                    // Remaining cycles of oam dma determines the dmc waiting cycles.
+                    // Remaining cycles of oam dma determines the dmc dma waiting cycles.
                     dmaDMCDMAWaitCycles = 4 - (512 - OAMCYCLE);
                 }
             }
@@ -106,31 +103,17 @@ namespace MyNes.Core
                 if (dmaOAMFinishCounter == 3)
                     dmaDMCDMAWaitCycles++;
             }
+            isOamDma = false;
             dmaDMCOn = true;
         }
         private static void AssertOAMDMA()
         {
-            isOamDma = true;
+            if (dmaOAM_occurring) return;
             // Setup
             // OAM DMA depends on apu odd timer for odd cycles
-            if (dmaDMC_occurring)
-            {
-                // DMC DMA occurring here, use r/w flag
-                dmaOAMDMAWaitCycles = BUS_RW ? 1 : 0;
-            }
-            else if (dmaOAM_occurring)
-            {
-                // OAM DMA inside OAM DMA !?? is that possible ?
-                // Ignore !
-                return;
-            }
-            else
-            {
-                // OAM DMA depends on the apu odd timer to add the waiting cycles
-                dmaOAMDMAWaitCycles = oddCycle ? 1 : 2;
-            }
+            dmaOAMDMAWaitCycles = oddCycle ? 1 : 2;
+            isOamDma = true;
             dmaOAMOn = true;
-            dmaOAMFinishCounter = 0;
         }
         private static void DMAClock()
         {
@@ -146,106 +129,100 @@ namespace MyNes.Core
             }
             if (dmaDMCOn)
             {
-                if (BUS_RW)// Clocks only on reads
+                dmaDMC_occurring = true;
+                // This is it !
+                dmaDMCOn = false;
+                // Do wait cycles (extra reads)
+                if (dmaDMCDMAWaitCycles > 0)
                 {
-                    dmaDMC_occurring = true;
-                    // This is it ! pause the cpu
-                    dmaDMCOn = false;
-                    // Do wait cycles (extra reads)
-                    if (dmaDMCDMAWaitCycles > 0)
+                    if (BUS_ADDRESS == 0x4016 || BUS_ADDRESS == 0x4017)
                     {
-                        if (BUS_ADDRESS == 0x4016 || BUS_ADDRESS == 0x4017)
+                        Read(BUS_ADDRESS);
+                        dmaDMCDMAWaitCycles--;
+
+                        while (dmaDMCDMAWaitCycles > 0)
+                        {
+                            ClockComponents();
+                            dmaDMCDMAWaitCycles--;
+                        }
+                    }
+                    else
+                    {
+                        while (dmaDMCDMAWaitCycles > 0)
                         {
                             Read(BUS_ADDRESS);
                             dmaDMCDMAWaitCycles--;
-
-                            while (dmaDMCDMAWaitCycles > 0)
-                            {
-                                ClockComponents();
-                                dmaDMCDMAWaitCycles--;
-                            }
-                        }
-                        else
-                        {
-                            while (dmaDMCDMAWaitCycles > 0)
-                            {
-                                Read(BUS_ADDRESS);
-                                dmaDMCDMAWaitCycles--;
-                            }
                         }
                     }
-                    // Do DMC DMA
-                    dmc_bufferFull = true;
-
-                    dmc_dmaBuffer = Read(dmc_dmaAddr);
-
-                    if (++dmc_dmaAddr == 0x10000)
-                        dmc_dmaAddr = 0x8000;
-                    if (dmc_dmaSize > 0)
-                        dmc_dmaSize--;
-
-                    if (dmc_dmaSize == 0)
-                    {
-                        if (dmc_dmaLooping)
-                        {
-                            dmc_dmaAddr = dmc_dmaAddrRefresh;
-                            dmc_dmaSize = dmc_dmaSizeRefresh;
-                        }
-                        else if (DMCIrqEnabled)
-                        {
-                            IRQFlags |= IRQ_DMC;
-                            DeltaIrqOccur = true;
-                        }
-                    }
-
-                    dmaDMC_occurring = false;
                 }
+                // Do DMC DMA
+                dmc_bufferFull = true;
+
+                dmc_dmaBuffer = Read(dmc_dmaAddr);
+
+                if (++dmc_dmaAddr == 0x10000)
+                    dmc_dmaAddr = 0x8000;
+                if (dmc_dmaSize > 0)
+                    dmc_dmaSize--;
+
+                if (dmc_dmaSize == 0)
+                {
+                    if (dmc_dmaLooping)
+                    {
+                        dmc_dmaAddr = dmc_dmaAddrRefresh;
+                        dmc_dmaSize = dmc_dmaSizeRefresh;
+                    }
+                    else if (DMCIrqEnabled)
+                    {
+                        IRQFlags |= IRQ_DMC;
+                        DeltaIrqOccur = true;
+                    }
+                }
+
+                dmaDMC_occurring = false;
             }
             if (dmaOAMOn)
             {
-                if (BUS_RW)// Clocks only on reads
+                dmaOAM_occurring = true;
+                // This is it ! pause the cpu
+                dmaOAMOn = false;
+                // Do wait cycles (extra reads)
+                if (dmaOAMDMAWaitCycles > 0)
                 {
-                    dmaOAM_occurring = true;
-                    // This is it ! pause the cpu
-                    dmaOAMOn = false;
-                    // Do wait cycles (extra reads)
-                    if (dmaOAMDMAWaitCycles > 0)
+                    if (BUS_ADDRESS == 0x4016 || BUS_ADDRESS == 0x4017)
                     {
-                        if (BUS_ADDRESS == 0x4016 || BUS_ADDRESS == 0x4017)
+                        Read(BUS_ADDRESS);
+                        dmaOAMDMAWaitCycles--;
+
+                        while (dmaOAMDMAWaitCycles > 0)
+                        {
+                            ClockComponents();
+                            dmaOAMDMAWaitCycles--;
+                        }
+                    }
+                    else
+                    {
+                        while (dmaOAMDMAWaitCycles > 0)
                         {
                             Read(BUS_ADDRESS);
                             dmaOAMDMAWaitCycles--;
-
-                            while (dmaOAMDMAWaitCycles > 0)
-                            {
-                                ClockComponents();
-                                dmaOAMDMAWaitCycles--;
-                            }
-                        }
-                        else
-                        {
-                            while (dmaOAMDMAWaitCycles > 0)
-                            {
-                                Read(BUS_ADDRESS);
-                                dmaOAMDMAWaitCycles--;
-                            }
                         }
                     }
-
-                    // Do OAM DMA
-                    OAMCYCLE = 0;
-                    for (oamdma_i = 0; oamdma_i < 256; oamdma_i++)
-                    {
-                        latch = Read(dmaOamaddress);
-                        OAMCYCLE++;
-                        Write(0x2004, latch);
-                        OAMCYCLE++;
-                        dmaOamaddress = (++dmaOamaddress) & 0xFFFF;
-                    }
-                    OAMCYCLE = 0;
-                    dmaOAMFinishCounter = 5;
-                    dmaOAM_occurring = false;
                 }
+
+                // Do OAM DMA
+                OAMCYCLE = 0;
+                for (oamdma_i = 0; oamdma_i < 256; oamdma_i++)
+                {
+                    latch = Read(dmaOamaddress);
+                    OAMCYCLE++;
+                    Write(0x2004, latch);
+                    OAMCYCLE++;
+                    dmaOamaddress = (++dmaOamaddress) & 0xFFFF;
+                }
+                OAMCYCLE = 0;
+                dmaOAMFinishCounter = 5;
+                dmaOAM_occurring = false;
             }
         }
     }

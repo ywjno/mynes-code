@@ -139,6 +139,9 @@
   <data name="button1.Text" xml:space="preserve">
     <value>&amp;تحديث</value>
   </data>
+  <data name="button1.ToolTip" xml:space="preserve">
+    <value>إنقر لتحديث قائمة الأجهزة المتصلة</value>
+  </data>
   <data name="listView1.Items" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
@@ -310,7 +313,7 @@
 </value>
   </data>
   <data name="listView1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>90, 32</value>
+    <value>90, 55</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="listView1.RightToLeftLayout" type="System.Boolean, mscorlib">
@@ -323,19 +326,25 @@
     <value>زر في الجهاز</value>
   </data>
   <data name="button2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 41</value>
+    <value>9, 55</value>
   </data>
   <data name="button2.Text" xml:space="preserve">
     <value>ت&amp;غيير</value>
   </data>
+  <data name="button2.ToolTip" xml:space="preserve">
+    <value>إنقر لتعيين الزر للزر المختار</value>
+  </data>
   <data name="button3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 70</value>
+    <value>9, 84</value>
   </data>
   <data name="button3.Text" xml:space="preserve">
     <value>تغيير ال&amp;كل</value>
   </data>
+  <data name="button3.ToolTip" xml:space="preserve">
+    <value>إنقر لتعين كافة الأزرار في القائمة الواحد تلو الآخر</value>
+  </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>100, 254</value>
+    <value>100, 277</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
     <value>243, 52</value>
@@ -345,6 +354,20 @@
 أنقر على زر التحديث لتحديث قائمة الأجهزة
 اختر المفتاح من القائمة الذي تريد تغيره ثم انقر على
 زر التغيير</value>
+  </data>
+  <data name="checkBox1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>40, 32</value>
+  </data>
+  <data name="checkBox1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 17</value>
+  </data>
+  <data name="checkBox1.Text" xml:space="preserve">
+    <value>إختر جهاز لوحة المفاتيح في حال عدم وجود الجهاز</value>
+  </data>
+  <data name="checkBox1.ToolTip" xml:space="preserve">
+    <value>إذا كان مفعلاً، سيقوم البرنامج بإختيار لوحة المفاتيح
+كجهاز مفعل عوضاً عن الجهاز المختار في حال
+عدم وجود هذا الجهاز (إنقطع الإتصال)</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="$this.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">

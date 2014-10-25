@@ -38,9 +38,9 @@ namespace MyNes.Core
             InputInitialize();
             switch (TVFormat)
             {
-                case TVSystem.NTSC: systemIndex = 0; audio_playback_samplePeriod = 1789772.67f; break;
-                case TVSystem.PALB: systemIndex = 1; audio_playback_samplePeriod = 1662607f; break;
-                case TVSystem.DENDY: systemIndex = 2; audio_playback_samplePeriod = 1773448f; break;
+                case TVSystem.NTSC: systemIndex = 0; cpuSpeedInHz = 1789772; break;
+                case TVSystem.PALB: systemIndex = 1; cpuSpeedInHz = 1662607; break;
+                case TVSystem.DENDY: systemIndex = 2; cpuSpeedInHz = 1773448; break;
             }
             if (TVFormat == TVSystem.NTSC)
                 FramePeriod = (1.0 / (FPS = 60.0));
@@ -52,10 +52,13 @@ namespace MyNes.Core
         public static Thread EmulationThread;
         public static bool EmulationON;
         public static bool EmulationPaused;
+        public static EmulationStatus EmuStatus;
+        public enum EmulationStatus
+        { PAUSED, SAVINGSTATE, LOADINGSTATE, SAVINGSNAP, SAVINGSRAM, HARDRESET, SOFTRESET }
         public static string GAMEFILE;
         private static bool DoPalAdditionalClock;
         private static byte palCyc;
-        private static bool initialized;
+        public static bool INITIALIZED;
         /*SRAM*/
         private static bool SaveSRAMAtShutdown;
         private static string SRAMFileName;
@@ -77,6 +80,7 @@ namespace MyNes.Core
         private static double LastFrameTime;
         private static double FramePeriod = (1.0 / 60.0988);
         private static double FPS = 0;
+        public static int FPSDone;
         // Requests !
         private static bool request_pauseAtFrameFinish;
         private static bool request_hardReset;
@@ -96,7 +100,7 @@ namespace MyNes.Core
         /// </summary>
         public static void WarmUp()
         {
-            InitializeSoundMixTable();
+            InitializeDACTables();
             NesCartDatabase.LoadDatabase("database.xml");
         }
 
@@ -107,8 +111,8 @@ namespace MyNes.Core
         /// <param name="is_supported_mapper">Indicates if this rom mapper is supported or not</param>
         /// <param name="has_issues">Indicates if this rom mapper have issues or not</param>
         /// <param name="known_issues">Issues with this mapper.</param>
-        /// <returns>True if My Nes car run this game otherwise false.</returns>
-        public static bool CheckRom(string fileName, out bool is_supported_mapper, 
+        /// <returns>True if My Nes can run this game otherwise false.</returns>
+        public static bool CheckRom(string fileName, out bool is_supported_mapper,
             out bool has_issues, out string known_issues)
         {
             switch (Path.GetExtension(fileName).ToLower())
@@ -171,7 +175,7 @@ namespace MyNes.Core
                         header.Load(fileName, true);
                         if (header.IsValid)
                         {
-                            initialized = false;
+                            INITIALIZED = false;
                             GAMEFILE = fileName;
                             CheckGameVSUnisystem(header.SHA1, header.IsVSUnisystem, header.MapperNumber);
                             // Make SRAM file name
@@ -197,7 +201,7 @@ namespace MyNes.Core
                                 EmulationThread.Start();
                             }
                             // Done !
-                            initialized = true;
+                            INITIALIZED = true;
                         }
                         else
                         {
@@ -230,6 +234,7 @@ namespace MyNes.Core
                 }
                 else
                 {
+                    EmuStatus = EmulationStatus.PAUSED;
                     if (AudioOut != null)
                     {
                         AudioOut.Pause();
@@ -237,36 +242,42 @@ namespace MyNes.Core
                     }
                     if (request_save_sram)
                     {
+                        EmuStatus = EmulationStatus.SAVINGSRAM;
                         request_save_sram = false;
                         SaveSRAM();
                         EmulationPaused = false;
                     }
                     if (request_hardReset)
                     {
+                        EmuStatus = EmulationStatus.HARDRESET;
                         request_hardReset = false;
                         hardReset();
                         EmulationPaused = false;
                     }
                     if (request_softReset)
                     {
+                        EmuStatus = EmulationStatus.SOFTRESET;
                         request_softReset = false;
                         softReset();
                         EmulationPaused = false;
                     }
                     if (request_state_save)
                     {
+                        EmuStatus = EmulationStatus.SAVINGSTATE;
                         request_state_save = false;
                         SaveStateAs(STATEFileName);
                         EmulationPaused = false;
                     }
                     if (request_state_load)
                     {
+                        EmuStatus = EmulationStatus.LOADINGSTATE;
                         request_state_load = false;
                         LoadStateAs(STATEFileName);
                         EmulationPaused = false;
                     }
                     if (request_snapshot)
                     {
+                        EmuStatus = EmulationStatus.SAVINGSNAP;
                         request_snapshot = false;
                         videoOut.TakeSnapshot(SNAPSFolder, SNAPSFileName, SNAPSFormat, SNAPSReplace);
                         EmulationPaused = false;
@@ -299,7 +310,7 @@ namespace MyNes.Core
         /// </summary>
         public static void ShutDown()
         {
-            if (!initialized)
+            if (!INITIALIZED)
                 return;
             EmulationON = false;
             MEMShutdown();
@@ -318,7 +329,7 @@ namespace MyNes.Core
             if (EMUShutdown != null)
                 EMUShutdown(null, new EventArgs());
 
-            initialized = false;
+            INITIALIZED = false;
         }
         /// <summary>
         /// Take game snapshot
@@ -365,7 +376,6 @@ namespace MyNes.Core
             }
             APUClock();
             DMAClock();
-
             board.OnCPUClock();
         }
         private static void OnFinishFrame()
@@ -396,6 +406,11 @@ namespace MyNes.Core
                 }
             }
             LastFrameTime = GetTime();
+            // FPS
+            FPSDone++;
+            // Reset
+            if (FPSDone > 1000)
+                FPSDone = 0;
             if (request_pauseAtFrameFinish)
             {
                 request_pauseAtFrameFinish = false;
@@ -431,33 +446,63 @@ namespace MyNes.Core
             palCyc = 0;
             // SPEED LIMITTER
             SpeedLimitterON = true;
-            // NOTE !!
-            // These values are calculated depending on cpu speed
-            // provided by Nes Wiki.
-            // NTSC = 1789772.67 Hz
-            // PALB = 1662607 Hz
-            // DENDY = 1773448 Hz
+            /*
+             * IMPORTANT
+             * ---------
+             * We MUST not use 60, 50 FPS here. Why ?
+             * Because of we used close numbers not the real number, for example
+             * When FPS calculated in real nes the result was 6.0988 (this is a close number by the way)
+             * same for CPU frequency 1789772.67 which is a close number.
+             * In emulator, we usually use even more close numbers like:
+             * CPU RATE = 1798772 (A 0.67 is lost)
+             * FPS = 60 (A 0.0988 is lost)
+             * If we continue, some bad result could happen:
+             * * Loose of audio samples.
+             * * Not as same as real nes speed although we output 60 FPS.
+             * * Synchronization problems between audio and video.
+             * 
+             * To fix this porblem, you need to CLOSE the FPS (or emu speed)
+             * to replace the loose. For example, using 1798772 instead of 1789772.67
+             * will make a lose of ~ 0.67 Hz. Also using 0.016 second as frame time instead
+             * of 1/60 = 0.01666666666666666666666666666667 second will lose 0.00066666666666666666666666666667
+             * of a second !
+             * This matters after running emulation in minutes.
+             * 
+             * Again, here, we use close numbers to:
+             * * Replace the lost details using close numbers (we use cpu rate 1789772 then we don't use 60.0988 FPS)
+             * * Make emulation run (output) as close as possible to real hardware speed.
+             * 
+             * To make that happen, we need to use what I call the 'DOZAN' method which means focusing.
+             * Make emulation run in FPS speed then make audio collect samples (note that FPS speed
+             * means your emulator run at 1/FPS for each frame) at REAL time. 
+             * You'll notice the sound loose sync after few seconds, adjust the FPS until the sync is ok.
+             * To determine that sync is ok, use the video renderer (or some gui) to output
+             * the value of (SOUND RENDER BUFFER WRITE POSITION - NES SOUND BUFFER WRITE POSITION)
+             * let's call it syncdiffer.
+             * Assuming that we have 2 sound buffers, one in emulation engine and other on the renderer.
+             * The syncdiffer value will output positive or negative number, that doesn't matter
+             * the matter is that number CHANGES AFTER FEW SECOND from value to another ONLY when the
+             * sound buffers are not sycnhronised. By adjusting the FPS, we make the syncdiffer never
+             * change or change very very small value in time. For example, the syncdiffer would be 5044
+             * at time 0 second, In time 60 second the syncdiffer become 7000. This is bad because of the
+             * buffers will loose sync after minutes.
+             * If syncdiffer become 5055 in 0 second then become 5100 in 60 second thats good but the less
+             * change we have in time the better.
+             * After we finished, we'll get the very close FPS for the real hardware using close numbers.
+             * Here, using FPS = 59.2 for example for NTSC and CPU SPEED used is 1789772 Hz. The sync will 
+             * loose after 10 minutes or more.
+             * 
+             * NOTE that this FPS represents 60.0988 in real nes. It's not nesseccary to use the real
+             * time to output the sound like I did, but using the FPS=59.234 here will be good to replace 
+             * the loose and then make the emu speed as close as possible to real hardware and that will be better
+             * for playing experience.
+             */
             if (TVFormat == TVSystem.NTSC)
-                FramePeriod = (1.0 / (FPS = 61.58));// Yes not 60.0988 for 1789772.67 Hz
+                FramePeriod = (1.0 / (FPS = 59.234));
             else if (TVFormat == TVSystem.PALB)
-                FramePeriod = (1.0 / (FPS = 51.33));// Not 50.070 for 1662607 Hz
+                FramePeriod = (1.0 / (FPS = 49.08));
             else if (TVFormat == TVSystem.DENDY)
-                FramePeriod = (1.0 / (FPS = 51.25));// Not 50.070 for 1773448 Hz
-            // Changing any value of FPS or CPU FREQ will slightly affect
-            // sound playback sync and the sound itself for high frequencies.
-            // 
-            // For example, if we put NTSC = 1789772 Hz instead of 1789772.67 Hz
-            // and the FPS = 60.0988 as provided in wiki, the sound record (record
-            // by adding sample sample on nes cpu clock, **not via playback on run 
-            // time**) show bad sample on high freq generated by square 1 and 2. 
-            // The best game to test this is Rygar at the first stage music. 
-            // Silence all channels but the square 2, record the sound and see the choppy.
-            // 
-            // The question is: is there something wrong I did or the
-            // Nes Wiki infromation is not accurate ?
-            // I'm sure all sound channels implemented exactly as it should by Wiki
-            // and APU passes all tests.
-            // Anyway, it sounds good using these values :)
+                FramePeriod = (1.0 / (FPS = 49.74));
             MEMHardReset();
             CPUHardReset();
             PPUHardReset();
