@@ -1,0 +1,104 @@
+SdlDotNet.dll:
+	mkdir -p src/$(BUILD_DIR)/$(CONFIG)/
+	resgen src/Windows/SurfaceControl.resx src/SdlDotNet.Windows.SurfaceControl.resources
+	resgen src/Properties/Resources.resx src/SdlDotNet.Properties/Resources.resources
+	$(CSC)	/out:src/$(BUILD_DIR)/$(CONFIG)/SdlDotNet.dll \
+		/target:library \
+		/reference:System.dll,System.Windows.Forms.dll,System.Drawing.dll,src/../lib/net-2.0/Tao.Sdl.dll \
+		/resource:src/SdlDotNet.Windows.SurfaceControl.resources,SdlDotNet.Windows.SurfaceControl.resources \
+		/resource:src/Windows/SurfaceControl.bmp \
+		/resource:src/Graphics/Transparent.png \
+		/resource:src/Properties/Resources.resx \
+		/keyfile:src/SdlDotNet.snk \
+		/define:DEBUG,TRACE,CODE_ANALYSIS \
+		/doc:src/$(BUILD_DIR)/$(CONFIG)/SdlDotNet.xml \
+		\
+		src\\Windows\\SurfaceControl.cs		\
+		src\\Audio\\AudioException.cs		\
+		src\\Audio\\AudioStream.cs		\
+		src\\Audio\\CDDrive.cs		\
+		src\\Audio\\CDRom.cs		\
+		src\\Audio\\Channel.cs		\
+		src\\Audio\\ChannelFinishedEventArgs.cs		\
+		src\\Audio\\Mixer.cs		\
+		src\\Audio\\Music.cs		\
+		src\\Audio\\MusicCollection.cs		\
+		src\\Audio\\MusicDictionary.cs		\
+		src\\Audio\\MusicFinishedEventArgs.cs		\
+		src\\Audio\\MusicNotPlayingException.cs		\
+		src\\Audio\\MusicPlayer.cs		\
+		src\\Audio\\Sound.cs		\
+		src\\Audio\\SoundDictionary.cs		\
+		src\\Audio\\SoundEventArgs.cs		\
+		src\\Core\\BaseSdlResource.cs		\
+		src\\Core\\Events.cs		\
+		src\\Core\\QuitEventArgs.cs		\
+		src\\Core\\SdlEventArgs.cs		\
+		src\\Core\\SdlException.cs		\
+		src\\Core\\TickEventArgs.cs		\
+		src\\Core\\Timer.cs		\
+		src\\Core\\UserEventArgs.cs		\
+		src\\Core\\Vector.cs		\
+		src\\Graphics\\Font.cs		\
+		src\\Graphics\\FontException.cs		\
+		src\\Graphics\\IPrimitive.cs		\
+		src\\Graphics\\Movie.cs		\
+		src\\Graphics\\MovieStatusException.cs		\
+		src\\Graphics\\Overlay.cs		\
+		src\\Graphics\\SdlColor.cs		\
+		src\\Graphics\\Surface.cs		\
+		src\\Graphics\\SurfaceCollection.cs		\
+		src\\Graphics\\SurfaceLostException.cs		\
+		src\\Graphics\\Transformation.cs		\
+		src\\Graphics\\Video.cs		\
+		src\\Graphics\\VideoExposeEventArgs.cs		\
+		src\\Graphics\\VideoInfo.cs		\
+		src\\Graphics\\VideoResizeEventArgs.cs		\
+		src\\Graphics\\Primitives\\Bezier.cs		\
+		src\\Graphics\\Primitives\\Box.cs		\
+		src\\Graphics\\Primitives\\Circle.cs		\
+		src\\Graphics\\Primitives\\Ellipse.cs		\
+		src\\Graphics\\Primitives\\Line.cs		\
+		src\\Graphics\\Primitives\\Pie.cs		\
+		src\\Graphics\\Primitives\\Polygon.cs		\
+		src\\Graphics\\Primitives\\TexturedPolygon.cs		\
+		src\\Graphics\\Primitives\\Triangle.cs		\
+		src\\Graphics\\Sprites\\AnimatedSprite.cs		\
+		src\\Graphics\\Sprites\\AnimationCollection.cs		\
+		src\\Graphics\\Sprites\\AnimationDictionary.cs		\
+		src\\Graphics\\Sprites\\AnimationException.cs		\
+		src\\Graphics\\Sprites\\ChangedZAxisEventArgs.cs		\
+		src\\Graphics\\Sprites\\KillSpriteEventArgs.cs		\
+		src\\Graphics\\Sprites\\Sprite.cs		\
+		src\\Graphics\\Sprites\\SpriteCollection.cs		\
+		src\\Graphics\\Sprites\\SpriteException.cs		\
+		src\\Graphics\\Sprites\\TextSprite.cs		\
+		src\\Input\\ActiveEventArgs.cs		\
+		src\\Input\\BallMotion.cs		\
+		src\\Input\\Joystick.cs		\
+		src\\Input\\JoystickAxisEventArgs.cs		\
+		src\\Input\\JoystickBallEventArgs.cs		\
+		src\\Input\\JoystickButtonEventArgs.cs		\
+		src\\Input\\JoystickHatEventArgs.cs		\
+		src\\Input\\Joysticks.cs		\
+		src\\Input\\Keyboard.cs		\
+		src\\Input\\KeyboardEventArgs.cs		\
+		src\\Input\\KeyboardState.cs		\
+		src\\Input\\Mouse.cs		\
+		src\\Input\\MouseButtonEventArgs.cs		\
+		src\\Input\\MouseMotionEventArgs.cs		\
+		src\\Properties\\AssemblyInfo.cs		\
+		src\\Properties\\Resources.Designer.cs		\
+		src\\Windows\\SurfaceControl.Designer.cs
+
+install-data-local:
+	echo "$(GACUTIL) /i bin/Release/SdlDotNet.dll /f $(GACUTIL_FLAGS)";  \
+	$(GACUTIL) /i bin/Release/SdlDotNet.dll /f $(GACUTIL_FLAGS) || exit 1;
+
+uninstall-local:
+	echo "$(GACUTIL) /u SdlDotNet $(GACUTIL_FLAGS)"; \
+	$(GACUTIL) /u SdlDotNet $(GACUTIL_FLAGS) || exit 1;
+
+CLEANFILES = $(BUILD_DIR)/$(CONFIG)/SdlDotNet.dll $(BUILD_DIR)/$(CONFIG)/SdlDotNet.mdb $(BUILD_DIR)/$(CONFIG)/SdlDotNet.pdb SdlDotNet.xml
+EXTRA_DIST = \
+	$(FILES) \	SdlDotNet.snk

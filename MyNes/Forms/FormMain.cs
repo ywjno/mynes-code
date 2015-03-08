@@ -201,7 +201,7 @@ namespace MyNes
                     video.Reset();
 
                     InitializeInputRenderer();
-                    
+
                     if (NesEmu.IsGameFoundOnDB)
                     {
                         if (NesEmu.GameInfo.Game_AltName != null && NesEmu.GameInfo.Game_AltName != "")
@@ -529,7 +529,7 @@ namespace MyNes
                 audio.Dispose();
             audio = new DirectSoundRenderer(this.Handle);
             NesEmu.SetupSoundPlayback(audio, Program.Settings.Audio_SoundEnabled, Program.Settings.Audio_Frequency,
-                audio.BufferSize, audio.latency_in_bytes);
+                audio.BufferSize, audio.latency_in_bytes, true);
 
             NesEmu.audio_playback_dmc_enabled = Program.Settings.AudioChannelDMCEnabled;
             NesEmu.audio_playback_noz_enabled = Program.Settings.AudioChannelNOZEnabled;

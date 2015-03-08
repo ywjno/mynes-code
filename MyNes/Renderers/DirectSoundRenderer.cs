@@ -205,5 +205,9 @@ namespace MyNes
         {
             Recorder.AddSample(ref sample);
         }
+        public void AddSample(ref int sample)
+        {
+            // Used only when the buffer-submit is disabled.
+        }
     }
 }

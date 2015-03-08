@@ -23,13 +23,14 @@ namespace MyNes.Core
 {
     public interface IAudioProvider
     {
+        void AddSample(ref int sample);
+        void RecorderAddSample(ref int sample);
         void SubmitBuffer(ref byte[] samples);
         int CurrentWritePosition { get; }
         bool IsPlaying { get; }
         void Play();
         void Pause();
         void Shutdown();
-        void RecorderAddSample(ref int sample);
         bool IsRecording { get; }
     }
 }

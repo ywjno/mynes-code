@@ -448,7 +448,7 @@ namespace MyNes
             if (!deviceLost)
             {
                 DataRectangle rect = bufferedSurface.LockRectangle(LockFlags.Discard);
-
+               
                 rect.Data.WriteRange(currentBuffer, linesToSkip * 256, 256 * scanlines);
 
                 rect.Data.Close();
@@ -570,6 +570,9 @@ namespace MyNes
                 buffer.CopyTo(currentBuffer, 0);
                 // canRender = true;
             }
+        }
+        public void OnFrameFinished()
+        {
         }
         private double GetTime()
         {

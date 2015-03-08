@@ -94,6 +94,10 @@ namespace MyNes.Core
         /// Raised when the emu engine finished shutdown.
         /// </summary>
         public static event EventHandler EMUShutdown;
+        /// <summary>
+        /// Raised when the emulation engine is initialized and ready to use.
+        /// </summary>
+        public static event EventHandler EMUInitialized;
 
         /// <summary>
         /// Call this at application start up to set nes default stuff
@@ -202,6 +206,8 @@ namespace MyNes.Core
                             }
                             // Done !
                             INITIALIZED = true;
+                            if (EMUInitialized != null)
+                                EMUInitialized(null, new EventArgs());
                         }
                         else
                         {
@@ -381,6 +387,10 @@ namespace MyNes.Core
         private static void OnFinishFrame()
         {
             InputFinishFrame();
+
+            ImmediateFrameTime = CurrentFrameTime = GetTime() - LastFrameTime;
+            DeadTime = FramePeriod - CurrentFrameTime;
+
             // Sound
             if (SoundEnabled)
             {
@@ -391,13 +401,13 @@ namespace MyNes.Core
                     audio_playback_w_pos = AudioOut.CurrentWritePosition + audio_playback_latency;
                 }
                 // Submit sound buffer
-                AudioOut.SubmitBuffer(ref audio_playback_buffer);
+                if (audio_playback_buffer_sumbit_enabled)
+                    AudioOut.SubmitBuffer(ref audio_playback_buffer);
+                if (DeadTime < 0)
+                    audio_playback_w_pos = AudioOut.CurrentWritePosition + audio_playback_latency;
             }
             // Speed
-            ImmediateFrameTime = CurrentFrameTime = GetTime() - LastFrameTime;
-            DeadTime = FramePeriod - CurrentFrameTime;
-            if (DeadTime < 0)
-                audio_playback_w_pos = AudioOut.CurrentWritePosition + audio_playback_latency;
+
             if (SpeedLimitterON)
             {
                 while (ImmediateFrameTime < FramePeriod)

@@ -165,8 +165,8 @@ namespace MyNes.Core
                 if (sq1_duration_counter > 0 && Sq1IsValidFrequency())
                 {
                     if (audio_playback_sq1_enabled)
-                        sq1_pl_output_av += (byte)(PulseDutyForms[sq1_dutyForm][sq1_dutyStep] * sq1_envelope);
-                } 
+                        sq1_pl_output_av += PulseDutyForms[sq1_dutyForm][sq1_dutyStep] * sq1_envelope;
+                }
                 sq1_pl_clocks++;
             }
         }

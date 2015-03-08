@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ItemType>PackagingProject</ItemType>
+    <ProjectGuid>{5F4AFE47-A3A3-4E46-8686-D0C7290CA60C}</ProjectGuid>
+    <Packages>
+      <Packages xmlns="">
+        <Package name="Linux Binaries">
+          <Builder targetFile="_Builds\MyNesGTK.tar.gz" platform="Linux" configuration="Release|x86" ctype="BinariesZipPackageBuilder">
+            <ChildEntries>
+              <SolutionItemReference path="MyNesGTK\MyNesGTK.csproj" />
+              <SolutionItemReference path="MyNesSDL\MyNesSDL.csproj" />
+              <SolutionItemReference path="SDLDotNet\SdlDotNet.csproj" />
+            </ChildEntries>
+            <RootEntry path="MyNesGTK.sln" id=":root:" />
+          </Builder>
+        </Package>
+      </Packages>
+    </Packages>
+  </PropertyGroup>
+</Project>

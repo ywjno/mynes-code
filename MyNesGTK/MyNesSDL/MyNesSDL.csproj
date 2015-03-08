@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{AAB30123-57E4-408F-A82C-69000ACF3A74}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MyNesSDL</RootNamespace>
+    <AssemblyName>MyNesSDL</AssemblyName>
+    <ReleaseVersion>1.0</ReleaseVersion>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <StartupObject>MyNesSDL.Program</StartupObject>
+    <ApplicationIcon>MyNes.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\_Builds\ReleaseX86</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\_Builds\ReleaseX86</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleasX64|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\_Builds\ReleaseX86</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'X64|x86'">
+    <OutputPath>..\_Builds\ReleaseX86</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleasX64|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\ReleasX64\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'X64|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>..\_Builds\ReleaseX64\</OutputPath>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Core">
+      <HintPath>..\..\_Builds\X86\Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Input\SDL_Keyboard_Joyad.cs" />
+    <Compile Include="Input\SDLZapper.cs" />
+    <Compile Include="Input\SDL_Joystick_Joypad.cs" />
+    <Compile Include="Input\SDL_Keyboard_VSUnisystem.cs" />
+    <Compile Include="Input\SDL_Joystick_VSUnisystem.cs" />
+    <Compile Include="Providers\SDLAudio.cs" />
+    <Compile Include="Providers\SDLVideo.cs" />
+    <Compile Include="Providers\WaveRecorder.cs" />
+    <Compile Include="Providers\MenuRooms\RoomBase.cs" />
+    <Compile Include="Providers\MenuRooms\Room_MainMenu.cs" />
+    <Compile Include="Providers\MenuRooms\Room_About.cs" />
+    <Compile Include="Providers\MenuRooms\MenuItems\MenuItem_BackToMainMenu.cs" />
+    <Compile Include="Providers\MenuRooms\Room_Settings.cs" />
+    <Compile Include="Providers\MenuRooms\MenuItems\MenuItem.cs" />
+    <Compile Include="Providers\MenuRooms\Room_VideoSettings.cs" />
+    <Compile Include="Providers\MenuRooms\Room_AudioSettings.cs" />
+    <Compile Include="Providers\MenuRooms\Room_PreferencesSettings.cs" />
+    <Compile Include="Providers\MenuRooms\Room_PalettesSettings.cs" />
+    <Compile Include="Providers\MenuRooms\Room_InputsSettings.cs" />
+    <Compile Include="Providers\MenuRooms\InputSettingRooms\Room_Input_Shortcuts.cs" />
+    <Compile Include="Providers\MenuRooms\InputSettingRooms\Room_Input_PlayerOne.cs" />
+    <Compile Include="Providers\MenuRooms\InputSettingRooms\Room_Input_PlayerTwo.cs" />
+    <Compile Include="Providers\MenuRooms\InputSettingRooms\Room_Input_PlayerThree.cs" />
+    <Compile Include="Providers\MenuRooms\InputSettingRooms\Room_Input_PlayerFour.cs" />
+    <Compile Include="Providers\MenuRooms\InputSettingRooms\Room_Input_VS.cs" />
+    <Compile Include="Providers\MenuRooms\Room_GameGenie.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <StandardHeader Text=" &#xA; ${FileName}&#xA; &#xA; Author:&#xA;      ${AuthorName} &lt;${AuthorEmail}&gt;&#xA;&#xA; Copyright (c) 2009 - ${Year} ${CopyrightHolder}&#xA;&#xA; This program is free software: you can redistribute it and/or modify&#xA; it under the terms of the GNU General Public License as published by&#xA; the Free Software Foundation, either version 3 of the License, or&#xA; (at your option) any later version.&#xA;&#xA; This program is distributed in the hope that it will be useful,&#xA; but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA; GNU General Public License for more details.&#xA;&#xA; You should have received a copy of the GNU General Public License&#xA; along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;." IncludeInNewFiles="True" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\SDLDotNet\SdlDotNet.csproj">
+      <Project>{7B28E1B7-FADB-4D0A-BA54-77E2BE941418}</Project>
+      <Name>SdlDotNet</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+</Project>

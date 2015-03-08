@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="label3.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>315, 3</value>
+  </data>
+  <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>171, 23</value>
+  </data>
+  <data name="label3.Text" xml:space="preserve">
+    <value>معدومة و لكن يوجد مشاكل</value>
+  </data>
+  <data name="label2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>492, 3</value>
+  </data>
+  <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 23</value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>ليست مدعومة</value>
+  </data>
+  <data name="label1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>608, 3</value>
+  </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>79, 23</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>مدعومة</value>
+  </data>
+  <data name="label_inf.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="label_inf.Location" type="System.Drawing.Point, System.Drawing">
+    <value>591, 35</value>
+  </data>
+  <data name="button1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left</value>
+  </data>
+  <data name="button1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 22</value>
+  </data>
+  <data name="button1.Text" xml:space="preserve">
+    <value>إ&amp;غلاق</value>
+  </data>
+  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>690, 57</value>
+  </data>
+  <data name="columnHeader1.Text" xml:space="preserve">
+    <value>رقم المبر</value>
+  </data>
+  <data name="columnHeader2.Text" xml:space="preserve">
+    <value>إسم اللوحة</value>
+  </data>
+  <data name="columnHeader5.Text" xml:space="preserve">
+    <value>مدعومة</value>
+  </data>
+  <data name="columnHeader6.Text" xml:space="preserve">
+    <value>يوجد مشاكل</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="columnHeader6.Width" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
+  <data name="columnHeader3.Text" xml:space="preserve">
+    <value>مشاكل</value>
+  </data>
+  <data name="listView1.RightToLeftLayout" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="listView1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>690, 314</value>
+  </data>
+  <data name="imageList1.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
+        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
+        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAAU
+        DgAAAk1TRnQBSQFMAgEBAwEAAUABAAFAAQABEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        AwABEAMAAQEBAAEgBgABEP8AIwADGQEjA0UBfQFYAV8BWAHbATsBagE9AfMBOwFmAT0B8wFYAV8BWAHb
+        A0UBfQMZASMcAAMqAUEDBgEIGAADBgEIAyoBQQwAA1EBogElAacB4AH/ASMBpAHfAf8BIQGhAd0B/wEf
+        AZ4B3AH/AR0BmwHaAf8BGwGYAdkB/wEYAZMB1gH/ARMBjAHTAf8BDgGFAc8B/wEJAXYBzAH/AQUBbwHJ
+        Af8BAQFpAcYB/wEAAWQBwwH/AQABYAHBAf8DUQGiTAADMwFTAVEBaAFSAeYBOgGgAUoB/wGHAcoBmgH/
+        AZsB0wGrAf8BmwHSAasB/wGDAccBlgH/ATUBlwFEAf8BUQFiAVIB5gMzAVMUAAMqAUEBRwFEAfIB/wJA
+        AdYB/QMGAQgQAAMGAQgBKwEqAcUB/AEpAScB6gH/AyoBQQgAAVgBaQF1AeMBvgHjAfUB/wH0AfwB/gH/
+        Ae8B+wH+Af8B7gH7Af4B/wHuAfsB/gH/Ae8B/AH+Af8B7wH8Af4B/wHvAfsB/gH/Ae4B+wH+Af8B7QH7
+        Af4B/wHtAfsB/gH/AewB+wH+Af8B8gH8Af4B/wGrAc4B6wH/AVYBXgFjAdhIAAMzAVMBPAF1AT0B9AFl
+        Ab4BgwH/AagB2wG1Af8BhwHMAZgB/wFeAbwBdQH/AVwBugF0Af8BhgHLAZgB/wGlAdkBtAH/AV4BtwF1
+        Af8BOwFlAT0B9AMzAVMMAAMqAUEBUAFOAfUB/wFbAVkB+gH/AVABTQH2Af8BOQE4AcsB/AMGAQgIAAMG
+        AQgCKwHHAfwBOQE3AfEB/wFEAUIB9gH/ASkBJwHqAf8DKgFBBAADMAFLAVoBvwHoAf8B9AH8Af4B/wG1
+        Ae8B+gH/AVAB2gH1Af8BUAHaAfUB/wFPAdgB8wH/AVAB1wHyAf8BUAHWAfIB/wFPAdkB9AH/AUkB2AH1
+        Af8BRgHXAfQB/wFaAdoB9gH/AeoB+wH+Af8BPAGTAdIB/wMwAUtEAAMYASIBVAFsAVcB5QFqAcIBhwH/
+        AagB2wGyAf8BWAG8AW8B/wFUAboBawH/AVEBuAFoAf8BUQG1AWcB/wFQAbUBZwH/AVMBtwFsAf8BpQHZ
+        AbMB/wFhAbgBdwH/AVQBZQFUAeUDGAEiCAADHgErAVMBUAH2Af8BXQFaAfoB/wFpAWgC/wFRAU4B9gH/
+        ATkBOAHLAfwDBgEIAwYBCAEuASsByAH8AT8BPQHyAf8BWwFaAv8BQgFAAfQB/wEnASUB6QH/Ax4BKwgA
+        AVoBXQFfAcoBnQHXAfEB/wHnAfkB/QH/AYsB5QH4Af8BUgHbAfYB/wFTAdoB9AH/ATUBoQHVAf8BNQGh
+        AdUB/wFMAdYB8gH/AUoB2AH1Af8BSAHWAfQB/wHYAfYB/AH/AYgBvwHlAf8BVQJWAbRIAAFFAUYBRQF+
+        AUQBsAFcAf8BqgHdAbQB/wFcAcEBcQH/AVcBvgFpAf8BbQHFAYUB/wHUAewB2QH/AYoBzQGZAf8BTgG2
+        AWQB/wFQAbUBZgH/AVQBtwFsAf8BpgHaAbQB/wE5AZsBRgH/AUUBRgFFAX4MAAMeASsBUwFRAfYB/wFe
+        AVsB+gH/AWwBaQL/AVIBUAH2Af8BOgE5AcsB/AJAAdUB/QFIAUUB9AH/AWABXwL/AUgBRgH1Af8BLgEs
+        AesB/wMeASsMAAMaASQBMgGYAcUB+wHzAfsB/gH/AcMB8gH7Af8BVAHcAfYB/wFUAdoB9AH/AVwB3wH2
+        Af8BTwHLAesB/wFNAdYB8gH/AUwB2QH1Af8BlAHnAfgB/wHjAfQB+wH/ASUBfwGtAfkDGgEkSAABWAFk
+        AVoB2wGRAdIBnwH/AY0B1AGaAf8BXAHDAWwB/wFxAckBhwH/AfIB+gH0Bf8B/QH+Af0B/wGGAcsBlgH/
+        AU8BtwFlAf8BUwG5AWoB/wGFAcwBlwH/AYcBxwGaAf8BWAFfAVgB2xAAAx4BKwFUAVIB9gH/AV8BXAH6
+        Af8BbAFqAv8BawFoAv8BaAFmAv8BZgFkAv8BTwFNAfcB/wE3ATUB7gH/Ax4BKxQAA1MBqgGMAdIB8AH/
+        AeoB+wH+Af8BlAHmAfgB/wFUAdoB9AH/AT8BsQHdAf8BNQGhAdUB/wFOAdcB8gH/AVQB2wH1Af8B3gH4
+        Af0B/wF1AcAB5wH/AUgCSQGHTAABMwGJAUgB9gGmAdwBrwH/AWgBygF3Af8BawHKAYAB/wHwAfkB8QX/
+        AesB9wHtBf8B+wH9AfwB/wGIAc0BlgH/AVMBuQFpAf8BXwG+AXUB/wGgAdcBrwH/ATIBZwEzAfYUAAMe
+        ASsBVQFTAfcB/wFxAW4C/wFRAU4C/wFPAUwC/wFqAWgC/wFAAT4B8AH/Ax4BKxgAAwkBDAFTAXoBiAHs
+        AcgB6gH3Af8B5gH6Af0B/wFVAdoB9AH/ATUBoQHVAf8BNQGhAdUB/wFPAdcB8gH/AccB8wH8Af8BwAHj
+        AfQB/wFTAWgBdAHkAwkBDEwAATUBjQFJAfYBpwHdAbEB/wFqAcwBgAH/AV4BxwFrAf8BsAHhAbcB/wHS
+        Ae4B1gH/AVsBwQFoAf8BuAHjAb8F/wH7Af0B/AH/AYwB0AGZAf8BYQHBAXYB/wGhAdcBrgH/ATIBbgEz
+        AfYUAAMGAQgBUQFQAd8B/QF1AXEC/wFWAVMC/wFTAVAC/wFuAWwC/wJAAdgB/QMGAQgcAAM3AVoBaQHI
+        Ae0B/wH5Af4C/wFWAdwB9AH/ATYBogHVAf8BNgGiAdUB/wFUAdkB9AH/Ae0B+wH+Af8BYAG7AeUB/wM3
+        AVpQAAFaAWYBWgHbAZUB1wGhAf8BkQHXAZsB/wFhAckBbgH/AVwBxgFnAf8BWQHEAWYB/wFZAcMBZwH/
+        AVkBwgFnAf8BuQHkAcAF/wHjAfQB5gH/AYsB0QGZAf8BiwHOAZ0B/wFYAWEBWAHbEAADBgEIAV4BWwHS
+        AfwBaAFlAfsB/wGAAXYC/wF2AXMC/wF0AXEC/wFxAW8C/wFWAVQB9wH/ATwBOgHMAfwDBgEIHAABXAFj
+        AWUB1AGpAd8B9AH/Ae0B+QH9Af8BNgGjAdYB/wE2AaMB1gH/AdQB9QH8Af8BogHXAfEB/wFZAlsBw1QA
+        AUUCRgF+AU8BvwFoAf8BrwHhAbcB/wFlAcwBcgH/AWAByAFqAf8BXQHHAWgB/wFbAcUBZgH/AVoBxAFm
+        Af8BWwHEAWkB/wG2AeMBvgH/AWcBxwF2Af8BrAHfAbUB/wFAAakBVgH/AUUBRgFFAX4MAAMGAQgBZgFj
+        AdUB/AFvAWwB/QH/AYYBggL/AW4BawH8Af8BXAFaAfgB/wFYAVUB9wH/AWUBYgH6Af8BcwFxAv8BWAFV
+        AfcB/wE8ATsBzAH8AwYBCBgAAyEBMAFAAa8B0QH9AfkB/QL/AZQB6QH5Af8BngHrAfoB/wHsAfoB/gH/
+        ASsBkgHEAfwDIQEwVAADGAEiAVcBcwFeAeUBdwHOAZAB/wGuAeEBtQH/AWUBzAFyAf8BYgHKAW4B/wFg
+        AcgBagH/AWAByAFsAf8BYAHIAW0B/wFjAckBcQH/AawB3wG0Af8BbgHEAYkB/wFUAWwBVgHlAxgBIggA
+        AwYBCAFlAWIB5wH9AXUBcgH+Af8BigGHAv8BdAFxAf0B/wFkAWEB+wH/Ax4BKwMeASsBWQFWAfgB/wFm
+        AWQB+gH/AXUBcgL/AVkBVwH3Af8BPQE7Ac0B/AMEAQUYAAFVAlYBtAGUAdgB8gH/AfMB/AH+Af8B5wH6
+        Af4B/wGPAdMB8AH/AU0CTgGWXAADMwFTAUIBjgFSAfQBdwHOAZAB/wGvAeEBtwH/AZIB2AGdAf8BbwHO
+        AYMB/wFvAc4BgwH/AZIB2AGdAf8BrgHhAbUB/wFwAcgBiwH/AT0BfQFCAfQDMwFTDAADFgEfAXIBbwL/
+        AYEBdgL/AYEBdgH+Af8BbAFpAf0B/wMeASsIAAMeASsBWgFXAfgB/wFnAWUB+wH/AXYBdAL/AVoBVwH4
+        Af8DQAFvAwEBAhQAAw0BEgFLAYoBnQHyAfEB+gH9Af8B1QHvAfoB/wFRAXsBigHtAw0BEmAAAzMBUwFY
+        AXQBWgHmAVEBwgFsAf8BlgHXAaMB/wGlAdwBrgH/AaUB3AGuAf8BlQHWAaEB/wFIAbkBYgH/AVIBcAFY
+        AeYDMwFTFAADFgEfAXIBbwL/AXEBbgH+Af8DHgErEAADHgErAVwBWQH4Af8BYgFgAfkB/wFTAVIBUwGo
+        Ax0BKRwAAU0CTgGVAYUB1AHxAf8BggHRAfAB/wM9AWloAAMZASMDRQF9AVoBZgFcAdsBRwGMAVUB8wFE
+        AYwBUwHzAVoBZgFaAdsDRQF9AxkBIxwAAxYBHwMeASsYAAMeASsDQAFvAykBPiAAAwIBAwFcAWMBZQHU
+        AVkCWwHDAwIBA8gAAwcBCowAAUIBTQE+BwABPgMAASgDAAFAAwABEAMAAQEBAAEBBQABgBcAA/8BAAb/
+        AgAB8AEPAucEAAHgAQcCwwQAAcABAwKBBAABgAEBAYABAQGAAQECAAGAAQEBwAEDAYABAQIAAYABAQHg
+        AQcBwAEDAgABgAEBAfABDwHAAQMCAAGAAQEB8AEPAeABBwIAAYABAQHgAQcB8AEPAgABgAEBAcABAwHw
+        AQ8CAAGAAQEBgAEBAfgBHwIAAcABAwGBAYAB+AEfAgAB4AEHAcMBwQH8AT8CAAHwAQ8B5wHjAfwBPwIA
+        A/8B9wL/AgAL
+</value>
+  </data>
+  <data name="richTextBox1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>690, 104</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>690, 475</value>
+  </data>
+  <data name="$this.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
+    <value>Yes</value>
+  </data>
+  <data name="$this.RightToLeftLayout" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>قائمة اللوحات</value>
+  </data>
+</root>

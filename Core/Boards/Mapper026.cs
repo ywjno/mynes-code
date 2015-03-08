@@ -23,10 +23,8 @@ namespace MyNes.Core
 {
     [BoardInfo("VRC6", 26)]
     [WithExternalSound]
-    [NotImplementedWell("Mapper 26:\n Game Esper Dream 2 is glitchy")]
     class Mapper026 : Board
     {
-        // TODO: VRC6 (mapper 26) Esper Dream 2 glitchy
         private int irq_reload;
         private int irq_counter;
         private int prescaler;
