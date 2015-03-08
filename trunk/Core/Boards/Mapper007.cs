@@ -24,7 +24,7 @@ namespace MyNes.Core
     [BoardInfo("AxROM", 7)]
     class Mapper007 : Board
     {
-        // Battledoats hangs on stage 2
+        // TODO: Mapper 7: Battletoads hangs on stage 2
         public override void WritePRG(ref int address, ref byte data)
         {
             base.SwitchNMT(((data & 0x10) == 0x10) ? Mirroring.OneScB : Mirroring.OneScA);

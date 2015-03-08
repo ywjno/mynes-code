@@ -26,6 +26,8 @@ namespace MyNes.Core
     {
         void SubmitBuffer(ref int[] buffer);
 
+        void OnFrameFinished();
+
         void ShutDown();
 
         void WriteNotification(string text, int frames, Color color);

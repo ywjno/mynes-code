@@ -23,7 +23,7 @@ using System;
 /*PPU section*/
 namespace MyNes.Core
 {
-    public partial class NesEmu
+    public unsafe partial class NesEmu
     {
         private static byte[] reverseLookup =
             {
@@ -47,6 +47,13 @@ namespace MyNes.Core
         private static int[] paletteIndexes;
         public static IVideoProvider videoOut;
         private static int[] screen = new int[256 * 240];
+        private static int* screenPointer;
+        private static int screenPointerSize;
+        private static bool screenPointerMode;
+        private static int screenPointerPos;
+        private static int screenPointerStart;
+        private static bool hideForbbidenLines;
+        private static int forbbidenLinesCount;
         private static int[] palette;
         private static int[] bkg_pixels;
         private static int[] spr_pixels;
@@ -160,6 +167,7 @@ namespace MyNes.Core
                         break;
                     }
             }
+
             spr_zero_buffer = new bool[8];
             bkg_pixels = new int[272];
             spr_pixels = new int[256];
@@ -240,6 +248,7 @@ namespace MyNes.Core
         private static void PPUClock()
         {
             board.OnPPUClock();
+
             if ((VClock < 240) || (VClock == vbl_vclock_End))
             {
                 if (bkg_enabled || spr_enabled)
@@ -361,8 +370,18 @@ namespace MyNes.Core
                                 spr_0Hit = true;
 
                         render:
-                            screen[(VClock * 256) + HClock] = palette[paletteIndexes[palettes_bank[current_pixel & ((current_pixel & 0x03) == 0 ? 0x0C : 0x1F)]
-                                & (grayscale | emphasis)]];
+                            if (!screenPointerMode)
+                            {
+                                screen[(VClock * 256) + HClock] = palette[paletteIndexes[palettes_bank[current_pixel & ((current_pixel & 0x03) == 0 ? 0x0C : 0x1F)]
+                                    & (grayscale | emphasis)]];
+                            }
+                            else
+                            {
+                                screenPointerPos = (VClock * 256) + HClock;
+                                if (screenPointerPos >= screenPointerStart && screenPointerPos < screenPointerSize)
+                                    screenPointer[screenPointerPos - screenPointerStart] = palette[paletteIndexes[palettes_bank[current_pixel & ((current_pixel & 0x03) == 0 ? 0x0C : 0x1F)]
+                                                                        & (grayscale | emphasis)]];
+                            }
                         }
                         #endregion
                         #region OAM EVALUATION
@@ -721,10 +740,33 @@ namespace MyNes.Core
                     if (HClock < 255 & VClock < 240)
                     {
                         if ((vram_address & 0x3F00) == 0x3F00)
-                            screen[(VClock * 256) + HClock] = palette[paletteIndexes[palettes_bank[vram_address & ((vram_address & 0x03) == 0 ? 0x0C : 0x1F)]
-                                & (grayscale | emphasis)]];
+                        {
+                            if (!screenPointerMode)
+                            {
+                                screen[(VClock * 256) + HClock] = palette[paletteIndexes[palettes_bank[vram_address & ((vram_address & 0x03) == 0 ? 0x0C : 0x1F)]
+                                     & (grayscale | emphasis)]];
+                            }
+                            else
+                            {
+                                screenPointerPos = (VClock * 256) + HClock;
+                                if (screenPointerPos >= screenPointerStart && screenPointerPos < screenPointerSize)
+                                    screenPointer[screenPointerPos - screenPointerStart] = palette[paletteIndexes[palettes_bank[vram_address & ((vram_address & 0x03) == 0 ? 0x0C : 0x1F)]
+                                     & (grayscale | emphasis)]];
+                            }
+                        }
                         else
-                            screen[(VClock * 256) + HClock] = palette[paletteIndexes[palettes_bank[0] & (grayscale | emphasis)]];
+                        {
+                            if (!screenPointerMode)
+                            {
+                                screen[(VClock * 256) + HClock] = palette[paletteIndexes[palettes_bank[0] & (grayscale | emphasis)]];
+                            }
+                            else
+                            {
+                                screenPointerPos = (VClock * 256) + HClock;
+                                if (screenPointerPos >= screenPointerStart && screenPointerPos < screenPointerSize)
+                                    screenPointer[screenPointerPos - screenPointerStart] = palette[paletteIndexes[palettes_bank[0] & (grayscale | emphasis)]];
+                            }
+                        }
                     }
                     #endregion
                 }
@@ -779,7 +821,10 @@ namespace MyNes.Core
                     {
                         if (FrameSkipTimer == 0)
                         {
-                            videoOut.SubmitBuffer(ref screen);
+                            if (!screenPointerMode)
+                                videoOut.SubmitBuffer(ref screen);
+                            else
+                                videoOut.OnFrameFinished();
                         }
                         if (FrameSkipTimer > 0)
                             FrameSkipTimer--;
@@ -788,7 +833,10 @@ namespace MyNes.Core
                     }
                     else
                     {
-                        videoOut.SubmitBuffer(ref screen);
+                        if (!screenPointerMode)
+                            videoOut.SubmitBuffer(ref screen);
+                        else
+                            videoOut.OnFrameFinished();
                     }
 
                     OnFinishFrame();
@@ -799,7 +847,25 @@ namespace MyNes.Core
         }
         public static void SetupVideoRenderer(IVideoProvider video)
         {
+            SetupVideoRenderer(video, false, IntPtr.Zero, 0, 0);
+        }
+        public static void SetupVideoRenderer(IVideoProvider video, bool pointerMode, IntPtr scan0, int scanStart, int scanSize)
+        {
             videoOut = video;
+            if (pointerMode)
+            {
+                screenPointerMode = true;
+                screenPointer = (int*)scan0;
+                screenPointerSize = scanSize;
+                screenPointerStart = scanStart;
+            }
+            else
+            {
+                screenPointerMode = false;
+                screenPointer = null;
+                screenPointerSize = 0;
+                screenPointerStart = 0;
+            }
         }
         public static void SetupFrameSkip(bool frameSkipEnabled, byte frameSkipReload)
         {

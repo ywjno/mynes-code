@@ -104,6 +104,7 @@ namespace MyNes.Core
         private static byte[] audio_playback_buffer = new byte[44100];
         private static int audio_playback_bufferSize;
         private static bool audio_playback_first_render;
+        private static bool audio_playback_buffer_sumbit_enabled;
         public static int audio_playback_w_pos = 0;//Write position
         public static int audio_playback_latency = 0;//Write position
         private static int audio_playback_out;
@@ -185,6 +186,18 @@ namespace MyNes.Core
                 dac_tnd_table[i] = 163.67 / (24329.0 / i + 100);
             }
         }
+
+        /// <summary>
+        /// Setup audio playback (using buffer submit at the end of each frame).
+        /// </summary>
+        /// <param name="AudioOutput">The audio provider (AudioOut.AddSample(ref sample) 
+        /// MUST be implemented, AudioOut.SubmitBuffer(ref buff) is ignored)</param>
+        /// <param name="soundEnabled">Indicates if the sound playbakc is enabled or not.</param>
+        /// <param name="frequency">The sound playback frequency in Hz. Prefered value is 44100 Hz</param>
+        public static void SetupSoundPlayback(IAudioProvider AudioOutput, bool soundEnabled, int frequency)
+        {
+            SetupSoundPlayback(AudioOutput, soundEnabled, frequency, 0, 0, false);
+        }
         /// <summary>
         /// Setup audio playback.
         /// </summary>
@@ -193,8 +206,10 @@ namespace MyNes.Core
         /// <param name="frequency">The sound playback frequency in Hz. Prefered value is 44100 Hz</param>
         /// <param name="bufferSize">The buffer size in bytes.</param>
         /// <param name="latencyInBytes">The latency in bytes (number of samples * 2 for latency)</param>
+        /// <param name="enable_buffer_submit">If set, the engine will use AudioOut.SubmitBuffer(ref buff)
+        /// otherwise AudioOut.AddSample(ref sample) will be used.</param>
         public static void SetupSoundPlayback(IAudioProvider AudioOutput, bool soundEnabled, int frequency, int bufferSize,
-            int latencyInBytes)
+            int latencyInBytes, bool enable_buffer_submit)
         {
             audio_playback_latency = latencyInBytes;
             audio_playback_bufferSize = bufferSize;
@@ -204,6 +219,7 @@ namespace MyNes.Core
             x = x_1 = y = y_1 = 0;
             audio_playback_first_render = true;
             audio_playback_buffer = new byte[audio_playback_bufferSize];
+            audio_playback_buffer_sumbit_enabled = enable_buffer_submit;
         }
         private static void APUUpdatePlayback()
         {
@@ -266,22 +282,28 @@ namespace MyNes.Core
                 #endregion
 
                 #region Add sample to the buffer.
-                if (audio_playback_first_render)
+                if (audio_playback_buffer_sumbit_enabled)
                 {
-                    audio_playback_first_render = false;
-                    audio_playback_w_pos = AudioOut.CurrentWritePosition;
+                    if (audio_playback_first_render)
+                    {
+                        audio_playback_first_render = false;
+                        audio_playback_w_pos = AudioOut.CurrentWritePosition;
+                    }
+                    // 16 Bit samples
+                    if (audio_playback_w_pos >= audio_playback_bufferSize)
+                        audio_playback_w_pos = 0;
+                    audio_playback_buffer[audio_playback_w_pos] = (byte)((audio_playback_out & 0xFF00) >> 8);
+                    audio_playback_w_pos++;
+
+                    if (audio_playback_w_pos >= audio_playback_bufferSize)
+                        audio_playback_w_pos = 0;
+                    audio_playback_buffer[audio_playback_w_pos] = (byte)(audio_playback_out & 0xFF);
+                    audio_playback_w_pos++;
                 }
-                // 16 Bit samples
-                if (audio_playback_w_pos >= audio_playback_bufferSize)
-                    audio_playback_w_pos = 0;
-                audio_playback_buffer[audio_playback_w_pos] = (byte)((audio_playback_out & 0xFF00) >> 8);
-                audio_playback_w_pos++;
-
-                if (audio_playback_w_pos >= audio_playback_bufferSize)
-                    audio_playback_w_pos = 0;
-                audio_playback_buffer[audio_playback_w_pos] = (byte)(audio_playback_out & 0xFF);
-                audio_playback_w_pos++;
-
+                else
+                {
+                    AudioOut.AddSample(ref audio_playback_out);
+                }
                 if (AudioOut.IsRecording)
                     AudioOut.RecorderAddSample(ref audio_playback_out);
                 #endregion

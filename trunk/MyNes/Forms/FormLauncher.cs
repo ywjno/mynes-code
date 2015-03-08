@@ -487,7 +487,126 @@ namespace MyNes
                             {
                                 // Open the archive
                                 SevenZipExtractor extractor = new SevenZipExtractor(file);
+                                // Extract the archive first !!
+                                Directory.CreateDirectory(Path.GetTempPath() + "\\MyNes\\");
+                                // Make sure the temp folder is clear
+                                string[] arFiles = Directory.GetFiles(Path.GetTempPath() + "\\MyNes\\");
+                                foreach (string a in arFiles)
+                                    File.Delete(a);
+                                extractor.ExtractArchive(Path.GetTempPath() + "\\MyNes\\");
+                                arFiles = Directory.GetFiles(Path.GetTempPath() + "\\MyNes\\");
                                 foreach (ArchiveFileInfo f in extractor.ArchiveFileData)
+                                {
+                                    if (Path.GetExtension(f.FileName).ToLower() == ".nes")
+                                    {
+                                        string entryPath = "(" + f.Index + ")" + file;
+                                        // Read header !
+                                        INes header = new INes();
+                                        header.Load(Path.GetTempPath() + "\\MyNes\\" + f.FileName, false);
+                                        // Search for the match
+                                        bool found = false;
+                                        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                                        {
+                                            if (ds.Tables[0].Rows[i]["SHA1"].ToString().ToLower() == header.SHA1.ToLower()
+                                                 && (bool)ds.Tables[0].Rows[i]["IsDB"])
+                                            {
+                                                string path = GetFilePathFromArchivePath(ds.Tables[0].Rows[i]["Path"].ToString().Replace("&apos;", "'"));
+                                                if (File.Exists(path) && path != "")
+                                                {
+                                                    // This is it !!
+                                                    if (_assign_update_entries_already_assigned)
+                                                    {
+                                                        // The file path code is (index within archive)archivePath
+                                                        ds.Tables[0].Rows[i]["Path"] = entryPath;
+                                                        ds.Tables[0].Rows[i]["Size"] = GetFileSize(tempFile);
+                                                        Trace.WriteLine(Program.ResourceManager.GetString("Status_EntryUPDATED") +
+                                                            ": [" + ds.Tables[0].Rows[i]["Name"].ToString() + "]");
+                                                    }
+                                                    else
+                                                    {
+                                                        Trace.WriteLine(Program.ResourceManager.GetString("Status_EntrySkipped") +
+                                                           ": [" + ds.Tables[0].Rows[i]["Name"].ToString() + "]");
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    // Force assign since the file is not valid
+                                                    ds.Tables[0].Rows[i]["Path"] = entryPath;
+                                                    ds.Tables[0].Rows[i]["Size"] = GetFileSize(tempFile);
+                                                    Trace.WriteLine(Program.ResourceManager.GetString("Status_EntryUPDATED") +
+                                                        ": [" + ds.Tables[0].Rows[i]["Name"].ToString() + "]");
+                                                }
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found && _assign_addFilesNotFound)
+                                        {
+                                            found = false;
+                                            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                                            {
+                                                if (ds.Tables[0].Rows[i]["Path"].ToString().Replace("&apos;", "'") == entryPath)
+                                                {
+                                                    found = true;
+                                                    // This is it !!
+                                                    if (_assign_update_entries_already_assigned)
+                                                    {
+                                                        ds.Tables[0].Rows[i]["Path"] = entryPath;
+                                                        ds.Tables[0].Rows[i]["Size"] = GetFileSize(tempFile);
+                                                        Trace.WriteLine(Program.ResourceManager.GetString("Status_EntryUPDATED") +
+                                                            ": [" + ds.Tables[0].Rows[i]["Name"].ToString() + "]");
+                                                    }
+                                                    else
+                                                    {
+                                                        Trace.WriteLine(Program.ResourceManager.GetString("Status_EntrySkipped") +
+                                                           ": [" + ds.Tables[0].Rows[i]["Name"].ToString() + "]");
+                                                    }
+                                                    break;
+                                                }
+                                            }
+                                            if (!found)
+                                            {
+                                                DataRow row = ds.Tables[0].NewRow();
+                                                MyNesDBEntryInfo infEntry = new MyNesDBEntryInfo();
+                                                infEntry.IsDB = false;
+                                                infEntry.AlternativeName = "";
+                                                infEntry.BoardMapper = header.IsValid ? header.MapperNumber : 0;
+                                                infEntry.BoardPcb = "";
+                                                infEntry.BoardType = "";
+                                                infEntry.Catalog = "";
+                                                infEntry.Class = "";
+                                                infEntry.Developer = "";
+                                                infEntry.Name = Path.GetFileNameWithoutExtension(f.FileName);
+                                                infEntry.Players = "";
+                                                infEntry.Publisher = "";
+                                                infEntry.Region = "";
+                                                infEntry.ReleaseDate = "";
+                                                infEntry.CRC = CalculateCRC(tempFile, 16);
+                                                infEntry.DateDumped = "";
+                                                infEntry.Dump = "";
+                                                infEntry.Dumper = "";
+                                                infEntry.System = "";
+                                                infEntry.SHA1 = header.SHA1.ToUpper();
+                                                // These info should be set when user detect files.
+                                                infEntry.Path = entryPath;
+                                                infEntry.Rating = 0;
+                                                infEntry.Size = GetFileSize(tempFile);
+                                                infEntry.LastPlayed = DateTimeFormater.ToFull(DateTime.MinValue);
+                                                infEntry.Played = 0;
+                                                infEntry.PlayTime = 0;
+
+                                                MyNesDB.SetEntryToRow(infEntry, row);
+                                                ds.Tables[0].Rows.Add(row);
+                                                Trace.WriteLine(Program.ResourceManager.GetString("Status_EntryADDED") +
+                                                    ":[" + infEntry.Name + "]");
+                                            }
+                                        }
+                                    }
+                                }
+                                // Clear the temp folder (to make sure)
+                                foreach (string a in arFiles)
+                                    File.Delete(a);
+                                /*foreach (ArchiveFileInfo f in extractor.ArchiveFileData)
                                 {
                                     if (Path.GetExtension(f.FileName).ToLower() == ".nes")
                                     {
@@ -598,7 +717,7 @@ namespace MyNes
                                             }
                                         }
                                     }
-                                }
+                                }*/
                             }
                             catch
                             {
