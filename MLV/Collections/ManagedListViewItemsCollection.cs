@@ -79,6 +79,10 @@ namespace MLV
             if (owner != null)
                 owner.OnItemAdded();
         }
+        public new void AddNoEvent(ManagedListViewItem item)
+        {
+            base.Add(item);
+        }
         /// <summary>
         /// Clear this collection
         /// </summary>
@@ -120,6 +124,15 @@ namespace MLV
             base.Insert(index, item);
             if (owner != null)
                 owner.OnItemAdded();
+        }
+        /// <summary>
+        /// Insert item to this collection at given index without raising the event.
+        /// </summary>
+        /// <param name="index">The index to insert the item at</param>
+        /// <param name="item">The item to insert</param>
+        public void InsertNoEvent(int index, ManagedListViewItem item)
+        {
+            base.Insert(index, item);
         }
         /// <summary>
         /// Sort the items collection

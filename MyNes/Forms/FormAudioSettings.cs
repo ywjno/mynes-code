@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,20 @@ namespace MyNes
         public FormAudioSettings()
         {
             InitializeComponent();
-            checkBox_enableSound.Checked = Program.Settings.Audio_SoundEnabled;
+            radioButton1_sound_enabled.Checked = Program.Settings.Audio_SoundEnabled;
             trackBar2.Value = Program.Settings.Audio_Volume;
-            trackBar_bufferLength.Value = Program.Settings.Audio_BufferSizeInMilliseconds / 100;
-            trackBar_latency.Value = Program.Settings.Audio_LatencyInMilliseconds / 100;
+
+            //trackBar_bufferLength.Value = Program.Settings.Audio_BufferSizeInBytes / 100;
+            int val = Program.Settings.Audio_BufferSizeInBytes / 1024;
+            switch (val)
+            {
+                case 8: radioButton_size_8kb.Checked = true; break;
+                case 16: radioButton_size_16kb.Checked = true; break;
+            }
+            trackBar_latency.Value = Program.Settings.Audio_LatencyInPrecentage;
+            trackBar1_Scroll(this, null);
             label_volume.Text = trackBar2.Value + "%";
-            label_latency.Text = "0." + trackBar_latency.Value;
-            label_bufferLength.Text = (trackBar_bufferLength.Value / 10).ToString() + "." + (trackBar_bufferLength.Value % 10);
+            // label_bufferLength.Text = (trackBar_bufferLength.Value / 10).ToString() + "." + (trackBar_bufferLength.Value % 10);
 
             checkBox_dmc.Checked = Program.Settings.AudioChannelDMCEnabled;
             checkBox_noize.Checked = Program.Settings.AudioChannelNOZEnabled;
@@ -52,15 +59,18 @@ namespace MyNes
         {
             Close();
         }
+        // OK
         private void button1_Click(object sender, EventArgs e)
         {
-            Program.Settings.Audio_SoundEnabled = checkBox_enableSound.Checked;
-
+            Program.Settings.Audio_SoundEnabled = radioButton1_sound_enabled.Checked;
 
             Program.Settings.Audio_Volume = trackBar2.Value;
-            Program.Settings.Audio_BufferSizeInMilliseconds = trackBar_bufferLength.Value * 100;
-            Program.Settings.Audio_LatencyInMilliseconds = trackBar_latency.Value * 100;
+            if (radioButton_size_8kb.Checked)
+                Program.Settings.Audio_BufferSizeInBytes = 1024 * 8;
+            if (radioButton_size_16kb.Checked)
+                Program.Settings.Audio_BufferSizeInBytes = 1024 * 16;
 
+            Program.Settings.Audio_LatencyInPrecentage = trackBar_latency.Value;
             Program.Settings.AudioChannelDMCEnabled = checkBox_dmc.Checked;
             Program.Settings.AudioChannelNOZEnabled = checkBox_noize.Checked;
             Program.Settings.AudioChannelSQ1Enabled = checkBox_sq1.Checked;
@@ -74,23 +84,14 @@ namespace MyNes
         {
             label_volume.Text = trackBar2.Value + "%";
         }
-        private void trackBar_bufferLength_Scroll(object sender, EventArgs e)
-        {
-            label_bufferLength.Text = (trackBar_bufferLength.Value / 10).ToString() + "." + (trackBar_bufferLength.Value % 10);
-        }
-        private void trackBar_latency_Scroll(object sender, EventArgs e)
-        {
-            label_latency.Text = (trackBar_latency.Value / 10).ToString() + "." + (trackBar_latency.Value % 10);
-        }
+
         private void button3_Click(object sender, EventArgs e)
         {
-            checkBox_enableSound.Checked = true;
+            radioButton1_sound_enabled.Checked = true;
             trackBar2.Value = 100;
-            trackBar_bufferLength.Value = 15;
-            trackBar_latency.Value = 1;
+            trackBar_latency.Value = 53;
+            radioButton_size_8kb.Checked = true;
             label_volume.Text = trackBar2.Value + "%";
-            trackBar_bufferLength_Scroll(this, null);
-            trackBar_latency_Scroll(this, null);
 
             checkBox_dmc.Checked = true;
             checkBox_noize.Checked = true;
@@ -113,6 +114,10 @@ namespace MyNes
             checkBox_sq1.Checked = false;
             checkBox_sq2.Checked = false;
             checkBox_triangle.Checked = false;
+        }
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            label_latency.Text = trackBar_latency.Value.ToString() + "%";
         }
     }
 }

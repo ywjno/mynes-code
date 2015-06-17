@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,16 +36,8 @@ namespace MyNes.Core
         static NesEmu()
         {
             InputInitialize();
-            switch (TVFormat)
-            {
-                case TVSystem.NTSC: systemIndex = 0; cpuSpeedInHz = 1789772; break;
-                case TVSystem.PALB: systemIndex = 1; cpuSpeedInHz = 1662607; break;
-                case TVSystem.DENDY: systemIndex = 2; cpuSpeedInHz = 1773448; break;
-            }
-            if (TVFormat == TVSystem.NTSC)
-                FramePeriod = (1.0 / (FPS = 60.0));
-            else//PALB, DENDY
-                FramePeriod = (1.0 / (FPS = 50.0));
+            CPUSetupSpeed();
+            setupSpeedLimiter();
         }
         public static TVSystemSetting TVFormatSetting;
         public static TVSystem TVFormat;
@@ -244,7 +236,6 @@ namespace MyNes.Core
                     if (AudioOut != null)
                     {
                         AudioOut.Pause();
-                        audio_playback_w_pos = AudioOut.CurrentWritePosition;
                     }
                     if (request_save_sram)
                     {
@@ -390,24 +381,26 @@ namespace MyNes.Core
 
             ImmediateFrameTime = CurrentFrameTime = GetTime() - LastFrameTime;
             DeadTime = FramePeriod - CurrentFrameTime;
-
             // Sound
             if (SoundEnabled)
             {
                 if (!AudioOut.IsPlaying)
-                {
                     AudioOut.Play();
-                    // Reset buffer
-                    audio_playback_w_pos = AudioOut.CurrentWritePosition + audio_playback_latency;
-                }
-                // Submit sound buffer
-                if (audio_playback_buffer_sumbit_enabled)
-                    AudioOut.SubmitBuffer(ref audio_playback_buffer);
-                if (DeadTime < 0)
-                    audio_playback_w_pos = AudioOut.CurrentWritePosition + audio_playback_latency;
+
+                // Blip buffer
+                //audio_playback_blipbuffer.EndFrame(audio_playback_blipbuffer_timer);
+                audio_playback_blipbuffer.EndFrame((uint)audio_playback_blipbuffer_timer);
+                audio_playback_blipbuffer_timer = 0;
+
+                // Submit call
+                // byte[] returnBuffer = new byte[audio_playback_blipbuffer.SamplesAvailable() * 2];
+
+                // audio_playback_blipbuffer.ReadSamples(returnBuffer, 0, audio_playback_blipbuffer.SamplesAvailable());
+                short[] returnBuffer = new short[audio_playback_blipbuffer.SamplesAvailable()];
+                audio_playback_blipbuffer.ReadSamples(returnBuffer, audio_playback_blipbuffer.SamplesAvailable(), false);
+                AudioOut.Update(ref returnBuffer);
             }
             // Speed
-
             if (SpeedLimitterON)
             {
                 while (ImmediateFrameTime < FramePeriod)
@@ -454,70 +447,24 @@ namespace MyNes.Core
             }
             DoPalAdditionalClock = TVFormat == TVSystem.PALB;
             palCyc = 0;
-            // SPEED LIMITTER
-            SpeedLimitterON = true;
-            /*
-             * IMPORTANT
-             * ---------
-             * We MUST not use 60, 50 FPS here. Why ?
-             * Because of we used close numbers not the real number, for example
-             * When FPS calculated in real nes the result was 6.0988 (this is a close number by the way)
-             * same for CPU frequency 1789772.67 which is a close number.
-             * In emulator, we usually use even more close numbers like:
-             * CPU RATE = 1798772 (A 0.67 is lost)
-             * FPS = 60 (A 0.0988 is lost)
-             * If we continue, some bad result could happen:
-             * * Loose of audio samples.
-             * * Not as same as real nes speed although we output 60 FPS.
-             * * Synchronization problems between audio and video.
-             * 
-             * To fix this porblem, you need to CLOSE the FPS (or emu speed)
-             * to replace the loose. For example, using 1798772 instead of 1789772.67
-             * will make a lose of ~ 0.67 Hz. Also using 0.016 second as frame time instead
-             * of 1/60 = 0.01666666666666666666666666666667 second will lose 0.00066666666666666666666666666667
-             * of a second !
-             * This matters after running emulation in minutes.
-             * 
-             * Again, here, we use close numbers to:
-             * * Replace the lost details using close numbers (we use cpu rate 1789772 then we don't use 60.0988 FPS)
-             * * Make emulation run (output) as close as possible to real hardware speed.
-             * 
-             * To make that happen, we need to use what I call the 'DOZAN' method which means focusing.
-             * Make emulation run in FPS speed then make audio collect samples (note that FPS speed
-             * means your emulator run at 1/FPS for each frame) at REAL time. 
-             * You'll notice the sound loose sync after few seconds, adjust the FPS until the sync is ok.
-             * To determine that sync is ok, use the video renderer (or some gui) to output
-             * the value of (SOUND RENDER BUFFER WRITE POSITION - NES SOUND BUFFER WRITE POSITION)
-             * let's call it syncdiffer.
-             * Assuming that we have 2 sound buffers, one in emulation engine and other on the renderer.
-             * The syncdiffer value will output positive or negative number, that doesn't matter
-             * the matter is that number CHANGES AFTER FEW SECOND from value to another ONLY when the
-             * sound buffers are not sycnhronised. By adjusting the FPS, we make the syncdiffer never
-             * change or change very very small value in time. For example, the syncdiffer would be 5044
-             * at time 0 second, In time 60 second the syncdiffer become 7000. This is bad because of the
-             * buffers will loose sync after minutes.
-             * If syncdiffer become 5055 in 0 second then become 5100 in 60 second thats good but the less
-             * change we have in time the better.
-             * After we finished, we'll get the very close FPS for the real hardware using close numbers.
-             * Here, using FPS = 59.2 for example for NTSC and CPU SPEED used is 1789772 Hz. The sync will 
-             * loose after 10 minutes or more.
-             * 
-             * NOTE that this FPS represents 60.0988 in real nes. It's not nesseccary to use the real
-             * time to output the sound like I did, but using the FPS=59.234 here will be good to replace 
-             * the loose and then make the emu speed as close as possible to real hardware and that will be better
-             * for playing experience.
-             */
-            if (TVFormat == TVSystem.NTSC)
-                FramePeriod = (1.0 / (FPS = 59.234));
-            else if (TVFormat == TVSystem.PALB)
-                FramePeriod = (1.0 / (FPS = 49.08));
-            else if (TVFormat == TVSystem.DENDY)
-                FramePeriod = (1.0 / (FPS = 49.74));
+            setupSpeedLimiter();
             MEMHardReset();
             CPUHardReset();
             PPUHardReset();
             APUHardReset();
             DMAHardReset();
+        }
+        private static void setupSpeedLimiter()
+        {
+            // SPEED LIMITTER
+            SpeedLimitterON = true;
+
+            if (TVFormat == TVSystem.NTSC)
+                FramePeriod = (1.0 / (FPS = 60.0988));
+            else if (TVFormat == TVSystem.PALB)
+                FramePeriod = (1.0 / (FPS = 50.0));
+            else if (TVFormat == TVSystem.DENDY)
+                FramePeriod = (1.0 / (FPS = 50.0));
         }
         private static void softReset()
         {

@@ -67,6 +67,11 @@ namespace MLV
         public bool IsSpecialItem
         { get { return specialItem; } set { specialItem = value; } }
         /// <summary>
+        /// Get or set a value indicate if this item is a child item (i.e X coordinate if this item is shifted to the right) 
+        /// </summary>
+        [Description("Indicates if this item is a child item (i.e X coordinate if this item is shifted to the right)"), Category("Style")]
+        public bool IsChildItem { get; set; }
+        /// <summary>
         /// Rises the "on mouse leave" event.
         /// </summary>
         public override void OnMouseLeave()

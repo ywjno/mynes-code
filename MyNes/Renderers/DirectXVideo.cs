@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -448,7 +448,7 @@ namespace MyNes
             if (!deviceLost)
             {
                 DataRectangle rect = bufferedSurface.LockRectangle(LockFlags.Discard);
-               
+
                 rect.Data.WriteRange(currentBuffer, linesToSkip * 256, 256 * scanlines);
 
                 rect.Data.Close();

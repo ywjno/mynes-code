@@ -132,8 +132,18 @@
   <data name="toolStripButton_openLocation.Text" xml:space="preserve">
     <value>فتح المجلد الحاوي للصورة</value>
   </data>
+  <data name="toolStripButton_search_tgdb.Text" xml:space="preserve">
+    <value>البحث</value>
+  </data>
+  <data name="toolStripButton_search_tgdb.ToolTipText" xml:space="preserve">
+    <value>البحث في TheGamesDB.net  عن المزيد من الصور</value>
+  </data>
   <data name="toolStripButton_previous.Text" xml:space="preserve">
     <value>الصورة السابقة</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="StatusLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>28, 22</value>
   </data>
   <data name="toolStripButton_next.Text" xml:space="preserve">
     <value>الصورة التالية</value>
@@ -141,7 +151,6 @@
   <data name="toolStripSplitButton1.Text" xml:space="preserve">
     <value>طريقة العرض</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="normalstretchIfLargerWithAspectRatioToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>313, 22</value>
   </data>

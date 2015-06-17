@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ using MyNes.Core;
 using System.IO;
 using SlimDX;
 using SlimDX.DirectInput;
+using SlimDX.XInput;
 using MMB;
 namespace MyNes
 {
@@ -231,7 +232,7 @@ namespace MyNes
         }
         public void InitializeInputRenderer()
         {
-            // Preper things
+            // prepare things
             IJoypadConnecter joy1 = null;
             IJoypadConnecter joy2 = null;
             IJoypadConnecter joy3 = null;
@@ -241,43 +242,119 @@ namespace MyNes
             List<DeviceInstance> devices = new List<DeviceInstance>(di.GetDevices());
             bool found = false;
             #region Player 1
-            foreach (DeviceInstance dev in devices)
+            switch (Program.Settings.ControlSettings.Joypad1DeviceGuid)
             {
-                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad1DeviceGuid)
-                {
-                    // We found the device !!
-                    // Let's see if we have the settings for this device
-                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                default:
                     {
-                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        foreach (DeviceInstance dev in devices)
                         {
-                            // This is it !
-                            switch (dev.Type)
+                            if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad1DeviceGuid)
                             {
-                                case DeviceType.Keyboard:
+                                // We found the device !!
+                                // Let's see if we have the settings for this device
+                                foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                                {
+                                    if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
                                     {
-                                        joy1 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        found = true;
+                                        // This is it !
+                                        switch (dev.Type)
+                                        {
+                                            case SlimDX.DirectInput.DeviceType.Keyboard:
+                                                {
+                                                    joy1 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                            case SlimDX.DirectInput.DeviceType.Joystick:
+                                                {
+                                                    joy1 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                        }
                                         break;
                                     }
-                                case DeviceType.Joystick:
-                                    {
-                                        joy1 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        found = true;
-                                        break;
-                                    }
+                                }
+                                break;
                             }
-                            break;
                         }
+                        break;
                     }
-                    break;
-                }
+                case "x-controller-1":
+                    {
+                        SlimDX.XInput.Controller c1 = new Controller(UserIndex.One);
+                        if (c1.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-1")
+                                {
+                                    joy1 = new NesJoypadXControllerConnection("x-controller-1", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+
+                case "x-controller-2":
+                    {
+                        SlimDX.XInput.Controller c2 = new Controller(UserIndex.Two);
+                        if (c2.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-2")
+                                {
+                                    joy1 = new NesJoypadXControllerConnection("x-controller-2", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-3":
+                    {
+                        SlimDX.XInput.Controller c3 = new Controller(UserIndex.Three);
+                        if (c3.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-3")
+                                {
+                                    joy1 = new NesJoypadXControllerConnection("x-controller-3", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-4":
+                    {
+                        SlimDX.XInput.Controller c4 = new Controller(UserIndex.Four);
+                        if (c4.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad1Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-4")
+                                {
+                                    joy1 = new NesJoypadXControllerConnection("x-controller-4", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
             }
             if (!found && Program.Settings.ControlSettings.Joypad1AutoSwitchBackToKeyboard)
             {
                 foreach (DeviceInstance dev in devices)
                 {
-                    if (dev.Type == DeviceType.Keyboard)
+                    if (dev.Type == SlimDX.DirectInput.DeviceType.Keyboard)
                     {
                         // We found the device !!
                         // Let's see if we have the settings for this device
@@ -297,41 +374,119 @@ namespace MyNes
             #endregion
             #region Player 2
             found = false;
-            foreach (DeviceInstance dev in devices)
+            switch (Program.Settings.ControlSettings.Joypad2DeviceGuid)
             {
-                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad2DeviceGuid)
-                {
-                    // We found the device !!
-                    // Let's see if we have the settings for this device
-                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                default:
                     {
-                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        foreach (DeviceInstance dev in devices)
                         {
-                            // This is it !
-                            switch (dev.Type)
+                            if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad2DeviceGuid)
                             {
-                                case DeviceType.Keyboard:
+                                // We found the device !!
+                                // Let's see if we have the settings for this device
+                                foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                                {
+                                    if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
                                     {
-                                        joy2 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        found = true; break;
+                                        // This is it !
+                                        switch (dev.Type)
+                                        {
+                                            case SlimDX.DirectInput.DeviceType.Keyboard:
+                                                {
+                                                    joy2 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                            case SlimDX.DirectInput.DeviceType.Joystick:
+                                                {
+                                                    joy2 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                        }
+                                        break;
                                     }
-                                case DeviceType.Joystick:
-                                    {
-                                        joy2 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        found = true; break;
-                                    }
+                                }
+                                break;
                             }
-                            break;
                         }
+                        break;
                     }
-                    break;
-                }
+                case "x-controller-1":
+                    {
+                        SlimDX.XInput.Controller c1 = new Controller(UserIndex.One);
+                        if (c1.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-1")
+                                {
+                                    joy2 = new NesJoypadXControllerConnection("x-controller-1", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+
+                case "x-controller-2":
+                    {
+                        SlimDX.XInput.Controller c2 = new Controller(UserIndex.Two);
+                        if (c2.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-2")
+                                {
+                                    joy2 = new NesJoypadXControllerConnection("x-controller-2", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-3":
+                    {
+                        SlimDX.XInput.Controller c3 = new Controller(UserIndex.Three);
+                        if (c3.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-3")
+                                {
+                                    joy2 = new NesJoypadXControllerConnection("x-controller-3", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-4":
+                    {
+                        SlimDX.XInput.Controller c4 = new Controller(UserIndex.Four);
+                        if (c4.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad2Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-4")
+                                {
+                                    joy2 = new NesJoypadXControllerConnection("x-controller-4", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
             }
             if (!found && Program.Settings.ControlSettings.Joypad2AutoSwitchBackToKeyboard)
             {
                 foreach (DeviceInstance dev in devices)
                 {
-                    if (dev.Type == DeviceType.Keyboard)
+                    if (dev.Type == SlimDX.DirectInput.DeviceType.Keyboard)
                     {
                         // We found the device !!
                         // Let's see if we have the settings for this device
@@ -351,41 +506,119 @@ namespace MyNes
             #endregion
             #region Player 3
             found = false;
-            foreach (DeviceInstance dev in devices)
+            switch (Program.Settings.ControlSettings.Joypad3DeviceGuid)
             {
-                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad3DeviceGuid)
-                {
-                    // We found the device !!
-                    // Let's see if we have the settings for this device
-                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                default:
                     {
-                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        foreach (DeviceInstance dev in devices)
                         {
-                            // This is it !
-                            switch (dev.Type)
+                            if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad3DeviceGuid)
                             {
-                                case DeviceType.Keyboard:
+                                // We found the device !!
+                                // Let's see if we have the settings for this device
+                                foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                                {
+                                    if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
                                     {
-                                        joy3 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        found = true; break;
+                                        // This is it !
+                                        switch (dev.Type)
+                                        {
+                                            case SlimDX.DirectInput.DeviceType.Keyboard:
+                                                {
+                                                    joy3 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                            case SlimDX.DirectInput.DeviceType.Joystick:
+                                                {
+                                                    joy3 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                        }
+                                        break;
                                     }
-                                case DeviceType.Joystick:
-                                    {
-                                        joy3 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        found = true; break;
-                                    }
+                                }
+                                break;
                             }
-                            break;
                         }
+                        break;
                     }
-                    break;
-                }
+                case "x-controller-1":
+                    {
+                        SlimDX.XInput.Controller c1 = new Controller(UserIndex.One);
+                        if (c1.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-1")
+                                {
+                                    joy3 = new NesJoypadXControllerConnection("x-controller-1", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+
+                case "x-controller-2":
+                    {
+                        SlimDX.XInput.Controller c2 = new Controller(UserIndex.Two);
+                        if (c2.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-2")
+                                {
+                                    joy3 = new NesJoypadXControllerConnection("x-controller-2", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-3":
+                    {
+                        SlimDX.XInput.Controller c3 = new Controller(UserIndex.Three);
+                        if (c3.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-3")
+                                {
+                                    joy3 = new NesJoypadXControllerConnection("x-controller-3", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-4":
+                    {
+                        SlimDX.XInput.Controller c4 = new Controller(UserIndex.Four);
+                        if (c4.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad3Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-4")
+                                {
+                                    joy3 = new NesJoypadXControllerConnection("x-controller-4", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
             }
             if (!found && Program.Settings.ControlSettings.Joypad3AutoSwitchBackToKeyboard)
             {
                 foreach (DeviceInstance dev in devices)
                 {
-                    if (dev.Type == DeviceType.Keyboard)
+                    if (dev.Type == SlimDX.DirectInput.DeviceType.Keyboard)
                     {
                         // We found the device !!
                         // Let's see if we have the settings for this device
@@ -405,41 +638,119 @@ namespace MyNes
             #endregion
             #region Player 4
             found = false;
-            foreach (DeviceInstance dev in devices)
+            switch (Program.Settings.ControlSettings.Joypad4DeviceGuid)
             {
-                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad4DeviceGuid)
-                {
-                    // We found the device !!
-                    // Let's see if we have the settings for this device
-                    foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                default:
                     {
-                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        foreach (DeviceInstance dev in devices)
                         {
-                            // This is it !
-                            switch (dev.Type)
+                            if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.Joypad4DeviceGuid)
                             {
-                                case DeviceType.Keyboard:
+                                // We found the device !!
+                                // Let's see if we have the settings for this device
+                                foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                                {
+                                    if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
                                     {
-                                        joy4 = new NesJoypadPcKeyboardConnection(this.Handle, con);
-                                        found = true; break;
+                                        // This is it !
+                                        switch (dev.Type)
+                                        {
+                                            case SlimDX.DirectInput.DeviceType.Keyboard:
+                                                {
+                                                    joy4 = new NesJoypadPcKeyboardConnection(this.Handle, con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                            case SlimDX.DirectInput.DeviceType.Joystick:
+                                                {
+                                                    joy4 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
+                                                    found = true;
+                                                    break;
+                                                }
+                                        }
+                                        break;
                                     }
-                                case DeviceType.Joystick:
-                                    {
-                                        joy4 = new NesJoypadPcJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con);
-                                        found = true; break;
-                                    }
+                                }
+                                break;
                             }
-                            break;
                         }
+                        break;
                     }
-                    break;
-                }
+                case "x-controller-1":
+                    {
+                        SlimDX.XInput.Controller c1 = new Controller(UserIndex.One);
+                        if (c1.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-1")
+                                {
+                                    joy4 = new NesJoypadXControllerConnection("x-controller-1", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+
+                case "x-controller-2":
+                    {
+                        SlimDX.XInput.Controller c2 = new Controller(UserIndex.Two);
+                        if (c2.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-2")
+                                {
+                                    joy4 = new NesJoypadXControllerConnection("x-controller-2", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-3":
+                    {
+                        SlimDX.XInput.Controller c3 = new Controller(UserIndex.Three);
+                        if (c3.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-3")
+                                {
+                                    joy4 = new NesJoypadXControllerConnection("x-controller-3", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-4":
+                    {
+                        SlimDX.XInput.Controller c4 = new Controller(UserIndex.Four);
+                        if (c4.IsConnected)
+                        {
+                            foreach (IInputSettingsJoypad con in Program.Settings.ControlSettings.Joypad4Devices)
+                            {
+                                if (con.DeviceGuid == "x-controller-4")
+                                {
+                                    joy4 = new NesJoypadXControllerConnection("x-controller-4", con);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
             }
-            if (!found && Program.Settings.ControlSettings.Joypad4AutoSwitchBackToKeyboard)
+            if (!found && Program.Settings.ControlSettings.Joypad3AutoSwitchBackToKeyboard)
             {
                 foreach (DeviceInstance dev in devices)
                 {
-                    if (dev.Type == DeviceType.Keyboard)
+                    if (dev.Type == SlimDX.DirectInput.DeviceType.Keyboard)
                     {
                         // We found the device !!
                         // Let's see if we have the settings for this device
@@ -460,41 +771,117 @@ namespace MyNes
             NesEmu.SetupJoypads(joy1, joy2, joy3, joy4);
             #region VSUnisystem DIP
             found = false;
-            foreach (DeviceInstance dev in devices)
+            switch (Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid)
             {
-                if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid)
-                {
-                    // We found the device !!
-                    // Let's see if we have the settings for this device
-                    foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                default:
                     {
-                        if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
+                        foreach (DeviceInstance dev in devices)
                         {
-                            // This is it !
-                            switch (dev.Type)
+                            if (dev.InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid)
                             {
-                                case DeviceType.Keyboard:
+                                // We found the device !!
+                                // Let's see if we have the settings for this device
+                                foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                                {
+                                    if (con.DeviceGuid.ToLower() == dev.InstanceGuid.ToString().ToLower())
                                     {
-                                        NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPKeyboardConnection(this.Handle, con));
-                                        found = true; break;
+                                        // This is it !
+                                        switch (dev.Type)
+                                        {
+                                            case SlimDX.DirectInput.DeviceType.Keyboard:
+                                                {
+                                                    NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPKeyboardConnection(this.Handle, con));
+                                                    found = true; break;
+                                                }
+                                            case SlimDX.DirectInput.DeviceType.Joystick:
+                                                {
+                                                    NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con));
+                                                    found = true; break;
+                                                }
+                                        }
+                                        break;
                                     }
-                                case DeviceType.Joystick:
-                                    {
-                                        NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPJoystickConnection(this.Handle, dev.InstanceGuid.ToString(), con));
-                                        found = true; break;
-                                    }
+                                }
+                                break;
                             }
-                            break;
                         }
+                        break;
                     }
-                    break;
-                }
+                case "x-controller-1":
+                    {
+                        SlimDX.XInput.Controller c1 = new Controller(UserIndex.One);
+                        if (c1.IsConnected)
+                        {
+                            foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                            {
+                                if (con.DeviceGuid == "x-controller-1")
+                                {
+                                    NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPXControllerConnection("x-controller-1", con));
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+
+                case "x-controller-2":
+                    {
+                        SlimDX.XInput.Controller c2 = new Controller(UserIndex.Two);
+                        if (c2.IsConnected)
+                        {
+                            foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                            {
+                                if (con.DeviceGuid == "x-controller-2")
+                                {
+                                    NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPXControllerConnection("x-controller-2", con));
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-3":
+                    {
+                        SlimDX.XInput.Controller c3 = new Controller(UserIndex.Three);
+                        if (c3.IsConnected)
+                        {
+                            foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                            {
+                                if (con.DeviceGuid == "x-controller-3")
+                                {
+                                    NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPXControllerConnection("x-controller-3", con));
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "x-controller-4":
+                    {
+                        SlimDX.XInput.Controller c4 = new Controller(UserIndex.Four);
+                        if (c4.IsConnected)
+                        {
+                            foreach (IInputSettingsVSUnisystemDIP con in Program.Settings.ControlSettings.VSUnisystemDIPDevices)
+                            {
+                                if (con.DeviceGuid == "x-controller-4")
+                                {
+                                    NesEmu.SetupVSUnisystemDIP(new NesVSUnisystemDIPXControllerConnection("x-controller-4", con));
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
             }
             if (!found && Program.Settings.ControlSettings.VSUnisystemDIPAutoSwitchBackToKeyboard)
             {
                 foreach (DeviceInstance dev in devices)
                 {
-                    if (dev.Type == DeviceType.Keyboard)
+                    if (dev.Type == SlimDX.DirectInput.DeviceType.Keyboard)
                     {
                         // We found the device !!
                         // Let's see if we have the settings for this device
@@ -529,7 +916,7 @@ namespace MyNes
                 audio.Dispose();
             audio = new DirectSoundRenderer(this.Handle);
             NesEmu.SetupSoundPlayback(audio, Program.Settings.Audio_SoundEnabled, Program.Settings.Audio_Frequency,
-                audio.BufferSize, audio.latency_in_bytes, true);
+                Program.Settings.Audio_BufferSizeInBytes / 2);
 
             NesEmu.audio_playback_dmc_enabled = Program.Settings.AudioChannelDMCEnabled;
             NesEmu.audio_playback_noz_enabled = Program.Settings.AudioChannelNOZEnabled;

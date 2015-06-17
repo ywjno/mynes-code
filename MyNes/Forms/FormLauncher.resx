@@ -143,6 +143,9 @@
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
   </data>
+  <data name="&gt;&gt;infoToolStripMenuItem.Name" xml:space="preserve">
+    <value>infoToolStripMenuItem</value>
+  </data>
   <data name="toolStripTextBox_find.ToolTipText" xml:space="preserve">
     <value>Search by name</value>
   </data>
@@ -177,14 +180,17 @@
   <data name="&gt;&gt;splitContainer2.Panel2.Parent" xml:space="preserve">
     <value>splitContainer2</value>
   </data>
-  <data name="tabPage_game.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
+  <data name="cycleImagesOnGameInfoToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 22</value>
   </data>
   <data name="&gt;&gt;toolStripButton9.Name" xml:space="preserve">
     <value>toolStripButton9</value>
   </data>
   <data name="tabPage_manuals.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton8.Name" xml:space="preserve">
+    <value>toolStripButton8</value>
   </data>
   <data name="&gt;&gt;toolStripTextBox_find.Name" xml:space="preserve">
     <value>toolStripTextBox_find</value>
@@ -202,11 +208,12 @@ Games with files exist can be used only.</value>
   <data name="tabPage_game.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="&gt;&gt;tabPage_info.Parent" xml:space="preserve">
-    <value>tabControl2</value>
+  <data name="toolStripButton10.ToolTipText" xml:space="preserve">
+    <value>Detect and download snapshots,covers and/or info for games 
+from TheGamesDB.net.</value>
   </data>
-  <data name="&gt;&gt;toolStripSeparator7.Name" xml:space="preserve">
-    <value>toolStripSeparator7</value>
+  <data name="statusStrip1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 556</value>
   </data>
   <data name="&gt;&gt;splitContainer2.Panel2.Name" xml:space="preserve">
     <value>splitContainer2.Panel2</value>
@@ -226,8 +233,8 @@ Games with files exist can be used only.</value>
   <data name="&gt;&gt;toolStripButton3.Name" xml:space="preserve">
     <value>toolStripButton3</value>
   </data>
-  <data name="&gt;&gt;toolStripButton8.Name" xml:space="preserve">
-    <value>toolStripButton8</value>
+  <data name="toolStripSplitButton1.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
   </data>
   <data name="&gt;&gt;autoMinimizeToolStripMenuItem.Name" xml:space="preserve">
     <value>autoMinimizeToolStripMenuItem</value>
@@ -277,6 +284,9 @@ Games with files exist can be used only.</value>
   <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
     <value>165, 6</value>
   </data>
+  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
   <data name="&gt;&gt;splitContainer2.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
@@ -293,7 +303,7 @@ Games with files exist can be used only.</value>
     <value>259</value>
   </data>
   <data name="&gt;&gt;statusStrip1.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>4</value>
   </data>
   <data name="toolStripButton1.Text" xml:space="preserve">
     <value>NEW</value>
@@ -311,8 +321,8 @@ next time you open the launcher.</value>
   <data name="tabControl1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="&gt;&gt;toolStrip2.Name" xml:space="preserve">
-    <value>toolStrip2</value>
+  <data name="&gt;&gt;toolStripSeparator8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="toolStripButton9.Text" xml:space="preserve">
     <value>DELETE</value>
@@ -344,11 +354,8 @@ next time you open the launcher.</value>
   <data name="toolStripButton8.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
-  <data name="toolStripButton6.Text" xml:space="preserve">
-    <value>SHOW DETECT TABLE</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="tabPage_info.Size" type="System.Drawing.Size, System.Drawing">
+    <value>221, 242</value>
   </data>
   <data name="&gt;&gt;tabPage_game.Parent" xml:space="preserve">
     <value>tabControl1</value>
@@ -365,23 +372,29 @@ next time you open the launcher.</value>
   <data name="splitContainer2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
+  <data name="&gt;&gt;splitContainer2.Name" xml:space="preserve">
+    <value>splitContainer2</value>
+  </data>
   <data name="splitContainer2.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
   <data name="tabPage_covers.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
-  <data name="cycleImagesOnGameInfoToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 22</value>
+  <data name="tabPage_game.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
   </data>
   <data name="&gt;&gt;splitContainer2.Panel2.Type" xml:space="preserve">
     <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator7.Name" xml:space="preserve">
+    <value>toolStripSeparator7</value>
   </data>
   <data name="&gt;&gt;splitContainer2.Type" xml:space="preserve">
     <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStrip1.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>5</value>
   </data>
   <data name="toolStripButton5.Text" xml:space="preserve">
     <value>DETECT</value>
@@ -446,9 +459,6 @@ next time you open the launcher.</value>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;splitContainer1.Panel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="&gt;&gt;toolStripSplitButton1.Name" xml:space="preserve">
     <value>toolStripSplitButton1</value>
   </data>
@@ -461,11 +471,17 @@ will scan folders for nes files that matches the
 entries. Also there's an option allows to add the
 files that not match as new entries.</value>
   </data>
+  <data name="&gt;&gt;toolStrip2.Name" xml:space="preserve">
+    <value>toolStrip2</value>
+  </data>
   <data name="&gt;&gt;contextMenuStrip_list_columns.Name" xml:space="preserve">
     <value>contextMenuStrip_list_columns</value>
   </data>
   <data name="&gt;&gt;toolStripButton4.Name" xml:space="preserve">
     <value>toolStripButton4</value>
+  </data>
+  <data name="&gt;&gt;Button_mode_all.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="tabPage_info.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -476,19 +492,16 @@ files that not match as new entries.</value>
   <data name="&gt;&gt;statusStrip1.Type" xml:space="preserve">
     <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="tabPage_info.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 242</value>
-  </data>
   <data name="toolStripButton1.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="toolStrip2.Text" xml:space="preserve">
     <value>toolStrip2</value>
   </data>
-  <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>165, 6</value>
+  <data name="toolStripButton3.ToolTipText" xml:space="preserve">
+    <value>Play selected game.</value>
   </data>
-  <data name="toolStripSplitButton1.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+  <data name="toolStripButton7.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="imageList1.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
@@ -496,89 +509,89 @@ files that not match as new entries.</value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAAW
-        FQAAAk1TRnQBSQFMAgEBBQEAAawBAQG0AQEBEAEAARABAAT/ASEBEAj/AUIBTQE2BwABNgMAASgDAAFA
-        AwABIAMAAQEBAAEgBgABIP8AHwADKgFBAwYBCBgAAwYBCAMqAUHUAAMqAUEBKgEnAfIB/wJAAakB/QMG
-        AQgQAAMGAQgCKwF9AfwBDAEKAeoB/wMqAUHMAAMqAUEBMwExAfUB/wE+ATwB+gH/ATMBMAH2Af8CKwF/
-        AfwDBgEICAADBgEIAisBfQH8ARwBGgHxAf8BJwElAfYB/wEMAQoB6gH/AyoBQcgAAx4BKwE2ATMB9gH/
-        AUABPQH6Af8BTAFLAv8BNAExAfYB/wIrAX8B/AMGAQgDBgEIAisBfgH8ASIBIAHyAf8BPgE9Av8BJQEj
-        AfQB/wEKAQgB6QH/Ax4BK8wAAx4BKwE2ATQB9gH/AUEBPgH6Af8BTwFMAv8BNQEzAfYB/wIrAX8B/AJA
-        AakB/QErASgB9AH/AUMBQgL/ASsBKQH1Af8BEQEPAesB/wMeASvUAAMeASsBNwE1AfYB/wFCAT8B+gH/
-        AU8BTQL/AU4BSwL/AUsBSQL/AUkBRwL/ATIBMAH3Af8BGgEYAe4B/wMeASvcAAMeASsBOAE2AfcB/wFU
-        AVEC/wE0ATEC/wEyAS8C/wFNAUsC/wEjASEB8AH/Ax4BK+AAAwYBCAJAAawB/QFYAVQC/wE5ATYC/wE2
-        ATMC/wFRAU8C/wJAAaoB/QMGAQjcAAMGAQgBNgEzAYUB/AFLAUgB+wH/AYABWQL/AVkBVgL/AVcBVAL/
-        AVQBUgL/ATkBNwH3Af8CKwF/AfwDBgEI1AADBgEIAT4BOwGIAfwBUgFPAf0B/wGGAYIC/wFRAU4B/AH/
-        AT8BPQH4Af8BOwE4AfcB/wFIAUUB+gH/AVYBVAL/ATsBOAH3Af8CKwF/AfwDBgEIzAADBgEIAkABrwH9
-        AVgBVQH+Af8BigGHAv8BVwFUAf0B/wFHAUQB+wH/Ax4BKwMeASsBPAE5AfgB/wFJAUcB+gH/AVgBVQL/
-        ATwBOgH3Af8CKwGAAfwDBAEFyAADFgEfAVUBUgL/AYEBWQL/AYEBWQH+Af8BTwFMAf0B/wMeASsIAAMe
-        ASsBPQE6AfgB/wFKAUgB+wH/AVkBVwL/AT0BOgH4Af8DQAFvAwEBAsgAAxYBHwFVAVIC/wFUAVEB/gH/
-        Ax4BKxAAAx4BKwE/ATwB+AH/AUUBQwH5Af8BUwFSAVMBqAMdASnQAAMWAR8DHgErGAADHgErA0ABbwMp
-        AT74AAMHAQr/ACUAAwoBDQMiATEDIAEvAwUBByAAA1sBxANlAfQB0QGWATUB/wHOAZIBMAH/AcsBjgEr
-        Af8ByQGKASgB/wHHAYcBIwH/AcMBhAEfAf8BwwGEAR8B/wHDAYQBHwH/AcMBhAEfAf8BwwGEAR8B/wHD
-        AYQBHwH/AlUBUwGwRAADWwHEA2UB9AHRAZYBNQH/Ac4BkgEwAf8BywGOASsB/wHJAYoBKAH/AccBhwEj
-        Af8BwwGEAR8B/wHDAYQBHwH/AcMBhAEfAf8BwwGEAR8B/wHDAYQBHwH/AcMBhAEfAf8CVQFTAbAQAAMY
-        ASEDUAGdA10B8AOhAf8DqwH/A6cB/wOVAf8DZAHnA0oBigMQARYUAAHXAaEBQgH/AfgB8gHtAf8B9wHw
+        FQAAAk1TRnQBSQFMAgEBBQEAAeQBAQHoAQEBEAEAARABAAT/ASEBEAj/AUIBTQE2BwABNgMAASgDAAFA
+        AwABIAMAAQEBAAEgBgABIP8AHwADKgFBAwYBCBgAAwYBCAMqAUHUAAMqAUEBJQEiAfIB/wJAAagB/QMG
+        AQgQAAMGAQgCKwF4AfwBBwEFAeoB/wMqAUHMAAMqAUEBLgEsAfUB/wE5ATcB+gH/AS4BKwH2Af8CKwF6
+        AfwDBgEICAADBgEIAisBeAH8ARcBFQHxAf8BIgEgAfYB/wEHAQUB6gH/AyoBQcgAAx4BKwExAS4B9gH/
+        ATsBOAH6Af8BRwFGAv8BLwEsAfYB/wIrAXoB/AMGAQgDBgEIAisBeQH8AR0BGwHyAf8BOQE4Av8BIAEe
+        AfQB/wEFAQMB6QH/Ax4BK8wAAx4BKwExAS8B9gH/ATwBOQH6Af8BSgFHAv8BMAEuAfYB/wIrAXoB/AJA
+        AagB/QEmASMB9AH/AT4BPQL/ASYBJAH1Af8BDAEKAesB/wMeASvUAAMeASsBMgEwAfYB/wE9AToB+gH/
+        AUoBSAL/AUkBRgL/AUYBRAL/AUQBQgL/AS0BKwH3Af8BFQETAe4B/wMeASvcAAMeASsBMwExAfcB/wFP
+        AUwC/wEvASwC/wEtASoC/wFIAUYC/wEeARwB8AH/Ax4BK+AAAwYBCAJAAagB/QFTAU8C/wE0ATEC/wEx
+        AS4C/wFMAUoC/wJAAagB/QMGAQjcAAMGAQgBMQEuAXwB/AFGAUMB+wH/AYABVAL/AVQBUQL/AVIBTwL/
+        AU8BTQL/ATQBMgH3Af8CKwF6AfwDBgEI1AADBgEIATkBNgF9AfwBTQFKAf0B/wGGAYIC/wFMAUkB/AH/
+        AToBOAH4Af8BNgEzAfcB/wFDAUAB+gH/AVEBTwL/ATYBMwH3Af8CKwF6AfwDBgEIzAADBgEIAkABqgH9
+        AVMBUAH+Af8BigGHAv8BUgFPAf0B/wFCAT8B+wH/Ax4BKwMeASsBNwE0AfgB/wFEAUIB+gH/AVMBUAL/
+        ATcBNQH3Af8CKwF6AfwDBAEFyAADFgEfAVABTQL/AYEBVAL/AYEBVAH+Af8BSgFHAf0B/wMeASsIAAMe
+        ASsBOAE1AfgB/wFFAUMB+wH/AVQBUgL/ATgBNQH4Af8DQAFvAwEBAsgAAxYBHwFQAU0C/wFPAUwB/gH/
+        Ax4BKxAAAx4BKwE6ATcB+AH/AUABPgH5Af8BUwFSAVMBqAMdASnQAAMWAR8DHgErGAADHgErA0ABbwMp
+        AT74AAMHAQr/ACUAAwoBDQMiATEDIAEvAwUBByAAA1sBxANlAfQB0QGWATAB/wHOAZIBKwH/AcsBjgEm
+        Af8ByQGKASMB/wHHAYcBHgH/AcMBhAEaAf8BwwGEARoB/wHDAYQBGgH/AcMBhAEaAf8BwwGEARoB/wHD
+        AYQBGgH/AlUBUwGwRAADWwHEA2UB9AHRAZYBMAH/Ac4BkgErAf8BywGOASYB/wHJAYoBIwH/AccBhwEe
+        Af8BwwGEARoB/wHDAYQBGgH/AcMBhAEaAf8BwwGEARoB/wHDAYQBGgH/AcMBhAEaAf8CVQFTAbAQAAMY
+        ASEDUAGdA10B8AOhAf8DqwH/A6cB/wOVAf8DZAHnA0oBigMQARYUAAHXAaEBPQH/AfgB8gHtAf8B9wHw
         AeoB/wH2Ae0B5gH/AfQB6gHiAf8B8wHnAd4B/wHxAeQB2wH/AfAB4gHYAf8B8AHiAdgB/wHwAeIB2AH/
-        AfAB4gHYAf8B8AHiAdgB/wHwAeIB2AH/AagBigFAAf1EAAHXAaEBQgH/AfgB8gHtAf8B9wHwAeoB/wH2
+        AfAB4gHYAf8B8AHiAdgB/wHwAeIB2AH/AagBigFAAf1EAAHXAaEBPQH/AfgB8gHtAf8B9wHwAeoB/wH2
         Ae0B5gH/AfQB6gHiAf8B8wHnAd4B/wHxAeQB2wH/AfAB4gHYAf8B8AHiAdgB/wHwAeIB2AH/AfAB4gHY
         Af8B8AHiAdgB/wHwAeIB2AH/AagBigFAAf0MAAMvAUoDZQH0A84B/wPtAf8D9AH/A/UB/wP0Af8D7wH/
-        A+IB/wO6Af8DZAHnAyQBNRAAAdkBpAFHAf8B+QHzAe4B/wHrAdIBvgX/AesB0wG/Df8B6gHHAa0N/wHw
-        AeIB2AH/AcYBjAEsAf8MAAMpAT4DXQHKA10BygNdAcoDXQHKA10BygNdAcoDXQHKA10BygNbAcgDGQEj
-        DAAB2QGkAUcB/wH5AfMB7gH/AesB0gG+Bf8B6wHTAb8N/wHqAccBrQ3/AfAB4gHYAf8BxgGMASwB/wwA
-        A1wB6gPeAf8D8wH/A9sB/wPSAf8D2wH/A9YB/wPAAf8DyQH/A+YB/wPEAf8DXAHqEAAB3QGoAUsB/wH5
+        A+IB/wO6Af8DZAHnAyQBNRAAAdkBpAFCAf8B+QHzAe4B/wHrAdIBvgX/AesB0wG/Df8B6gHHAa0N/wHw
+        AeIB2AH/AcYBjAEnAf8MAAMpAT4DXQHKA10BygNdAcoDXQHKA10BygNdAcoDXQHKA10BygNbAcgDGQEj
+        DAAB2QGkAUIB/wH5AfMB7gH/AesB0gG+Bf8B6wHTAb8N/wHqAccBrQ3/AfAB4gHYAf8BxgGMAScB/wwA
+        A1wB6gPeAf8D8wH/A9sB/wPSAf8D2wH/A9YB/wPAAf8DyQH/A+YB/wPEAf8DXAHqEAAB3QGoAUYB/wH5
         AfMB7wH/AesB0AG6Af8B6wHQAbsB/wHrAdABuwH/AesB0AG7Af8B6wHQAbsB/wHrAdEBvQH/AeoBzQG1
-        Af8B6gHNAbUB/wHqAc0BtQH/AeoBzQG1Af8B8AHiAdgB/wHGAYoBKQH/CAADHwEsAVwCZAHnAZoC7gH/
-        AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AQABSgFMAf8DQwF4AwkBDAgA
-        Ad0BqAFLAf8B+QHzAe8B/wHrAdABugH/AesB0AG7Af8B6wHQAbsB/wHrAdABuwH/AesB0AG7Af8B6wHR
-        Ab0B/wHqAc0BtQH/AeoBzQG1Af8B6gHNAbUB/wHqAc0BtQH/AfAB4gHYAf8BxgGKASkB/wwAA1wB6gPw
+        Af8B6gHNAbUB/wHqAc0BtQH/AeoBzQG1Af8B8AHiAdgB/wHGAYoBJAH/CAADHwEsAVwCZAHnAZoC7gH/
+        AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AZoC7gH/AQABRQFHAf8DQwF4AwkBDAgA
+        Ad0BqAFGAf8B+QHzAe8B/wHrAdABugH/AesB0AG7Af8B6wHQAbsB/wHrAdABuwH/AesB0AG7Af8B6wHR
+        Ab0B/wHqAc0BtQH/AeoBzQG1Af8B6gHNAbUB/wHqAc0BtQH/AfAB4gHYAf8BxgGKASQB/wwAA1wB6gPw
         Af8D3gH/A9QB/wPSAf8D2wH/A9YB/wO/Af8DsAH/A7MB/wPeAf8DXAHqEAAB3wGqAYIB/wH5AfMB7wH/
-        AeoBzgG3Bf8B6wHQAbsN/wHqAc8BugH/AfsB9gHyCf8B8AHiAdgB/wHIAY0BLAH/BAADEQEXAQACogH/
-        AQYBrQGsAf8BtQL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BBgGQ
+        AeoBzgG3Bf8B6wHQAbsN/wHqAc8BugH/AfsB9gHyCf8B8AHiAdgB/wHIAY0BJwH/BAADEQEXAQACogH/
+        AQEBrQGsAf8BtQL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BAQGQ
         AZEB/wEAAYYBhwH/A04BmAgAAd8BqgGCAf8B+QHzAe8B/wHqAc4BtwX/AesB0AG7Df8B6gHPAboB/wH7
-        AfYB8gn/AfAB4gHYAf8ByAGNASwB/wwAA1wB6gPyAf8D4gH/A9gB/wPVAf8D3AH/A9gB/wPAAf8DswH/
+        AfYB8gn/AfAB4gHYAf8ByAGNAScB/wwAA1wB6gPyAf8D4gH/A9gB/wPVAf8D3AH/A9gB/wPAAf8DswH/
         A7cB/wPgAf8DXAHqDAADBAEFAdgBrAGKAf8B4wHeAdsB/wHSAbsBqQH/AdsBwgGtAf8B4wHHAbAB/wHq
         AcwBswH/AeoBzAGzAf8B6gHOAbcB/wHoAccBrAH/AegBxwGsAf8B6AHIAbAB/wHoAcgBrgH/AfAB4gHY
-        Af8BxAGGASEB/wQAAxcBIAFMAs8B/wEAAZABkQH/AQABTAGRAf8BAAFJAT0B/wEAAacBsQH/AQABrwGw
-        Af8BOgE4AbAB/wEBAY8BpgH/AQABVQGfAf8BAAGJAbAB/wEAAYABggH/AQABtwG5Af8DVAGmCAAB4QGu
+        Af8BxAGGARwB/wQAAxcBIAFHAs8B/wEAAZABkQH/AQABRwGRAf8BAAFEATgB/wEAAacBsQH/AQABrwGw
+        Af8BNQEzAbAB/wEAAY8BpgH/AQABUAGfAf8BAAGJAbAB/wEAAYABggH/AQABtwG5Af8DVAGmCAAB4QGu
         AYcB/wH6AfQB8AH/AeoBywGyAf8B6gHMAbMB/wHqAcwBswH/AeoBzAGzAf8B6gHMAbMB/wHqAc4BtwH/
-        AegBxwGsAf8B6AHHAawB/wHoAcgBsAH/AegByAGuAf8B8AHiAdgB/wHEAYYBIQH/DAADXAHqA/MB/wPn
+        AegBxwGsAf8B6AHHAawB/wHoAcgBsAH/AegByAGuAf8B8AHiAdgB/wHEAYYBHAH/DAADXAHqA/MB/wPn
         Af8D3QH/A9kB/wPgAf8D2wH/A8QB/wO4Af8DuwH/A+EB/wNcAeoIAAMEAQYDPgFqAa8BpAGcAf8CqwGq
-        Af8BpAGgAZwB/wOnAf8BtgGnAZwB/wPzCf8B6AHHAawN/wHxAeUB2wH/AcYBhgEiAf8EAAMXASABTALP
-        Af8BAAGQAZEB/wGpAUEBLQH/AYYBrwGPAf8BkAGnAf4B/wG3AU8B/gH/Ad4BkQH9Af8BAAGpAf4B/wEA
+        Af8BpAGgAZwB/wOnAf8BtgGnAZwB/wPzCf8B6AHHAawN/wHxAeUB2wH/AcYBhgEdAf8EAAMXASABRwLP
+        Af8BAAGQAZEB/wGpATwBKAH/AYYBrwGPAf8BkAGnAf4B/wG3AUoB/gH/Ad4BkQH9Af8BAAGpAf4B/wEA
         AakB/gH/AQABqQH+Af8BAAGAAYIB/wEAAbcBuQH/A1QBpggAAeMBsQGMAf8B+gH2AfEB/wHqAckBrgX/
-        AeoByQGwDf8B6AHHAawN/wHxAeUB2wH/AcYBhgEiAf8MAANcAeoD9AH/A+oB/wPhAf8D3QH/A+MB/wPe
+        AeoByQGwDf8B6AHHAawN/wHxAeUB2wH/AcYBhgEdAf8MAANcAeoD9AH/A+oB/wPhAf8D3QH/A+MB/wPe
         Af8DyQH/A70B/wO/Af8D4gH/A1wB6ggAA1IBqQPLAf8D6gH/A/AB/wPyAf8D7AH/A8oB/wGaAZUBkQH/
         AekByQGuAf8B6QHJAbAB/wHoAccBrAH/AekByQGwAf8B6AHIAbAB/wHoAcwBtQH/AfIB5wHeAf8ByAGK
-        ASYB/wQAAxcBIAFMAs8B/wEAAZABkQH/AQABTgG+Af8BNgE6AcgB/wHuAUgB/QH/AcgBggH9Af8B4gEr
-        Af0B/wHVARMBmgH/AZEBxwH1Af8BMwGOAdgB/wEAAYABggH/AQABtwG5Af8DVAGmCAAB5QG0AY8B/wH6
+        ASEB/wQAAxcBIAFHAs8B/wEAAZABkQH/AQABSQG+Af8BMQE1AcgB/wHuAUMB/QH/AcgBggH9Af8B4gEm
+        Af0B/wHVAQ4BmgH/AZEBxwH1Af8BLgGOAdgB/wEAAYABggH/AQABtwG5Af8DVAGmCAAB5QG0AY8B/wH6
         AfYB8gH/AekBxgGqAf8B6QHGAawB/wHqAccBrAH/AekBxwGtAf8B6QHJAa4B/wHpAckBsAH/AegBxwGs
-        Af8B6QHJAbAB/wHoAcgBsAH/AegBzAG1Af8B8gHnAd4B/wHIAYoBJgH/DAADXAHqA/UB/wPuAf8D5gH/
+        Af8B6QHJAbAB/wHoAcgBsAH/AegBzAG1Af8B8gHnAd4B/wHIAYoBIQH/DAADXAHqA/UB/wPuAf8D5gH/
         A+IB/wPmAf8D4QH/A80B/wPCAf8DwgH/A+MB/wNcAeoIAANdAfAD+gH/A9cB/wPiAf8DygH/A88F/wOT
-        Cf8B6AHHAawN/wH3AfEB6wH/AcsBjwEsAf8EAAMXASABTALPAf8BAAGQAZEB/wFGAbcBxwH/AUUBwAHO
-        Af8BwgGLAdgB/wFJAcQB2QH/AQYBlQGaAf8BRQHFAdEB/wFGAbcBxwH/AUYBugHJAf8BAAGAAYIB/wEA
+        Cf8B6AHHAawN/wH3AfEB6wH/AcsBjwEnAf8EAAMXASABRwLPAf8BAAGQAZEB/wFBAbcBxwH/AUABwAHO
+        Af8BwgGLAdgB/wFEAcQB2QH/AQEBlQGaAf8BQAHFAdEB/wFBAbcBxwH/AUEBugHJAf8BAAGAAYIB/wEA
         AbcBuQH/A1QBpggAAecBtwGUAf8B+wH3AfQB/wHpAcMBpgX/AegBxAGpDf8B6AHHAawN/wH3AfEB6wH/
-        AcsBjwEsAf8MAANcAeoD9gH/A+sB/wPeAf8D1gH/A9UB/wPRAf8DwwH/A7wB/wPAAf8D5QH/A1wB6ggA
+        AcsBjwEnAf8MAANcAeoD9gH/A+sB/wPeAf8D1gH/A9UB/wPRAf8DwwH/A7wB/wPAAf8D5QH/A1wB6ggA
         A18B6AP4Af8D0QH/A+wB/wPFAf8DxgX/A5oB/wHpAcMBpgH/AekBwwGmAf8B6QHDAaYB/wHpAcMBpgH/
-        AekBwwGmAf8B6QHDAaYB/wH7AfcB9AH/Ac4BkwExAf8EAAMXASABGALHAf8BAAGxAbIB/wEAAaABoQH/
-        AQABoAGhAf8BDQHLAcwB/wEAAZAB7gH/ATgB7gHvAf8BAAGgAaEB/wEAAaABoQH/AQABoAGhAf8BAAGo
+        AekBwwGmAf8B6QHDAaYB/wH7AfcB9AH/Ac4BkwEsAf8EAAMXASABEwLHAf8BAAGxAbIB/wEAAaABoQH/
+        AQABoAGhAf8BCAHLAcwB/wEAAZAB7gH/ATMB7gHvAf8BAAGgAaEB/wEAAaABoQH/AQABoAGhAf8BAAGo
         AaoB/wEAAbcBuQH/A1QBpggAAekBugGYAf8B+wH3AfQB/wHpAcMBpgH/AekBwwGmAf8B6QHDAaYB/wHp
         AcMBpgH/AekBwwGmAf8B6QHDAaYB/wHpAcMBpgH/AekBwwGmAf8B6QHDAaYB/wHpAcMBpgH/AfsB9wH0
-        Af8BzgGTATEB/wwAA1wB6gP3Af8D5wH/A+8B/wP2Af8D+wH/A/oB/wPwAf8D3gH/A8MB/wPmAf8DXAHq
-        CAADXwHoA/gB/wPVAf8D7wH/A8sB/wPLBf8Dnhn/AfsB9wH0Af8B0QGXATcB/wQAAxIBGAFMAs8B/wGV
+        Af8BzgGTASwB/wwAA1wB6gP3Af8D5wH/A+8B/wP2Af8D+wH/A/oB/wPwAf8D3gH/A8MB/wPmAf8DXAHq
+        CAADXwHoA/gB/wPVAf8D7wH/A8sB/wPLBf8Dnhn/AfsB9wH0Af8B0QGXATIB/wQAAxIBGAFHAs8B/wGV
         AsYB/wEAAd4B3wH/Ab4C/gH/AccC/gH/AcEC/gH/AbAC/gH/Ab4C/gH/AccC/gH/AcEC/gH/AbAC/gH/
-        AQABtwG5Af8DNgFZCAAB6wG9AZsB/wH7AfcB9Cn/AfsB9wH0Af8B0QGXATcB/wwAA1wB6gP4Af8D/hn/
+        AQABtwG5Af8DNgFZCAAB6wG9AZsB/wH7AfcB9Cn/AfsB9wH0Af8B0QGXATIB/wwAA1wB6gP4Af8D/hn/
         A/sB/wPqAf8DXAHqCAADXwHoA/gB/wPbAf8D7wH/A9AB/wPQBf8DogH/AYsBywGTAf8BhwHJAY4B/wGC
-        AcYBiQH/AUsBwwGEAf8BRwHBAYAB/wFDAb4BSQH/AfsB9wH0Af8B1AGbATwB/wcAAQEDKgRAAXEDQAFx
+        AcYBiQH/AUYBwwGEAf8BQgHBAYAB/wE+Ab4BRAH/AfsB9wH0Af8B1AGbATcB/wcAAQEDKgRAAXEDQAFx
         A0ABcQNAAXEDQAFxA0ABcQNAAXEDQAFxA0ABcQNAAXEDLQFFAwABAQgAAewBvwGeAf8B+wH3AfQB/wGc
-        AdUBpQH/AZgB0wGhAf8BlAHQAZ0B/wGQAc4BmAH/AYsBywGTAf8BhwHJAY4B/wGCAcYBiQH/AUsBwwGE
-        Af8BRwHBAYAB/wFDAb4BSQH/AfsB9wH0Af8B1AGbATwB/wwAA1kBvwPhAf8D/hn/A/sB/wPPAf8DUgGh
+        AdUBpQH/AZgB0wGhAf8BlAHQAZ0B/wGQAc4BmAH/AYsBywGTAf8BhwHJAY4B/wGCAcYBiQH/AUYBwwGE
+        Af8BQgHBAYAB/wE+Ab4BRAH/AfsB9wH0Af8B1AGbATcB/wwAA1kBvwPhAf8D/hn/A/sB/wPPAf8DUgGh
         CAADYgHpA/IB/wPZAf8D5AH/A+IB/wPIAf8D8QH/A6UB/wH7AfcB9AH/AfsB9wH0Af8B+wH3AfQB/wH7
         AfcB9AH/AfsB9wH0Af8B+wH3AfQB/wH7AfcB9AH/A1wB+EQAA2AB6wH7AfcB9AH/AfsB9wH0Af8B+wH3
         AfQB/wH7AfcB9AH/AfsB9wH0Af8B+wH3AfQB/wH7AfcB9AH/AfsB9wH0Af8B+wH3AfQB/wH7AfcB9AH/
         AfsB9wH0Af8B+wH3AfQB/wNcAfgMAAMdASoDXAHRA9AB/wPoAf8D8wH/A/0B/wP8Af8D7QH/A+AB/wPC
         Af8DWwHDAxQBGwgAA10B7QP2Af8D9AH/A/kB/wP7Af8D9gH/A/YB/wOoAf8B5wG3AZMB/wHmAbUBkAH/
-        AeQBsgGMAf8B4gGvAYgB/wHgAawBhAH/Ad0BqQGAAf8B3AGlAUoB/wNdAcpEAANGAX4DXwHjAe0BwAGf
+        AeQBsgGMAf8B4gGvAYgB/wHgAawBhAH/Ad0BqQGAAf8B3AGlAUUB/wNdAcpEAANGAX4DXwHjAe0BwAGf
         Af8B6wG+AZ0B/wHrAbwBmgH/AekBugGWAf8B5wG3AZMB/wHmAbUBkAH/AeQBsgGMAf8B4gGvAYgB/wHg
-        AawBhAH/Ad0BqQGAAf8B3AGlAUoB/wNdAcoQAAMFAQcDNQFVA1QBrgNgAdYDXwH7A2oB+QNcAc0DUgGp
+        AawBhAH/Ad0BqQGAAf8B3AGlAUUB/wNdAcoQAAMFAQcDNQFVA1QBrgNgAdYDXwH7A2oB+QNcAc0DUgGp
         Ay0BRgMCAQMMAANSAaQD1gH/A+0B/wP5Af8D+wH/A/AB/wPZAf8DXgHY4AADDAEQAz8BbANaAcADYAHr
         A18B8wNeAdADSgGKAxoBJWAAAUIBTQE+BwABPgMAASgDAAFAAwABIAMAAQEBAAEBBgABARYAA/8BAAL/
         BgAC5wYAAsMGAAKBBgABgAEBBgABwAEDBgAB4AEHBgAB8AEPBgAB8AEPBgAB4AEHBgABwAEDBgABgAEB
@@ -605,8 +618,8 @@ than 1.</value>
 (database.xml file). After that, you can assign
 files to the entries.</value>
   </data>
-  <data name="contextMenuStrip_list_main.Size" type="System.Drawing.Size, System.Drawing">
-    <value>169, 110</value>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
   </data>
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
@@ -638,6 +651,9 @@ files to the entries.</value>
   <data name="&gt;&gt;deleteToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="toolStripButton10.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
   <data name="&gt;&gt;toolStripSeparator8.Name" xml:space="preserve">
     <value>toolStripSeparator8</value>
   </data>
@@ -647,8 +663,52 @@ files to the entries.</value>
   <data name="Button_mode_notDB.Size" type="System.Drawing.Size, System.Drawing">
     <value>83, 20</value>
   </data>
+  <data name="&gt;&gt;timer_selection.Name" xml:space="preserve">
+    <value>timer_selection</value>
+  </data>
   <data name="&gt;&gt;cycleImagesOnGameInfoToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="imageList_items.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
+        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
+        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAADW
+        BwAAAk1TRnQBSQFMAgEBAgEAAcQBAQHIAQEBEAEAARABAAT/ASEBEAj/AUIBTQE2BwABNgMAASgDAAFA
+        AwABEAMAAQEBAAEgBgABEP8AHwADKgFBAwYBCBgAAwYBCAMqAUHUAAMqAUEBGwEYAfIB/wJAAagB/QMG
+        AQgQAAMGAQgCKwFuAfwCAAHqAf8DKgFBFAADKQE+A10BygNdAcoDXQHKA10BygNdAcoDXQHKA10BygNd
+        AcoDWwHIAxkBI4wAAyoBQQEkASIB9QH/AS8BLQH6Af8BJAEhAfYB/wIrAXAB/AMGAQgIAAMGAQgCKwFu
+        AfwBDQELAfEB/wEYARYB9gH/AgAB6gH/AyoBQQwAAx8BLAFcAmQB5wGaAu4B/wGaAu4B/wGaAu4B/wGa
+        Au4B/wGaAu4B/wGaAu4B/wGaAu4B/wGaAu4B/wEAAT8BQQH/A0MBeAMJAQyIAAMeASsBJwEkAfYB/wEx
+        AS4B+gH/AT0BPAL/ASUBIgH2Af8CKwFwAfwDBgEIAwYBCAIrAW8B/AETAREB8gH/AS8BLgL/ARYBFAH0
+        Af8CAAHpAf8DHgErCAADEQEXAQACogH/AQABrQGsAf8BtQL+Af8BtgL+Af8BtgL+Af8BtgL+Af8BtgL+
+        Af8BtgL+Af8BtgL+Af8BtgL+Af8BAAGQAZEB/wEAAYYBhwH/A04BmIwAAx4BKwEnASUB9gH/ATIBLwH6
+        Af8BQAE9Av8BJgEkAfYB/wIrAXAB/AJAAagB/QEcARkB9AH/ATQBMwL/ARwBGgH1Af8BAgEAAesB/wMe
+        ASsMAAMXASABQQLPAf8BAAGQAZEB/wEAAUEBkQH/AQABPgEyAf8BAAGnAbEB/wEAAa8BsAH/AS8BLQGw
+        Af8BAAGPAaYB/wEAAUoBnwH/AQABiQGwAf8BAAGAAYIB/wEAAbcBuQH/A1QBppAAAx4BKwEoASYB9gH/
+        ATMBMAH6Af8BQAE+Av8BPwE8Av8BPAE6Av8BOgE4Av8BIwEhAfcB/wELAQkB7gH/Ax4BKxAAAxcBIAFB
+        As8B/wEAAZABkQH/AakBNgEiAf8BhgGvAY8B/wGQAacB/gH/AbcBRAH+Af8B3gGRAf0B/wEAAakB/gH/
+        AQABqQH+Af8BAAGpAf4B/wEAAYABggH/AQABtwG5Af8DVAGmlAADHgErASkBJwH3Af8BRQFCAv8BJQEi
+        Av8BIwEgAv8BPgE8Av8BFAESAfAB/wMeASsUAAMXASABQQLPAf8BAAGQAZEB/wEAAUMBvgH/ASsBLwHI
+        Af8B7gE9Af0B/wHIAYIB/QH/AeIBIAH9Af8B1QEIAZoB/wGRAccB9QH/ASgBjgHYAf8BAAGAAYIB/wEA
+        AbcBuQH/A1QBppQAAwYBCAJAAagB/QFJAUUC/wEqAScC/wEnASQC/wFCAUAC/wJAAagB/QMGAQgUAAMX
+        ASABQQLPAf8BAAGQAZEB/wE7AbcBxwH/AToBwAHOAf8BwgGLAdgB/wE+AcQB2QH/AQABlQGaAf8BOgHF
+        AdEB/wE7AbcBxwH/ATsBugHJAf8BAAGAAYIB/wEAAbcBuQH/A1QBppAAAwYBCAIrAXIB/AE8ATkB+wH/
+        AYABSgL/AUoBRwL/AUgBRQL/AUUBQwL/ASoBKAH3Af8CKwFwAfwDBgEIEAADFwEgAQ0CxwH/AQABsQGy
+        Af8BAAGgAaEB/wEAAaABoQH/AQIBywHMAf8BAAGQAe4B/wEtAe4B7wH/AQABoAGhAf8BAAGgAaEB/wEA
+        AaABoQH/AQABqAGqAf8BAAG3AbkB/wNUAaaMAAMGAQgBLwEsAXMB/AFDAUAB/QH/AYYBggL/AUIBPwH8
+        Af8BMAEuAfgB/wEsASkB9wH/ATkBNgH6Af8BRwFFAv8BLAEpAfcB/wIrAXAB/AMGAQgMAAMSARgBQQLP
+        Af8BlQLGAf8BAAHeAd8B/wG+Av4B/wHHAv4B/wHBAv4B/wGwAv4B/wG+Av4B/wHHAv4B/wHBAv4B/wGw
+        Av4B/wEAAbcBuQH/AzYBWYgAAwYBCAJAAagB/QFJAUYB/gH/AYoBhwL/AUgBRQH9Af8BOAE1AfsB/wMe
+        ASsDHgErAS0BKgH4Af8BOgE4AfoB/wFJAUYC/wEtASsB9wH/AisBcAH8AwQBBQsAAQEDKgRAAXEDQAFx
+        A0ABcQNAAXEDQAFxA0ABcQNAAXEDQAFxA0ABcQNAAXEDLQFFAwABAYgAAxYBHwFGAUMC/wGBAUoC/wGB
+        AUoB/gH/AUABPQH9Af8DHgErCAADHgErAS4BKwH4Af8BOwE5AfsB/wFKAUgC/wEuASsB+AH/A0ABbwMB
+        AQLIAAMWAR8BRgFDAv8BRQFCAf4B/wMeASsQAAMeASsBMAEtAfgB/wE2ATQB+QH/AVMBUgFTAagDHQEp
+        0AADFgEfAx4BKxgAAx4BKwNAAW8DKQE++AADBwEKzAABQgFNAT4HAAE+AwABKAMAAUADAAEQAwABAQEA
+        AQEFAAGAFwAD/wEABP8EAALnAv8EAALDAeABAwQAAoEBwAEBBAABgAEBAYABAQQAAcABAwGAAQEEAAHg
+        AQcBgAEBBAAB8AEPAYABAQQAAfABDwGAAQEEAAHgAQcBgAEBBAABwAEDAYABAQQAAYABAQGAAQEEAAGB
+        AYAC/wQAAcMBwQL/BAAB5wHjAv8EAAH/AfcC/xoACw==
+</value>
   </data>
   <data name="&gt;&gt;openFileLocationToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -680,11 +740,14 @@ files to the entries.</value>
   <data name="&gt;&gt;toolStripButton6.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="toolStripButton3.ToolTipText" xml:space="preserve">
-    <value>Play selected game.</value>
-  </data>
   <data name="&gt;&gt;tabPage_manuals.Name" xml:space="preserve">
     <value>tabPage_manuals</value>
+  </data>
+  <data name="toolStripButton10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>102, 22</value>
+  </data>
+  <data name="tabPage_manuals.Size" type="System.Drawing.Size, System.Drawing">
+    <value>221, 242</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator9.Name" xml:space="preserve">
     <value>toolStripSeparator9</value>
@@ -705,7 +768,7 @@ files to the entries.</value>
     <value>4, 22</value>
   </data>
   <data name="&gt;&gt;splitContainer1.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>2</value>
   </data>
   <data name="&gt;&gt;tabControl2.Name" xml:space="preserve">
     <value>tabControl2</value>
@@ -731,8 +794,8 @@ files to the entries.</value>
   <data name="&gt;&gt;statusStrip1.Name" xml:space="preserve">
     <value>statusStrip1</value>
   </data>
-  <data name="&gt;&gt;tabPage_snapshots.Name" xml:space="preserve">
-    <value>tabPage_snapshots</value>
+  <data name="&gt;&gt;tabControl1.Name" xml:space="preserve">
+    <value>tabControl1</value>
   </data>
   <data name="Button_mode_missing.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
@@ -743,8 +806,8 @@ files to the entries.</value>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>83, 6</value>
   </data>
-  <data name="&gt;&gt;tabControl2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="toolStripButton10.Text" xml:space="preserve">
+    <value>DETECT TGDB</value>
   </data>
   <data name="&gt;&gt;timer_play.Type" xml:space="preserve">
     <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -755,8 +818,8 @@ files to the entries.</value>
   <data name="toolStripButton6.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
-  <data name="toolStripButton1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 22</value>
+  <data name="&gt;&gt;splitContainer1.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;StatusLabel.Name" xml:space="preserve">
     <value>StatusLabel</value>
@@ -773,9 +836,6 @@ files to the entries.</value>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
   </data>
-  <data name="statusStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 556</value>
-  </data>
   <data name="&gt;&gt;toolStripButton4.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -791,14 +851,14 @@ files to the entries.</value>
   <data name="&gt;&gt;toolStripButton1.Name" xml:space="preserve">
     <value>toolStripButton1</value>
   </data>
-  <data name="toolStripButton7.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
+  <data name="&gt;&gt;toolStrip1.Name" xml:space="preserve">
+    <value>toolStrip1</value>
   </data>
   <data name="StatusLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>42, 17</value>
   </data>
-  <data name="tabControl2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
+  <data name="&gt;&gt;tabControl2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Button_mode_notDB.Text" xml:space="preserve">
     <value>NOT DB</value>
@@ -836,8 +896,8 @@ files to the entries.</value>
   <data name="splitContainer1.Size" type="System.Drawing.Size, System.Drawing">
     <value>892, 531</value>
   </data>
-  <data name="&gt;&gt;timer_selection.Name" xml:space="preserve">
-    <value>timer_selection</value>
+  <data name="contextMenuStrip_list_main.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 110</value>
   </data>
   <data name="playToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 22</value>
@@ -881,14 +941,17 @@ files to the entries.</value>
   <data name="toolStripStatusLabel2.Size" type="System.Drawing.Size, System.Drawing">
     <value>10, 17</value>
   </data>
-  <data name="&gt;&gt;tabControl1.Name" xml:space="preserve">
-    <value>tabControl1</value>
+  <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>165, 6</value>
   </data>
   <data name="splitContainer1.Location" type="System.Drawing.Point, System.Drawing">
     <value>86, 25</value>
   </data>
   <data name="toolStripStatusLabel1.Text" xml:space="preserve">
     <value>0 / 0</value>
+  </data>
+  <data name="tabControl2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
   <data name="ProgressBar.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -904,6 +967,9 @@ files to the entries.</value>
   </data>
   <data name="&gt;&gt;toolStripLabel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;timer_search.Name" xml:space="preserve">
+    <value>timer_search</value>
   </data>
   <data name="&gt;&gt;tabPage_manuals.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -935,14 +1001,11 @@ files to the entries.</value>
   <data name="&gt;&gt;managedListView1.Name" xml:space="preserve">
     <value>managedListView1</value>
   </data>
-  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="tabControl2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>229, 268</value>
   </data>
   <data name="tabPage_manuals.Text" xml:space="preserve">
     <value>Manuals</value>
-  </data>
-  <data name="toolStripButton9.Size" type="System.Drawing.Size, System.Drawing">
-    <value>83, 20</value>
   </data>
   <data name="managedListView1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
@@ -950,14 +1013,14 @@ files to the entries.</value>
   <data name="infoToolStripMenuItem.Text" xml:space="preserve">
     <value>Info</value>
   </data>
-  <data name="Button_mode_files.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
   <data name="&gt;&gt;tabControl1.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStrip2.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>3</value>
+  </data>
+  <data name="toolStripButton6.Text" xml:space="preserve">
+    <value>SHOW DETECT TABLE</value>
   </data>
   <data name="toolStripStatusLabel1.Size" type="System.Drawing.Size, System.Drawing">
     <value>30, 17</value>
@@ -967,6 +1030,9 @@ files to the entries.</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton10.Name" xml:space="preserve">
+    <value>toolStripButton10</value>
   </data>
   <data name="cycleImagesOnGameInfoToolStripMenuItem.Text" xml:space="preserve">
     <value>Cycle images on game info</value>
@@ -978,8 +1044,8 @@ files to the entries.</value>
     <value>Indicates if the Launcher should be opened
 when My Nes starts.</value>
   </data>
-  <data name="&gt;&gt;infoToolStripMenuItem.Name" xml:space="preserve">
-    <value>infoToolStripMenuItem</value>
+  <data name="&gt;&gt;showLauncherAtAppStartToolStripMenuItem.Name" xml:space="preserve">
+    <value>showLauncherAtAppStartToolStripMenuItem</value>
   </data>
   <data name="toolStripSplitButton1.Size" type="System.Drawing.Size, System.Drawing">
     <value>91, 22</value>
@@ -1008,8 +1074,8 @@ when My Nes starts.</value>
   <data name="Button_mode_database.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <data name="&gt;&gt;timer_search.Name" xml:space="preserve">
-    <value>timer_search</value>
+  <data name="toolStripButton1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 22</value>
   </data>
   <data name="toolStripButton7.ToolTipText" xml:space="preserve">
     <value>Add files to the database.
@@ -1017,17 +1083,14 @@ If entries match file(s), these entries get updated.
 Otherwise files not found in database get added
 as new entries/entry.</value>
   </data>
-  <data name="&gt;&gt;Button_mode_missing.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="toolStripButton9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
   </data>
   <data name="&gt;&gt;splitContainer1.Panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="openFileLocationToolStripMenuItem.Text" xml:space="preserve">
     <value>Open file location</value>
-  </data>
-  <data name="&gt;&gt;showLauncherAtAppStartToolStripMenuItem.Name" xml:space="preserve">
-    <value>showLauncherAtAppStartToolStripMenuItem</value>
   </data>
   <data name="managedListView1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1071,17 +1134,14 @@ as new entries/entry.</value>
   <data name="toolStrip2.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 25</value>
   </data>
-  <data name="tabPage_snapshots.Text" xml:space="preserve">
-    <value>Snapshots</value>
-  </data>
   <data name="toolStripButton5.Size" type="System.Drawing.Size, System.Drawing">
     <value>69, 22</value>
   </data>
   <data name="&gt;&gt;toolStripButton8.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="tabPage_manuals.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 242</value>
+  <data name="Button_mode_files.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
   </data>
   <data name="Button_mode_all.Size" type="System.Drawing.Size, System.Drawing">
     <value>83, 20</value>
@@ -1125,9 +1185,6 @@ as new entries/entry.</value>
   <data name="&gt;&gt;tabPage_covers.Parent" xml:space="preserve">
     <value>tabControl1</value>
   </data>
-  <data name="&gt;&gt;toolStrip1.Name" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
   <data name="&gt;&gt;toolStrip2.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
@@ -1136,6 +1193,9 @@ as new entries/entry.</value>
   </data>
   <data name="rememberSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>218, 22</value>
+  </data>
+  <data name="&gt;&gt;splitContainer1.Panel2.Name" xml:space="preserve">
+    <value>splitContainer1.Panel2</value>
   </data>
   <data name="tabControl1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1155,14 +1215,14 @@ as new entries/entry.</value>
   <data name="tabPage_game.Text" xml:space="preserve">
     <value>Game</value>
   </data>
-  <data name="Button_mode_all.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
   <data name="showLauncherAtAppStartToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>218, 22</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator5.Name" xml:space="preserve">
     <value>toolStripSeparator5</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton10.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Button_mode_all.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1182,14 +1242,14 @@ as new entries/entry.</value>
   <data name="&gt;&gt;toolStripButton2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;splitContainer1.Panel2.Name" xml:space="preserve">
-    <value>splitContainer1.Panel2</value>
+  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Button_mode_database.ToolTipText" xml:space="preserve">
     <value>Show games of NesCartDB database only</value>
   </data>
   <data name="&gt;&gt;managedListView1.Type" xml:space="preserve">
-    <value>MLV.ManagedListView, MLV, Version=1.2.5334.30111, Culture=neutral, PublicKeyToken=null</value>
+    <value>MLV.ManagedListView, MLV, Version=1.2.5642.22734, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;toolStripButton6.Name" xml:space="preserve">
     <value>toolStripButton6</value>
@@ -1200,58 +1260,20 @@ as new entries/entry.</value>
   <data name="tabPage_covers.Size" type="System.Drawing.Size, System.Drawing">
     <value>221, 233</value>
   </data>
-  <data name="&gt;&gt;toolStripSeparator8.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;splitContainer2.Panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
-    <value>toolStripSeparator2</value>
+  <data name="&gt;&gt;tabPage_info.Parent" xml:space="preserve">
+    <value>tabControl2</value>
   </data>
   <data name="&gt;&gt;tabPage_snapshots.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="imageList_items.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
-    <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
-        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
-        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAADc
-        BwAAAk1TRnQBSQFMAgEBAgEAAYwBAQGUAQEBEAEAARABAAT/ASEBEAj/AUIBTQE2BwABNgMAASgDAAFA
-        AwABEAMAAQEBAAEgBgABEP8AHwADKgFBAwYBCBgAAwYBCAMqAUHUAAMqAUEBIAEdAfIB/wJAAagB/QMG
-        AQgQAAMGAQgCKwFzAfwBAgEAAeoB/wMqAUEUAAMpAT4DXQHKA10BygNdAcoDXQHKA10BygNdAcoDXQHK
-        A10BygNbAcgDGQEjjAADKgFBASkBJwH1Af8BNAEyAfoB/wEpASYB9gH/AisBdQH8AwYBCAgAAwYBCAIr
-        AXMB/AESARAB8QH/AR0BGwH2Af8BAgEAAeoB/wMqAUEMAAMfASwBXAJkAecBmgLuAf8BmgLuAf8BmgLu
-        Af8BmgLuAf8BmgLuAf8BmgLuAf8BmgLuAf8BmgLuAf8BAAFEAUYB/wNDAXgDCQEMiAADHgErASwBKQH2
-        Af8BNgEzAfoB/wFCAUEC/wEqAScB9gH/AisBdQH8AwYBCAMGAQgCKwF0AfwBGAEWAfIB/wE0ATMC/wEb
-        ARkB9AH/AgAB6QH/Ax4BKwgAAxEBFwEAAqIB/wEAAa0BrAH/AbUC/gH/AbYC/gH/AbYC/gH/AbYC/gH/
-        AbYC/gH/AbYC/gH/AbYC/gH/AbYC/gH/AQABkAGRAf8BAAGGAYcB/wNOAZiMAAMeASsBLAEqAfYB/wE3
-        ATQB+gH/AUUBQgL/ASsBKQH2Af8CKwF1AfwCQAGoAf0BIQEeAfQB/wE5ATgC/wEhAR8B9QH/AQcBBQHr
-        Af8DHgErDAADFwEgAUYCzwH/AQABkAGRAf8BAAFGAZEB/wEAAUMBNwH/AQABpwGxAf8BAAGvAbAB/wE0
-        ATIBsAH/AQABjwGmAf8BAAFPAZ8B/wEAAYkBsAH/AQABgAGCAf8BAAG3AbkB/wNUAaaQAAMeASsBLQEr
-        AfYB/wE4ATUB+gH/AUUBQwL/AUQBQQL/AUEBPwL/AT8BPQL/ASgBJgH3Af8BEAEOAe4B/wMeASsQAAMX
-        ASABRgLPAf8BAAGQAZEB/wGpATsBJwH/AYYBrwGPAf8BkAGnAf4B/wG3AUkB/gH/Ad4BkQH9Af8BAAGp
-        Af4B/wEAAakB/gH/AQABqQH+Af8BAAGAAYIB/wEAAbcBuQH/A1QBppQAAx4BKwEuASwB9wH/AUoBRwL/
-        ASoBJwL/ASgBJQL/AUMBQQL/ARkBFwHwAf8DHgErFAADFwEgAUYCzwH/AQABkAGRAf8BAAFIAb4B/wEw
-        ATQByAH/Ae4BQgH9Af8ByAGCAf0B/wHiASUB/QH/AdUBDQGaAf8BkQHHAfUB/wEtAY4B2AH/AQABgAGC
-        Af8BAAG3AbkB/wNUAaaUAAMGAQgCQAGoAf0BTgFKAv8BLwEsAv8BLAEpAv8BRwFFAv8CQAGoAf0DBgEI
-        FAADFwEgAUYCzwH/AQABkAGRAf8BQAG3AccB/wE/AcABzgH/AcIBiwHYAf8BQwHEAdkB/wEAAZUBmgH/
-        AT8BxQHRAf8BQAG3AccB/wFAAboByQH/AQABgAGCAf8BAAG3AbkB/wNUAaaQAAMGAQgBLAErAXcB/AFB
-        AT4B+wH/AYABTwL/AU8BTAL/AU0BSgL/AUoBSAL/AS8BLQH3Af8CKwF1AfwDBgEIEAADFwEgARICxwH/
-        AQABsQGyAf8BAAGgAaEB/wEAAaABoQH/AQcBywHMAf8BAAGQAe4B/wEyAe4B7wH/AQABoAGhAf8BAAGg
-        AaEB/wEAAaABoQH/AQABqAGqAf8BAAG3AbkB/wNUAaaMAAMGAQgBNAExAXgB/AFIAUUB/QH/AYYBggL/
-        AUcBRAH8Af8BNQEzAfgB/wExAS4B9wH/AT4BOwH6Af8BTAFKAv8BMQEuAfcB/wIrAXUB/AMGAQgMAAMS
-        ARgBRgLPAf8BlQLGAf8BAAHeAd8B/wG+Av4B/wHHAv4B/wHBAv4B/wGwAv4B/wG+Av4B/wHHAv4B/wHB
-        Av4B/wGwAv4B/wEAAbcBuQH/AzYBWYgAAwYBCAJAAagB/QFOAUsB/gH/AYoBhwL/AU0BSgH9Af8BPQE6
-        AfsB/wMeASsDHgErATIBLwH4Af8BPwE9AfoB/wFOAUsC/wEyATAB9wH/AisBdQH8AwQBBQsAAQEDKgRA
-        AXEDQAFxA0ABcQNAAXEDQAFxA0ABcQNAAXEDQAFxA0ABcQNAAXEDLQFFAwABAYgAAxYBHwFLAUgC/wGB
-        AU8C/wGBAU8B/gH/AUUBQgH9Af8DHgErCAADHgErATMBMAH4Af8BQAE+AfsB/wFPAU0C/wEzATAB+AH/
-        A0ABbwMBAQLIAAMWAR8BSwFIAv8BSgFHAf4B/wMeASsQAAMeASsBNQEyAfgB/wE7ATkB+QH/AVMBUgFT
-        AagDHQEp0AADFgEfAx4BKxgAAx4BKwNAAW8DKQE++AADBwEKzAABQgFNAT4HAAE+AwABKAMAAUADAAEQ
-        AwABAQEAAQEFAAGAFwAD/wEABP8EAALnAv8EAALDAeABAwQAAoEBwAEBBAABgAEBAYABAQQAAcABAwGA
-        AQEEAAHgAQcBgAEBBAAB8AEPAYABAQQAAfABDwGAAQEEAAHgAQcBgAEBBAABwAEDAYABAQQAAYABAQGA
-        AQEEAAGBAYAC/wQAAcMBwQL/BAAB5wHjAv8EAAH/AfcC/xoACw==
-</value>
+  <data name="Button_mode_all.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="&gt;&gt;Button_mode_missing.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tabPage_manuals.ZOrder" xml:space="preserve">
     <value>1</value>
@@ -1274,30 +1296,24 @@ as new entries/entry.</value>
   <data name="&gt;&gt;imageList_items.Name" xml:space="preserve">
     <value>imageList_items</value>
   </data>
-  <data name="tabControl2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>229, 268</value>
-  </data>
   <data name="&gt;&gt;toolStrip1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="toolStrip1.Text" xml:space="preserve">
     <value>toolStrip1</value>
   </data>
-  <data name="&gt;&gt;splitContainer2.Name" xml:space="preserve">
-    <value>splitContainer2</value>
+  <data name="tabPage_snapshots.Text" xml:space="preserve">
+    <value>Snapshots</value>
   </data>
   <data name="&gt;&gt;timer_selection.Type" xml:space="preserve">
     <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;Button_mode_all.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;tabPage_snapshots.Name" xml:space="preserve">
+    <value>tabPage_snapshots</value>
   </data>
   <data name="toolStripButton8.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <metadata name="contextMenuStrip_list_columns.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <metadata name="timer_play.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>706, 17</value>
   </metadata>
@@ -1310,11 +1326,11 @@ as new entries/entry.</value>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>452, 17</value>
   </metadata>
-  <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>342, 17</value>
-  </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>93</value>
+  </metadata>
+  <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>342, 17</value>
   </metadata>
   <metadata name="imageList_items.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>568, 17</value>
@@ -1330,6 +1346,9 @@ as new entries/entry.</value>
   </metadata>
   <metadata name="timer_progress.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>338, 56</value>
+  </metadata>
+  <metadata name="contextMenuStrip_list_columns.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
   </metadata>
   <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>237, 17</value>

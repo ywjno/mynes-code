@@ -211,25 +211,28 @@
     <value>0</value>
   </data>
   <data name="richTextBox1.Text" xml:space="preserve">
-    <value>Copyright © Ala Ibrahim Hadid 2009 - 2014
+    <value> A Nintendo Entertainment System / Family Computer (Nes/Famicom) Emulator written in C#.
 
-Writen by Ala Ibrahim Hadid.
-Email: mailto:ahdsoftwares@hotmail.com
+Copyright © Ala Ibrahim Hadid 2009 - 2015
+Email: ahdsoftwares@hotmail.com
 
-Important !!
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. 
+If not, see &lt;http://www.gnu.org/licenses/&gt;.
+
+Important!!
 ------------
 NES is either a trademark or registered trademark of Nintendo of America Inc.
 Famicom is either a trademark or registered trademark of Nintendo Co., LTD.
 All other trademarks are property of their respective owners.
-My Nes is not affiliated with or endorsed by any of the companies mentioned. 
-
-License:
----------
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+My Nes is not affiliated with or endorsed by any of the companies mentioned.
 
 Icons:
 -------
@@ -260,13 +263,13 @@ https://sourceforge.net/projects/managedmessagebox/
 Licenses for files are:
 
 1) 7z.dll: GNU LGPL + unRAR restriction
- 2) All other files:  GNU LGPL
+2) All other files:  GNU LGPL
 
-The GNU LGPL + unRAR restriction means that you must follow both 
+The GNU LGPL + unRAR restriction means that you must follow both
 GNU LGPL rules and unRAR restriction rules.
 
-Note: 
-You can use 7-Zip on any computer, including a computer in a commercial 
+Note:
+You can use 7-Zip on any computer, including a computer in a commercial
 organization. You don't need to register or pay for 7-Zip.
 
 ZLIP
@@ -277,9 +280,9 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
-Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
-Neither the name of ComponentAce nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission. 
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of ComponentAce nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 SlimDX
@@ -311,16 +314,16 @@ http://creativecommons.org/licenses/by-sa/3.0/us/
 
 You are free:
 * To Share - to copy, distribute, display, and perform the work
-* To Remix - to make derivative works 
+* To Remix - to make derivative works
 
 Under the following conditions:
 * Attribution - You must attribute the work in the manner specified by the author or
-licensor (but not in any way that suggests that they endorse you or your use of the work). 
+licensor (but not in any way that suggests that they endorse you or your use of the work).
 * Share Alike - If you alter, transform, or build upon this work, you may distribute
 the resulting work only under the same, similar or a compatible license.
 
 For any reuse or distribution, you must make clear to others the license terms of this work.
-The best way to do this is with a link to the above web page. 
+The best way to do this is with a link to the above web page.
 
 Any of the above conditions can be waived if you get permission from the copyright holder.
 
@@ -334,7 +337,41 @@ Version 1.0.66.0 April 18, 2010
 Using SQLite 3.6.23.1
 Written by Robert Simpson (robert@blackcastlesoft.com)
 Released to the public domain, use at your own risk!
-Official provider website:  http://sqlite.phxsoftware.com</value>
+Official provider website:  http://sqlite.phxsoftware.com
+
+NesCartDB
+----------------
+By BootGod, released at : Sat Sep 10 14:40:41 2011
+Downloaded from:http://bootgod.dyndns.org:7777/home.php
+
+TheGamesDB C# API
+----------------------
+https://github.com/Chainsawkitten/gamesdb-csharp-api/
+Authored by Chainsawkitten; github profile: &lt;https://github.com/Chainsawkitten&gt;
+
+A C# API for [TheGamesDB](http://thegamesdb.net/), 
+a free open-source online database for video games. 
+See the [API Introduction](http://wiki.thegamesdb.net/index.php?title=API_Introduction) 
+on the wiki.
+
+Licensed under [MIT](LICENSE).
+
+Blip_Buffer 0.4.0: Band-Limited Sound Buffer
+
+--------------------------------------------
+
+Blip_Buffer provides waveform synthesis and sample buffering with a high-level
+interface that allows easy generation of square waves and similar with high
+sound quality. Waveforms are specified by amplitude changes at times in terms
+of the source clock rate, then efficiently resampled to the output sample rate
+with adjustable low-pass and high-pass filtering. It is well-suited for
+emulation of the sound chips used video game consoles before the mid-1990s.
+
+
+Author : Shay Green &lt;hotpop.com@blargg&gt;
+Website: http://www.slack.net/~ant/
+Forum  : http://groups.google.com/group/blargg-sound-libs
+License: GNU Lesser General Public License (LGPL)</value>
   </data>
   <data name="richTextBox1.WordWrap" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -378,6 +415,23 @@ Official provider website:  http://sqlite.phxsoftware.com</value>
   <data name="&gt;&gt;tabPage1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="richTextBox2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="richTextBox2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="richTextBox2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>431, 191</value>
+  </data>
+  <data name="richTextBox2.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="richTextBox2.Text" xml:space="preserve">
+    <value>Author and developer: Ala Ibrahim Hadid &lt;mailto:ahdsoftwares@hotmail.com&gt;
+
+Special thanks to Adam Becker &lt;mailto:beannaich@gmail.com&gt; for the great help !</value>
+  </data>
   <data name="&gt;&gt;richTextBox2.Name" xml:space="preserve">
     <value>richTextBox2</value>
   </data>
@@ -397,7 +451,7 @@ Official provider website:  http://sqlite.phxsoftware.com</value>
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>353, 197</value>
+    <value>437, 197</value>
   </data>
   <data name="tabPage2.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -416,6 +470,25 @@ Official provider website:  http://sqlite.phxsoftware.com</value>
   </data>
   <data name="&gt;&gt;tabPage2.ZOrder" xml:space="preserve">
     <value>1</value>
+  </data>
+  <data name="richTextBox3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="richTextBox3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="richTextBox3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>431, 191</value>
+  </data>
+  <data name="richTextBox3.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="richTextBox3.Text" xml:space="preserve">
+    <value>Website: http://sourceforge.net/projects/mynes/
+
+Article: http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx
+
+Facebook: http://www.facebook.com/pages/My-Nes/427707727244076</value>
   </data>
   <data name="&gt;&gt;richTextBox3.Name" xml:space="preserve">
     <value>richTextBox3</value>
@@ -436,7 +509,7 @@ Official provider website:  http://sqlite.phxsoftware.com</value>
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>353, 197</value>
+    <value>437, 197</value>
   </data>
   <data name="tabPage3.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -479,66 +552,6 @@ Official provider website:  http://sqlite.phxsoftware.com</value>
   </data>
   <data name="&gt;&gt;tabControl1.ZOrder" xml:space="preserve">
     <value>1</value>
-  </data>
-  <data name="richTextBox2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="richTextBox2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="richTextBox2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>347, 191</value>
-  </data>
-  <data name="richTextBox2.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="richTextBox2.Text" xml:space="preserve">
-    <value>Author and developer: Ala Ibrahim Hadid &lt;mailto:ahdsoftwares@hotmail.com&gt;
-
-Special thanks to Adam Becker &lt;mailto:beannaich@gmail.com&gt; for the great help !</value>
-  </data>
-  <data name="&gt;&gt;richTextBox2.Name" xml:space="preserve">
-    <value>richTextBox2</value>
-  </data>
-  <data name="&gt;&gt;richTextBox2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;richTextBox2.Parent" xml:space="preserve">
-    <value>tabPage2</value>
-  </data>
-  <data name="&gt;&gt;richTextBox2.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="richTextBox3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="richTextBox3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="richTextBox3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>347, 191</value>
-  </data>
-  <data name="richTextBox3.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="richTextBox3.Text" xml:space="preserve">
-    <value>Website: http://sourceforge.net/projects/mynes/
-
-Article: http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx
-
-Facebook: http://www.facebook.com/pages/My-Nes/427707727244076</value>
-  </data>
-  <data name="&gt;&gt;richTextBox3.Name" xml:space="preserve">
-    <value>richTextBox3</value>
-  </data>
-  <data name="&gt;&gt;richTextBox3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;richTextBox3.Parent" xml:space="preserve">
-    <value>tabPage3</value>
-  </data>
-  <data name="&gt;&gt;richTextBox3.ZOrder" xml:space="preserve">
-    <value>0</value>
   </data>
   <data name="button1.Location" type="System.Drawing.Point, System.Drawing">
     <value>340, 406</value>

@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,43 +50,38 @@ namespace MyNes
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAudioSettings));
-            this.checkBox_enableSound = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.trackBar2 = new System.Windows.Forms.TrackBar();
-            this.trackBar_bufferLength = new System.Windows.Forms.TrackBar();
-            this.trackBar_latency = new System.Windows.Forms.TrackBar();
             this.button3 = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label_volume = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label_bufferLength = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label_latency = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.radioButton_size_16kb = new System.Windows.Forms.RadioButton();
+            this.radioButton_size_8kb = new System.Windows.Forms.RadioButton();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.radioButton1_sound_enabled = new System.Windows.Forms.RadioButton();
+            this.radioButton_sound_disabled = new System.Windows.Forms.RadioButton();
+            this.trackBar_latency = new System.Windows.Forms.TrackBar();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label_volume = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox_noize = new System.Windows.Forms.CheckBox();
             this.checkBox_triangle = new System.Windows.Forms.CheckBox();
             this.checkBox_dmc = new System.Windows.Forms.CheckBox();
             this.checkBox_sq2 = new System.Windows.Forms.CheckBox();
             this.checkBox_sq1 = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label_latency = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar_bufferLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_latency)).BeginInit();
             this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // checkBox_enableSound
-            // 
-            resources.ApplyResources(this.checkBox_enableSound, "checkBox_enableSound");
-            this.checkBox_enableSound.Name = "checkBox_enableSound";
-            this.toolTip1.SetToolTip(this.checkBox_enableSound, resources.GetString("checkBox_enableSound.ToolTip"));
-            this.checkBox_enableSound.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
@@ -113,25 +108,6 @@ namespace MyNes
             this.trackBar2.Value = 1;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             // 
-            // trackBar_bufferLength
-            // 
-            resources.ApplyResources(this.trackBar_bufferLength, "trackBar_bufferLength");
-            this.trackBar_bufferLength.Maximum = 50;
-            this.trackBar_bufferLength.Minimum = 1;
-            this.trackBar_bufferLength.Name = "trackBar_bufferLength";
-            this.toolTip1.SetToolTip(this.trackBar_bufferLength, resources.GetString("trackBar_bufferLength.ToolTip"));
-            this.trackBar_bufferLength.Value = 2;
-            this.trackBar_bufferLength.Scroll += new System.EventHandler(this.trackBar_bufferLength_Scroll);
-            // 
-            // trackBar_latency
-            // 
-            resources.ApplyResources(this.trackBar_latency, "trackBar_latency");
-            this.trackBar_latency.Minimum = 1;
-            this.trackBar_latency.Name = "trackBar_latency";
-            this.toolTip1.SetToolTip(this.trackBar_latency, resources.GetString("trackBar_latency.ToolTip"));
-            this.trackBar_latency.Value = 1;
-            this.trackBar_latency.Scroll += new System.EventHandler(this.trackBar_latency_Scroll);
-            // 
             // button3
             // 
             resources.ApplyResources(this.button3, "button3");
@@ -140,64 +116,19 @@ namespace MyNes
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // groupBox4
+            // radioButton_size_16kb
             // 
-            resources.ApplyResources(this.groupBox4, "groupBox4");
-            this.groupBox4.Controls.Add(this.label_volume);
-            this.groupBox4.Controls.Add(this.trackBar2);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.TabStop = false;
-            this.toolTip1.SetToolTip(this.groupBox4, resources.GetString("groupBox4.ToolTip"));
+            resources.ApplyResources(this.radioButton_size_16kb, "radioButton_size_16kb");
+            this.radioButton_size_16kb.Name = "radioButton_size_16kb";
+            this.toolTip1.SetToolTip(this.radioButton_size_16kb, resources.GetString("radioButton_size_16kb.ToolTip"));
+            this.radioButton_size_16kb.UseVisualStyleBackColor = true;
             // 
-            // label_volume
+            // radioButton_size_8kb
             // 
-            resources.ApplyResources(this.label_volume, "label_volume");
-            this.label_volume.Name = "label_volume";
-            this.toolTip1.SetToolTip(this.label_volume, resources.GetString("label_volume.ToolTip"));
-            // 
-            // groupBox1
-            // 
-            resources.ApplyResources(this.groupBox1, "groupBox1");
-            this.groupBox1.Controls.Add(this.label_bufferLength);
-            this.groupBox1.Controls.Add(this.trackBar_bufferLength);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.TabStop = false;
-            this.toolTip1.SetToolTip(this.groupBox1, resources.GetString("groupBox1.ToolTip"));
-            // 
-            // label_bufferLength
-            // 
-            resources.ApplyResources(this.label_bufferLength, "label_bufferLength");
-            this.label_bufferLength.Name = "label_bufferLength";
-            this.toolTip1.SetToolTip(this.label_bufferLength, resources.GetString("label_bufferLength.ToolTip"));
-            // 
-            // groupBox2
-            // 
-            resources.ApplyResources(this.groupBox2, "groupBox2");
-            this.groupBox2.Controls.Add(this.label_latency);
-            this.groupBox2.Controls.Add(this.trackBar_latency);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.TabStop = false;
-            this.toolTip1.SetToolTip(this.groupBox2, resources.GetString("groupBox2.ToolTip"));
-            // 
-            // label_latency
-            // 
-            resources.ApplyResources(this.label_latency, "label_latency");
-            this.label_latency.Name = "label_latency";
-            this.toolTip1.SetToolTip(this.label_latency, resources.GetString("label_latency.ToolTip"));
-            // 
-            // groupBox3
-            // 
-            resources.ApplyResources(this.groupBox3, "groupBox3");
-            this.groupBox3.Controls.Add(this.linkLabel2);
-            this.groupBox3.Controls.Add(this.linkLabel1);
-            this.groupBox3.Controls.Add(this.checkBox_noize);
-            this.groupBox3.Controls.Add(this.checkBox_triangle);
-            this.groupBox3.Controls.Add(this.checkBox_dmc);
-            this.groupBox3.Controls.Add(this.checkBox_sq2);
-            this.groupBox3.Controls.Add(this.checkBox_sq1);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.TabStop = false;
-            this.toolTip1.SetToolTip(this.groupBox3, resources.GetString("groupBox3.ToolTip"));
+            resources.ApplyResources(this.radioButton_size_8kb, "radioButton_size_8kb");
+            this.radioButton_size_8kb.Name = "radioButton_size_8kb";
+            this.toolTip1.SetToolTip(this.radioButton_size_8kb, resources.GetString("radioButton_size_8kb.ToolTip"));
+            this.radioButton_size_8kb.UseVisualStyleBackColor = true;
             // 
             // linkLabel2
             // 
@@ -215,89 +146,158 @@ namespace MyNes
             this.toolTip1.SetToolTip(this.linkLabel1, resources.GetString("linkLabel1.ToolTip"));
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // radioButton1_sound_enabled
+            // 
+            resources.ApplyResources(this.radioButton1_sound_enabled, "radioButton1_sound_enabled");
+            this.radioButton1_sound_enabled.Checked = true;
+            this.radioButton1_sound_enabled.Name = "radioButton1_sound_enabled";
+            this.radioButton1_sound_enabled.TabStop = true;
+            this.toolTip1.SetToolTip(this.radioButton1_sound_enabled, resources.GetString("radioButton1_sound_enabled.ToolTip"));
+            this.radioButton1_sound_enabled.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_sound_disabled
+            // 
+            resources.ApplyResources(this.radioButton_sound_disabled, "radioButton_sound_disabled");
+            this.radioButton_sound_disabled.Name = "radioButton_sound_disabled";
+            this.toolTip1.SetToolTip(this.radioButton_sound_disabled, resources.GetString("radioButton_sound_disabled.ToolTip"));
+            this.radioButton_sound_disabled.UseVisualStyleBackColor = true;
+            // 
+            // trackBar_latency
+            // 
+            resources.ApplyResources(this.trackBar_latency, "trackBar_latency");
+            this.trackBar_latency.Maximum = 100;
+            this.trackBar_latency.Minimum = 1;
+            this.trackBar_latency.Name = "trackBar_latency";
+            this.toolTip1.SetToolTip(this.trackBar_latency, resources.GetString("trackBar_latency.ToolTip"));
+            this.trackBar_latency.Value = 1;
+            this.trackBar_latency.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label_volume);
+            this.groupBox4.Controls.Add(this.trackBar2);
+            resources.ApplyResources(this.groupBox4, "groupBox4");
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.TabStop = false;
+            // 
+            // label_volume
+            // 
+            resources.ApplyResources(this.label_volume, "label_volume");
+            this.label_volume.Name = "label_volume";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.linkLabel2);
+            this.groupBox3.Controls.Add(this.linkLabel1);
+            this.groupBox3.Controls.Add(this.checkBox_noize);
+            this.groupBox3.Controls.Add(this.checkBox_triangle);
+            this.groupBox3.Controls.Add(this.checkBox_dmc);
+            this.groupBox3.Controls.Add(this.checkBox_sq2);
+            this.groupBox3.Controls.Add(this.checkBox_sq1);
+            resources.ApplyResources(this.groupBox3, "groupBox3");
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.TabStop = false;
+            // 
             // checkBox_noize
             // 
             resources.ApplyResources(this.checkBox_noize, "checkBox_noize");
             this.checkBox_noize.Name = "checkBox_noize";
-            this.toolTip1.SetToolTip(this.checkBox_noize, resources.GetString("checkBox_noize.ToolTip"));
             this.checkBox_noize.UseVisualStyleBackColor = true;
             // 
             // checkBox_triangle
             // 
             resources.ApplyResources(this.checkBox_triangle, "checkBox_triangle");
             this.checkBox_triangle.Name = "checkBox_triangle";
-            this.toolTip1.SetToolTip(this.checkBox_triangle, resources.GetString("checkBox_triangle.ToolTip"));
             this.checkBox_triangle.UseVisualStyleBackColor = true;
             // 
             // checkBox_dmc
             // 
             resources.ApplyResources(this.checkBox_dmc, "checkBox_dmc");
             this.checkBox_dmc.Name = "checkBox_dmc";
-            this.toolTip1.SetToolTip(this.checkBox_dmc, resources.GetString("checkBox_dmc.ToolTip"));
             this.checkBox_dmc.UseVisualStyleBackColor = true;
             // 
             // checkBox_sq2
             // 
             resources.ApplyResources(this.checkBox_sq2, "checkBox_sq2");
             this.checkBox_sq2.Name = "checkBox_sq2";
-            this.toolTip1.SetToolTip(this.checkBox_sq2, resources.GetString("checkBox_sq2.ToolTip"));
             this.checkBox_sq2.UseVisualStyleBackColor = true;
             // 
             // checkBox_sq1
             // 
             resources.ApplyResources(this.checkBox_sq1, "checkBox_sq1");
             this.checkBox_sq1.Name = "checkBox_sq1";
-            this.toolTip1.SetToolTip(this.checkBox_sq1, resources.GetString("checkBox_sq1.ToolTip"));
             this.checkBox_sq1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.radioButton_size_8kb);
+            this.groupBox1.Controls.Add(this.radioButton_size_16kb);
+            resources.ApplyResources(this.groupBox1, "groupBox1");
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.TabStop = false;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.radioButton1_sound_enabled);
+            this.groupBox2.Controls.Add(this.radioButton_sound_disabled);
+            resources.ApplyResources(this.groupBox2, "groupBox2");
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.TabStop = false;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label_latency);
+            this.groupBox5.Controls.Add(this.trackBar_latency);
+            resources.ApplyResources(this.groupBox5, "groupBox5");
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.TabStop = false;
+            // 
+            // label_latency
+            // 
+            resources.ApplyResources(this.label_latency, "label_latency");
+            this.label_latency.Name = "label_latency";
             // 
             // FormAudioSettings
             // 
             this.AcceptButton = this.button1;
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.checkBox_enableSound);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormAudioSettings";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.toolTip1.SetToolTip(this, resources.GetString("$this.ToolTip"));
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar_bufferLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_latency)).EndInit();
             this.groupBox4.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.CheckBox checkBox_enableSound;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label label_volume;
         private System.Windows.Forms.TrackBar trackBar2;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label_bufferLength;
-        private System.Windows.Forms.TrackBar trackBar_bufferLength;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label_latency;
-        private System.Windows.Forms.TrackBar trackBar_latency;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox checkBox_noize;
@@ -307,5 +307,14 @@ namespace MyNes
         private System.Windows.Forms.CheckBox checkBox_sq1;
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.RadioButton radioButton_size_16kb;
+        private System.Windows.Forms.RadioButton radioButton_size_8kb;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RadioButton radioButton1_sound_enabled;
+        private System.Windows.Forms.RadioButton radioButton_sound_disabled;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label_latency;
+        private System.Windows.Forms.TrackBar trackBar_latency;
     }
 }

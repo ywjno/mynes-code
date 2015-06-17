@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,8 @@ namespace MyNes
             this.toolStripButton_deleteSelected = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton_deleteAll = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton_get_tgdb = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton_edit = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton_openLocation = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -79,6 +81,8 @@ namespace MyNes
             this.toolStripButton_deleteSelected,
             this.toolStripButton_deleteAll,
             this.toolStripSeparator2,
+            this.toolStripButton_get_tgdb,
+            this.toolStripSeparator4,
             this.toolStripButton_edit,
             this.toolStripButton_openLocation,
             this.toolStripSeparator3,
@@ -136,6 +140,19 @@ namespace MyNes
             // 
             resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
             this.toolStripSeparator2.Name = "toolStripSeparator2";
+            // 
+            // toolStripButton_get_tgdb
+            // 
+            resources.ApplyResources(this.toolStripButton_get_tgdb, "toolStripButton_get_tgdb");
+            this.toolStripButton_get_tgdb.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton_get_tgdb.Image = global::MyNes.Properties.Resources.the_game_db_icon;
+            this.toolStripButton_get_tgdb.Name = "toolStripButton_get_tgdb";
+            this.toolStripButton_get_tgdb.Click += new System.EventHandler(this.toolStripButton_get_tgdb_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
             // 
             // toolStripButton_edit
             // 
@@ -218,5 +235,7 @@ namespace MyNes
         private System.Windows.Forms.ToolStripButton toolStripButton_prevous;
         private System.Windows.Forms.ToolStripLabel StatusLabel;
         private System.Windows.Forms.ToolStripButton toolStripButton_next;
+        private System.Windows.Forms.ToolStripButton toolStripButton_get_tgdb;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }

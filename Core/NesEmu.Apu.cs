@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,23 +97,15 @@ namespace MyNes.Core
         private static bool SoundEnabled;
         // Output playback buffer
         public static int audio_playback_buffer_frequency;
-        private static int audio_playback_buffer_timer;
-        private static int audio_playback_buffer_timer_reload;
-        private const int audio_playback_max_peek = 120;
-        private const int audio_playback_min_peek = -120;
-        private static byte[] audio_playback_buffer = new byte[44100];
-        private static int audio_playback_bufferSize;
-        private static bool audio_playback_first_render;
-        private static bool audio_playback_buffer_sumbit_enabled;
-        public static int audio_playback_w_pos = 0;//Write position
-        public static int audio_playback_latency = 0;//Write position
-        private static int audio_playback_out;
         // DAC
         private const double audio_playback_amplitude = 256;
-        private static double[] dac_sqr_table;
-        private static double[] dac_tnd_table;
-        // DC Blocker Filter.
-        private static double x, x_1, y, y_1;
+
+        private static double[][][][][] dac_table;
+        // Output values
+        private static double x, x_1;
+        private static BlipBufferNative audio_playback_blipbuffer;
+        private static uint audio_playback_blipbuffer_timer;
+        private static int audio_playback_blipbuffer_size;
 
         /*Channels configuration*/
         public static bool audio_playback_sq1_enabled;
@@ -121,6 +113,8 @@ namespace MyNes.Core
         public static bool audio_playback_dmc_enabled;
         public static bool audio_playback_trl_enabled;
         public static bool audio_playback_noz_enabled;
+
+        private static bool audio_playback_sample_needed;
 
         private static void APUHardReset()
         {
@@ -158,155 +152,91 @@ namespace MyNes.Core
         }
         private static void APUShutdown()
         {
-            if (audio_playback_buffer == null) return;
-            // Noise on shutdown; MISC
-            Random r = new Random();
-            for (int i = 0; i < audio_playback_buffer.Length; i++)
-                audio_playback_buffer[i] = (byte)r.Next(0, 20);
+            if (AudioOut != null)
+                AudioOut.Shutdown();
         }
         public static void CalculateAudioPlaybackValues()
         {
             // Playback buffer
-            audio_playback_buffer_timer = 0;
-            audio_playback_buffer_timer_reload = cpuSpeedInHz / audio_playback_buffer_frequency;
-            audio_playback_first_render = true;
+            audio_playback_blipbuffer = new BlipBufferNative(audio_playback_blipbuffer_size);
+            audio_playback_blipbuffer.SetRates(cpuSpeedInHz, audio_playback_buffer_frequency);
+
+            audio_playback_blipbuffer_timer = 0;
+            audio_playback_sample_needed = false;
+            x = x_1 = 0;
         }
         private static void InitializeDACTables()
         {
-            // Squares table
-            dac_sqr_table = new double[32];
-            for (int i = 0; i < 32; i++)
+            dac_table = new double[16][][][][];
+            for (int sq1 = 0; sq1 < 16; sq1++)
             {
-                dac_sqr_table[i] = 95.52 / (8128.0 / i + 100);
-            }
-            // TND table
-            dac_tnd_table = new double[204];
-            for (int i = 0; i < 204; i++)
-            {
-                dac_tnd_table[i] = 163.67 / (24329.0 / i + 100);
+                dac_table[sq1] = new double[16][][][];
+                for (int sq2 = 0; sq2 < 16; sq2++)
+                {
+                    dac_table[sq1][sq2] = new double[16][][];
+                    for (int trl = 0; trl < 16; trl++)
+                    {
+                        dac_table[sq1][sq2][trl] = new double[16][];
+                        for (int noz = 0; noz < 16; noz++)
+                        {
+                            dac_table[sq1][sq2][trl][noz] = new double[128];
+                            for (int dmc = 0; dmc < 128; dmc++)
+                            {
+                                double rgroup1_dac_output = (8128.0 / ((double)sq1 + (double)sq2));
+                                rgroup1_dac_output = 95.88 / (rgroup1_dac_output + 100.0);
+
+                                double rgroup2_dac_output = 1.0 / (((double)dmc / 22638.0) + ((double)trl / 8827.0) + ((double)noz / 12241.0));
+                                rgroup2_dac_output = 159.79 / (rgroup2_dac_output + 100.0);
+
+                                dac_table[sq1][sq2][trl][noz][dmc] = rgroup1_dac_output + rgroup2_dac_output;
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        /// <summary>
-        /// Setup audio playback (using buffer submit at the end of each frame).
-        /// </summary>
-        /// <param name="AudioOutput">The audio provider (AudioOut.AddSample(ref sample) 
-        /// MUST be implemented, AudioOut.SubmitBuffer(ref buff) is ignored)</param>
-        /// <param name="soundEnabled">Indicates if the sound playbakc is enabled or not.</param>
-        /// <param name="frequency">The sound playback frequency in Hz. Prefered value is 44100 Hz</param>
-        public static void SetupSoundPlayback(IAudioProvider AudioOutput, bool soundEnabled, int frequency)
-        {
-            SetupSoundPlayback(AudioOutput, soundEnabled, frequency, 0, 0, false);
-        }
         /// <summary>
         /// Setup audio playback.
         /// </summary>
         /// <param name="AudioOutput">The audio provider.</param>
-        /// <param name="soundEnabled">Indicates if the sound playbakc is enabled or not.</param>
-        /// <param name="frequency">The sound playback frequency in Hz. Prefered value is 44100 Hz</param>
-        /// <param name="bufferSize">The buffer size in bytes.</param>
-        /// <param name="latencyInBytes">The latency in bytes (number of samples * 2 for latency)</param>
-        /// <param name="enable_buffer_submit">If set, the engine will use AudioOut.SubmitBuffer(ref buff)
-        /// otherwise AudioOut.AddSample(ref sample) will be used.</param>
-        public static void SetupSoundPlayback(IAudioProvider AudioOutput, bool soundEnabled, int frequency, int bufferSize,
-            int latencyInBytes, bool enable_buffer_submit)
+        /// <param name="soundEnabled">Indicates if the sound playback is enabled or not.</param>
+        /// <param name="frequency">The sound playback frequency in Hz. Preferred value is 44100 Hz</param>
+        /// <param name="samplesCount">The buffer size in samples (bytes count / 2)</param>
+        public static void SetupSoundPlayback(IAudioProvider AudioOutput, bool soundEnabled, int frequency, int samplesCount)
         {
-            audio_playback_latency = latencyInBytes;
-            audio_playback_bufferSize = bufferSize;
             audio_playback_buffer_frequency = frequency;
             AudioOut = AudioOutput;
             SoundEnabled = soundEnabled;
-            x = x_1 = y = y_1 = 0;
-            audio_playback_first_render = true;
-            audio_playback_buffer = new byte[audio_playback_bufferSize];
-            audio_playback_buffer_sumbit_enabled = enable_buffer_submit;
+            audio_playback_blipbuffer_size = samplesCount;
+            x = x_1 = 0;
         }
         private static void APUUpdatePlayback()
         {
-            audio_playback_buffer_timer++;
-            if (audio_playback_buffer_timer >= audio_playback_buffer_timer_reload)
+            audio_playback_blipbuffer_timer++;
+            if (audio_playback_sample_needed)
             {
-                audio_playback_buffer_timer -= audio_playback_buffer_timer_reload;
+                audio_playback_sample_needed = false;
+                if (!audio_playback_sq1_enabled)
+                    sq1_pl_output = 0;
+                if (!audio_playback_sq2_enabled)
+                    sq2_pl_output = 0;
+                if (!audio_playback_dmc_enabled)
+                    dmc_pl_output = 0;
+                if (!audio_playback_trl_enabled)
+                    trl_pl_output = 0;
+                if (!audio_playback_noz_enabled)
+                    noz_pl_output = 0;
+                // Collect the sample
+                x = (dac_table[sq1_pl_output][sq2_pl_output][trl_pl_output][noz_pl_output][dmc_pl_output] +
+                    (board.enable_external_sound ? board.APUGetSamples() : 0)) * audio_playback_amplitude;
 
-                #region Collect channel outputs
-
-                // SQ1
-                if (sq1_pl_clocks > 0)
-                    sq1_pl_output = sq1_pl_output_av / sq1_pl_clocks;
-                sq1_pl_clocks = sq1_pl_output_av = 0;
-
-                // SQ2
-                if (sq2_pl_clocks > 0)
-                    sq2_pl_output = sq2_pl_output_av / sq2_pl_clocks;
-                sq2_pl_clocks = sq2_pl_output_av = 0;
-
-                // NOZ
-                if (noz_pl_clocks > 0)
-                    noz_pl_output = noz_pl_output_av / noz_pl_clocks;
-                noz_pl_clocks = noz_pl_output_av = 0;
-
-                // TRL
-                if (trl_pl_clocks > 0)
-                    trl_pl_output = trl_pl_output_av / trl_pl_clocks;
-                trl_pl_clocks = trl_pl_output_av = 0;
-
-                // DMC
-                if (dmc_pl_clocks > 0)
-                    dmc_pl_output = dmc_pl_output_av / dmc_pl_clocks;
-                dmc_pl_clocks = dmc_pl_output_av = 0;
-
-                #endregion
-
-                #region DC Blocker Filter
-
-                // X[n] is the current NES DAC sample.
-                x = (dac_sqr_table[sq1_pl_output + sq2_pl_output] +
-                     dac_tnd_table[(3 * trl_pl_output) + (2 * noz_pl_output) + dmc_pl_output] +
-                   (board.enable_external_sound ? board.APUGetSamples() : 0)) * audio_playback_amplitude;
-
-                // Apply the formula. 
-                // Y[n] is the current sample that output into buffer.
-                y = x - x_1 + (0.995 * y_1);// y[n] = x[n] - x[n - 1] + R * y[n - 1]; R = 0.995 for 44100 Hz
-                x_1 = x;
-                y_1 = y;
-                // Convert from double to int32.
-                audio_playback_out = Convert.ToInt32(Math.Round(y));
-
-                #endregion
-
-                #region Limit peek (this nesseccary for external channels)
-                if (audio_playback_out > audio_playback_max_peek)
-                    audio_playback_out = audio_playback_max_peek;
-                else if (audio_playback_out < audio_playback_min_peek)
-                    audio_playback_out = audio_playback_min_peek;
-                #endregion
-
-                #region Add sample to the buffer.
-                if (audio_playback_buffer_sumbit_enabled)
+                // Add delta to the blip-buffer
+                if (x != x_1)
                 {
-                    if (audio_playback_first_render)
-                    {
-                        audio_playback_first_render = false;
-                        audio_playback_w_pos = AudioOut.CurrentWritePosition;
-                    }
-                    // 16 Bit samples
-                    if (audio_playback_w_pos >= audio_playback_bufferSize)
-                        audio_playback_w_pos = 0;
-                    audio_playback_buffer[audio_playback_w_pos] = (byte)((audio_playback_out & 0xFF00) >> 8);
-                    audio_playback_w_pos++;
-
-                    if (audio_playback_w_pos >= audio_playback_bufferSize)
-                        audio_playback_w_pos = 0;
-                    audio_playback_buffer[audio_playback_w_pos] = (byte)(audio_playback_out & 0xFF);
-                    audio_playback_w_pos++;
+                    audio_playback_blipbuffer.AddDelta(audio_playback_blipbuffer_timer, (int)(x - x_1));
+                    x_1 = x;
                 }
-                else
-                {
-                    AudioOut.AddSample(ref audio_playback_out);
-                }
-                if (AudioOut.IsRecording)
-                    AudioOut.RecorderAddSample(ref audio_playback_out);
-                #endregion
             }
         }
         private static void APUClockDuration()
@@ -329,7 +259,6 @@ namespace MyNes.Core
             if (board.enable_external_sound)
                 board.OnAPUClockEnvelope();
         }
-
         private static void APUCheckIrq()
         {
             if (FrameIrqEnabled)

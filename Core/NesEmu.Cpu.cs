@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,15 +35,19 @@ namespace MyNes.Core
         private static int int_temp1;
         private static byte dummy;
 
-        private static void CPUHardReset()
+        private static void CPUSetupSpeed()
         {
-            // SPEED
+            // SPEED <http://wiki.nesdev.com/w/index.php?title=Clock_rate&redirect=no>
             switch (TVFormat)
             {
-                case TVSystem.NTSC: systemIndex = 0; cpuSpeedInHz = 1789772; break;
+                case TVSystem.NTSC: systemIndex = 0; cpuSpeedInHz = 1789773; break;
                 case TVSystem.PALB: systemIndex = 1; cpuSpeedInHz = 1662607; break;
                 case TVSystem.DENDY: systemIndex = 2; cpuSpeedInHz = 1773448; break;
             }
+        }
+        private static void CPUHardReset()
+        {
+            CPUSetupSpeed();
             // registers
             registers.a = 0x00;
             registers.x = 0x00;

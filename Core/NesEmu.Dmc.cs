@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,6 @@ namespace MyNes.Core
         private static byte dmc_output;
         private static int dmc_cycles;
         private static int dmc_freqTimer;
-        // Playback
-        private static int dmc_pl_clocks;
-        private static int dmc_pl_output_av;
         private static int dmc_pl_output;
 
         private static void DMCShutdown()
@@ -64,7 +61,6 @@ namespace MyNes.Core
             dmc_dmaBuffer = 0;
             dmc_freqTimer = 0;
             dmc_cycles = DMCFrequencyTable[systemIndex][dmc_freqTimer];
-            dmc_pl_clocks = 0;
         }
         private static void DMCSoftReset()
         {
@@ -75,6 +71,7 @@ namespace MyNes.Core
             if (--dmc_cycles <= 0)
             {
                 dmc_cycles = DMCFrequencyTable[systemIndex][dmc_freqTimer];
+
                 if (dmc_dmaEnabled)
                 {
                     if ((dmc_dmaByte & 0x01) != 0)
@@ -109,9 +106,9 @@ namespace MyNes.Core
                         dmc_dmaEnabled = false;
                     }
                 }
-                if (audio_playback_dmc_enabled)
-                    dmc_pl_output_av += dmc_output;
-                dmc_pl_clocks++;
+
+                dmc_pl_output = dmc_output;
+                audio_playback_sample_needed = true;
             }
         }
     }

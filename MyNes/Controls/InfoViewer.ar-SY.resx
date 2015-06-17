@@ -132,6 +132,12 @@
   <data name="toolStripButton_deleteAll.Text" xml:space="preserve">
     <value>حذف كافة الملفات</value>
   </data>
+  <data name="toolStripButton_get_tgdb.Text" xml:space="preserve">
+    <value>البحث</value>
+  </data>
+  <data name="toolStripButton_get_tgdb.ToolTipText" xml:space="preserve">
+    <value>البحث في TheGamesDB.net  عن معلومات عن العبة</value>
+  </data>
   <data name="toolStripButton_edit.Text" xml:space="preserve">
     <value>تحرير باستخدام البرنامج الافتراضي للويندوز</value>
   </data>
@@ -140,6 +146,10 @@
   </data>
   <data name="toolStripButton_prevous.Text" xml:space="preserve">
     <value>الملف السابق</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="StatusLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>28, 22</value>
   </data>
   <data name="toolStripButton_next.Text" xml:space="preserve">
     <value>الملف التالي</value>

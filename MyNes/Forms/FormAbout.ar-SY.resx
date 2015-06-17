@@ -117,12 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="tabControl1.RightToLeftLayout" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="tabPage1.Text" xml:space="preserve">
+    <value>حقوق النسخ</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="richTextBox1.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Narrow, 9pt</value>
   </data>
   <data name="richTextBox1.Text" xml:space="preserve">
-    <value>جميع الحقوق محفوظة © علاء ابراهيم حديد 2009 - 2014
+    <value>جميع الحقوق محفوظة © علاء ابراهيم حديد 2009 - 2015
 سوريا - حماه - السلمية
 Email: mailto:ahdsoftwares@hotmail.com
 
@@ -150,8 +157,8 @@ https://sourceforge.net/projects/managedmessagebox/
 وزع هذا البرنامج على الأمل بأنه مفيد، لكن بدون أية ضمانة؛ حتى بدون الضمانة الضمنية أو الإمكانية التجارية أو الملاءمة التجارية لأي غرض معين.
 يجب بأن تكون قد استلمت نسخة من الرخصة GNU General Public License مع هذا البرنامج، إذا لم تكن موجودة مع البرنامج، الرجاء زيارة الموقع&lt;http://www.gnu.org/licenses/&gt;</value>
   </data>
-  <data name="tabPage1.Text" xml:space="preserve">
-    <value>حقوق النسخ</value>
+  <data name="tabPage2.Text" xml:space="preserve">
+    <value>أعمال</value>
   </data>
   <data name="richTextBox2.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Narrow, 9pt</value>
@@ -163,8 +170,8 @@ https://sourceforge.net/projects/managedmessagebox/
 Adam Becker for the great help !!
 &lt;mailto:beannaich@gmail.com&gt;</value>
   </data>
-  <data name="tabPage2.Text" xml:space="preserve">
-    <value>أعمال</value>
+  <data name="tabPage3.Text" xml:space="preserve">
+    <value>روابط الأنترنيت</value>
   </data>
   <data name="richTextBox3.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Narrow, 9pt</value>
@@ -175,13 +182,6 @@ Adam Becker for the great help !!
 مقالة عن المشروع: http://www.codeproject.com/KB/game/MyNes_NitendoEmulator.aspx
 
 صفحة الفيس بوك: http://www.facebook.com/pages/My-Nes/427707727244076</value>
-  </data>
-  <data name="tabPage3.Text" xml:space="preserve">
-    <value>روابط الأنترنيت</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="tabControl1.RightToLeftLayout" type="System.Boolean, mscorlib">
-    <value>True</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="$this.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">

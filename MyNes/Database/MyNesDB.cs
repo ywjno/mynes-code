@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -396,6 +396,28 @@ namespace MyNes
         }
 
         /*Entries*/
+        public static bool UpdateEntry(string id, string gameTitle)
+        {
+            try
+            {
+                using (SQLiteTransaction mytransaction = myconnection.BeginTransaction())
+                {
+                    using (SQLiteCommand mycommand = new SQLiteCommand(myconnection))
+                    {
+                        mycommand.CommandText = string.Format(
+                            "UPDATE GAMES SET [Name] = '{0}' WHERE [Id] = '{1}';", gameTitle, id);
+                        mycommand.ExecuteNonQuery();
+                    }
+                    mytransaction.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.Message);
+                return false;
+            }
+            return true;
+        }
         public static bool UpdateEntry(string id, int rating)
         {
             try

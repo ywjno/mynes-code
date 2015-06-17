@@ -1762,7 +1762,7 @@ namespace MLV
             itemHeight = CharSize.Height + itemh;
             int itemTextOffset = itemh / 2;
             int lines = (this.Height / itemHeight) + 2;
-
+            bool resetX = false;
             int offset = VscrollOffset % itemHeight;
 
             foreach (ManagedListViewColumn column in columns)
@@ -1774,11 +1774,25 @@ namespace MLV
                     if (items != null)
                     {
                         int lineIndex = VscrollOffset / itemHeight;
+                        
                         //draw sub items related to this column
                         for (int j = 0; j < lines; j++)
                         {
                             if (lineIndex < items.Count)
                             {
+                                if (resetX)
+                                {
+                                    resetX = false;
+                                    x = 0;
+                                }
+                                if (x == 0)
+                                {
+                                    if (items[lineIndex].IsChildItem)
+                                    {
+                                        x = 15;
+                                        resetX = true;
+                                    }
+                                }
                                 //clear
                                 if (backgroundThumbnail == null)
                                 {
@@ -1911,6 +1925,11 @@ namespace MLV
                             }
                             lineIndex++;
                         }
+                        if (resetX)
+                        {
+                            resetX = false;
+                            x = 0;
+                        } 
                     }
                     //draw the column rectangle, draw the column after the item to hide the offset
                     Color Hcolor = ColumnColor;
@@ -2334,6 +2353,17 @@ namespace MLV
         {
             if (AdvanceHScrollRequest != null)
                 AdvanceHScrollRequest(this, new EventArgs());
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            if (m.Msg == 257)// Key up !
+            {
+                // Fix when the window is no longer receive keydown events.
+                OnKeyDownRaised(new KeyEventArgs((Keys)m.WParam));
+            }
         }
     }
 }

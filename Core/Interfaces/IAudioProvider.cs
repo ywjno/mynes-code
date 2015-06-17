@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,7 @@ namespace MyNes.Core
 {
     public interface IAudioProvider
     {
-        void AddSample(ref int sample);
-        void RecorderAddSample(ref int sample);
-        void SubmitBuffer(ref byte[] samples);
-        int CurrentWritePosition { get; }
+        void Update(ref short[] samples);
         bool IsPlaying { get; }
         void Play();
         void Pause();

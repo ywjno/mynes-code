@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,8 @@ namespace MyNes
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton_openDefaultBrowser = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton_openLocation = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton_search_tgdb = new System.Windows.Forms.ToolStripButton();
             this.toolStrip_status = new System.Windows.Forms.ToolStrip();
             this.toolStripButton_previous = new System.Windows.Forms.ToolStripButton();
             this.StatusLabel = new System.Windows.Forms.ToolStripLabel();
@@ -101,7 +103,9 @@ namespace MyNes
             this.toolStripButton_deleteAll,
             this.toolStripSeparator2,
             this.toolStripButton_openDefaultBrowser,
-            this.toolStripButton_openLocation});
+            this.toolStripButton_openLocation,
+            this.toolStripSeparator7,
+            this.toolStripButton_search_tgdb});
             this.toolStrip_bar.Name = "toolStrip_bar";
             this.toolTip1.SetToolTip(this.toolStrip_bar, resources.GetString("toolStrip_bar.ToolTip"));
             // 
@@ -149,6 +153,19 @@ namespace MyNes
             this.toolStripButton_openLocation.Image = global::MyNes.Properties.Resources.folder;
             this.toolStripButton_openLocation.Name = "toolStripButton_openLocation";
             this.toolStripButton_openLocation.Click += new System.EventHandler(this.toolStripButton_openLocation_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            resources.ApplyResources(this.toolStripSeparator7, "toolStripSeparator7");
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            // 
+            // toolStripButton_search_tgdb
+            // 
+            resources.ApplyResources(this.toolStripButton_search_tgdb, "toolStripButton_search_tgdb");
+            this.toolStripButton_search_tgdb.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton_search_tgdb.Image = global::MyNes.Properties.Resources.the_game_db_icon;
+            this.toolStripButton_search_tgdb.Name = "toolStripButton_search_tgdb";
+            this.toolStripButton_search_tgdb.Click += new System.EventHandler(this.toolStripButton_search_tgdb_Click);
             // 
             // toolStrip_status
             // 
@@ -424,5 +441,7 @@ namespace MyNes
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem showToolbarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showStatusbarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripButton toolStripButton_search_tgdb;
     }
 }

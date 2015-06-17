@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,7 @@ namespace MyNes
             toolStripButton_next.Enabled = false;
             toolStripButton_previous.Enabled = false;
             toolStripButton_add.Enabled = false;
+            toolStripButton_search_tgdb.Enabled = false;
             toolStripButton_delete.Enabled = false;
             toolStripButton_deleteAll.Enabled = false;
             toolStripButton_openLocation.Enabled = false;
@@ -142,6 +143,7 @@ namespace MyNes
             // Get images for given game id
             detects = MyNesDB.GetDetects(MODE.ToString(), id);
             toolStripButton_add.Enabled = true;
+            toolStripButton_search_tgdb.Enabled = true;
             if (detects == null) return;
             if (detects.Length > 0)
                 fileIndex = 0;
@@ -460,6 +462,122 @@ namespace MyNes
             }
             showStatusbarToolStripMenuItem.Checked = toolStrip_status.Visible;
             showToolbarToolStripMenuItem.Checked = toolStrip_bar.Visible;
+        }
+        private void toolStripButton_search_tgdb_Click(object sender, EventArgs e)
+        {
+            if (currentID == "") return;
+            string entryName = MyNesDB.GetEntry(currentID).Name;
+            FormSearchTheGamesDB frm = new FormSearchTheGamesDB(entryName);
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                TheGamesDBAPI.Game gm = TheGamesDBAPI.GamesDB.GetGame(frm.SelectedResultID);
+                FormTheGamesDBImageMode frm2 = new FormTheGamesDBImageMode(gm.Images);
+                if (frm2.ShowDialog(this) == DialogResult.OK)
+                {
+                    // Browse for a folder
+                    FolderBrowserDialog fol = new FolderBrowserDialog();
+
+                    string selectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                    switch (MODE)
+                    {
+                        case DetectMode.COVERS:
+                            {
+                                if (Program.Settings.Database_FoldersCovers != null)
+                                    if (Program.Settings.Database_FoldersCovers.Count > 0)
+                                        selectedPath = Program.Settings.Database_FoldersCovers[0];
+                                break;
+                            }
+                        case DetectMode.SNAPS:
+                            {
+                                if (Program.Settings.Database_FoldersSnapshots != null)
+                                    if (Program.Settings.Database_FoldersSnapshots.Count > 0)
+                                        selectedPath = Program.Settings.Database_FoldersSnapshots[0];
+                                break;
+                            }
+                    }
+                    fol.SelectedPath = selectedPath;
+                    fol.Description = Program.ResourceManager.GetString("Title_ChooseWhereToDownloadTheFiles");
+                    if (fol.ShowDialog(this) == DialogResult.OK)
+                    {
+                        List<string> links = new List<string>();
+                        if (frm2.SelectedBanners)
+                        {
+                            for (int i = 0; i < gm.Images.Banners.Count; i++)
+                                links.Add(TheGamesDBAPI.GamesDB.BaseImgURL + gm.Images.Banners[i].Path);
+                        }
+                        else if (frm2.SelectedBoxArtBack)
+                        {
+                            links.Add(TheGamesDBAPI.GamesDB.BaseImgURL + gm.Images.BoxartBack.Path);
+                        }
+                        else if (frm2.SelectedBoxArtFront)
+                        {
+                            links.Add(TheGamesDBAPI.GamesDB.BaseImgURL + gm.Images.BoxartFront.Path);
+                        }
+                        else if (frm2.SelectedFanart)
+                        {
+                            for (int i = 0; i < gm.Images.Fanart.Count; i++)
+                                links.Add(TheGamesDBAPI.GamesDB.BaseImgURL + gm.Images.Fanart[i].Path);
+                        }
+                        else if (frm2.SelectedScreenshots)
+                        {
+                            for (int i = 0; i < gm.Images.Screenshots.Count; i++)
+                                links.Add(TheGamesDBAPI.GamesDB.BaseImgURL + gm.Images.Screenshots[i].Path);
+                        }
+                        FormDownloadFiles down = new FormDownloadFiles(fol.SelectedPath, links.ToArray(), entryName);
+                        if (down.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                        {
+                            if (down.DownloadedPaths.Count > 0)
+                            {
+                                foreach (string file in down.DownloadedPaths)
+                                {
+                                    // Make sure this file isn't exist for selected game
+                                    bool found = false;
+                                    if (detects != null)
+                                    {
+                                        foreach (MyNesDetectEntryInfo inf in detects)
+                                        {
+                                            if (inf.Path == file)
+                                            {
+                                                found = true; break;
+                                            }
+                                        }
+                                    }
+                                    if (!found)
+                                    {
+                                        // Add it !
+                                        MyNesDetectEntryInfo newDetect = new MyNesDetectEntryInfo();
+                                        newDetect.GameID = currentID;
+                                        newDetect.Path = file;
+                                        newDetect.Name = Path.GetFileNameWithoutExtension(file);
+                                        newDetect.FileInfo = "";
+                                        MyNesDB.AddDetect(MODE.ToString(), newDetect);
+                                    }
+                                }
+                                RefreshForEntry(currentID);
+                            }
+                            // Save folder 
+                            switch (MODE)
+                            {
+                                case DetectMode.COVERS:
+                                    {
+                                        if (Program.Settings.Database_FoldersCovers != null)
+                                            if (!Program.Settings.Database_FoldersCovers.Contains(fol.SelectedPath))
+                                                Program.Settings.Database_FoldersCovers.Insert(0, fol.SelectedPath);
+                                        break;
+                                    }
+                                case DetectMode.SNAPS:
+                                    {
+                                        if (Program.Settings.Database_FoldersSnapshots != null)
+                                            if (!Program.Settings.Database_FoldersSnapshots.Contains(fol.SelectedPath))
+                                                Program.Settings.Database_FoldersSnapshots.Insert(0, fol.SelectedPath);
+                                        break;
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

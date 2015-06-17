@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,12 @@ using System.Text;
 using System.Windows.Forms;
 using SlimDX;
 using SlimDX.DirectInput;
+using SlimDX.XInput;
 namespace MyNes
 {
     public partial class FormKey : Form
     {
-        public FormKey(DeviceType type, string deviceGuid, string keyName)
+        public FormKey(SlimDX.DirectInput.DeviceType type, string deviceGuid, string keyName)
         {
             this.deviceType = type;
             InitializeComponent();
@@ -41,21 +42,32 @@ namespace MyNes
 
             switch (type)
             {
-                case DeviceType.Keyboard:
+                case SlimDX.DirectInput.DeviceType.Keyboard:
                     {
                         keyboard = new Keyboard(di);
                         keyboard.SetCooperativeLevel(this.Handle, CooperativeLevel.Nonexclusive | CooperativeLevel.Foreground);
                         break;
                     }
-                case DeviceType.Joystick:
+                case SlimDX.DirectInput.DeviceType.Joystick:
                     {
                         joystick = new Joystick(di, Guid.Parse(deviceGuid));
                         joystick.SetCooperativeLevel(this.Handle, CooperativeLevel.Nonexclusive | CooperativeLevel.Foreground);
 
                         break;
                     }
+                case SlimDX.DirectInput.DeviceType.Other:
+                    {
+                        switch (deviceGuid)
+                        {
+                            case "x-controller-1": x_controller = new Controller(UserIndex.One); break;
+                            case "x-controller-2": x_controller = new Controller(UserIndex.Two); break;
+                            case "x-controller-3": x_controller = new Controller(UserIndex.Three); break;
+                            case "x-controller-4": x_controller = new Controller(UserIndex.Four); break;
+                        }
+                        break;
+                    }
             }
-          
+
             timer_hold.Start();
             label1.Text = string.Format(Program.ResourceManager.GetString("Text_PressAKeyFor") + " [{0}]", keyName);
             stopTimer = 10;
@@ -64,11 +76,12 @@ namespace MyNes
             timer2.Start();
             this.Select();
         }
-        private DeviceType deviceType;
+        private SlimDX.DirectInput.DeviceType deviceType;
         private Keyboard keyboard;
         private KeyboardState keyboardState;
         private Joystick joystick;
         private JoystickState joystickState;
+        private Controller x_controller;
         private string _inputName;
         private int stopTimer = 0;
         public string InputName { get { return _inputName; } }
@@ -76,7 +89,7 @@ namespace MyNes
         {
             switch (deviceType)
             {
-                case DeviceType.Keyboard:
+                case SlimDX.DirectInput.DeviceType.Keyboard:
                     {
                         if (keyboard.Acquire().IsSuccess)
                         {
@@ -93,10 +106,23 @@ namespace MyNes
                         }
                         break;
                     }
-                case DeviceType.Joystick:
+                case SlimDX.DirectInput.DeviceType.Joystick:
                     {
                         if (CheckJoystickInput())
                         {
+                            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                            timer1.Enabled = false;
+                            this.Close();
+                            return;
+                        }
+                        break;
+                    }
+                case SlimDX.DirectInput.DeviceType.Other:
+                    {
+                        if (x_controller.GetState().Gamepad.Buttons != GamepadButtonFlags.None)
+                        {
+                            _inputName = x_controller.GetState().Gamepad.Buttons.ToString();
+
                             this.DialogResult = System.Windows.Forms.DialogResult.OK;
                             timer1.Enabled = false;
                             this.Close();

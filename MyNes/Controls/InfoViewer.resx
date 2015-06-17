@@ -163,6 +163,9 @@
   <data name="toolStripButton_deleteSelected.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
+  <data name="&gt;&gt;toolStripButton_get_tgdb.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;richTextBox1.Name" xml:space="preserve">
     <value>richTextBox1</value>
   </data>
@@ -178,14 +181,23 @@
   <data name="&gt;&gt;richTextBox1.Type" xml:space="preserve">
     <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="toolStripButton_get_tgdb.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
   <data name="&gt;&gt;toolStripButton_deleteAll.Name" xml:space="preserve">
     <value>toolStripButton_deleteAll</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
+    <value>toolStripSeparator4</value>
   </data>
   <data name="StatusLabel.Text" xml:space="preserve">
     <value>0 / 0</value>
   </data>
   <data name="&gt;&gt;toolStrip1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton_get_tgdb.Name" xml:space="preserve">
+    <value>toolStripButton_get_tgdb</value>
   </data>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
@@ -221,11 +233,17 @@
   <data name="toolStripButton_SaveChanges.Text" xml:space="preserve">
     <value>Save changes</value>
   </data>
+  <data name="toolStripButton_get_tgdb.ToolTipText" xml:space="preserve">
+    <value>Search TheGamesDB.net for info (Overview)</value>
+  </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
   </data>
   <data name="toolStripButton_deleteAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
+  </data>
+  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
   </data>
   <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
     <value>370, 25</value>
@@ -244,12 +262,6 @@
   </data>
   <data name="toolStripButton_next.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton_edit.Name" xml:space="preserve">
-    <value>toolStripButton_edit</value>
-  </data>
-  <data name="toolStripButton_next.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
   </data>
   <data name="toolStripButton_deleteSelected.Text" xml:space="preserve">
     <value>Remove selected</value>
@@ -287,6 +299,9 @@
   <data name="toolStripButton_prevous.Text" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="toolStripButton_get_tgdb.Text" xml:space="preserve">
+    <value>Search</value>
+  </data>
   <data name="&gt;&gt;toolStripButton_prevous.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -305,11 +320,17 @@
   <data name="toolStrip1.Text" xml:space="preserve">
     <value>toolStrip1</value>
   </data>
-  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>6, 25</value>
+  <data name="toolStripButton_next.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
   </data>
-  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="&gt;&gt;toolStripButton_edit.Name" xml:space="preserve">
+    <value>toolStripButton_edit</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="toolStripButton_next.Text" xml:space="preserve">
+    <value>Next</value>
   </data>
   <data name="toolStripButton_prevous.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -342,8 +363,11 @@
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.UserControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="toolStripButton_next.Text" xml:space="preserve">
-    <value>Next</value>
+  <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 25</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 25</value>
   </data>
   <data name="toolStripButton_prevous.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
@@ -353,6 +377,9 @@
   </data>
   <data name="&gt;&gt;toolStripButton_SaveChanges.Name" xml:space="preserve">
     <value>toolStripButton_SaveChanges</value>
+  </data>
+  <data name="toolStripButton_get_tgdb.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

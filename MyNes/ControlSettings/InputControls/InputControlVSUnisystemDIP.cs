@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SlimDX.DirectInput;
+using SlimDX.XInput;
 using MMB;
 namespace MyNes
 {
@@ -36,16 +37,20 @@ namespace MyNes
         {
             InitializeComponent();
         }
-
-        private List<DeviceInstance> devices;
+        private List<string> deviceGuides;
+        private List<SlimDX.DirectInput.DeviceType> deviceTypes;
+        private Controller c1 = new Controller(UserIndex.One);
+        private Controller c2 = new Controller(UserIndex.Two);
+        private Controller c3 = new Controller(UserIndex.Three);
+        private Controller c4 = new Controller(UserIndex.Four);
 
         public override void LoadSettings()
         {
             RefreshDevices();
             // Load settings
-            for (int i = 0; i < devices.Count; i++)
+            for (int i = 0; i < deviceGuides.Count; i++)
             {
-                if (devices[i].InstanceGuid.ToString().ToLower() == Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid.ToLower())
+                if (deviceGuides[i].ToLower() == Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid.ToLower())
                 {
                     // This is it!
                     // Select the device
@@ -60,14 +65,41 @@ namespace MyNes
         {
             comboBox_device.Items.Clear();
             DirectInput di = new DirectInput();
-            devices = new List<DeviceInstance>();
+            deviceGuides = new List<string>();
+            deviceTypes = new List<SlimDX.DirectInput.DeviceType>();
             foreach (DeviceInstance ins in di.GetDevices())
             {
-                if (ins.Type == DeviceType.Joystick || ins.Type == DeviceType.Keyboard)
+                if (ins.Type == SlimDX.DirectInput.DeviceType.Joystick || ins.Type == SlimDX.DirectInput.DeviceType.Keyboard)
                 {
                     comboBox_device.Items.Add(ins.InstanceName);
-                    devices.Add(ins);
+                    deviceGuides.Add(ins.InstanceGuid.ToString());
+                    deviceTypes.Add(ins.Type);
                 }
+            }
+            // Add the X inputs devices if available
+            if (c1.IsConnected)
+            {
+                comboBox_device.Items.Add("X Controller Player One");
+                deviceGuides.Add("x-controller-1");
+                deviceTypes.Add(SlimDX.DirectInput.DeviceType.Other);
+            }
+            if (c2.IsConnected)
+            {
+                comboBox_device.Items.Add("X Controller Player Two");
+                deviceGuides.Add("x-controller-2");
+                deviceTypes.Add(SlimDX.DirectInput.DeviceType.Other);
+            }
+            if (c3.IsConnected)
+            {
+                comboBox_device.Items.Add("X Controller Player Three");
+                deviceGuides.Add("x-controller-3");
+                deviceTypes.Add(SlimDX.DirectInput.DeviceType.Other);
+            }
+            if (c4.IsConnected)
+            {
+                comboBox_device.Items.Add("X Controller Player Four");
+                deviceGuides.Add("x-controller-1");
+                deviceTypes.Add(SlimDX.DirectInput.DeviceType.Other);
             }
         }
         private void RefreshList()
@@ -77,7 +109,7 @@ namespace MyNes
             for (int i = 0; i < Program.Settings.ControlSettings.VSUnisystemDIPDevices.Count; i++)
             {
                 if (Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].DeviceGuid.ToLower() ==
-                    devices[comboBox_device.SelectedIndex].InstanceGuid.ToString().ToLower())
+                    deviceGuides[comboBox_device.SelectedIndex].ToLower())
                 {
                     // This is it!
                     ListViewItem item = new ListViewItem("Credit Left Coin Slot");
@@ -163,7 +195,7 @@ namespace MyNes
             for (int i = 0; i < Program.Settings.ControlSettings.VSUnisystemDIPDevices.Count; i++)
             {
                 if (Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].DeviceGuid.ToLower() ==
-                    devices[comboBox_device.SelectedIndex].InstanceGuid.ToString().ToLower())
+                    deviceGuides[comboBox_device.SelectedIndex].ToLower())
                 {
                     Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid = Program.Settings.ControlSettings.VSUnisystemDIPDevices[i].DeviceGuid;
                     found = true;
@@ -185,7 +217,7 @@ namespace MyNes
             if (!found)
             {
                 // Add the device
-                Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid = devices[comboBox_device.SelectedIndex].InstanceGuid.ToString();
+                Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid = deviceGuides[comboBox_device.SelectedIndex];
                 IInputSettingsVSUnisystemDIP vs = new IInputSettingsVSUnisystemDIP();
                 vs.DeviceGuid = Program.Settings.ControlSettings.VSUnisystemDIPDeviceGuid;
                 vs.CreditLeftCoinSlot = listView1.Items[0].SubItems[1].Text;
@@ -211,8 +243,8 @@ namespace MyNes
         }
         private void SetPlayer()
         {
-            FormKey frm = new FormKey(devices[comboBox_device.SelectedIndex].Type,
-                devices[comboBox_device.SelectedIndex].InstanceGuid.ToString(), listView1.SelectedItems[0].Text);
+            FormKey frm = new FormKey(deviceTypes[comboBox_device.SelectedIndex],
+                deviceGuides[comboBox_device.SelectedIndex], listView1.SelectedItems[0].Text);
             frm.Location = new Point(this.Parent.Parent.Parent.Location.X + this.Parent.Parent.Location.X + button2.Location.X,
             this.Parent.Parent.Parent.Location.Y + this.Parent.Parent.Location.Y + button2.Location.Y + 30);
             if (frm.ShowDialog(this) == DialogResult.OK)
@@ -224,8 +256,8 @@ namespace MyNes
         {
             for (int i = 0; i < listView1.Items.Count; i++)
             {
-                FormKey frm = new FormKey(devices[comboBox_device.SelectedIndex].Type,
-                    devices[comboBox_device.SelectedIndex].InstanceGuid.ToString(),
+                FormKey frm = new FormKey(deviceTypes[comboBox_device.SelectedIndex],
+                    deviceGuides[comboBox_device.SelectedIndex],
                     listView1.Items[i].Text);
                 frm.Location = new Point(this.Parent.Parent.Parent.Location.X + this.Parent.Parent.Location.X + button3.Location.X,
                 this.Parent.Parent.Parent.Location.Y + this.Parent.Parent.Location.Y + button3.Location.Y + 30);
