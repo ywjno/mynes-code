@@ -122,9 +122,6 @@
     <Setting Name="Video_Filter" Type="SlimDX.Direct3D9.TextureFilter" Scope="User">
       <Value Profile="(Default)">Point</Value>
     </Setting>
-    <Setting Name="Audio_LatencyInMilliseconds" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
-    </Setting>
     <Setting Name="Audio_Volume" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
@@ -188,8 +185,8 @@
     <Setting Name="Language" Type="System.String" Scope="User">
       <Value Profile="(Default)">English (United States)</Value>
     </Setting>
-    <Setting Name="Audio_BufferSizeInMilliseconds" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+    <Setting Name="Audio_BufferSizeInBytes" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8192</Value>
     </Setting>
     <Setting Name="Palette_UseGenerators" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -220,6 +217,9 @@
     </Setting>
     <Setting Name="AudioChannelNOZEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Audio_LatencyInPrecentage" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">53</Value>
     </Setting>
   </Settings>
 </SettingsFile>

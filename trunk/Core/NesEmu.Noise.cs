@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,6 @@ namespace MyNes.Core
         private static int noz_feedback;
         private static int noz_frequency;
         private static int noz_cycles;
-
-        // Playback
-        private static int noz_pl_clocks;
-        private static int noz_pl_output_av;
         private static int noz_pl_output;
 
         private static void NOZShutdown()
@@ -69,8 +65,6 @@ namespace MyNes.Core
             noz_cycles = 0;
             noz_frequency = NozFrequencyTable[systemIndex][0];
             noz_feedback = 0;
-            noz_pl_clocks = 0;
-            noz_pl_output_av = 0;
             noz_pl_output = 0;
         }
         private static void NozSoftReset()
@@ -131,14 +125,16 @@ namespace MyNes.Core
                 else
                     noz_feedback = (noz_shiftRegister >> 1 & 0x1) ^ (noz_shiftRegister & 0x1);
                 noz_shiftRegister >>= 1;
-                noz_shiftRegister = (noz_shiftRegister & 0x3FFF) | (noz_feedback << 14);
+                noz_shiftRegister = (noz_shiftRegister & 0x3FFF) | ((noz_feedback & 1) << 14);
 
                 if (noz_duration_counter > 0 && (noz_shiftRegister & 1) == 0)
                 {
-                    if (audio_playback_noz_enabled)
-                        noz_pl_output_av += noz_envelope;
+                    noz_pl_output = noz_envelope;
+                    
                 }
-                noz_pl_clocks++;
+                else
+                    noz_pl_output = 0;
+                audio_playback_sample_needed = true;
             }
         }
     }

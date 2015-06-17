@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using MMB;
+using TheGamesDBAPI;
 
 namespace MyNes
 {
@@ -50,6 +51,7 @@ namespace MyNes
             toolStripButton_newFile.Enabled = false;
             toolStripButton_SaveChanges.Enabled = false;
             toolStripButton_addMoreFiles.Enabled = false;
+            toolStripButton_get_tgdb.Enabled = false;
             toolStripButton_deleteSelected.Enabled = false;
             toolStripButton_deleteAll.Enabled = false;
             toolStripButton_openLocation.Enabled = false;
@@ -104,6 +106,7 @@ namespace MyNes
             // Get files for given game id
             detects = MyNesDB.GetDetects("INFOS", id);
             toolStripButton_addMoreFiles.Enabled = true;
+            toolStripButton_get_tgdb.Enabled = true;
             toolStripButton_newFile.Enabled = true;
             if (detects == null) return;
             if (detects.Length > 0)
@@ -179,6 +182,10 @@ namespace MyNes
                 {
                     ManagedMessageBox.ShowErrorMessage(ex.Message);
                 }
+            }
+            else
+            {
+                toolStripButton_newFile_Click(this, new EventArgs());
             }
         }
         private void toolStripButton_addMoreFiles_Click(object sender, EventArgs e)
@@ -376,6 +383,74 @@ namespace MyNes
             {
                 e.Effect = DragDropEffects.None;
             }
+        }
+        private void toolStripButton_get_tgdb_Click(object sender, EventArgs e)
+        {
+            if (currentID == "") return;
+            string entryName = MyNesDB.GetEntry(currentID).Name;
+            FormSearchTheGamesDB frm = new FormSearchTheGamesDB(entryName);
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                // Set the data
+                richTextBox1.Clear();
+                Game gm = GamesDB.GetGame(frm.SelectedResultID);
+                richTextBox1.Text = gm.Overview;
+                if (fileIndex >= 0 && fileIndex < detects.Length)
+                {
+                    //save
+                    toolStripButton_SaveChanges_Click(sender, e);
+                }
+                else
+                {
+                    SaveFileDialog sav = new SaveFileDialog();
+                    sav.Title = Program.ResourceManager.GetString("Title_NewInfoFile");
+                    sav.Filter = Program.ResourceManager.GetString("Filter_InfoFile");
+                    // Determine file name
+                    MyNesDBEntryInfo entry = MyNesDB.GetEntry(currentID);
+                    sav.FileName = entry.Name + ".txt";
+                    if (sav.ShowDialog(this) == DialogResult.OK)
+                    {
+                        // Save the file !
+                        switch (Path.GetExtension(sav.FileName).ToLower())
+                        {
+                            case ".rtf":
+                            case ".doc": richTextBox1.SaveFile(sav.FileName); break;
+                            default: File.WriteAllLines(sav.FileName, richTextBox1.Lines, Encoding.UTF8); break;
+                        }
+                        // Make sure this file isn't exist for selected game
+                        bool found = false;
+                        if (detects != null)
+                        {
+                            for (int i = 0; i < detects.Length; i++)
+                            {
+                                if (detects[i].Path == sav.FileName)
+                                {
+
+                                    fileIndex = i;
+                                    ShowCurrentFile();
+                                    found = true;
+                                    return;
+                                }
+                            }
+                        }
+                        if (!found)
+                        {
+                            // Add it !
+                            MyNesDetectEntryInfo newDetect = new MyNesDetectEntryInfo();
+                            newDetect.GameID = currentID;
+                            newDetect.Path = sav.FileName;
+                            newDetect.Name = Path.GetFileNameWithoutExtension(sav.FileName);
+                            newDetect.FileInfo = "";
+                            MyNesDB.AddDetect("INFOS", newDetect);
+                            // Refresh
+                            RefreshForEntry(currentID);
+                            fileIndex = detects.Length - 1;
+                            ShowCurrentFile();
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

@@ -1,0 +1,469 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TheGamesDBAPI</name>
+    </assembly>
+    <members>
+        <member name="T:TheGamesDBAPI.Game">
+            <summary>
+            Contains the data for one game in the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.ID">
+            <summary>
+            Unique database ID
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Title">
+            <summary>
+            Title of the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Platform">
+            <summary>
+            Which platform the game is for.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.ReleaseDate">
+            <summary>
+            Which date the game was first released on.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Overview">
+            <summary>
+            A general description of the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.ESRB">
+            <summary>
+            ESRB rating for the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Players">
+            <summary>
+            How many players the game supports. "1","2","3" or "4+".
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Publisher">
+            <summary>
+            The publisher(s) of the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Developer">
+            <summary>
+            The developer(s) of the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Rating">
+            <summary>
+            The overall rating of the game as rated by users on TheGamesDB.net.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.AlternateTitles">
+            <summary>
+            A list of all the alternative titles of the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Genres">
+            <summary>
+            A list of all the game's genres.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.Images">
+            <summary>
+            A GameImages-object containing all the images for the game.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.Game.#ctor">
+            <summary>
+            Creates a new Game without any content.
+            </summary>
+        </member>
+        <member name="T:TheGamesDBAPI.Game.GameImages">
+            <summary>
+            Represents the images for one game in the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.BoxartBack">
+            <summary>
+            The art on the back of the box.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.BoxartFront">
+            <summary>
+            The art on the front of the box.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.Fanart">
+            <summary>
+            A list of all the fanart for the game that have been uploaded to the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.Banners">
+            <summary>
+            A list of all the banners for the game that have been uploaded to the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.Screenshots">
+            <summary>
+            A list of all the screenshots for the game that have been uploaded to the database.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.Game.GameImages.#ctor">
+            <summary>
+            Creates a new GameImages without any content.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.Game.GameImages.FromXmlNode(System.Xml.XmlNode)">
+            <summary>
+            Adds all the images that can be found in the XmlNode
+            </summary>
+            <param name="node">the XmlNode to search through</param>
+        </member>
+        <member name="T:TheGamesDBAPI.Game.GameImages.GameImage">
+            <summary>
+            Represents one image
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.GameImage.Width">
+            <summary>
+            The width of the image in pixels.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.GameImage.Height">
+            <summary>
+            The height of the image in pixels.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Game.GameImages.GameImage.Path">
+            <summary>
+            The relative path to the image.
+            </summary>
+            <seealso cref="F:TheGamesDBAPI.GamesDB.BaseImgURL"/>
+        </member>
+        <member name="M:TheGamesDBAPI.Game.GameImages.GameImage.#ctor(System.Xml.XmlNode)">
+            <summary>
+            Creates an image from an XmlNode.
+            </summary>
+            <param name="node">XmlNode to get data from</param>
+        </member>
+        <member name="T:TheGamesDBAPI.GamesDB">
+            <summary>
+            Fetches information from TheGamesDB.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.GamesDB.BaseImgURL">
+            <summary>
+            The base image path that should be prepended to all the relative image paths to get the full paths to the images.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetGames(System.String,System.String,System.String)">
+            <summary>
+            Gets a collection of games matched up with loose search terms.
+            </summary>
+            <param name="Name">The game title to search for</param>
+            <param name="Platform">Filters results by platform</param>
+            <param name="Genre">Filters results by genre</param>
+            <returns>A collection of games that matched the search terms</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetUpdatedGames(System.Int32)">
+            <summary>
+            Gets all games updated since the specified time.
+            </summary>
+            <param name="time">Last x seconds to get updated games for</param>
+            <returns>A collection of game ID's for games that have been updated</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetGame(System.Int32)">
+            <summary>
+            Gets the data for a specific game.
+            </summary>
+            <param name="ID">The game ID to return data for</param>
+            <returns>A Game-object containing all the data about the game, or null if no game was found</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetGame(TheGamesDBAPI.GameSearchResult)">
+            <summary>
+            Gets the data for a specific game.
+            </summary>
+            <param name="game">The game to return data for</param>
+            <returns>A Game-object containing all the data about the game, or null if no game was found</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetPlatforms">
+            <summary>
+            Gets a collection of all the available platforms.
+            </summary>
+            <returns>A collection of all the available platforms</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetPlatform(System.Int32)">
+            <summary>
+            Gets all data for a specific platform.
+            </summary>
+            <param name="ID">The platform ID to return data for (can be found by using GetPlatformsList)</param>
+            <returns>A Platform-object containing all the data about the platform, or null if no platform was found</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetPlatform(TheGamesDBAPI.PlatformSearchResult)">
+            <summary>
+            Gets all data for a specific platform.
+            </summary>
+            <param name="platform">The platform to return data for (can be found by using GetPlatformsList)</param>
+            <returns>A Platform-object containing all the data about the platform, or null if no platform was found</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetPlatformGames(System.Int32)">
+            <summary>
+            Gets all the games for a platform. The Platform field will not be filled.
+            </summary>
+            <param name="ID">The platform ID to return games for (can be found by using GetPlatformsList)</param>
+            <returns>A collection of all the games on the platform</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetPlatformGames(TheGamesDBAPI.Platform)">
+            <summary>
+            Gets all the games for a platform.
+            </summary>
+            <param name="platform">The platform to return games for</param>
+            <returns>A collection of all the games on the platform</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetPlatformGames(TheGamesDBAPI.PlatformSearchResult)">
+            <summary>
+            Gets all the games for a platform.
+            </summary>
+            <param name="platform">The platform to return games for</param>
+            <returns>A collection of all the games on the platform</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetUserFavorites(System.String)">
+            <summary>
+            Gets all of a user's favorites.
+            </summary>
+            <param name="AccountIdentifier">The unique 'account identifier' of the user in question. It can be found on their 'My User Info' page.</param>
+            <returns>Collection of game ID:s</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.AddUserFavorite(System.String,System.Int32)">
+            <summary>
+            Adds a game to the user's favorites.
+            </summary>
+            <param name="AccountIdentifier">The unique 'account identifier' of the user in question. It can be found on their 'My User Info' page.</param>
+            <param name="GameID">ID of the game to add</param>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.RemoveUserFavorite(System.String,System.Int32)">
+            <summary>
+            Removes a game from the user's favorites.
+            </summary>
+            <param name="AccountIdentifier">The unique 'account identifier' of the user in question. It can be found on their 'My User Info' page.</param>
+            <param name="GameID">ID of the game to remove</param>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.GetUserRating(System.String,System.Int32)">
+            <summary>
+            Gets a user's rating of a specific game.
+            </summary>
+            <param name="AccountIdentifier">The unique 'account identifier' of the user in question. It can be found on their 'My User Info' page.</param>
+            <param name="GameID">ID of the game to get the rating of</param>
+            <returns>A rating of 1 to 10 (or 0 if the user has not rated the game)</returns>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.SetUserRating(System.String,System.Int32,System.Int32)">
+            <summary>
+            Sets a user's rating of a specific game.
+            </summary>
+            <param name="AccountIdentifier">The unique 'account identifier' of the user in question. It can be found on their 'My User Info' page.</param>
+            <param name="GameID">ID of the game to rate</param>
+            <param name="Rating">A rating of 1 to 10</param>
+        </member>
+        <member name="M:TheGamesDBAPI.GamesDB.RemoveUserRating(System.String,System.Int32)">
+            <summary>
+            Removes a user's rating of a specific game.
+            </summary>
+            <param name="AccountIdentifier">The unique 'account identifier' of the user in question. It can be found on their 'My User Info' page.</param>
+            <param name="GameID">ID of the game to remove the rating for</param>
+        </member>
+        <member name="T:TheGamesDBAPI.GameSearchResult">
+            <summary>
+            Represents a search result when searching for games.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.GameSearchResult.ID">
+            <summary>
+            Unique database ID.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.GameSearchResult.Title">
+            <summary>
+            Title of the game.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.GameSearchResult.ReleaseDate">
+            <summary>
+            Date on which the game was released.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.GameSearchResult.Platform">
+            <summary>
+            Which platform the game is for.
+            </summary>
+        </member>
+        <member name="T:TheGamesDBAPI.Platform">
+            <summary>
+            Contains the data for one platform in the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.ID">
+            <summary>
+            Unique database ID.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Name">
+            <summary>
+            The name of the platform.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.MaxControllers">
+            <summary>
+            The max amount of controllers that can be connected to the device.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Overview">
+            <summary>
+            General overview of the platform.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Developer">
+            <summary>
+            The developer(s) of the platform.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Manufacturer">
+            <summary>
+            The manufacturer(s) of the platform.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.CPU">
+            <summary>
+            The CPU of the platform (for platforms which have one specific CPU).
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Memory">
+            <summary>
+            Information about the platform's memory.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Graphics">
+            <summary>
+            The platform's graphics card.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Sound">
+            <summary>
+            Information about the platform's sound capabilities.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Display">
+            <summary>
+            Display resolution (on the form: 'width'x'height')
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Media">
+            <summary>
+            The game media the platform reads (eg. 'Disc').
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Rating">
+            <summary>
+            The average rating as rated by the users on TheGamesDB.net.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.Images">
+            <summary>
+            A PlatformImages-object containing all the images for the platform.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.Platform.#ctor">
+            <summary>
+            Creates a new Platform without any content.
+            </summary>
+        </member>
+        <member name="T:TheGamesDBAPI.Platform.PlatformImages">
+            <summary>
+            Represents the images for one platform in the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.ConsoleArt">
+            <summary>
+            Path to the image of the console.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.ControllerArt">
+            <summary>
+            Path to the image of the controller.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.Boxart">
+            <summary>
+            Boxart for the platform
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.Fanart">
+            <summary>
+            A list of all the fanart for the platform that have been uploaded to the database.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.Banners">
+            <summary>
+            A list of all the banners for the platform that have been uploaded to the database.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.Platform.PlatformImages.#ctor">
+            <summary>
+            Creates a new PlatformImages without any content.
+            </summary>
+        </member>
+        <member name="M:TheGamesDBAPI.Platform.PlatformImages.FromXmlNode(System.Xml.XmlNode)">
+            <summary>
+            Adds all the images that can be found in the XmlNode
+            </summary>
+            <param name="node">the XmlNode to search through</param>
+        </member>
+        <member name="T:TheGamesDBAPI.Platform.PlatformImages.PlatformImage">
+            <summary>
+            Represents one image
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.PlatformImage.Width">
+            <summary>
+            The width of the image in pixels.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.PlatformImage.Height">
+            <summary>
+            The height of the image in pixels.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.Platform.PlatformImages.PlatformImage.Path">
+            <summary>
+            The relative path to the image.
+            </summary>
+            <seealso cref="F:TheGamesDBAPI.GamesDB.BaseImgURL"/>
+        </member>
+        <member name="M:TheGamesDBAPI.Platform.PlatformImages.PlatformImage.#ctor(System.Xml.XmlNode)">
+            <summary>
+            Creates an image from an XmlNode.
+            </summary>
+            <param name="node">XmlNode to get data from</param>
+        </member>
+        <member name="T:TheGamesDBAPI.PlatformSearchResult">
+            <summary>
+            Represents a search result when listing games.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.PlatformSearchResult.ID">
+            <summary>
+            Unique database ID.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.PlatformSearchResult.Name">
+            <summary>
+            Name of the platform.
+            </summary>
+        </member>
+        <member name="F:TheGamesDBAPI.PlatformSearchResult.Alias">
+            <summary>
+            URL alias
+            </summary>
+        </member>
+    </members>
+</doc>

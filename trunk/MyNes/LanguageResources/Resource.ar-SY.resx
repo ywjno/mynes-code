@@ -574,10 +574,9 @@
     <value>النسخة</value>
   </data>
   <data name="About_CopyrightNotice" xml:space="preserve">
-    <value>MY NES
-------
+    <value>
 محاكي لنظام Nintendo Entertainment System / Family Computer (Nes/Famicom) مكتوب بلغة C#
-جميع الحقوق محفوظة © علاء ابراهيم حديد 2009 - 2014
+جميع الحقوق محفوظة © علاء ابراهيم حديد 2009 - 2015
 إيميل: ahdsoftwares@hotmail.com
 
 هذا البرنامج مجاني، يمكنك إعادة نشره و\أو التعديل عليه تحت شروط و قيود الرخصة GNU General Public License كما صدرت من قبل المؤسسة Free Software، النسخة 3 من الرخصة، أو (حسب اختيارك) أية نسخة لاحقة.
@@ -690,5 +689,50 @@ Adam Becker for the great help !!
   </data>
   <data name="Status_Supported" xml:space="preserve">
     <value>مدعومة.</value>
+  </data>
+  <data name="Message_PleaseSelectOneResultFirst" xml:space="preserve">
+    <value>الرجاء إختيار نتيجة واحدة</value>
+  </data>
+  <data name="Status_Downloading" xml:space="preserve">
+    <value>جاري التنزيل</value>
+  </data>
+  <data name="Title_ChooseWhereToDownloadTheFiles" xml:space="preserve">
+    <value>الرجاء إختيار أين سيتم تنزيل الملفات</value>
+  </data>
+  <data name="Button_Ok" xml:space="preserve">
+    <value>&amp;موافق</value>
+  </data>
+  <data name="Button_OpenLog" xml:space="preserve">
+    <value>&amp;فتح ملف السجل</value>
+  </data>
+  <data name="MessageCaption_DetectAndDownloadFromTheGamesDB" xml:space="preserve">
+    <value>التعيين و التنزيل TheGamesDB.net</value>
+  </data>
+  <data name="Message_LogFileSavedTo" xml:space="preserve">
+    <value>تمّ حفظ ملف السجل في</value>
+  </data>
+  <data name="Status_ApplyingDatabase" xml:space="preserve">
+    <value>جاري الإضافة إلى قاعدة البيانات</value>
+  </data>
+  <data name="Message_PleaseSelectAPlatformFirst" xml:space="preserve">
+    <value>الرجاء إختيار منصة أولاً</value>
+  </data>
+  <data name="Message_TheFolderForBannersIsNotExist" xml:space="preserve">
+    <value>المجلد الخاص بالملصقات غير موجود</value>
+  </data>
+  <data name="Message_TheFolderForBoxartBackIsNotExist" xml:space="preserve">
+    <value>المجلد الخاص بالغلاف الخلفي غير موجود</value>
+  </data>
+  <data name="Message_TheFolderForBoxartFrontIsNotExist" xml:space="preserve">
+    <value>المجلد الخاص بالغلاف الأمامي غير موجود</value>
+  </data>
+  <data name="Message_TheFolderForFanartIsNotExist" xml:space="preserve">
+    <value>المجلد الخاص بصور المعجبين غير موجود</value>
+  </data>
+  <data name="Message_TheFolderForOverviewIsNotExist" xml:space="preserve">
+    <value>المجلد الخاص بمعلومات اللعبة غير موجود</value>
+  </data>
+  <data name="Message_TheFolderForScreenshotsIsNotExist" xml:space="preserve">
+    <value>المجلد الخاص بلصور الملتقطة غير موجود</value>
   </data>
 </root>

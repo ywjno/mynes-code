@@ -544,11 +544,13 @@ namespace MLV
                     vScrollBar1.Maximum = 1;
                     ManagedListViewPanel1.VscrollOffset = vScrollBar1.Value = 0;
                     ManagedListViewPanel1.Invalidate();
+                   
                     panel2.Visible = vScrollBar1.Visible = false;
                 }
                 else
                 {
                     vScrollBar1.Maximum = size - ManagedListViewPanel1.Height + 40;
+                   
                     panel2.Visible = vScrollBar1.Visible = true;
                     vScrollBar1.Enabled = true;
                 }
@@ -561,12 +563,14 @@ namespace MLV
                     vScrollBar1.Maximum = 1;
                     ManagedListViewPanel1.VscrollOffset = vScrollBar1.Value = 0;
                     ManagedListViewPanel1.Invalidate();
+                    
                     panel2.Visible = vScrollBar1.Visible = false;
                     vScrollBar1.Enabled = true;
                 }
                 else
                 {
                     vScrollBar1.Maximum = size.Height - ManagedListViewPanel1.Height + 40;
+                   
                     panel2.Visible = vScrollBar1.Visible = true;
                 }
 
@@ -702,6 +706,18 @@ namespace MLV
                 currentToolTip = "";
             }
         }
+        /// <summary>
+        /// Refresh scroll bars
+        /// </summary>
+        public void RefreshScrollBarsView()
+        {
+            ManagedListViewPanel1.buffered_itemsSize = ManagedListViewPanel1.CalculateItemsSize();
+            ManagedListViewPanel1_RefreshScrollBars(this, null);
+            ManagedListViewPanel1.Invalidate();
+            FixWheelScrollSpeed();
+            if (ItemAdded != null)
+                ItemAdded(this, new EventArgs());
+        }
         #endregion
 
         private void ManagedListView_Paint(object sender, PaintEventArgs e)
@@ -831,7 +847,7 @@ namespace MLV
 
             vScrollBar1.Maximum = 1;
             ManagedListViewPanel1.VscrollOffset = vScrollBar1.Value = 0;
-            vScrollBar1.Visible = false;
+          //  vScrollBar1.Visible = false;
 
             ManagedListViewPanel1.Invalidate();
         }

@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,6 @@ namespace MyNes.Core
         private static bool trl_halt;
         private static int trl_frequency;
         private static int trl_cycles;
-        // Playback
-        private static int trl_pl_clocks;
-        private static int trl_pl_output_av;
         private static int trl_pl_output;
 
         private static void TrlShutdown()
@@ -60,8 +57,6 @@ namespace MyNes.Core
             trl_halt = true;
             trl_frequency = 0;
             trl_cycles = 0;
-            trl_pl_output_av = 0;
-            trl_pl_clocks = 0;
             trl_pl_output = 0;
         }
         private static void TrlSoftReset()
@@ -108,6 +103,7 @@ namespace MyNes.Core
             }
             if (--trl_cycles <= 0)
             {
+                audio_playback_sample_needed = true;
                 trl_cycles = trl_frequency + 1;
                 if (trl_duration_counter > 0 && trl_linearCounter > 0)
                 {
@@ -115,9 +111,7 @@ namespace MyNes.Core
                     {
                         trl_step++;
                         trl_step &= 0x1F;
-                        if (audio_playback_trl_enabled)
-                            trl_pl_output_av += TrlStepSequence[trl_step];
-                        trl_pl_clocks++;
+                        trl_pl_output = TrlStepSequence[trl_step];
                     }
                 }
             }

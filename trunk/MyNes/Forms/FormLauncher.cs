@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -987,6 +987,26 @@ namespace MyNes
             {
                 FormDetectForDatabase frmDetect = new FormDetectForDatabase(frm.MODE);
                 frmDetect.ShowDialog(this);
+            }
+        }
+        private void DetectTGDB()
+        {
+            if (_thread_busy)
+            {
+                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_AnotherOperationInProgress"));
+                return;
+            }
+            if (!MyNesDB.IsDatabaseLoaded)
+            {
+                ManagedMessageBox.ShowErrorMessage(Program.ResourceManager.GetString("Message_NoDbLoadedYet"));
+                return;
+            }
+            if (NesEmu.EmulationON)
+                NesEmu.EmulationPaused = true;
+            FormDetectAndDownloadFromTheGamesDB frm = new FormDetectAndDownloadFromTheGamesDB();
+            if (frm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                // ??
             }
         }
         private bool FilterGame(DataRow row)
@@ -2004,6 +2024,10 @@ namespace MyNes
             sortColumnName = e.ColumnID;
             sortAZ = az;
             RefreshEntries();
+        }
+        private void toolStripButton10_Click(object sender, EventArgs e)
+        {
+            DetectTGDB();
         }
     }
 }

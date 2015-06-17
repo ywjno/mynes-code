@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ namespace MyNes
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripTextBox_find = new System.Windows.Forms.ToolStripTextBox();
@@ -309,6 +310,7 @@ namespace MyNes
             this.toolStripButton2,
             this.toolStripButton7,
             this.toolStripButton5,
+            this.toolStripButton10,
             this.toolStripSeparator1,
             this.toolStripButton4,
             this.toolStripTextBox_find,
@@ -344,6 +346,13 @@ namespace MyNes
             this.toolStripButton5.Image = global::MyNes.Properties.Resources.database_go;
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
+            // toolStripButton10
+            // 
+            resources.ApplyResources(this.toolStripButton10, "toolStripButton10");
+            this.toolStripButton10.Image = global::MyNes.Properties.Resources.the_game_db_icon;
+            this.toolStripButton10.Name = "toolStripButton10";
+            this.toolStripButton10.Click += new System.EventHandler(this.toolStripButton10_Click);
             // 
             // toolStripSeparator1
             // 
@@ -681,5 +690,6 @@ namespace MyNes
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem showLauncherAtAppStartToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton10;
     }
 }

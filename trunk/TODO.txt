@@ -1,5 +1,6 @@
 Things to do generally.
 -----------------------
+* Gamepad support (I don't have one to test on :( )
 * Fix all sound external channels.
 * FDS
 * NET PLAY

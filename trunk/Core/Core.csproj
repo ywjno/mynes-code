@@ -384,6 +384,7 @@
     <Compile Include="NesEmu.State.cs" />
     <Compile Include="NesEmu.Triangle.cs" />
     <Compile Include="Palettes\PaletteFileWrapper.cs" />
+    <Compile Include="Types\BlipBufferNative.cs" />
     <Compile Include="Types\ZlipWrapper.cs" />
     <Compile Include="ZLIP\Adler32.cs" />
     <Compile Include="ZLIP\Deflate.cs" />

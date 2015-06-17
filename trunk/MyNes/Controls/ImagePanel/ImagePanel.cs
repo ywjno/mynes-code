@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ namespace MyNes
         private StringFormat _StringFormat;
 
         public bool DrawDefaultImageWhenViewImageIsNull = true;
+        public System.Drawing.Drawing2D.InterpolationMode DrawInterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
         public int viewImageWidth = 0;
         public int viewImageHeight = 0;
         public int drawX = 0;
@@ -175,57 +176,6 @@ namespace MyNes
                 else
                 {
                     if (imageToView.Width < imageToView.Height && imRatio < pRatio)
-                    {
-                        viewImageHeight = this.Height;
-                        viewImageWidth = (int)(this.Height * imRatio);
-                    }
-                    else
-                    {
-                        viewImageWidth = this.Width;
-                        viewImageHeight = (int)(this.Width / imRatio);
-                    }
-                }
-            }
-        }
-        void CalculateStretchedImageValues(int imageToViewWidth, int imageToViewHeight)
-        {
-            float pRatio = (float)this.Width / this.Height;
-            float imRatio = (float)imageToViewWidth / imageToViewHeight;
-
-            if (this.Width >= imageToViewWidth && this.Height >= imageToViewHeight)
-            {
-                viewImageWidth = imageToViewWidth;
-                viewImageHeight = imageToViewHeight;
-            }
-            else if (this.Width > imageToViewWidth && this.Height < imageToViewHeight)
-            {
-                viewImageHeight = this.Height;
-                viewImageWidth = (int)(this.Height * imRatio);
-            }
-            else if (this.Width < imageToViewWidth && this.Height > imageToViewHeight)
-            {
-                viewImageWidth = this.Width;
-                viewImageHeight = (int)(this.Width / imRatio);
-            }
-            else if (this.Width < imageToViewWidth && this.Height < imageToViewHeight)
-            {
-                if (this.Width >= this.Height)
-                {
-                    //width image
-                    if (imageToViewWidth >= imageToViewHeight && imRatio >= pRatio)
-                    {
-                        viewImageWidth = this.Width;
-                        viewImageHeight = (int)(this.Width / imRatio);
-                    }
-                    else
-                    {
-                        viewImageHeight = this.Height;
-                        viewImageWidth = (int)(this.Height * imRatio);
-                    }
-                }
-                else
-                {
-                    if (imageToViewWidth < imageToViewHeight && imRatio < pRatio)
                     {
                         viewImageHeight = this.Height;
                         viewImageWidth = (int)(this.Height * imRatio);
@@ -417,16 +367,13 @@ namespace MyNes
 
         protected override void OnPaint(PaintEventArgs pe)
         {
+            pe.Graphics.InterpolationMode = DrawInterpolationMode;
             base.OnPaint(pe);
             if (ImageToView == null)
             {
                 if (DrawDefaultImageWhenViewImageIsNull)
                     if (defaultImage != null)
-                    {
-                        CalculateStretchedImageValues(defaultImage.Width, defaultImage.Height);
-                        CenterImage();
-                        pe.Graphics.DrawImage(defaultImage, new Rectangle(drawX, drawY, viewImageWidth, viewImageHeight));
-                    }
+                        pe.Graphics.DrawImage(defaultImage, new Rectangle(0, 0, this.Width, this.Height));
                 goto DRAWTEXT;
             }
             ImageAnimator.UpdateFrames();

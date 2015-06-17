@@ -3,7 +3,7 @@
  * A Nintendo Entertainment System / Family Computer (Nes/Famicom) 
  * Emulator written in C#.
  *
- * Copyright © Ala Ibrahim Hadid 2009 - 2014
+ * Copyright © Ala Ibrahim Hadid 2009 - 2015
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,7 @@ namespace MyNes.Core
         private static int sq1_frequency;
         private static int sq1_sweep;
         private static int sq1_cycles;
-        // Playback
-        private static int sq1_pl_clocks;
         private static int sq1_pl_output;
-        private static int sq1_pl_output_av;
 
         private static void Sq1Shutdown()
         {
@@ -80,9 +77,7 @@ namespace MyNes.Core
             sq1_frequency = 0;
             sq1_sweep = 0;
             sq1_cycles = 0;
-            sq1_pl_clocks = 0;
             sq1_pl_output = 0;
-            sq1_pl_output_av = 0;
         }
         private static void Sq1SoftReset()
         {
@@ -157,17 +152,19 @@ namespace MyNes.Core
 
             if (--sq1_cycles <= 0)
             {
+                // "Since the period of the timer is t+1 APU cycles and the sequencer has 8 steps, 
+                // the period of the waveform is 8*(t+1) APU cycles"
+                // Its t+1 APU clock, so we add 1 first then shift left by one ((t+1)* 2)
                 sq1_cycles = (sq1_frequency + 1) << 1;
-
-                sq1_dutyStep--;
-                if (sq1_dutyStep < 0)
-                    sq1_dutyStep = 0x7;
+                sq1_dutyStep = (sq1_dutyStep + 1) & 0x7;
                 if (sq1_duration_counter > 0 && Sq1IsValidFrequency())
                 {
-                    if (audio_playback_sq1_enabled)
-                        sq1_pl_output_av += PulseDutyForms[sq1_dutyForm][sq1_dutyStep] * sq1_envelope;
+                    // if (audio_playback_sq1_enabled)
+                    sq1_pl_output = PulseDutyForms[sq1_dutyForm][sq1_dutyStep] * sq1_envelope;
                 }
-                sq1_pl_clocks++;
+                else
+                    sq1_pl_output = 0;
+                audio_playback_sample_needed = true;
             }
         }
     }
